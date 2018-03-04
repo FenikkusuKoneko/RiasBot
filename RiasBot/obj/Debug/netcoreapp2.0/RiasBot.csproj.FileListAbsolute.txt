@@ -1,0 +1,13 @@
+D:\RiasBot\RiasBot\bin\Debug\netcoreapp2.0\RiasBot.dll.config
+D:\RiasBot\RiasBot\bin\Debug\netcoreapp2.0\RiasBot.deps.json
+D:\RiasBot\RiasBot\bin\Debug\netcoreapp2.0\RiasBot.runtimeconfig.json
+D:\RiasBot\RiasBot\bin\Debug\netcoreapp2.0\RiasBot.runtimeconfig.dev.json
+D:\RiasBot\RiasBot\bin\Debug\netcoreapp2.0\RiasBot.dll
+D:\RiasBot\RiasBot\bin\Debug\netcoreapp2.0\RiasBot.pdb
+D:\RiasBot\RiasBot\obj\Debug\netcoreapp2.0\RiasBot.dll.config
+D:\RiasBot\RiasBot\obj\Debug\netcoreapp2.0\RiasBot.csproj.CoreCompileInputs.cache
+D:\RiasBot\RiasBot\obj\Debug\netcoreapp2.0\RiasBot.AssemblyInfoInputs.cache
+D:\RiasBot\RiasBot\obj\Debug\netcoreapp2.0\RiasBot.AssemblyInfo.cs
+D:\RiasBot\RiasBot\obj\Debug\netcoreapp2.0\RiasBot.dll
+D:\RiasBot\RiasBot\obj\Debug\netcoreapp2.0\RiasBot.pdb
+D:\RiasBot\RiasBot\obj\Debug\netcoreapp2.0\RiasBot.csprojResolveAssemblyReference.cache
