@@ -16,8 +16,8 @@ namespace RiasBot.Commons.Attributes
         public static string GetUsage(string memberName)
         {
             var usage = Localization.LoadCommand(memberName.ToLowerInvariant()).Remarks;
-            return string.Join(" or ", usage
-                .Select(x => Format.Bold(x)));
+            return string.Join(" OR ", usage
+                .Select(x => Format.Code(x)));
         }
     }
 }

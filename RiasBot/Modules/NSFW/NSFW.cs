@@ -49,14 +49,14 @@ namespace RiasBot.Modules.NSFW
 
             if (!String.IsNullOrEmpty(image))
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithImageUrl(image);
 
                 await ReplyAsync("", embed: embed.Build());
             }
             else
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.errorColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
                 embed.WithDescription("I couldn't find anything.");
 
                 await ReplyAsync("", embed: embed.Build());
@@ -80,14 +80,14 @@ namespace RiasBot.Modules.NSFW
 
             if (!String.IsNullOrEmpty(image))
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithImageUrl(image);
 
                 await ReplyAsync("", embed: embed.Build());
             }
             else
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.errorColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
                 embed.WithDescription("I couldn't find anything.");
 
                 await ReplyAsync("", embed: embed.Build());
@@ -111,14 +111,14 @@ namespace RiasBot.Modules.NSFW
 
             if (!String.IsNullOrEmpty(image))
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithImageUrl(image);
 
                 await ReplyAsync("", embed: embed.Build());
             }
             else
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.errorColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
                 embed.WithDescription("I couldn't find anything.");
 
                 await ReplyAsync("", embed: embed.Build());
@@ -142,14 +142,14 @@ namespace RiasBot.Modules.NSFW
 
             if (!String.IsNullOrEmpty(image))
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithImageUrl(image);
 
                 await ReplyAsync("", embed: embed.Build());
             }
             else
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.errorColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
                 embed.WithDescription("I couldn't find anything.");
 
                 await ReplyAsync("", embed: embed.Build());
@@ -182,7 +182,7 @@ namespace RiasBot.Modules.NSFW
             {
                 if (!String.IsNullOrEmpty(image))
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithImageUrl(image);
                     await ReplyAsync("", embed: embed.Build());
                     count++;
@@ -190,8 +190,8 @@ namespace RiasBot.Modules.NSFW
             }
             if (count == 0)
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
-                embed.WithColor(RiasBot.errorColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                embed.WithColor(RiasBot.badColor);
                 embed.WithDescription("I couldn't find anything.");
 
                 await ReplyAsync("", embed: embed.Build());

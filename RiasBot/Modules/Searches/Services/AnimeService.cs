@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RiasBot.Modules.Searches.Services
 {
-    public class AnimeService : IKService
+    public class AnimeService : IRService
     {
         public AnimeService()
         {

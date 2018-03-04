@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace RiasBot.Services
 {
-    public class DbService : IKService
+    public class DbService : IRService
     {
         private readonly DbContextOptions<KurumiContext> options;
         private readonly DbContextOptions<KurumiContext> migrateOptions;

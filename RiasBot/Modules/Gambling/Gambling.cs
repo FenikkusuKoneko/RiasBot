@@ -28,9 +28,9 @@ namespace RiasBot.Modules.Gambling
         [Description][@Remarks]
         public async Task BetFlip(int bet, string coin)
         {
-            if(bet < 2)
+            if(bet < 20)
             {
-                await ReplyAsync($"{Context.User.Mention} you can't bet less than 2 {RiasBot.currency}");
+                await ReplyAsync($"{Context.User.Mention} you can't bet less than 20 {RiasBot.currency}");
                 return;
             }
 
@@ -73,9 +73,9 @@ namespace RiasBot.Modules.Gambling
         [Description][@Remarks]
         public async Task Wheel(int bet)
         {
-            if (bet < 10)
+            if (bet < 50)
             {
-                await ReplyAsync($"{Context.User.Mention} you can't bet less than 10 {RiasBot.currency}");
+                await ReplyAsync($"{Context.User.Mention} you can't bet less than 50 {RiasBot.currency}");
                 return;
             }
 
@@ -95,7 +95,7 @@ namespace RiasBot.Modules.Gambling
                         userDb.Currency += win - bet;
                         await db.SaveChangesAsync().ConfigureAwait(false);
 
-                        var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                        var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                         embed.WithTitle($"{Context.User} you won {win} {RiasBot.currency}");
                         embed.WithDescription($"「1.7x」\t「2.3x」\t「0.1x」\n\n「1.5x」\t    {arrow[wheel]}    \t「0.2x」\n\n「1.2x」\t「0.3x」\t「0.5x」");
                         await ReplyAsync("", embed: embed.Build());

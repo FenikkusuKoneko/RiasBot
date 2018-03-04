@@ -76,7 +76,7 @@ namespace RiasBot.Modules.Searches
                     if (description.Length > 1024)
                         description = description.Substring(0, 1024);
 
-                    var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
                     embed.WithAuthor(title, null, (string)obj.siteUrl);
                     embed.AddField("Romaji", titleRomaji, true).AddField("English", titleEnglish, true).AddField("Native", titleNative, true);
@@ -107,7 +107,7 @@ namespace RiasBot.Modules.Searches
                     if (description.Length > 1024)
                         description = description.Substring(0, 1024);
 
-                    var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
                     embed.WithAuthor(name, null, (string)obj.siteUrl);
                     embed.AddField("First Name", (string)obj.name.first ?? "-", true).AddField("Last Name", (string)obj.name.last ?? "-", true)
@@ -139,7 +139,7 @@ namespace RiasBot.Modules.Searches
                         if (description.Length > 1024)
                             description = description.Substring(0, 1024);
 
-                        var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                        var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
                         embed.WithAuthor(name, null, (string)obj.characters[0].siteUrl);
                         embed.AddField("First Name", (string)obj.characters[0].name.first ?? "-", true).AddField("Last Name", (string)obj.characters[0].name.last ?? "-", true)
@@ -185,7 +185,7 @@ namespace RiasBot.Modules.Searches
                             break;
                         }
                     }
-                    var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithDescription(description);
 
                     await ReplyAsync("", embed: embed.Build());

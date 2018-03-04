@@ -15,7 +15,7 @@ using SixLabors.Fonts;
 
 namespace RiasBot.Modules.Xp.Services
 {
-    public class XpService : IKService
+    public class XpService : IRService
     {
         private readonly DbService _db;
         public XpService(DbService db)

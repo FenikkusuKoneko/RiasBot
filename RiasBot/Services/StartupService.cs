@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RiasBot.Services
 {
-    public class StartupService : IKService
+    public class StartupService : IRService
     {
         private readonly DiscordSocketClient _discord;
         private readonly CommandService _commands;

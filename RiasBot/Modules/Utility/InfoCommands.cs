@@ -46,7 +46,7 @@ namespace RiasBot.Modules.Utility
                     users += (await guild.GetUsersAsync().ConfigureAwait(false)).Count;
                 }
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
                 embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
                 embed.AddField("Author", author.Username + "#" + author.Discriminator, true).AddField("Bot ID", Context.Client.CurrentUser.Id.ToString(), true);
@@ -96,7 +96,7 @@ namespace RiasBot.Modules.Utility
                 Array.Sort(userRolesPositions, userRoles);
                 Array.Reverse(userRoles);
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.AddField("Name", user, true).AddField("Nickname", user.Nickname ?? "-", true);
                 embed.AddField("ID", user.Id, true).AddField("Status", user.Status, true);
                 embed.AddField("Joined Server", joinedServer, true).AddField("Joined Discord", accountCreated, true);
@@ -148,7 +148,7 @@ namespace RiasBot.Modules.Utility
                     emoteIndex++;
                 }
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle(Context.Guild.Name);
                 embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner.Username}#{owner.Discriminator}", true).AddField("Members", users.Count, true);
                 embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
@@ -204,7 +204,7 @@ namespace RiasBot.Modules.Utility
                     user = (IGuildUser)Context.User;
 
                 var embed = new EmbedBuilder();
-                embed.WithColor(RiasBot.color);
+                embed.WithColor(RiasBot.goodColor);
                 try
                 {
                     embed.WithAuthor($"{user}", null, user.RealAvatarUrl(1024));
@@ -227,7 +227,7 @@ namespace RiasBot.Modules.Utility
             public async Task ServerIcon()
             {
                 var embed = new EmbedBuilder();
-                embed.WithColor(RiasBot.color);
+                embed.WithColor(RiasBot.goodColor);
                 embed.WithImageUrl(Context.Guild.IconUrl + "?size=1024");
 
                 await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);

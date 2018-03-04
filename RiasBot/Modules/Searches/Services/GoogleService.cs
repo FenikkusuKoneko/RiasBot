@@ -15,7 +15,7 @@ using System.Net;
 
 namespace RiasBot.Modules.Searches.Services
 {
-    public class GoogleService : IKService
+    public class GoogleService : IRService
     {
         const string search_engine_id = "018084019232060951019:hs5piey28-e";
         private readonly IBotCredentials _creds;

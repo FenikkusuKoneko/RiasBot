@@ -40,23 +40,7 @@ namespace RiasBot.Modules.Administration
                     await ReplyAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
                     return;
                 }
-
-                using (var db = _db.GetDbContext())
-                {
-                    var warnings = db.Warnings.Where(x => x.GuildId == Context.Guild.Id).ToList();
-
-                    var warning = new Warnings { GuildId = Context.Guild.Id, UserId = user.Id, Reason = reason, Moderator = Context.User.Id};
-                    await db.AddAsync(warning).ConfigureAwait(false);
-                    await db.SaveChangesAsync().ConfigureAwait(false);
-
-                    var embed = new EmbedBuilder().WithColor(RiasBot.color);
-                    embed.WithTitle($"{user}");
-                    embed.AddField("Warning", warnings.Count + 1);
-                    if (reason != null)
-                        embed.AddField("Reason", reason);
-
-                    await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
-                }
+                await _service.WarnUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
             }
 
             [RiasCommand][@Alias]
@@ -66,7 +50,7 @@ namespace RiasBot.Modules.Administration
             {
                 using (var db = _db.GetDbContext())
                 {
-                    var warnings = db.Warnings.Where(x => x.GuildId == Context.Guild.Id).ToList();
+                    var warnings = db.Warnings.Where(x => x.GuildId == Context.Guild.Id).GroupBy(y => y.UserId).Select(z => z.FirstOrDefault()).ToList();
 
                     if (warnings.Count == 0)
                     {
@@ -74,13 +58,26 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
+                        int index = 0;
                         string[] warnUsers = new string[warnings.Count];
-                        for (int i = 0; i < warnings.Count; i++)
+                        foreach (var warn in warnings)
                         {
-                            var user = await Context.Guild.GetUserAsync(warnings[i].UserId).ConfigureAwait(false);
-                            warnUsers[i] = $"{i + 1}. {user}";
+                            var user = await Context.Guild.GetUserAsync(warnings[index].UserId).ConfigureAwait(false);
+                            if (user != null)
+                            {
+                                warnUsers[index] = $"{index + 1}. {user}";
+                                index++;
+                            }
+                            else
+                            {
+                                db.Remove(warn);
+                            }
                         }
-                        await Context.Channel.SendPaginated(_client, "All warned users", warnUsers, 10);
+                        await db.SaveChangesAsync().ConfigureAwait(false);
+                        if (warnUsers.Any(x => !String.IsNullOrEmpty(x)))
+                            await Context.Channel.SendPaginated(_client, "All warned users", warnUsers, 10);
+                        else
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} No warned users.");
                     }
                 }
             }
@@ -105,7 +102,7 @@ namespace RiasBot.Modules.Administration
                     for (int i = 0; i < warningsUser.Count; i++)
                     {
                         var moderator = await Context.Guild.GetUserAsync(warningsUser[i].Moderator).ConfigureAwait(false);
-                        reasons[i] = $"{i+1}. {warningsUser[i].Reason ?? "-"}\n{Format.Bold("Moderator:")} {moderator.Username}#{moderator.Discriminator}\n";
+                        reasons[i] = $"#{i+1} {warningsUser[i].Reason ?? "-"}\n{Format.Bold("Moderator:")} {moderator.Username}#{moderator.Discriminator}\n";
                     }
                     if (warningsUser.Count == 0)
                     {
@@ -133,7 +130,7 @@ namespace RiasBot.Modules.Administration
 
                 using (var db = _db.GetDbContext())
                 {
-                    var warnings = db.Warnings.Where(x => x.GuildId == Context.Guild.Id).ToList();
+                    var warnings = db.Warnings.Where(x => x.GuildId == Context.Guild.Id).Where(y => y.UserId == user.Id).ToList();
 
                     if (warnings.Count == 0)
                     {
@@ -164,7 +161,7 @@ namespace RiasBot.Modules.Administration
 
                 using (var db = _db.GetDbContext())
                 {
-                    var warnings = db.Warnings.Where(x => x.GuildId == Context.Guild.Id).ToList();
+                    var warnings = db.Warnings.Where(x => x.GuildId == Context.Guild.Id).Where(y => y.UserId == user.Id).ToList();
 
                     if (warnings.Count == 0)
                     {
@@ -182,6 +179,102 @@ namespace RiasBot.Modules.Administration
                             await ReplyAsync("All warnings removed!");
                         }
                     }
+                }
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireUserPermission(GuildPermission.Administrator)]
+            [RequireContext(ContextType.Guild)]
+            public async Task WarningPunishment([Remainder]string punishment)
+            {
+                var punish = punishment.ToLowerInvariant().Split(" ");
+                try
+                {
+                    punishment = punish[1];
+                }
+                catch
+                {
+                    punishment = null;
+                }
+                Int32.TryParse(punish[0], out var warns);
+                using (var db = _db.GetDbContext())
+                {
+                    if (warns <= 0)
+                    {
+                        if (String.IsNullOrEmpty(punishment))
+                        {
+                            var warnings = db.Guilds.Where(x => x.GuildId == Context.Guild.Id).FirstOrDefault();
+                            try
+                            {
+                                warnings.WarnsPunishment = warns;
+                                warnings.PunishmentMethod = null;
+                                await db.SaveChangesAsync().ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} no warning punishment will be applied in this server.");
+                            }
+                            catch
+                            {
+                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} no warning punishment will be applied in this server.");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        switch (punishment)
+                        {
+                            case "mute":
+                                await _service.RegisterMuteWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            case "m":
+                                await _service.RegisterMuteWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            case "kick":
+                                await _service.RegisterKickWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            case "k":
+                                await _service.RegisterKickWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            case "ban":
+                                await _service.RegisterBanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            case "b":
+                                await _service.RegisterBanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            case "softban":
+                                await _service.RegisterSoftbanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            case "sb":
+                                await _service.RegisterSoftbanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            default:
+                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the punishment method introduced is not valid. Use {Format.Bold("mute, kick, ban or softban")}");
+                                break;
+                        }
+                    }
+                }
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireUserPermission(GuildPermission.Administrator)]
+            [RequireContext(ContextType.Guild)]
+            public async Task WarningPunishment()
+            {
+                using (var db = _db.GetDbContext())
+                {
+                    var warnings = db.Guilds.Where(x => x.GuildId == Context.Guild.Id).FirstOrDefault();
+                    int warns = warnings?.WarnsPunishment ?? 0;
+                    string punish = warnings?.PunishmentMethod;
+
+                    if (warns > 0)
+                    {
+                        if (punish.Contains('e'))
+                            await Context.Channel.SendConfirmationEmbed($"The punishement method for warning in this server is:\n ~at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold(punish) + "d"}~");
+                        else
+                            await Context.Channel.SendConfirmationEmbed($"The punishement method for warning in this server is:\n ~at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold(punish) + "ed"}~");
+                    }
+                    else
+                        await Context.Channel.SendErrorEmbed("No punishment for warnings applied in this server.");
                 }
             }
         }

@@ -72,7 +72,7 @@
     "Command": "setmute",
     "Description": "Set the mute role. If the role doesn't exists it will be created.",
     "Remarks": [
-      "[prefix]setmute @User"
+      "[prefix]setmute role"
     ]
   },
 
@@ -157,6 +157,15 @@
     ]
   },
 
+  "sendembed": {
+    "Command": "sendembed",
+    "Description": "Send an embed message to an user or to a channel from a server.",
+    "Remarks": [
+      "[prefix]send 327927038360944640 message",
+      "[prefix]send 381975648979124225|381975649428176907 message"
+    ]
+  },
+
   "name": {
     "Command": "name",
     "Description": "Set the bot's name.",
@@ -170,6 +179,14 @@
     "Description": "Set the bot's avatar.",
     "Remarks": [
       "[prefix]avatar https://i.imgur.com/sn6vi10.jpg?1"
+    ]
+  },
+
+  "edit": {
+    "Command": "edit",
+    "Description": "Edit a message in a guild.",
+    "Remarks": [
+      "[prefix]edit 416511999837732864|419897542508281867 message"
     ]
   },
 
@@ -358,11 +375,20 @@
   },
 
   "warningclear": {
-    "Command": "warnclear",
+    "Command": "warnclear clearwarn",
     "Description": "Clear an warning from an user. Type `all` to clear all warnings.",
     "Remarks": [
       "[prefix]warnclear @User 1",
       "[prefix]warnclear @User all"
+    ]
+  },
+
+  "warningpunishment": {
+    "Command": "warnpunishment warnpunish",
+    "Description": "Set the number of warnings for a user to be punished and the punishment method (mute, kick, ban, softban), or 0 to disable the punishment. Provide no parameters to show the current punishment method.",
+    "Remarks": [
+      "[prefix]warnpunish 0",
+      "[prefix]warnpunish 3 kick"
     ]
   },
 
@@ -465,7 +491,7 @@
   },
 
   "stats": {
-    "Command": "stats status",
+    "Command": "stats",
     "Description": "Show the stats of the bot.",
     "Remarks": [
       "[prefix]stats"

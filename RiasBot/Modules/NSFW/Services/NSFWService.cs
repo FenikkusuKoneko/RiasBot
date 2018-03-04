@@ -10,7 +10,7 @@ using System.Xml;
 
 namespace RiasBot.Modules.NSFW.Services
 {
-    public class NSFWService : IKService
+    public class NSFWService : IRService
     {
         public NSFWService()
         {

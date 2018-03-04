@@ -203,7 +203,7 @@ namespace RiasBot.Modules.Gambling
                 Emote.TryParse(RiasBot.currency, out var heartDiamond);
                 using (var db = _db.GetDbContext())
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithTitle($"{heartDiamond} Leaderboard");
 
                     var userDb = db.Users.OrderByDescending(x => x.Currency).Skip(page * 9).Take(9).ToList();

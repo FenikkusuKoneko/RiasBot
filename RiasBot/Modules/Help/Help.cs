@@ -29,7 +29,7 @@ namespace RiasBot.Modules.Help
         public async Task H()
         {
             var embed = new EmbedBuilder();
-            embed.WithColor(RiasBot.color);
+            embed.WithColor(RiasBot.goodColor);
             embed.WithDescription(_creds.HelpDM.Replace("%invite%", RiasBot.invite).Replace("%creatorServer%", RiasBot.creatorServer));
 
             try
@@ -56,7 +56,7 @@ namespace RiasBot.Modules.Help
                 return;
             }
 
-            var embed = new EmbedBuilder().WithColor(RiasBot.color);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
             bool single = true;
 
@@ -105,7 +105,7 @@ namespace RiasBot.Modules.Help
         public async Task Modules()
         {
             var embed = new EmbedBuilder();
-            embed.WithColor(RiasBot.color);
+            embed.WithColor(RiasBot.goodColor);
             embed.WithTitle("List of all modules and submodules");
 
             var modules = _service.Modules.GroupBy(m => m.GetModule()).Select(m => m.Key).OrderBy(m => m.Name);
@@ -134,7 +134,7 @@ namespace RiasBot.Modules.Help
             module = module?.Trim().ToUpperInvariant();
             var getModule = _service.Modules.Where(m => m.GetModule().Name.ToUpperInvariant().StartsWith(module)).FirstOrDefault();
 
-            var embed = new EmbedBuilder().WithColor(RiasBot.color);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
             int index = 0;
 
             if (getModule != null)

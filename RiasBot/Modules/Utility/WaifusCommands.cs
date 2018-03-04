@@ -75,7 +75,7 @@ namespace RiasBot.Modules.Utility
                             await db.AddAsync(waifus).ConfigureAwait(false);
                             await db.SaveChangesAsync().ConfigureAwait(false);
 
-                            var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                             embed.WithDescription($"Congratulations!\nYou successfully claimed {Format.Bold(waifuName)} for {Format.Bold(price.ToString())} {RiasBot.currency}");
                             embed.WithThumbnailUrl(waifuPicture);
                             await ReplyAsync("", embed: embed.Build());
@@ -141,7 +141,7 @@ namespace RiasBot.Modules.Utility
                                 await db.AddAsync(waifus).ConfigureAwait(false);
                                 await db.SaveChangesAsync().ConfigureAwait(false);
 
-                                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                                 embed.WithDescription($"Congratulations!\nYou successfully claimed {Format.Bold(waifuName)} for {Format.Bold(price.ToString())} {RiasBot.currency}");
                                 embed.WithThumbnailUrl(waifuPicture);
                                 await ReplyAsync("", embed: embed.Build());
@@ -233,7 +233,7 @@ namespace RiasBot.Modules.Utility
                             db.Remove(waifu);
                             await db.SaveChangesAsync().ConfigureAwait(false);
 
-                            var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                             embed.WithTitle("Divorce!");
                             embed.WithDescription($"You successfully divorced from {waifu.WaifuName}. You received {waifuCashback} {RiasBot.currency} back.");
                             embed.WithThumbnailUrl(waifu.WaifuPicture);

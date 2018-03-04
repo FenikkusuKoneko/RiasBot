@@ -15,7 +15,7 @@ namespace RiasBot.Extensions
         ///</summary>
         public static async Task SendConfirmationEmbed(this IMessageChannel channel, string description)
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.color);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
             embed.WithDescription(description);
             await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
         }
@@ -25,7 +25,7 @@ namespace RiasBot.Extensions
         ///</summary>
         public static async Task SendErrorEmbed(this IMessageChannel channel, string description)
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.errorColor);
+            var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
             embed.WithDescription(description);
             await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
         }
@@ -40,7 +40,7 @@ namespace RiasBot.Extensions
             else if (currentPage > list.Length % itemsPerPage)
                 currentPage = list.Length % itemsPerPage;
 
-            var embed = new EmbedBuilder().WithColor(RiasBot.color);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
             embed.WithTitle(title);
 
             IEmote arrow_left = new Emoji("⬅");

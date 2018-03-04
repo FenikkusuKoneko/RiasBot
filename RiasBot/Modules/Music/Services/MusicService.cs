@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace RiasBot.Modules.Music.MusicServices
 {
-    public class MusicService : IKService
+    public class MusicService : IRService
     {
         private DiscordSocketClient _client;
 

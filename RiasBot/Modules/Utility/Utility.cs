@@ -77,7 +77,7 @@ namespace RiasBot.Modules.Utility
         [Description][@Remarks]
         public async Task Donate()
         {
-            await Context.Channel.SendConfirmationEmbed($"Support me! Support this project on Patreon: [Onii-chan](https://www.patreon.com/fenikkusukurumibot)");
+            await Context.Channel.SendConfirmationEmbed($"Support me! Support this project on Patreon: [Onii-chan](https://www.patreon.com/riasbot)");
         }
     }
 }

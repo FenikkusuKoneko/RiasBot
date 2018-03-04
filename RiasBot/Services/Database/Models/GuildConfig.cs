@@ -16,5 +16,7 @@ namespace RiasBot.Services.Database.Models
         public ulong ByeChannel { get; set; }
         public bool XpGuildNotification { get; set; }
         public ulong AutoAssignableRole { get; set; }
+        public int WarnsPunishment { get; set; }
+        public string PunishmentMethod { get; set; }
     }
 }

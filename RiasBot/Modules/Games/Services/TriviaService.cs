@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RiasBot.Modules.Games.Services
 {
-    public class TriviaService : IKService
+    public class TriviaService : IRService
     {
         public TriviaService()
         {

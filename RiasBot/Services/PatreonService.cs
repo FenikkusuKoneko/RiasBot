@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace RiasBot.Services
 {
-    public class PatreonService : IKService
+    public class PatreonService : IRService
     {
         private readonly DiscordSocketClient _client;
         private readonly DbService _db;
@@ -121,7 +121,7 @@ namespace RiasBot.Services
                                     {
                                         var user = (IUser)_client.GetUser(userId);
 
-                                        var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                                        var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                                         embed.WithTitle("Patreon Support!");
                                         embed.WithDescription("Thank you so much for supporting the project :heart:");
                                         embed.AddField("Pledge", amountCents + "$", true).AddField("Reward", amountCents * 10 + RiasBot.currency);

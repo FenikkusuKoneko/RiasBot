@@ -1,14 +1,14 @@
-﻿using RiasBot.Services;
-using Discord;
+﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
+using RiasBot.Services;
 using RiasBot.Services.Implementation;
+using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace RiasBot
 {
@@ -17,9 +17,9 @@ namespace RiasBot
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.2.0";
-        public static uint color = 0x009688;
-        public static uint errorColor = 0xff0000;
+        public static string version = "1.2.5";
+        public static uint goodColor = 0x009688;
+        public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
         public static string invite = "https://discordapp.com/oauth2/authorize?client_id=381387277764395008&permissions=1609952383&scope=bot";
         public static ulong fenikkusuId = 327927038360944640;
@@ -51,7 +51,7 @@ namespace RiasBot
             var assembly = Assembly.GetAssembly(typeof(RiasBot));
 
             var IKServices = assembly.GetTypes()
-                    .Where(x => x.GetInterfaces().Contains(typeof(IKService))
+                    .Where(x => x.GetInterfaces().Contains(typeof(IRService))
                         && !x.GetTypeInfo().IsInterface && !x.GetTypeInfo().IsAbstract).ToArray();
 
             for (int i = 0; i < IKServices.Length; i++)

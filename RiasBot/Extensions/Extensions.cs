@@ -2,13 +2,9 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using ImageSharp;
+using Newtonsoft.Json;
 using RiasBot.Commons;
-using SixLabors.Shapes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RiasBot.Extensions
@@ -34,5 +30,42 @@ namespace RiasBot.Extensions
             wrap.OnReactionRemoved += (r) => { var _ = Task.Run(() => reactionRemoved(r)); };
             return wrap;
         }
+
+        public static EmbedBuilder EmbedFromJson(string json)
+        {
+            var embed = new EmbedBuilder();
+            var embedDeserialized = JsonConvert.DeserializeObject<JsonEmbed>(json);
+            var color = (embedDeserialized.color == true) ? RiasBot.goodColor : RiasBot.badColor;
+            embed.WithColor(color);
+            embed.WithTitle(embedDeserialized.title);
+            embed.WithDescription(embedDeserialized.description);
+            embed.WithThumbnailUrl(embedDeserialized.thumbnail);
+            embed.WithImageUrl(embedDeserialized.image);
+            foreach (var field in embedDeserialized.fields)
+            {
+                embed.AddField(field.title, field.content, field.inline);
+            }
+            if (embedDeserialized.timestamp)
+                embed.WithCurrentTimestamp();
+            return embed;
+        }
+    }
+
+    public class JsonEmbed
+    {
+        public bool color { get; set; }
+        public string title { get; set; }
+        public string description { get; set; }
+        public string thumbnail { get; set; }
+        public string image { get; set; }
+        public EmbedFields[] fields { get; set; }
+        public bool timestamp { get; set; }
+    }
+
+    public class EmbedFields
+    {
+        public string title { get; set; }
+        public string content { get; set; }
+        public bool inline { get; set; }
     }
 }

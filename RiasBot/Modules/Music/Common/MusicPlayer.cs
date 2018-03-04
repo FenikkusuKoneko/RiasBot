@@ -108,7 +108,7 @@ namespace RiasBot.Modules.Music.Common
                         var timeETA = GetTimeString(eta);
 
                         Queue.Add(song);
-                        var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                        var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                         embed.WithAuthor("Added to queue", song.user.GetAvatarUrl() ?? song.user.DefaultAvatarUrl());
                         embed.WithDescription($"[{song.title}]({song.url})");
                         embed.AddField("Channel", song.channel, true).AddField("Length", song.duration, true);
@@ -186,7 +186,7 @@ namespace RiasBot.Modules.Music.Common
                     song = Queue[++index];
                 }
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle("Now Playing");
                 embed.WithDescription($"[{song.title}]({song.url})");
                 embed.AddField("Channel", song.channel, true).AddField("Length", song.duration, true);
@@ -263,7 +263,7 @@ namespace RiasBot.Modules.Music.Common
         {
             try
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 lock (locker)
                 {
                     string timerBar = null;

@@ -40,7 +40,7 @@ namespace RiasBot.Modules.Searches
             var neko = getNeko["neko"];
 
             var embed = new EmbedBuilder();
-            embed.WithColor(RiasBot.color);
+            embed.WithColor(RiasBot.goodColor);
             embed.WithTitle("Neko <3");
             embed.WithImageUrl((string)neko);
 
@@ -95,7 +95,7 @@ namespace RiasBot.Modules.Searches
             var def = item["definition"].ToString();
             var link = item["permalink"].ToString();
 
-            var embed = new EmbedBuilder().WithColor(RiasBot.color);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
             embed.WithUrl(link);
             embed.WithAuthor(word, "https://i.imgur.com/G3VoNuJ.jpg");
             embed.WithDescription(def);

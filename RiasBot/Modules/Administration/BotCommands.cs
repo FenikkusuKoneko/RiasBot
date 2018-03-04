@@ -44,7 +44,7 @@ namespace RiasBot.Modules.Administration
                 if (guild != null)
                 {
                     var usersGuild = await guild.GetUsersAsync();
-                    var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithDescription($"Leabing {Format.Bold(guild.Name)}");
                     embed.AddField("Id", guild.Id, true).AddField("Users", usersGuild.Count, true);
 
@@ -185,6 +185,57 @@ namespace RiasBot.Modules.Administration
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireOwner]
+            public async Task SendEmbed(string id, [Remainder]string json)
+            {
+                try
+                {
+                    IGuild guild;
+                    IUser user;
+                    ITextChannel channel;
+
+                    var embed = Extensions.Extensions.EmbedFromJson(json);
+
+                    if (id.Contains("|"))
+                    {
+                        try
+                        {
+                            var ids = id.Split('|');
+                            string guildId = ids[0];
+                            string channelId = ids[1];
+
+                            guild = await Context.Client.GetGuildAsync(Convert.ToUInt64(guildId)).ConfigureAwait(false);
+                            channel = await guild.GetTextChannelAsync(Convert.ToUInt64(channelId)).ConfigureAwait(false);
+                            await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationEmbed("Message sent!").ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            await Context.Channel.SendErrorEmbed("I couldn't find the guild or the channel");
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            user = await Context.Client.GetUserAsync(Convert.ToUInt64(id));
+                            await user.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationEmbed("Message sent!").ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            await Context.Channel.SendErrorEmbed("I couldn't find the user").ConfigureAwait(false);
+                        }
+                    }
+                }
+                catch
+                {
+                    await Context.Channel.SendErrorEmbed("JSON not valid!");
+                }
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireOwner]
             public async Task Name([Remainder]string name)
             {
                 try
@@ -215,6 +266,28 @@ namespace RiasBot.Modules.Administration
                 catch
                 {
 
+                }
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireOwner]
+            public async Task Edit(string channelMessage, [Remainder]string message)
+            {
+                try
+                {
+                    var ids = channelMessage.Split("|");
+                    UInt64.TryParse(ids[0], out ulong channelId);
+                    UInt64.TryParse(ids[1], out ulong messageId);
+
+                    var channel = await Context.Client.GetChannelAsync(channelId).ConfigureAwait(false);
+                    var msg = await ((ITextChannel)channel).GetMessageAsync(messageId).ConfigureAwait(false);
+                    await ((IUserMessage)msg).ModifyAsync(x => x.Content = message).ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationEmbed("Message edited!");
+                }
+                catch
+                {
+                    await Context.Channel.SendConfirmationEmbed("I couldn't find the channel/message!");
                 }
             }
         }

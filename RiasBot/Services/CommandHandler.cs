@@ -10,7 +10,7 @@ using RiasBot.Modules.Xp.Services;
 
 namespace RiasBot.Services
 {
-    public class CommandHandler : IKService
+    public class CommandHandler : IRService
     {
         private readonly DiscordSocketClient _discord;
         private readonly CommandService _commands;

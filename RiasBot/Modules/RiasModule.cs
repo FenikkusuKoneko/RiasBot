@@ -19,7 +19,7 @@ namespace RiasBot.Modules
         }
     }
 
-    public abstract class RiasModule<TService> : RiasModule where TService : IKService
+    public abstract class RiasModule<TService> : RiasModule where TService : IRService
     {
         public TService _service { get; set; }
 
@@ -33,7 +33,7 @@ namespace RiasBot.Modules
         protected RiasSubmodule() : base(false) { }
     }
 
-    public abstract class RiasSubmodule<TService> : RiasModule<TService> where TService : IKService
+    public abstract class RiasSubmodule<TService> : RiasModule<TService> where TService : IRService
     {
         protected RiasSubmodule() : base(false)
         {

@@ -106,7 +106,7 @@ namespace RiasBot.Modules.Xp
         {
             using (var db = _db.GetDbContext())
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.color);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle("Global XP Leaderboard");
 
                 var xps = db.Users

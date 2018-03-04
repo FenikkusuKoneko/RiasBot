@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using RiasBot.Modules.Administration.Services;
 using RiasBot.Services.Database.Models;
 using RiasBot.Extensions;
+using System;
 
 namespace RiasBot.Modules.Administration
 {
@@ -32,25 +33,7 @@ namespace RiasBot.Modules.Administration
         {
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
-                var kickEmbed = new EmbedBuilder();
-                kickEmbed.WithColor(RiasBot.color);
-                kickEmbed.WithDescription("User kicked");
-                kickEmbed.AddField("Username", $"{user}").AddField("ID", user.Id.ToString(), true);
-                if (reason != null)
-                    kickEmbed.AddField("Reason", reason);
-
-                await ReplyAsync("", embed: kickEmbed.Build()).ConfigureAwait(false);
-
-                var reasonEmbed = new EmbedBuilder();
-                reasonEmbed.WithColor(RiasBot.color);
-                reasonEmbed.WithDescription($"You have been kicked from {Format.Bold(Context.Guild.Name)} server!");
-                if (reason != null)
-                    reasonEmbed.AddField("Reason", reason);
-
-                if (!user.IsBot)
-                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
-
-                await user.KickAsync(reason).ConfigureAwait(false);
+                await _service.KickUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);
             }
             else
             {
@@ -67,26 +50,7 @@ namespace RiasBot.Modules.Administration
         {
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
-                var banEmbed = new EmbedBuilder();
-                banEmbed.WithColor(RiasBot.color);
-                banEmbed.WithDescription("User banned");
-                banEmbed.AddField("Username", $"{user}").AddField("ID", user.Id.ToString(), true);
-                if (reason != null)
-                    banEmbed.AddField("Reason", reason);
-
-                await ReplyAsync("", embed: banEmbed.Build()).ConfigureAwait(false);
-
-                var reasonEmbed = new EmbedBuilder();
-                reasonEmbed.WithColor(RiasBot.color);
-                reasonEmbed.WithDescription($"You have been banned from {Format.Bold(Context.Guild.Name)} server!");
-                if (reason != null)
-                    reasonEmbed.AddField("Reason", reason);
-
-                if (!user.IsBot)
-                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
-
-
-                await Context.Guild.AddBanAsync(user).ConfigureAwait(false);
+                await _service.BanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
             }
             else
             {
@@ -103,25 +67,7 @@ namespace RiasBot.Modules.Administration
         {
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
-                var banEmbed = new EmbedBuilder();
-                banEmbed.WithColor(RiasBot.color);
-                banEmbed.WithDescription("User soft-banned");
-                banEmbed.AddField("Username", $"{user}").AddField("ID", user.Id.ToString(), true);
-                if (reason != null)
-                    banEmbed.AddField("Reason", reason);
-
-                await ReplyAsync("", embed: banEmbed.Build()).ConfigureAwait(false);
-
-                var reasonEmbed = new EmbedBuilder();
-                reasonEmbed.WithColor(RiasBot.color);
-                reasonEmbed.WithDescription($"You have been kicked from {Format.Bold(Context.Guild.Name)} server!");
-                if (reason != null)
-                    reasonEmbed.AddField("Reason", reason);
-
-                if (!user.IsBot)
-                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
-                await Task.Delay(1000).ConfigureAwait(false);
-                await Task.Factory.StartNew(async () => _service.SoftBanPurge(Context.User, Context.Guild, user, await Context.Guild.GetCurrentUserAsync(), Context.Channel));
+                await _service.SoftbanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
             }
             else
             {
@@ -134,43 +80,11 @@ namespace RiasBot.Modules.Administration
         [RequireUserPermission(GuildPermission.ManageRoles)]
         [RequireBotPermission(GuildPermission.ManageRoles)]
         [RequireContext(ContextType.Guild)]
-        public async Task Mute([Remainder]IGuildUser user)
+        public async Task Mute(IGuildUser user, [Remainder]string reason = null)
         {
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
-                using (var db = _db.GetDbContext())
-                {
-                    var guildDb = db.Guilds.Where(x => x.GuildId == Context.Guild.Id).FirstOrDefault();
-                    try
-                    {
-                        IRole role = null;
-                        try
-                        {
-                            role = Context.Guild.GetRole(guildDb.MuteRole);
-                        }
-                        catch
-                        {
-                            role = await Context.Guild.CreateRoleAsync("kurumi-mute").ConfigureAwait(false);
-                            var newRole = new GuildConfig { GuildId = Context.Guild.Id, MuteRole = role.Id };
-                            await db.AddAsync(newRole).ConfigureAwait(false);
-                            await db.SaveChangesAsync().ConfigureAwait(false);
-                        }
-                        if (user.RoleIds.Any(r => r == role.Id))
-                        {
-                            await Context.Channel.SendConfirmationEmbed($"{user.Mention} is already muted from text and voice channels!");
-                        }
-                        else
-                        {
-                            await Task.Factory.StartNew(() => _service.MuteService(role, Context));
-                            await user.AddRoleAsync(role).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{user.Mention} has been muted from text and voice thannels!");
-                        }
-                    }
-                    catch
-                    {
-
-                    }
-                }
+                await _service.MuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);
             }
             else
             {
@@ -183,39 +97,15 @@ namespace RiasBot.Modules.Administration
         [RequireUserPermission(GuildPermission.ManageRoles)]
         [RequireBotPermission(GuildPermission.ManageRoles)]
         [RequireContext(ContextType.Guild)]
-        public async Task UnMute([Remainder]IGuildUser user)
+        public async Task UnMute(IGuildUser user, [Remainder]string reason = null)
         {
-            using (var db = _db.GetDbContext())
+            if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
-                var guildDb = db.Guilds.Where(x => x.GuildId == Context.Guild.Id).FirstOrDefault();
-                try
-                {
-                    IRole role = null;
-                    try
-                    {
-                        role = Context.Guild.GetRole(guildDb.MuteRole);
-                    }
-                    catch
-                    {
-                        role = await Context.Guild.CreateRoleAsync("kurumi-mute").ConfigureAwait(false);
-                        var newRole = new GuildConfig { GuildId = Context.Guild.Id, MuteRole = role.Id };
-                        await db.AddAsync(newRole).ConfigureAwait(false);
-                        await db.SaveChangesAsync().ConfigureAwait(false);
-                    }
-                    if (user.RoleIds.Any(r => r == role.Id))
-                    {
-                        await user.RemoveRoleAsync(role).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"{user.Mention} has been unmuted from text and voice thannels!");
-                    }
-                    else
-                    {
-                        await Context.Channel.SendConfirmationEmbed($"{user.Mention} is already muted from text and voice channels!");
-                    }
-                }
-                catch
-                {
-
-                }
+                await _service.UnmuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);
+            }
+            else
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
             }
         }
 
@@ -225,7 +115,7 @@ namespace RiasBot.Modules.Administration
         [RequireUserPermission(GuildPermission.ManageMessages)]
         [RequireBotPermission(GuildPermission.ManageMessages)]
         [Priority(1)]
-        public async Task Purge(int amount)
+        public async Task Purge(int amount = 100)
         {
             var channel = (ITextChannel)Context.Channel;
 
@@ -237,9 +127,16 @@ namespace RiasBot.Modules.Administration
             if (amount > 100)
                 amount = 100;
 
-            var msgs = await channel.GetMessagesAsync(amount).FlattenAsync();
-            await Task.Delay(1000).ConfigureAwait(false);
-            await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
+            var msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days <= 14);
+            if (msgs.Count() > 0)
+            {
+                await Task.Delay(1000).ConfigureAwait(false);
+                await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
+            }
+            else
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete any message because they are older thatn 14 days.");
+            }
         }
 
         [RiasCommand][@Alias]
@@ -247,6 +144,7 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageMessages)]
         [RequireBotPermission(GuildPermission.ManageMessages)]
+        [RequireBotPermission(GuildPermission.Administrator)]
         [Priority(0)]
         public async Task Purge(IGuildUser user, int amount = 100)
         {
@@ -260,9 +158,16 @@ namespace RiasBot.Modules.Administration
             if (amount > 100)
                 amount = 100;
 
-            var msgs = (await channel.GetMessagesAsync(100).FlattenAsync()).Where((x) => x.Author.Id == user.Id).Take(amount).ToArray();
-            await Task.Delay(1000).ConfigureAwait(false);
-            await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
+            var msgs = (await channel.GetMessagesAsync(100).FlattenAsync()).Where((x) => x.Author.Id == user.Id).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days <= 14).Take(amount);
+            if (msgs.Count() > 0)
+            {
+                await Task.Delay(1000).ConfigureAwait(false);
+                await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
+            }
+            else
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete any message because they are older thatn 14 days.");
+            }
         }
 
         [RiasCommand][@Alias]

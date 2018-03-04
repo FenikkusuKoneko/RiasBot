@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace RiasBot.Services
 {
-    public class BotService : IKService
+    public class BotService : IRService
     {
         private readonly DiscordSocketClient _discord;
         private readonly DbService _db;
