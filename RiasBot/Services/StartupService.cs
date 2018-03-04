@@ -40,7 +40,7 @@ namespace RiasBot.Services
             
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _provider).ConfigureAwait(false);
 
-            RiasBot.runTime.Start();
+            RiasBot.upTime.Start();
         }
     }
 }

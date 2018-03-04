@@ -24,7 +24,7 @@ namespace RiasBot
         public static string invite = "https://discordapp.com/oauth2/authorize?client_id=381387277764395008&permissions=1609952383&scope=bot";
         public static ulong fenikkusuId = 327927038360944640;
         public static string creatorServer = "https://discord.gg/VPfBvBt";
-        public static Stopwatch runTime = new Stopwatch();
+        public static Stopwatch upTime = new Stopwatch();
         public static int commandsRun = 0;
 
         public static bool isBeta = false;

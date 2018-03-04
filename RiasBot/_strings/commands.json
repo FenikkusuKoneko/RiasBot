@@ -170,7 +170,7 @@
     "Command": "name",
     "Description": "Set the bot's name.",
     "Remarks": [
-      "[prefix]name Kurumi"
+      "[prefix]name Rias"
     ]
   },
 
@@ -178,7 +178,7 @@
     "Command": "avatar",
     "Description": "Set the bot's avatar.",
     "Remarks": [
-      "[prefix]avatar https://i.imgur.com/sn6vi10.jpg?1"
+      "[prefix]avatar https://i.imgur.com/ZW96TT6.jpg"
     ]
   },
 
@@ -194,7 +194,7 @@
     "Command": "createrole cr",
     "Description": "Create a role.",
     "Remarks": [
-      "[prefix]cr Kurumi"
+      "[prefix]cr Rias"
     ]
   },
 
@@ -202,7 +202,7 @@
     "Command": "deleterole dr",
     "Description": "Delete a role.",
     "Remarks": [
-      "[prefix]dr Kurumi"
+      "[prefix]dr Rias"
     ]
   },
 
@@ -211,7 +211,7 @@
     "Description": "Set a color for a role.",
     "Remarks": [
       "[prefix]rc color(hex format) roleName",
-      "[prefix]rc ffffff Kurumi"
+      "[prefix]rc ffffff Rias"
     ]
   },
 
@@ -219,7 +219,7 @@
     "Command": "renamerole rnr",
     "Description": "Rename a Role. Use `|` to separate the old role from the new role",
     "Remarks": [
-      "[prefix]rnr Kurumi | Kurumi-chan"
+      "[prefix]rnr Rias | Rias-waifu"
     ]
   },
 
@@ -758,7 +758,7 @@
     "Command": "anime",
     "Description": "Show info for an anime from AniList.",
     "Remarks": [
-      "[prefix]anime Date A Live"
+      "[prefix]anime High School DxD"
     ]
   },
 
@@ -766,8 +766,8 @@
     "Command": "character",
     "Description": "Show info for a character from AniList.",
     "Remarks": [
-      "[prefix]character Kurumi Tokisaki",
-      "[prefix]character 70069"
+      "[prefix]character Rias Gremory",
+      "[prefix]character 50389"
     ]
   },
 
@@ -775,7 +775,7 @@
     "Command": "animelist anilist",
     "Description": "Show a list with anime from AniList.",
     "Remarks": [
-      "[prefix]anilist Date A Live"
+      "[prefix]anilist High School DxD"
     ]
   },
 
@@ -907,8 +907,8 @@
     "Command": "claimwaifu",
     "Description": "Claim your waifu from anime. The price for every waifu is between 5000 and 10000 [currency]. You need to have at least 10000 [currency]. Be careful at the name. Use `[prefix]character name` to search for an anime character. The character must be on AniList database.",
     "Remarks": [
-      "[prefix]claimwaifu Kurumi Tokisaki",
-      "[prefix]claimwaifu 70069"
+      "[prefix]claimwaifu Rias Gremory",
+      "[prefix]claimwaifu 50389"
     ]
   },
 
@@ -916,7 +916,7 @@
     "Command": "primarywaifu belovedwaifu",
     "Description": "Make a waifu primary and beloved. In front of her name will be a :heart:. You can set only one waifu. The price is 10000 [currency]. The action is not reversible.",
     "Remarks": [
-      "[prefix]primarywaifu Kurumi Tokisaki"
+      "[prefix]primarywaifu Rias Gremory"
     ]
   },
 
@@ -924,7 +924,7 @@
     "Command": "divorce",
     "Description": "Divorce from a waifu. You will receive 90% cashback.",
     "Remarks": [
-      "[prefix]divorce Kurumi Tokisaki"
+      "[prefix]divorce Rias Gremory"
     ]
   },
 

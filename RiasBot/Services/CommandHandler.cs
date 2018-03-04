@@ -7,6 +7,7 @@ using System.Linq;
 using Cleverbot.Net;
 using Discord;
 using RiasBot.Modules.Xp.Services;
+using System.Collections.Concurrent;
 
 namespace RiasBot.Services
 {
@@ -79,7 +80,9 @@ namespace RiasBot.Services
 
             int argPos = 0;     // Check if the message has a valid command prefix
 
-            if (msg.HasStringPrefix(_prefix, ref argPos) || msg.HasStringPrefix("rias ", ref argPos))
+            if (msg.HasStringPrefix(_prefix, ref argPos) || msg.HasStringPrefix("rias ", ref argPos)
+                || msg.HasStringPrefix("Rias ", ref argPos)
+                || (msg.HasMentionPrefix(context.Client.CurrentUser, ref argPos)))
             {
                 var result = await _commands.ExecuteAsync(context, argPos, _provider).ConfigureAwait(false);
 
@@ -87,28 +90,11 @@ namespace RiasBot.Services
                     RiasBot.commandsRun++;
             }
 
-            /*if (msg.HasMentionPrefix(context.Client.CurrentUser, ref argPos))
-            {
-                await Task.Factory.StartNew(() => Cleverbot(msg, context, context.Channel)).ConfigureAwait(false);
-            }*/
-
             if (!context.IsPrivate)
             {
                 await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
                 await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel);
             }
-        }
-        
-        private async Task Cleverbot (SocketUserMessage msg, SocketCommandContext context, IMessageChannel channel)
-        {
-            
-            string _message = msg.ToString();
-        
-            await context.Channel.TriggerTypingAsync().ConfigureAwait(false);
-        
-            var _cleverbot = await CleverbotSession.NewSessionAsync("fxssTYrQznLfGLi2", "WJSrkkq8mGmIyr5CaZncuDTX49gk4jBM");
-            var cleverbotResponse = await _cleverbot.SendAsync(_message.Remove(0, context.Client.CurrentUser.Mention.Length));
-            await channel.SendMessageAsync(cleverbotResponse).ConfigureAwait(false);
         }
     }
 }

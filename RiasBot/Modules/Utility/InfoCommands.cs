@@ -51,7 +51,7 @@ namespace RiasBot.Modules.Utility
                 embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
                 embed.AddField("Author", author.Username + "#" + author.Discriminator, true).AddField("Bot ID", Context.Client.CurrentUser.Id.ToString(), true);
                 embed.AddField("Master ID", author.Id, true).AddField("In server", Context.Guild?.Name ?? "-", true);
-                embed.AddField("Uptime", GetTimeString(RiasBot.runTime.Elapsed), true).AddField("Commands Run", RiasBot.commandsRun, true);
+                embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Commands Run", RiasBot.commandsRun, true);
                 embed.AddField("Memory", Math.Round((double)GC.GetTotalMemory(false) / 1024 / 1024, 2) + " Mb", true)
                     .AddField("Presence", $"{guilds.Count} Servers\n{textChannels} Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
                 embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
