@@ -41,9 +41,16 @@ namespace RiasBot.Extensions
             embed.WithDescription(embedDeserialized.description);
             embed.WithThumbnailUrl(embedDeserialized.thumbnail);
             embed.WithImageUrl(embedDeserialized.image);
-            foreach (var field in embedDeserialized.fields)
+            try
             {
-                embed.AddField(field.title, field.content, field.inline);
+                foreach (var field in embedDeserialized.fields)
+                {
+                    embed.AddField(field.title, field.content, field.inline);
+                }
+            }
+            catch
+            {
+
             }
             if (embedDeserialized.timestamp)
                 embed.WithCurrentTimestamp();
