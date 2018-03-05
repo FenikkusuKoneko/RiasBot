@@ -19,14 +19,16 @@ namespace RiasBot.Modules.Administration
         public class WarningCommands : RiasSubmodule<WarningService>
         {
             private DiscordSocketClient _client;
-            public readonly CommandHandler _ch;
-            public readonly DbService _db;
+            private readonly CommandHandler _ch;
+            private readonly DbService _db;
+            private readonly AdministrationService _adminService;
 
-            public WarningCommands(DiscordSocketClient client, CommandHandler ch, DbService db)
+            public WarningCommands(DiscordSocketClient client, CommandHandler ch, DbService db, AdministrationService adminService)
             {
                 _client = client;
                 _ch = ch;
                 _db = db;
+                _adminService = adminService;
             }
 
             [RiasCommand] [@Alias] [Description] [@Remarks]
@@ -40,7 +42,14 @@ namespace RiasBot.Modules.Administration
                     await ReplyAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
                     return;
                 }
-                await _service.WarnUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
+                if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
+                {
+                    await _service.WarnUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
+                }
+                else
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                }
             }
 
             [RiasCommand][@Alias]
@@ -239,6 +248,12 @@ namespace RiasBot.Modules.Administration
                                 break;
                             case "b":
                                 await _service.RegisterBanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            case "softban":
+                                await _service.RegisterSoftbanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            case "sb":
+                                await _service.RegisterSoftbanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
                                 break;
                             default:
                                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the punishment method introduced is not valid. Use {Format.Bold("mute, kick or ban")}");

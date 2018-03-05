@@ -45,7 +45,7 @@
 
   "softban": {
     "Command": "softban sb",
-    "Description": "Kick an user and then remove his messages from the server. If you provide a reason message the bot will DM the user with the reason.",
+    "Description": "Ban an user, remove his messages from last 7 days, and then unban it.",
     "Remarks": [
       "[prefix]sb @User",
       "[prefix]sb @User Don't spam here."

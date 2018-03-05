@@ -55,6 +55,9 @@ namespace RiasBot.Modules.Administration.Services
                         case "ban":
                             await _adminService.BanUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! Ban punishment applied!").ConfigureAwait(false);
                             break;
+                        case "softban":
+                            await _adminService.BanUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! Softban punishment applied!").ConfigureAwait(false);
+                            break;
                     }
                 }
             }
@@ -109,6 +112,25 @@ namespace RiasBot.Modules.Administration.Services
                     warnings.PunishmentMethod = "ban";
                     await db.SaveChangesAsync().ConfigureAwait(false);
                     await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("banned")}.");
+                }
+                catch
+                {
+                    await channel.SendConfirmationEmbed($"{user.Mention} no warning punishment will be applied in this server.");
+                }
+            }
+        }
+
+        public async Task RegisterSoftbanWarning(IGuild guild, IGuildUser user, IMessageChannel channel, int warns)
+        {
+            using (var db = _db.GetDbContext())
+            {
+                var warnings = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
+                try
+                {
+                    warnings.WarnsPunishment = warns;
+                    warnings.PunishmentMethod = "softban";
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("softbanned")}.");
                 }
                 catch
                 {

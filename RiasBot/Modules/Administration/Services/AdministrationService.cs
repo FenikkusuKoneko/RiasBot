@@ -182,17 +182,8 @@ namespace RiasBot.Modules.Administration.Services
             if (!user.IsBot)
                 await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
             await Task.Delay(1000).ConfigureAwait(false);
-            await SoftBanPurge(guild, user);
-        }
-
-        public async Task SoftBanPurge(IGuild guild, IGuildUser user)
-        {
-            foreach (var channel in await guild.GetTextChannelsAsync())
-            {
-                var msgs = (await channel.GetMessagesAsync(100).FlattenAsync()).Where((x) => x.Author == user);
-                await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
-            }
-            await user.KickAsync().ConfigureAwait(false);
+            await guild.AddBanAsync(user, 7).ConfigureAwait(false);
+            await guild.RemoveBanAsync(user).ConfigureAwait(false);
         }
 
         public async Task MuteService(IRole role, IGuild guild)

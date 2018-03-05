@@ -57,19 +57,26 @@ namespace RiasBot.Services
                 {
                     if (guildDb.Greet)
                     {
-                        if (!String.IsNullOrEmpty(guildDb.GreetMessage))
+                        try
                         {
-                            var greetMsg = guildDb.GreetMessage;
-                            var channel = _discord.GetGuild(user.Guild.Id).GetTextChannel(guildDb.GreetChannel);
-                            if (guildDb.GreetMessage.Contains("%user%"))
+                            if (!String.IsNullOrEmpty(guildDb.GreetMessage))
                             {
-                                greetMsg = greetMsg.Replace("%user%", user.Mention);
+                                var greetMsg = guildDb.GreetMessage;
+                                var channel = _discord.GetGuild(user.Guild.Id).GetTextChannel(guildDb.GreetChannel);
+                                if (guildDb.GreetMessage.Contains("%user%"))
+                                {
+                                    greetMsg = greetMsg.Replace("%user%", user.Mention);
+                                }
+                                var embed = Extensions.Extensions.EmbedFromJson(greetMsg);
+                                if (embed is null)
+                                    await channel.SendMessageAsync(greetMsg).ConfigureAwait(false);
+                                else
+                                    await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                             }
-                            var embed = Extensions.Extensions.EmbedFromJson(greetMsg);
-                            if (embed is null)
-                                await channel.SendMessageAsync(greetMsg).ConfigureAwait(false);
-                            else
-                                await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            //channel deleted
                         }
                     }
 
@@ -95,19 +102,26 @@ namespace RiasBot.Services
                 {
                     if (guildDb.Bye)
                     {
-                        if (!String.IsNullOrEmpty(guildDb.ByeMessage))
+                        try
                         {
-                            var byeMsg = guildDb.ByeMessage;
-                            var channel = _discord.GetGuild(user.Guild.Id).GetTextChannel(guildDb.ByeChannel);
-                            if (guildDb.ByeMessage.Contains("%user%"))
+                            if (!String.IsNullOrEmpty(guildDb.ByeMessage))
                             {
-                                byeMsg = byeMsg.Replace("%user%", $"{user.Username}#{user.Discriminator}");
+                                var byeMsg = guildDb.ByeMessage;
+                                var channel = _discord.GetGuild(user.Guild.Id).GetTextChannel(guildDb.ByeChannel);
+                                if (guildDb.ByeMessage.Contains("%user%"))
+                                {
+                                    byeMsg = byeMsg.Replace("%user%", $"{user.Username}#{user.Discriminator}");
+                                }
+                                var embed = Extensions.Extensions.EmbedFromJson(byeMsg);
+                                if (embed is null)
+                                    await channel.SendMessageAsync(byeMsg).ConfigureAwait(false);
+                                else
+                                    await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                             }
-                            var embed = Extensions.Extensions.EmbedFromJson(byeMsg);
-                            if (embed is null)
-                                await channel.SendMessageAsync(byeMsg).ConfigureAwait(false);
-                            else
-                                await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            //channel deleted
                         }
                     }
                 }
