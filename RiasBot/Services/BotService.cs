@@ -65,7 +65,11 @@ namespace RiasBot.Services
                             {
                                 greetMsg = greetMsg.Replace("%user%", user.Mention);
                             }
-                            await channel.SendMessageAsync(greetMsg).ConfigureAwait(false);
+                            var embed = Extensions.Extensions.EmbedFromJson(greetMsg);
+                            if (embed is null)
+                                await channel.SendMessageAsync(greetMsg).ConfigureAwait(false);
+                            else
+                                await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                         }
                     }
 
@@ -99,7 +103,11 @@ namespace RiasBot.Services
                             {
                                 byeMsg = byeMsg.Replace("%user%", $"{user.Username}#{user.Discriminator}");
                             }
-                            await channel.SendMessageAsync(byeMsg);
+                            var embed = Extensions.Extensions.EmbedFromJson(byeMsg);
+                            if (embed is null)
+                                await channel.SendMessageAsync(byeMsg).ConfigureAwait(false);
+                            else
+                                await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                         }
                     }
                 }

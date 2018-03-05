@@ -63,6 +63,7 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.KickMembers | GuildPermission.ManageMessages)]
         [RequireBotPermission(GuildPermission.KickMembers | GuildPermission.ManageMessages)]
+        [RequireBotPermission(GuildPermission.Administrator)]
         public async Task SoftBan(IGuildUser user, [Remainder]string reason = null)
         {
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))

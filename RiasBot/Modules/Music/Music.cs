@@ -402,9 +402,8 @@ namespace RiasBot.Modules.Music
 
                     nextPageToken = playlistItemsListResponse.NextPageToken;
                 }
-                catch (Exception e)
+                catch
                 {
-                    Console.WriteLine(e);
                     await ReplyAsync("Please provide a direct and unlisted or public YouTube playlist URL!");
                     return;
                 }

@@ -139,7 +139,7 @@ namespace RiasBot.Modules.Help
 
             if (getModule != null)
             {
-                var moduleCommands = getModule.Commands.OrderBy(c => c.Aliases.First());
+                var moduleCommands = getModule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
 
                 var transformed = moduleCommands.Select(x =>
                 {
@@ -188,7 +188,7 @@ namespace RiasBot.Modules.Help
                     if (sbFound)
                         break;
                 }
-                var submoduleCommands = submodule.Commands.OrderBy(c => c.Aliases.First());
+                var submoduleCommands = submodule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
 
                 var transformed = submoduleCommands.Select(x =>
                 {

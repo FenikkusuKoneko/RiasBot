@@ -57,7 +57,7 @@ namespace RiasBot.Modules.Administration
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireOwner]
-            public async Task Status(string type = null, [Remainder]string name = null)
+            public async Task Activity(string type = null, [Remainder]string name = null)
             {
                 try
                 {
@@ -93,7 +93,7 @@ namespace RiasBot.Modules.Administration
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireOwner]
-            public async Task StatusRotate(int time, [Remainder]string status)
+            public async Task ActivityRotate(int time, [Remainder]string status)
             {
                 var statuses = status.Split('\n');
 
@@ -101,6 +101,41 @@ namespace RiasBot.Modules.Administration
                 _botService.status = new Timer(async _ => await _botService.StatusRotate(), null, 0, time * 1000);
 
                 await Context.Channel.SendConfirmationEmbed($"Activity status rotation setted: {time} seconds\n{String.Join("\n", statuses)}");
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireOwner]
+            public async Task Status(string status)
+            {
+                status = status.ToLowerInvariant();
+                switch (status)
+                {
+                    case "online":
+                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.Online);
+                        await Context.Channel.SendConfirmationEmbed($"Status setted to {Format.Code("Online")}");
+                        break;
+                    case "idle":
+                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.Idle);
+                        await Context.Channel.SendConfirmationEmbed($"Status setted to {Format.Code("Idle")}");
+                        break;
+                    case "afk":
+                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.AFK);
+                        await Context.Channel.SendConfirmationEmbed($"Status setted to {Format.Code("AFK")}");
+                        break;
+                    case "donotdisturb":
+                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.DoNotDisturb);
+                        await Context.Channel.SendConfirmationEmbed($"Status setted to {Format.Code("DoNotDisturb")}");
+                        break;
+                    case "dnd":
+                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.DoNotDisturb);
+                        await Context.Channel.SendConfirmationEmbed($"Status setted to {Format.Code("DoNotDisturb")}");
+                        break;
+                    case "invisible":
+                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.Invisible);
+                        await Context.Channel.SendConfirmationEmbed($"Status setted to {Format.Code("Invisible")}");
+                        break;
+                }
             }
 
             [RiasCommand][@Alias]
@@ -145,9 +180,7 @@ namespace RiasBot.Modules.Administration
                 IUser user;
                 ITextChannel channel;
 
-                //Placeholders
-                message = message.Replace("[currency]", RiasBot.currency);
-                message = message.Replace("%currency%", RiasBot.currency);
+                var embed = Extensions.Extensions.EmbedFromJson(message);
 
                 if (id.Contains("|"))
                 {
@@ -159,7 +192,10 @@ namespace RiasBot.Modules.Administration
 
                         guild = await Context.Client.GetGuildAsync(Convert.ToUInt64(guildId)).ConfigureAwait(false);
                         channel = await guild.GetTextChannelAsync(Convert.ToUInt64(channelId)).ConfigureAwait(false);
-                        await channel.SendMessageAsync(message).ConfigureAwait(false);
+                        if (embed is null)
+                            await channel.SendMessageAsync(message).ConfigureAwait(false);
+                        else
+                            await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                         await Context.Channel.SendConfirmationEmbed("Message sent!").ConfigureAwait(false);
                     }
                     catch
@@ -172,64 +208,16 @@ namespace RiasBot.Modules.Administration
                     try
                     {
                         user = await Context.Client.GetUserAsync(Convert.ToUInt64(id));
-                        await user.SendMessageAsync(message).ConfigureAwait(false);
+                        if (embed != null)
+                            await user.SendMessageAsync(message).ConfigureAwait(false);
+                        else
+                            await user.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                         await Context.Channel.SendConfirmationEmbed("Message sent!").ConfigureAwait(false);
                     }
                     catch
                     {
                         await Context.Channel.SendErrorEmbed("I couldn't find the user").ConfigureAwait(false);
                     }
-                }
-            }
-
-            [RiasCommand][@Alias]
-            [Description][@Remarks]
-            [RequireOwner]
-            public async Task SendEmbed(string id, [Remainder]string json)
-            {
-                try
-                {
-                    IGuild guild;
-                    IUser user;
-                    ITextChannel channel;
-
-                    var embed = Extensions.Extensions.EmbedFromJson(json);
-
-                    if (id.Contains("|"))
-                    {
-                        try
-                        {
-                            var ids = id.Split('|');
-                            string guildId = ids[0];
-                            string channelId = ids[1];
-
-                            guild = await Context.Client.GetGuildAsync(Convert.ToUInt64(guildId)).ConfigureAwait(false);
-                            channel = await guild.GetTextChannelAsync(Convert.ToUInt64(channelId)).ConfigureAwait(false);
-                            await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed("Message sent!").ConfigureAwait(false);
-                        }
-                        catch
-                        {
-                            await Context.Channel.SendErrorEmbed("I couldn't find the guild or the channel");
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            user = await Context.Client.GetUserAsync(Convert.ToUInt64(id));
-                            await user.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed("Message sent!").ConfigureAwait(false);
-                        }
-                        catch
-                        {
-                            await Context.Channel.SendErrorEmbed("I couldn't find the user").ConfigureAwait(false);
-                        }
-                    }
-                }
-                catch
-                {
-                    await Context.Channel.SendErrorEmbed("JSON not valid!");
                 }
             }
 

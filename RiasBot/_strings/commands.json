@@ -86,7 +86,7 @@
 
   "greetmessage": {
     "Command": "greetmsg",
-    "Description": "Set the announcement message when someone joins the server.\nPlaceholders: %user% (will mention the user who joins)",
+    "Description": "Set the announcement message when someone joins the server.\nPlaceholders: %user% (will mention the user who joins). Embeds are supported, json form: soon a site for it.",
     "Remarks": [
       "[prefix]greetmsg Welcome %user% to..."
     ]
@@ -102,7 +102,7 @@
 
   "byemessage": {
     "Command": "byemsg",
-    "Description": "Set the announcement message when someone leaves the server.\nPlaceholders: %user% (will mention the user who leaves)",
+    "Description": "Set the announcement message when someone leaves the server.\nPlaceholders: %user% (will mention the user who leaves). Embeds are supported, json form: soon a site for it.",
     "Remarks": [
       "[prefix]byemsg %user% left..."
     ]
@@ -116,19 +116,27 @@
     ]
   },
 
-  "status": {
-    "Command": "status",
+  "activity": {
+    "Command": "activity",
     "Description": "Sets the bot's activity status to `Playing`, `Listening to` or `Watching`",
     "Remarks": [
-      "[prefix]status playing k!h for help"
+      "[prefix]activity playing k!h for help"
     ]
   },
 
-  "statusrotate": {
-    "Command": "statusrotate",
+  "activityrotate": {
+    "Command": "activityrotate",
     "Description": "Sets the bot's activity status rotation.",
     "Remarks": [
-      "[prefix]statusrotate 30 playing k!h for help | watching anime"
+      "[prefix]activityrotate 30 playing k!h for help | watching anime"
+    ]
+  },
+
+  "status": {
+    "Command": "status",
+    "Description": "Sets the bot's status to Online, Idle/AFK, DnD or Invisible`",
+    "Remarks": [
+      "[prefix]status online"
     ]
   },
 
@@ -151,15 +159,6 @@
   "send": {
     "Command": "send",
     "Description": "Send a message to an user or to a channel from a server.",
-    "Remarks": [
-      "[prefix]send 327927038360944640 message",
-      "[prefix]send 381975648979124225|381975649428176907 message"
-    ]
-  },
-
-  "sendembed": {
-    "Command": "sendembed",
-    "Description": "Send an embed message to an user or to a channel from a server.",
     "Remarks": [
       "[prefix]send 327927038360944640 message",
       "[prefix]send 381975648979124225|381975649428176907 message"
@@ -385,7 +384,7 @@
 
   "warningpunishment": {
     "Command": "warnpunishment warnpunish",
-    "Description": "Set the number of warnings for a user to be punished and the punishment method (mute, kick, ban, softban), or 0 to disable the punishment. Provide no parameters to show the current punishment method.",
+    "Description": "Set the number of warnings for a user to be punished and the punishment method (mute, kick, ban), or 0 to disable the punishment. Provide no parameters to show the current punishment method.",
     "Remarks": [
       "[prefix]warnpunish 0",
       "[prefix]warnpunish 3 kick"
@@ -575,7 +574,7 @@
   },
 
   "nowplaying": {
-    "Command": "now playing np",
+    "Command": "nowplaying np",
     "Description": "Show the current played song",
     "Remarks": [
       "[prefix]np"

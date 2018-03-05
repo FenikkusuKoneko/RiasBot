@@ -13,7 +13,6 @@ namespace RiasBot.Services
     {
         private readonly DiscordSocketClient _discord;
         private readonly CommandService _commands;
-
         public LoggingService(DiscordSocketClient discord, CommandService commands)
         {
             _discord = discord;
@@ -21,8 +20,6 @@ namespace RiasBot.Services
             
             _discord.Log += DiscordLogAsync;
             _commands.Log += DiscordLogAsync;
-
-            //_discord.Connected += LoggedInMessage;
         }
         
         private Task DiscordLogAsync(LogMessage msg)
@@ -30,18 +27,5 @@ namespace RiasBot.Services
             string logText = $"{DateTime.UtcNow.ToString("hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
             return Console.Out.WriteLineAsync(logText);
         }
-
-        /*private async Task LoggedInMessage()
-        {
-            bool serverConnected = true;
-            while (serverConnected)
-            {
-                if (_discord.GetGuild(RiasBot.ownerGuildId).IsConnected)
-                {
-                    await _discord.GetGuild(RiasBot.ownerGuildId).GetTextChannel(RiasBot.channelLoggedInMessage).SendMessageAsync(RiasBot.loggedInMessage).ConfigureAwait(false);
-                    serverConnected = false;
-                }
-            }
-        }*/
     }
 }
