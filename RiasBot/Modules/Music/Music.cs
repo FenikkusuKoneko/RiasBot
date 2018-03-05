@@ -58,41 +58,48 @@ namespace RiasBot.Modules.Music
                 return;
             }
 
-            var mp = _service.GetOrAddMusicPlayer(Context.Guild);
-            await mp.JoinAudio(Context.Guild, Context.Channel, voiceChannel).ConfigureAwait(false);
-
-            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+            try
             {
-                ApiKey = _creds.GoogleApiKey,
-                ApplicationName = "Kurumi Bot"
-            });
+                var mp = _service.GetOrAddMusicPlayer(Context.Guild);
+                await mp.JoinAudio(Context.Guild, Context.Channel, voiceChannel).ConfigureAwait(false);
 
-            if (Uri.IsWellFormedUriString(keywords, UriKind.Absolute))
-            {
-                var regex = new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]*)(?:.*list=|(?:.*/)?)([a-zA-Z0-9-_]*)");
-                var matches = regex.Match(keywords);
-                string videoId = matches.Groups[1].Value;
-                string listId = matches.Groups[2].Value;
-
-                if (!String.IsNullOrEmpty(listId))
+                var youtubeService = new YouTubeService(new BaseClientService.Initializer()
                 {
-                    if (videoId == "playlist")
+                    ApiKey = _creds.GoogleApiKey,
+                    ApplicationName = "Kurumi Bot"
+                });
+
+                if (Uri.IsWellFormedUriString(keywords, UriKind.Absolute))
+                {
+                    var regex = new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]*)(?:.*list=|(?:.*/)?)([a-zA-Z0-9-_]*)");
+                    var matches = regex.Match(keywords);
+                    string videoId = matches.Groups[1].Value;
+                    string listId = matches.Groups[2].Value;
+
+                    if (!String.IsNullOrEmpty(listId))
                     {
-                        await PlayList(mp, youtubeService, listId, index: 0);
+                        if (videoId == "playlist")
+                        {
+                            await PlayList(mp, youtubeService, listId, index: 0);
+                        }
+                        else
+                        {
+                            await PlayList(mp, youtubeService, listId, videoId);
+                        }
                     }
                     else
                     {
-                        await PlayList(mp, youtubeService, listId, videoId);
+                        await PlayVideoURL(mp, youtubeService, videoId);
                     }
                 }
                 else
                 {
-                    await PlayVideoURL(mp, youtubeService, videoId);
+                    await PlayVideo(mp, youtubeService, keywords);
                 }
             }
-            else
+            catch
             {
-                await PlayVideo(mp, youtubeService, keywords);
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} something went wrong. I can't connect to the voice channel, speak or to see the voice channel.").ConfigureAwait(false);
             }
         }
 

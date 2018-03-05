@@ -47,60 +47,42 @@ namespace RiasBot.Modules.Searches
             await Context.Channel.SendMessageAsync("", false, embed.Build());
         }
 
-        /*[KurumiCommand][Aliases][Description][Usage]
-        public async Task NekoLewd()
-        {
-            string nekoURL = null;
-
-            using (var http = new HttpClient())
-            {
-                nekoURL = await http.GetStringAsync("https://nekos.life/api/lewd/neko");
-            }
-
-            var getNeko = JObject.Parse(nekoURL);
-            var neko = getNeko["neko"];
-
-            var embed = new EmbedBuilder();
-            embed.WithColor(RiasBot.color);
-            embed.WithTitle("Lewd Neko <3");
-            embed.WithImageUrl((string)neko);
-
-            var channel = (ITextChannel)Context.Channel;
-            if (channel.IsNsfw)
-                await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
-            else
-                await ReplyAsync("Neko are very shy. You need to see them in a **nsfw** channel");
-        }*/
-
         [RiasCommand][@Alias]
         [Description][@Remarks]
         public async Task UrbanDictionary([Remainder]string keyword)
         {
-            if (String.IsNullOrEmpty(_creds.UrbanDictionaryApiKey))
+            try
             {
-                await Context.Channel.SendErrorEmbed("The urban dictionary api key needs to be seted to use this command!").ConfigureAwait(false);
-                return;
+                if (String.IsNullOrEmpty(_creds.UrbanDictionaryApiKey))
+                {
+                    await Context.Channel.SendErrorEmbed("The urban dictionary api key needs to be seted to use this command!").ConfigureAwait(false);
+                    return;
+                }
+
+                await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
+
+                HttpResponse<String> response = Unirest.get("https://mashape-community-urban-dictionary.p.mashape.com/define?term=" + Uri.EscapeUriString(keyword))
+                .header("X-Mashape-Key", _creds.UrbanDictionaryApiKey)
+                .header("Accept", "text/plain")
+                .asString();
+
+                var items = JObject.Parse(response.Body);
+                var item = items["list"][0];
+                var word = item["word"].ToString();
+                var def = item["definition"].ToString();
+                var link = item["permalink"].ToString();
+
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                embed.WithUrl(link);
+                embed.WithAuthor(word, "https://i.imgur.com/G3VoNuJ.jpg");
+                embed.WithDescription(def);
+
+                await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
-
-            await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
-
-            HttpResponse<String> response = Unirest.get("https://mashape-community-urban-dictionary.p.mashape.com/define?term=" + Uri.EscapeUriString(keyword))
-            .header("X-Mashape-Key", _creds.UrbanDictionaryApiKey)
-            .header("Accept", "text/plain")
-            .asString();
-
-            var items = JObject.Parse(response.Body);
-            var item = items["list"][0];
-            var word = item["word"].ToString();
-            var def = item["definition"].ToString();
-            var link = item["permalink"].ToString();
-
-            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-            embed.WithUrl(link);
-            embed.WithAuthor(word, "https://i.imgur.com/G3VoNuJ.jpg");
-            embed.WithDescription(def);
-
-            await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+            catch
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find anything.");
+            }
         }
 
         [RiasCommand][@Alias]

@@ -199,7 +199,7 @@ namespace RiasBot.Modules.Utility
                             }
                             userDb.Currency -= 10000;
                             await db.SaveChangesAsync().ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {getWaifu.WaifuName} is not your beloved waifu :heart:.");
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {getWaifu.WaifuName} is now your beloved waifu :heart:.");
                         }
                         else
                         {

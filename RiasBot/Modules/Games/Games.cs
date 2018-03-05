@@ -59,7 +59,7 @@ namespace RiasBot.Modules.Games
                 else
                 {
                     var embed = new EmbedBuilder().WithColor(0xffff00);
-                    embed.WithDescription($"{Format.Bold(types[botChoice - 1])}, draw!");
+                    embed.WithDescription($"I chose {Format.Bold(types[botChoice - 1])}, draw!");
                     await ReplyAsync("", embed: embed.Build());
                 }
             }
