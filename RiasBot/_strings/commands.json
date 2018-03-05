@@ -287,13 +287,13 @@
     ]
   },
 
-  "purge": {
-    "Command": "purge",
-    "Description": "`[prefix]purge x` removes last x number of messages from the channel (up to 100).\n`[prefix]purge @User` removes all User's messages in the last 100 messages.\n`[prefix]purge @Someone x` removes last x number of User's messages in the channel.",
+  "prune": {
+    "Command": "prune purge",
+    "Description": "`[prefix]prune x` removes last x number of messages from the channel (up to 100).\n`[prefix]prune @User` removes all User's messages in the last 100 messages.\n`[prefix]prune @Someone x` removes last x number of User's messages in the channel.",
     "Remarks": [
-      "[prefix]purge x",
-      "[prefix]purge @User",
-      "[prefix]purge @User x"
+      "[prefix]prune x",
+      "[prefix]prune @User",
+      "[prefix]prune @User x"
     ]
   },
 

@@ -115,7 +115,7 @@ namespace RiasBot.Modules.Administration
         [RequireUserPermission(GuildPermission.ManageMessages)]
         [RequireBotPermission(GuildPermission.ManageMessages)]
         [Priority(1)]
-        public async Task Purge(int amount = 100)
+        public async Task Prune(int amount = 100)
         {
             var channel = (ITextChannel)Context.Channel;
 
@@ -144,9 +144,8 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageMessages)]
         [RequireBotPermission(GuildPermission.ManageMessages)]
-        [RequireBotPermission(GuildPermission.Administrator)]
         [Priority(0)]
-        public async Task Purge(IGuildUser user, int amount = 100)
+        public async Task Prune(IGuildUser user, int amount = 100)
         {
             var channel = (ITextChannel)Context.Channel;
             if (user.Id == Context.Message.Author.Id)
