@@ -216,7 +216,7 @@
 
   "renamerole": {
     "Command": "renamerole rnr",
-    "Description": "Rename a Role. Use `|` to separate the old role from the new role",
+    "Description": "Rename a Role. You need to separate the old name by the new name with '->'",
     "Remarks": [
       "[prefix]rnr Rias | Rias-waifu"
     ]

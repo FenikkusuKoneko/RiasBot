@@ -44,7 +44,7 @@ namespace RiasBot.Extensions
                 string description = embedDeserialized.description;
                 description = description.Replace("[currency]", RiasBot.currency);
                 description = description.Replace("%currency%", RiasBot.currency);
-                embed.WithDescription(embedDeserialized.description);
+                embed.WithDescription(description);
                 embed.WithThumbnailUrl(embedDeserialized.thumbnail);
                 embed.WithImageUrl(embedDeserialized.image);
                 try

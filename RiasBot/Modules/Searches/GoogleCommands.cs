@@ -29,7 +29,15 @@ namespace RiasBot.Modules.Searches
             [Description][@Remarks]
             public async Task YouTube(string type, [Remainder]string keywords)
             {
-                var searches = (await _service.YouTubeSearch(type, keywords).ConfigureAwait(false)).Where(x => !String.IsNullOrEmpty(x)).ToArray();
+                string[] searches = null;
+                try
+                {
+                    searches = (await _service.YouTubeSearch(type, keywords).ConfigureAwait(false)).Where(x => !String.IsNullOrEmpty(x)).ToArray();
+                }
+                catch
+                {
+
+                }
 
                 Random r = new Random();
                 int random = r.Next(0, searches?.Length ?? 0);

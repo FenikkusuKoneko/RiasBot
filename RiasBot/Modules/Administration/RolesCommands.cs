@@ -97,20 +97,12 @@ namespace RiasBot.Modules.Administration
             [RequireBotPermission(GuildPermission.ManageRoles)]
             public async Task RenameRole([Remainder]string role)
             {
-                string oldName = null;
-                string newName = null;
-                if (role.Contains('|'))
-                {
-                    oldName = role.Substring(0, role.IndexOf('|') - 1);
-                    newName = role.Substring(role.IndexOf('|') + 2);
-                }
-                else
-                {
-                    await ReplyAsync("The role couldn't be found.").ConfigureAwait(false);
-                    return;
-                }
                 try
                 {
+                    var roles = role.Split("->");
+                    string oldName = roles[0].TrimEnd();
+                    string newName = roles[1].TrimStart();
+
                     var oldRole = Context.Guild.Roles.Where(r => r.Name.ToLower() == oldName.ToLower()).First();
                     oldName = oldRole.Name;
                     await oldRole.ModifyAsync(r => r.Name = newName).ConfigureAwait(false);

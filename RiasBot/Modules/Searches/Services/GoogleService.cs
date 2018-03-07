@@ -34,7 +34,7 @@ namespace RiasBot.Modules.Searches.Services
             var youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {
                 ApiKey = _creds.GoogleApiKey,
-                ApplicationName = "Kurumi Bot"
+                ApplicationName = "Rias Bot"
             });
 
             var searchListRequest = youtubeService.Search.List("snippet");
@@ -90,7 +90,7 @@ namespace RiasBot.Modules.Searches.Services
             var googleService = new CustomsearchService(new BaseClientService.Initializer()
             {
                 ApiKey = _creds.GoogleApiKey,
-                ApplicationName = "Kurumi Bot"
+                ApplicationName = "Rias Bot"
             });
             var searchListRequest = googleService.Cse.List(keywords);
             searchListRequest.Cx = search_engine_id;
