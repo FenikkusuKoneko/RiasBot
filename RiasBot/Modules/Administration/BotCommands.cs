@@ -169,6 +169,7 @@ namespace RiasBot.Modules.Administration
             {
                 await Context.Channel.SendConfirmationEmbed("Shutting down...").ConfigureAwait(false);
                 await Context.Client.StopAsync().ConfigureAwait(false);
+                Environment.Exit(0);
             }
 
             [RiasCommand][@Alias]

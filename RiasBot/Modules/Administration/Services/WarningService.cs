@@ -42,8 +42,11 @@ namespace RiasBot.Modules.Administration.Services
 
                 await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
 
-                if (nrWarnings + 1 == guildDb.WarnsPunishment)
+                if (nrWarnings + 1 >= guildDb.WarnsPunishment)
                 {
+                    db.Remove(warning);
+                    db.RemoveRange(warnings);
+                    await db.SaveChangesAsync().ConfigureAwait(false);
                     switch (guildDb.PunishmentMethod)
                     {
                         case "mute":
