@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using DiscordBotsList.Api;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
 using RiasBot.Services;
@@ -25,14 +26,16 @@ namespace RiasBot.Modules.Administration
             private readonly DbService _db;
             private readonly DiscordSocketClient _client;
             private readonly BotService _botService;
+            private readonly IBotCredentials _creds;
 
-            public BotCommands(CommandHandler ch, CommandService service, DbService db, DiscordSocketClient client, BotService botService)
+            public BotCommands(CommandHandler ch, CommandService service, DbService db, DiscordSocketClient client, BotService botService, IBotCredentials creds)
             {
                 _ch = ch;
                 _service = service;
                 _db = db;
                 _client = client;
                 _botService = botService;
+                _creds = creds;
             }
 
             [RiasCommand][@Alias]
@@ -278,6 +281,28 @@ namespace RiasBot.Modules.Administration
                 {
                     await Context.Channel.SendConfirmationEmbed("I couldn't find the channel/message!");
                 }
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireOwner]
+            public async Task Dbl(int page = 1)
+            {
+                AuthDiscordBotListApi dblApi = new AuthDiscordBotListApi(_creds.ClientId, _creds.DiscordBotsListApiKey);
+                var dblSelfBot = await dblApi.GetMeAsync().ConfigureAwait(false);
+                var dbls = await dblSelfBot.GetVotersAsync(1).ConfigureAwait(false);
+
+                string[] voters = new string[dbls.Count];
+                int index = 0;
+                foreach (var dbl in dbls)
+                {
+                    voters[index] = $"#{index+1} {dbl.Username}#{dbl.Discriminator} ({dbl.Id})";
+                    index++;
+                }
+                if (voters.Count() > 0)
+                    await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, "List of voters today", voters, 10, page - 1).ConfigureAwait(false);
+                else
+                    await Context.Channel.SendErrorEmbed("No voters today.").ConfigureAwait(false);
             }
         }
     }

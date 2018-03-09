@@ -69,42 +69,49 @@ namespace RiasBot.Modules.Utility
             {
                 if (user is null) user = (IGuildUser)Context.User;
 
-                string joinedServer = user.JoinedAt.Value.UtcDateTime.ToShortDateString()
-                    + " " + user.JoinedAt.Value.UtcDateTime.ToShortTimeString()
-                    .Replace("/", ".");
-
-                string accountCreated = user.CreatedAt.UtcDateTime.ToShortDateString()
-                    + " " + user.JoinedAt.Value.UtcDateTime.ToShortTimeString()
-                    .Replace("/", ".");
-
-                int roleIndex = 0;
-                var getUserRoles = user.RoleIds;
-                string[] userRoles = new string[getUserRoles.Count];
-                int[] userRolesPositions = new int[getUserRoles.Count];
-
-                foreach (var role in getUserRoles)
+                try
                 {
-                    var r = Context.Guild.GetRole(role);
-                    if (roleIndex < 10)
+                    string joinedServer = user.JoinedAt.Value.UtcDateTime.ToShortDateString()
+                    + " " + user.JoinedAt.Value.UtcDateTime.ToShortTimeString()
+                    .Replace("/", ".");
+
+                    string accountCreated = user.CreatedAt.UtcDateTime.ToShortDateString()
+                        + " " + user.JoinedAt.Value.UtcDateTime.ToShortTimeString()
+                        .Replace("/", ".");
+
+                    int roleIndex = 0;
+                    var getUserRoles = user.RoleIds;
+                    string[] userRoles = new string[getUserRoles.Count];
+                    int[] userRolesPositions = new int[getUserRoles.Count];
+
+                    foreach (var role in getUserRoles)
                     {
-                        userRoles[roleIndex] = r.Name;
-                        userRolesPositions[roleIndex] = r.Position;
-                        roleIndex++;
+                        var r = Context.Guild.GetRole(role);
+                        if (roleIndex < 10)
+                        {
+                            userRoles[roleIndex] = r.Name;
+                            userRolesPositions[roleIndex] = r.Position;
+                            roleIndex++;
+                        }
                     }
+
+                    Array.Sort(userRolesPositions, userRoles);
+                    Array.Reverse(userRoles);
+
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    embed.AddField("Name", user, true).AddField("Nickname", user.Nickname ?? "-", true);
+                    embed.AddField("ID", user.Id, true).AddField("Status", user.Status, true);
+                    embed.AddField("Joined Server", joinedServer, true).AddField("Joined Discord", accountCreated, true);
+                    embed.AddField($"Roles ({roleIndex})",
+                        (roleIndex == 0) ? "-" : String.Join("\n", userRoles));
+                    embed.WithThumbnailUrl(user.RealAvatarUrl() ?? user.DefaultAvatarUrl());
+
+                    await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
                 }
-
-                Array.Sort(userRolesPositions, userRoles);
-                Array.Reverse(userRoles);
-
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.AddField("Name", user, true).AddField("Nickname", user.Nickname ?? "-", true);
-                embed.AddField("ID", user.Id, true).AddField("Status", user.Status, true);
-                embed.AddField("Joined Server", joinedServer, true).AddField("Joined Discord", accountCreated, true);
-                embed.AddField($"Roles ({roleIndex})",
-                    (roleIndex == 0) ? "-" : String.Join("\n", userRoles));
-                embed.WithThumbnailUrl(user.RealAvatarUrl() ?? user.DefaultAvatarUrl());
-
-                await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
+                catch
+                {
+                    await Context.Channel.SendErrorEmbed("I couldn't find the user.");
+                }
             }
 
             [RiasCommand]

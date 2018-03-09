@@ -157,7 +157,7 @@ namespace RiasBot.Services
             try
             {
                 AuthDiscordBotListApi dblApi = new AuthDiscordBotListApi(_creds.ClientId, _creds.DiscordBotsListApiKey);
-                var dblSelfBot = await dblApi.GetMeAsync();
+                var dblSelfBot = await dblApi.GetMeAsync().ConfigureAwait(false);
                 await dblSelfBot.UpdateStatsAsync(_discord.Guilds.Count).ConfigureAwait(false);
 
                 if (TimeSpan.Compare(voteTimer.Elapsed, new TimeSpan(1, 0, 0)) >= 0)
@@ -170,13 +170,24 @@ namespace RiasBot.Services
                         {
                             try
                             {
-                                var userDb = db.Users.Where(x => x.UserId == voterId).FirstOrDefault();
-                                userDb.Currency += 10;
+                                var userGuild = _discord.GetGuild(RiasBot.supportServer).GetUser(voterId);
+                                if (userGuild != null)
+                                {
+                                    try
+                                    {
+                                        var userDb = db.Users.Where(x => x.UserId == voterId).FirstOrDefault();
+                                        userDb.Currency += 10;
+                                    }
+                                    catch
+                                    {
+                                        var dblVote = new UserConfig { UserId = voterId, Currency = 10 };
+                                        await db.AddAsync(dblVote).ConfigureAwait(false);
+                                    }
+                                }
                             }
                             catch
                             {
-                                var dblVote = new UserConfig { UserId = voterId, Currency = 10 };
-                                await db.AddAsync(dblVote).ConfigureAwait(false);
+
                             }
                         }
                         await db.SaveChangesAsync().ConfigureAwait(false);

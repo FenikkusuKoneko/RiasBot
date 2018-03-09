@@ -108,6 +108,14 @@
     ]
   },
 
+   "modlog": {
+    "Command": "modlog",
+    "Description": "Set the current channel as \"mod-log\" channel where the bot will post notifications about mute, unmute, kick, ban, softban. Provide no arguments to disable it from the current channel.",
+    "Remarks": [
+      "[prefix]modlog"
+    ]
+  },
+
   "leaveguild": {
     "Command": "leaveguild leaveserver",
     "Description": "Leave a guild/server.",
@@ -186,6 +194,14 @@
     "Description": "Edit a message in a guild.",
     "Remarks": [
       "[prefix]edit 416511999837732864|419897542508281867 message"
+    ]
+  },
+
+  "dbl": {
+    "Command": "dbl",
+    "Description": "Show a list with voters for today from Discord Bots List.",
+    "Remarks": [
+      "[prefix]dbl"
     ]
   },
 

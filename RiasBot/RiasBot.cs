@@ -17,13 +17,14 @@ namespace RiasBot
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.2.13";
+        public static string version = "1.2.16";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
         public static string invite = "https://discordapp.com/oauth2/authorize?client_id=381387277764395008&permissions=1609952383&scope=bot";
         public static ulong fenikkusuId = 327927038360944640;
         public static string creatorServer = "https://discord.gg/VPfBvBt";
+        public static ulong supportServer = 416492045859946507;
         public static Stopwatch upTime = new Stopwatch();
         public static int commandsRun = 0;
 

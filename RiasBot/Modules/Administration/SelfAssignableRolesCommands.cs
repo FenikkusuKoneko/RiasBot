@@ -131,7 +131,11 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the role.");
+                        var sar = db.SelfAssignableRoles.Where(x => x.GuildId == Context.Guild.Id).Where(x => x.RoleName.ToLowerInvariant() == name.ToLowerInvariant()).FirstOrDefault();
+                        db.Remove(sar);
+                        await db.SaveChangesAsync().ConfigureAwait(false);
+
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(name)} was deleted from the self assignable roles list successfully.");
                     }
                 }
             }

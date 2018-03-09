@@ -308,5 +308,39 @@ namespace RiasBot.Modules.Administration
             }
             await Context.Channel.SendConfirmationEmbed("New announcement message setted for users who leave the server!");
         }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireContext(ContextType.Guild)]
+        public async Task ModLog()
+        {
+            using (var db = _db.GetDbContext())
+            {
+                var guildDb = db.Guilds.Where(x => x.GuildId == Context.Guild.Id).FirstOrDefault();
+                try
+                {
+                    if (guildDb.ModLogChannel != Context.Channel.Id)
+                    {
+                        guildDb.ModLogChannel = Context.Channel.Id;
+                        await db.SaveChangesAsync().ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} notifications about mute, unmute, kick, ban, unban will be posted in this channel.").ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        guildDb.ModLogChannel = 0;
+                        await db.SaveChangesAsync().ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} notifications about mute, unmute, kick, ban, unban disabled.").ConfigureAwait(false);
+                    }
+                }
+                catch
+                {
+                    var modlog = new GuildConfig { GuildId = Context.Guild.Id, ModLogChannel = Context.Channel.Id };
+                    await db.AddAsync(modlog).ConfigureAwait(false);
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} notifications about mute, unmute, kick, ban, unban will be posted in this channel.").ConfigureAwait(false);
+                }
+            }
+        }
     }
 }

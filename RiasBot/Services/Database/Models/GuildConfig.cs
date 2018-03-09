@@ -18,5 +18,6 @@ namespace RiasBot.Services.Database.Models
         public ulong AutoAssignableRole { get; set; }
         public int WarnsPunishment { get; set; }
         public string PunishmentMethod { get; set; }
+        public ulong ModLogChannel { get; set; }
     }
 }

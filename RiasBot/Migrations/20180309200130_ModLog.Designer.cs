@@ -11,9 +11,10 @@ using System;
 namespace RiasBot.Migrations
 {
     [DbContext(typeof(KurumiContext))]
-    partial class KurumiContextModelSnapshot : ModelSnapshot
+    [Migration("20180309200130_ModLog")]
+    partial class ModLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

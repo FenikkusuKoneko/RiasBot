@@ -65,7 +65,12 @@ namespace RiasBot.Modules.Administration.Services
                             embed.AddField("Moderator", moderator);
 
                         embed.WithCurrentTimestamp();
-                        await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+
+                        var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
+                        if (modlog != null)
+                            await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                        else
+                            await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                     }
                 }
                 catch
@@ -105,85 +110,138 @@ namespace RiasBot.Modules.Administration.Services
                             embed.AddField("Reason", reason, true);
 
                         embed.WithCurrentTimestamp();
-                        await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+
+                        var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
+                        if (modlog != null)
+                            await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                        else
+                            await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
                     {
                         await channel.SendConfirmationEmbed($"{moderator.Mention} {Format.Bold(user.ToString())} is not muted from text and voice channels!");
                     }
                 }
-                catch(Exception e)
+                catch
                 {
-                    await channel.SendErrorEmbed(Format.Code(e.ToString()));
+                    
                 }
             }
         }
 
         public async Task KickUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, string reason)
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
-            embed.WithDescription("Kick");
-            embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
-            embed.AddField("Moderator", moderator, true);
-            if (!String.IsNullOrEmpty(reason))
-                embed.AddField("Reason", reason);
+            using (var db = _db.GetDbContext())
+            {
+                var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
 
-            await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                embed.WithDescription("Kick");
+                embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
+                embed.AddField("Moderator", moderator, true);
+                if (!String.IsNullOrEmpty(reason))
+                    embed.AddField("Reason", reason);
 
-            var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
-            reasonEmbed.WithDescription($"You have been kicked from {Format.Bold(guild.Name)} server!");
-            if (reason != null)
-                reasonEmbed.AddField("Reason", reason);
+                try
+                {
+                    var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
+                    if (modlog != null)
+                        await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    else
+                        await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
+                catch
+                {
+                    await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
 
-            if (!user.IsBot)
-                await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                reasonEmbed.WithDescription($"You have been kicked from {Format.Bold(guild.Name)} server!");
+                if (reason != null)
+                    reasonEmbed.AddField("Reason", reason);
 
-            await user.KickAsync(reason).ConfigureAwait(false);
+                if (!user.IsBot)
+                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+
+                await user.KickAsync(reason).ConfigureAwait(false);
+            }
         }
 
         public async Task BanUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, string reason)
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
-            embed.WithDescription("Ban");
-            embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
-            embed.AddField("Moderator", moderator, true);
-            if (reason != null)
-                embed.AddField("Reason", reason);
+            using (var db = _db.GetDbContext())
+            {
+                var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
 
-            await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                embed.WithDescription("Ban");
+                embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
+                embed.AddField("Moderator", moderator, true);
+                if (reason != null)
+                    embed.AddField("Reason", reason);
 
-            var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
-            reasonEmbed.WithDescription($"You have been banned from {Format.Bold(guild.Name)} server!");
-            if (reason != null)
-                reasonEmbed.AddField("Reason", reason);
+                try
+                {
+                    var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
+                    if (modlog != null)
+                        await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    else
+                        await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
+                catch
+                {
+                    await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
 
-            if (!user.IsBot)
-                await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                reasonEmbed.WithDescription($"You have been banned from {Format.Bold(guild.Name)} server!");
+                if (reason != null)
+                    reasonEmbed.AddField("Reason", reason);
 
-            await guild.AddBanAsync(user).ConfigureAwait(false);
+                if (!user.IsBot)
+                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+
+                await guild.AddBanAsync(user).ConfigureAwait(false);
+            }
         }
 
         public async Task SoftbanUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, string reason)
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
-            embed.WithDescription("Softban");
-            embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
-            embed.AddField("Moderator", moderator, true);
-            if (reason != null)
-                embed.AddField("Reason", reason);
+            using (var db = _db.GetDbContext())
+            {
+                var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
 
-            await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                embed.WithDescription("Softban");
+                embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
+                embed.AddField("Moderator", moderator, true);
+                if (reason != null)
+                    embed.AddField("Reason", reason);
 
-            var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
-            reasonEmbed.WithDescription($"You have been kicked from {Format.Bold(guild.Name)} server!");
-            if (reason != null)
-                reasonEmbed.AddField("Reason", reason);
+                try
+                {
+                    var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
+                    if (modlog != null)
+                        await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    else
+                        await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
+                catch
+                {
+                    await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
 
-            if (!user.IsBot)
-                await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
-            await Task.Delay(1000).ConfigureAwait(false);
-            await guild.AddBanAsync(user, 7).ConfigureAwait(false);
-            await guild.RemoveBanAsync(user).ConfigureAwait(false);
+                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                reasonEmbed.WithDescription($"You have been kicked from {Format.Bold(guild.Name)} server!");
+                if (reason != null)
+                    reasonEmbed.AddField("Reason", reason);
+
+                if (!user.IsBot)
+                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                await Task.Delay(1000).ConfigureAwait(false);
+                await guild.AddBanAsync(user, 7).ConfigureAwait(false);
+                await guild.RemoveBanAsync(user).ConfigureAwait(false);
+            }
         }
 
         public async Task MuteService(IRole role, IGuild guild)

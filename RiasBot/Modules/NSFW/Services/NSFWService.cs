@@ -40,30 +40,18 @@ namespace RiasBot.Modules.NSFW.Services
             string images = null;
 
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
-            int ratingRnd = rnd.Next(2);
-            string rating = null;
-
             var data = new List<Hentai>();
             
-            switch(ratingRnd)
-            {
-                case 0:
-                    rating = "rating:questionable";
-                    break;
-                case 1:
-                    rating = "rating:explicit";
-                    break;
-            }
             switch(site)
             {
                 case NSFWSite.Danbooru:
-                    api = $"http://danbooru.donmai.us/posts.json?limit=100&tags={rating}+{tag}";
+                    api = $"http://danbooru.donmai.us/posts.json?limit=100&tags=rating:explicit+{tag}";
                     break;
                 case NSFWSite.Konachan:
-                    api = $"https://konachan.com/post.json?s=post&q=index&limit=100&tags={rating}+{tag}";
+                    api = $"https://konachan.com/post.json?s=post&q=index&limit=100&tags=rating:explicit+{tag}";
                     break;
                 case NSFWSite.Yandere:
-                    api = $"https://yande.re/post.json?limit=100&tags={rating}+{tag}";
+                    api = $"https://yande.re/post.json?limit=100&tags=rating:explicit+{tag}";
                     break;
             }
             try
@@ -85,7 +73,12 @@ namespace RiasBot.Modules.NSFW.Services
                 int random = rnd.Next(data.Count);
                 string imageUrl = data[random].File_Url;
                 if (site == NSFWSite.Danbooru)
-                    return "http://danbooru.donmai.us" + imageUrl;
+                {
+                    if (!imageUrl.Contains("donmai.us"))
+                        return "http://danbooru.donmai.us" + imageUrl;
+                    else
+                        return imageUrl;
+                }
                 else
                     return imageUrl;
             }
