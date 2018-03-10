@@ -62,28 +62,27 @@ namespace RiasBot.Modules.NSFW.Services
 
                     data = JsonConvert.DeserializeObject<List<Hentai>>(images);
                 }
-            }
-            catch
-            {
 
-            }
-
-            if (data.Count > 0)
-            {
-                int random = rnd.Next(data.Count);
-                string imageUrl = data[random].File_Url;
-                if (site == NSFWSite.Danbooru)
+                if (data.Count > 0)
                 {
-                    if (!imageUrl.Contains("donmai.us"))
-                        return "http://danbooru.donmai.us" + imageUrl;
+                    int random = rnd.Next(data.Count);
+                    string imageUrl = data[random].File_Url;
+                    if (site == NSFWSite.Danbooru)
+                    {
+                        if (!imageUrl.Contains("donmai.us"))
+                            return "http://danbooru.donmai.us" + imageUrl;
+                        else
+                            return imageUrl;
+                    }
                     else
                         return imageUrl;
                 }
-                else
-                    return imageUrl;
             }
-            else
+            catch
+            {
                 return null;
+            }
+            return null;
         }
 
         public enum NSFWSite

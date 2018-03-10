@@ -171,38 +171,45 @@ namespace RiasBot.Modules.Help
             }
             else
             {
-                ModuleInfo submodule = null;
-                foreach (var mod in _service.Modules)
+                try
                 {
-                    bool sbFound = false;
-                    foreach (var submod in mod.Submodules)
+                    ModuleInfo submodule = null;
+                    foreach (var mod in _service.Modules)
                     {
-                        if (submod.Name.ToUpperInvariant().StartsWith(module))
+                        bool sbFound = false;
+                        foreach (var submod in mod.Submodules)
                         {
-                            submodule = submod;
-                            sbFound = true;
-                            break;
+                            if (submod.Name.ToUpperInvariant().StartsWith(module))
+                            {
+                                submodule = submod;
+                                sbFound = true;
+                                break;
+                            }
+
                         }
-                        
+                        if (sbFound)
+                            break;
                     }
-                    if (sbFound)
-                        break;
+                    var submoduleCommands = submodule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
+
+                    var transformed = submoduleCommands.Select(x =>
+                    {
+                        string nextAlias = null;
+                        if (x.Aliases.Skip(1).FirstOrDefault() != null)
+                            nextAlias = $"[{_ch._prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
+
+                        return $"{_ch._prefix + x.Aliases.First()} {nextAlias}";
+                    });
+                    embed.WithTitle($"All commands for submodule {submodule.Name.Replace("Commands", "")}");
+                    embed.WithDescription(String.Join("\n", transformed));
+                    embed.WithFooter($"For a specific command info type {_ch._prefix + "h <command>"}");
+                    embed.WithCurrentTimestamp();
+                    await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
-                var submoduleCommands = submodule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
-
-                var transformed = submoduleCommands.Select(x =>
+                catch
                 {
-                    string nextAlias = null;
-                    if (x.Aliases.Skip(1).FirstOrDefault() != null)
-                        nextAlias = $"[{_ch._prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
-
-                    return $"{_ch._prefix + x.Aliases.First()} {nextAlias}";
-                });
-                embed.WithTitle($"All commands for submodule {submodule.Name.Replace("Commands", "")}");
-                embed.WithDescription(String.Join("\n", transformed));
-                embed.WithFooter($"For a specific command info type {_ch._prefix + "h <command>"}");
-                embed.WithCurrentTimestamp();
-                await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the module or submodule. Type {Format.Code(_ch._prefix + "modules")} to see all modules and submodules.").ConfigureAwait(false);
+                }
             }
         }
 

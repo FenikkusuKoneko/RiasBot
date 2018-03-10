@@ -182,10 +182,7 @@ namespace RiasBot.Modules.NSFW
             {
                 if (!String.IsNullOrEmpty(image))
                 {
-                    Console.WriteLine(image);
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                    embed.WithImageUrl(image);
-                    await ReplyAsync("", embed: embed.Build());
+                    await ReplyAsync(image);
                     count++;
                 }
             }
