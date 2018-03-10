@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RiasBot.Extensions;
 
 namespace RiasBot.Modules.Gambling
 {
@@ -30,8 +31,8 @@ namespace RiasBot.Modules.Gambling
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireOwner]
-            [Priority(0)]
-            public async Task Award(int amount, [Remainder]IGuildUser user)
+            [Priority(2)]
+            public async Task Award(int amount, [Remainder]IUser user)
             {
                 using (var db = _db.GetDbContext())
                 {
@@ -73,14 +74,40 @@ namespace RiasBot.Modules.Gambling
                     }
                 }
                 var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
-                await ReplyAsync($"{Format.Bold(user.ToString())} has been awarded with {amount} {RiasBot.currency}");
+                await ReplyAsync($"{Format.Bold(user?.ToString() ?? id.ToString())} has been awarded with {amount} {RiasBot.currency}");
             }
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireOwner]
             [Priority(0)]
-            public async Task Take(int amount, [Remainder]IGuildUser user)
+            public async Task Award(int amount, string user)
+            {
+                var userSplit = user.Split("#");
+                var getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                using (var db = _db.GetDbContext())
+                {
+                    var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
+                    try
+                    {
+                        userDb.Currency += amount;
+                        await db.SaveChangesAsync().ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        var currency = new UserConfig { UserId = getUser.Id, Currency = amount };
+                        await db.Users.AddAsync(currency).ConfigureAwait(false);
+                        await db.SaveChangesAsync().ConfigureAwait(false);
+                    }
+                }
+                await ReplyAsync($"{Format.Bold(user.ToString())} has been awarded with {amount} {RiasBot.currency}");
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireOwner]
+            [Priority(2)]
+            public async Task Take(int amount, [Remainder]IUser user)
             {
                 using (var db = _db.GetDbContext())
                 {
@@ -108,12 +135,52 @@ namespace RiasBot.Modules.Gambling
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireOwner]
-            [Priority(0)]
+            [Priority(1)]
             public async Task Take(int amount, ulong id)
             {
                 using (var db = _db.GetDbContext())
                 {
                     var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
+                    if (userDb != null)
+                    {
+                        try
+                        {
+                            if (userDb.Currency - amount < 0)
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                userDb.Currency -= amount;
+                            }
+                            await db.SaveChangesAsync().ConfigureAwait(false);
+
+                            var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
+                            await ReplyAsync($"Took {amount} {RiasBot.currency} from {Format.Bold(user.ToString())}").ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            await ReplyAsync($"Took {amount} {RiasBot.currency} from {Format.Bold(id.ToString())}").ConfigureAwait(false);
+                        }
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorEmbed("User doesn't exists in the database").ConfigureAwait(false);
+                    }
+                }
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireOwner]
+            [Priority(0)]
+            public async Task Take(int amount, string user)
+            {
+                var userSplit = user.Split("#");
+                var getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                using (var db = _db.GetDbContext())
+                {
+                    var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
                     try
                     {
                         if (userDb.Currency - amount < 0)
@@ -125,8 +192,6 @@ namespace RiasBot.Modules.Gambling
                             userDb.Currency -= amount;
                         }
                         await db.SaveChangesAsync().ConfigureAwait(false);
-
-                        var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
                         await ReplyAsync($"Took {amount} {RiasBot.currency} from {Format.Bold(user.ToString())}").ConfigureAwait(false);
                     }
                     catch
@@ -198,8 +263,11 @@ namespace RiasBot.Modules.Gambling
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
-            public async Task Leaderboard(int page = 0)
+            public async Task Leaderboard(int page = 1)
             {
+                if (page < 1)
+                    page = 1;
+                page--;
                 Emote.TryParse(RiasBot.currency, out var heartDiamond);
                 using (var db = _db.GetDbContext())
                 {
