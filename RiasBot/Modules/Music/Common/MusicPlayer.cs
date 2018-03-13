@@ -634,8 +634,15 @@ namespace RiasBot.Modules.Music.Common
             catch
             {
             }
-            _outStream.Dispose();
-            p.Dispose();
+            try
+            {
+                _outStream.Dispose();
+                p.Dispose();
+            }
+            catch
+            {
+
+            }
         }
 
         public Task<bool> CheckMusicChannel(IMessageChannel channel) => Task<bool>.Factory.StartNew(() =>

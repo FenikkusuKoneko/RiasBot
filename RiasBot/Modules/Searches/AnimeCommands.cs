@@ -61,6 +61,9 @@ namespace RiasBot.Modules.Searches
                     string averageScore = "-";
                     string meanScore = "-";
                     string duration = "-";
+                    var genres = String.Join("\n", (JArray)obj.genres);
+                    if (String.IsNullOrEmpty(genres))
+                        genres = "-";
                     try
                     {
                         episodes = $"{(int)obj.episodes}";
@@ -73,8 +76,9 @@ namespace RiasBot.Modules.Searches
                         
                     }
                     string description = (string)obj.description;
+                    description = description.Replace("<br>", "");
                     if (description.Length > 1024)
-                        description = description.Substring(0, 1024);
+                        description = $"{description.Substring(0, 950)}... [More]({(string)obj.siteUrl})";
 
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
@@ -83,7 +87,7 @@ namespace RiasBot.Modules.Searches
                     embed.AddField("ID", (int)obj.id, true).AddField("Type", (string)obj.format, true).AddField("Episodes", episodes, true);
                     embed.AddField("Status", (string)obj.status, true).AddField("Start", startDate, true).AddField("End", endDate, true);
                     embed.AddField("Average Score", averageScore, true).AddField("Mean Score", meanScore, true).AddField("Popularity", (int)obj.popularity, true);
-                    embed.AddField("Duration", duration, true).AddField("Genres", String.Join("\n", (JArray)obj.genres), true).AddField("Is Adult", (bool)obj.isAdult, true);
+                    embed.AddField("Duration", duration, true).AddField("Genres", genres, true).AddField("Is Adult", (bool)obj.isAdult, true);
                     embed.AddField("Description", description);
                     embed.WithImageUrl((string)obj.coverImage.large);
                     await ReplyAsync("", embed: embed.Build());
@@ -105,7 +109,7 @@ namespace RiasBot.Modules.Searches
                     string alternative = String.Join(",\n", (JArray)obj.name.alternative);
                     string description = (string)obj.description;
                     if (description.Length > 1024)
-                        description = description.Substring(0, 1024);
+                        description = $"{description.Substring(0, 950)}... [More]({(string)obj.siteUrl})";
 
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
@@ -137,7 +141,7 @@ namespace RiasBot.Modules.Searches
                         string alternative = String.Join(", ", (JArray)obj.characters[0].name.alternative);
                         string description = (string)obj.characters[0].description;
                         if (description.Length > 1024)
-                            description = description.Substring(0, 1024);
+                            description = $"{description.Substring(0, 950)}... [More]({(string)obj.characters[0].siteUrl})";
 
                         var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 

@@ -655,7 +655,7 @@
 
   "remove": {
     "Command": "remove",
-    "Description": "Remove a song bty name or id. The name doesn't need to be full.",
+    "Description": "Remove a song by name or id. The name doesn't need to be full.",
     "Remarks": [
       "[prefix]remove song",
       "[prefix]remove 1"

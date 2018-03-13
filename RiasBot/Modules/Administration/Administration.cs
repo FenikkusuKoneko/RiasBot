@@ -278,7 +278,7 @@ namespace RiasBot.Modules.Administration
                     await db.SaveChangesAsync().ConfigureAwait(false);
                     bye = true;
                 }
-                if (guildDb.Bye)
+                if (bye)
                     await Context.Channel.SendConfirmationEmbed("Enabling announcements in this channel for users who leave the server!");
                 else
                     await Context.Channel.SendConfirmationEmbed("Disabling announcements for users who leave the server!");
