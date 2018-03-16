@@ -212,7 +212,7 @@ namespace RiasBot.Modules.Administration
                     try
                     {
                         user = await Context.Client.GetUserAsync(Convert.ToUInt64(id));
-                        if (embed != null)
+                        if (embed is null)
                             await user.SendMessageAsync(message).ConfigureAwait(false);
                         else
                             await user.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
