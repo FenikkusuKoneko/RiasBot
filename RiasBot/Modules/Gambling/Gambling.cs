@@ -80,7 +80,7 @@ namespace RiasBot.Modules.Gambling
             }
 
             string[] arrow = { "⬆", "↗", "➡", "↘", "⬇", "↙", "⬅", "↖" };
-            float[] wheelMultiple = { 2.3f, 0.1f, 0.2f, 0.3f, 0.5f, 1.2f, 1.5f, 1.7f };
+            float[] wheelMultiple = { 2.0f, 0.1f, 0.2f, 0.3f, 0.5f, 1.2f, 1.5f, 1.7f };
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
             int wheel = rnd.Next(8);
 
@@ -97,7 +97,7 @@ namespace RiasBot.Modules.Gambling
 
                         var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                         embed.WithTitle($"{Context.User} you won {win} {RiasBot.currency}");
-                        embed.WithDescription($"「1.7x」\t「2.3x」\t「0.1x」\n\n「1.5x」\t    {arrow[wheel]}    \t「0.2x」\n\n「1.2x」\t「0.3x」\t「0.5x」");
+                        embed.WithDescription($"「1.7x」\t「2.0x」\t「0.1x」\n\n「1.5x」\t    {arrow[wheel]}    \t「0.2x」\n\n「1.2x」\t「0.3x」\t「0.5x」");
                         await ReplyAsync("", embed: embed.Build());
                     }
                     else

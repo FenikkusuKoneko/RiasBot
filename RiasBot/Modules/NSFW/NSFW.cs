@@ -47,19 +47,26 @@ namespace RiasBot.Modules.NSFW
                 }
             }
 
-            if (!String.IsNullOrEmpty(image))
+            try
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithImageUrl(image);
+                if (!String.IsNullOrEmpty(image))
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    embed.WithImageUrl(image);
 
-                await ReplyAsync("", embed: embed.Build());
+                    await ReplyAsync("", embed: embed.Build());
+                }
+                else
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                    embed.WithDescription("I couldn't find anything.");
+
+                    await ReplyAsync("", embed: embed.Build());
+                }
             }
-            else
+            catch
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
-                embed.WithDescription("I couldn't find anything.");
 
-                await ReplyAsync("", embed: embed.Build());
             }
         }
 
@@ -78,19 +85,26 @@ namespace RiasBot.Modules.NSFW
 
             string image = await _service.DownloadImages(NSFWService.NSFWSite.Danbooru, tag);
 
-            if (!String.IsNullOrEmpty(image))
+            try
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithImageUrl(image);
+                if (!String.IsNullOrEmpty(image))
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    embed.WithImageUrl(image);
 
-                await ReplyAsync("", embed: embed.Build());
+                    await ReplyAsync("", embed: embed.Build());
+                }
+                else
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                    embed.WithDescription("I couldn't find anything.");
+
+                    await ReplyAsync("", embed: embed.Build());
+                }
             }
-            else
+            catch
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
-                embed.WithDescription("I couldn't find anything.");
 
-                await ReplyAsync("", embed: embed.Build());
             }
         }
 
@@ -109,19 +123,26 @@ namespace RiasBot.Modules.NSFW
 
             string image = await _service.DownloadImages(NSFWService.NSFWSite.Konachan, tag);
 
-            if (!String.IsNullOrEmpty(image))
+            try
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithImageUrl(image);
+                if (!String.IsNullOrEmpty(image))
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    embed.WithImageUrl(image);
 
-                await ReplyAsync("", embed: embed.Build());
+                    await ReplyAsync("", embed: embed.Build());
+                }
+                else
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                    embed.WithDescription("I couldn't find anything.");
+
+                    await ReplyAsync("", embed: embed.Build());
+                }
             }
-            else
+            catch
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
-                embed.WithDescription("I couldn't find anything.");
 
-                await ReplyAsync("", embed: embed.Build());
             }
         }
 
@@ -140,19 +161,26 @@ namespace RiasBot.Modules.NSFW
 
             string image = await _service.DownloadImages(NSFWService.NSFWSite.Yandere, tag);
 
-            if (!String.IsNullOrEmpty(image))
+            try
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithImageUrl(image);
+                if (!String.IsNullOrEmpty(image))
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    embed.WithImageUrl(image);
 
-                await ReplyAsync("", embed: embed.Build());
+                    await ReplyAsync("", embed: embed.Build());
+                }
+                else
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                    embed.WithDescription("I couldn't find anything.");
+
+                    await ReplyAsync("", embed: embed.Build());
+                }
             }
-            else
+            catch
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
-                embed.WithDescription("I couldn't find anything.");
 
-                await ReplyAsync("", embed: embed.Build());
             }
         }
 
@@ -177,22 +205,29 @@ namespace RiasBot.Modules.NSFW
                 await _service.DownloadImages(NSFWService.NSFWSite.Yandere, tag)
             };
 
-            int count = 0;
-            foreach (var image in images)
+            try
             {
-                if (!String.IsNullOrEmpty(image))
+                int count = 0;
+                foreach (var image in images)
                 {
-                    await ReplyAsync(image);
-                    count++;
+                    if (!String.IsNullOrEmpty(image))
+                    {
+                        await ReplyAsync(image);
+                        count++;
+                    }
+                }
+                if (count == 0)
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    embed.WithColor(RiasBot.badColor);
+                    embed.WithDescription("I couldn't find anything.");
+
+                    await ReplyAsync("", embed: embed.Build());
                 }
             }
-            if (count == 0)
+            catch
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithColor(RiasBot.badColor);
-                embed.WithDescription("I couldn't find anything.");
 
-                await ReplyAsync("", embed: embed.Build());
             }
         }
     }

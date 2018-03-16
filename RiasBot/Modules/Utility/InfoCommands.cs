@@ -144,26 +144,26 @@ namespace RiasBot.Modules.Utility
 
                 foreach (var emote in guildEmotes)
                 {
-                    if (emote.Animated && emoteIndex < 20)
-                    {
-                        emotes[emoteIndex] = $"{emote.Name} <a:{emote.Name}:{emote.Id}>";
-                    }
-                    else
-                    {
-                        emotes[emoteIndex] = $"{emote.Name} <:{emote.Name}:{emote.Id}>";
-                    }
+                    emotes[emoteIndex] = emote.ToString();
                     emoteIndex++;
                 }
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithTitle(Context.Guild.Name);
-                embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner.Username}#{owner.Discriminator}", true).AddField("Members", users.Count, true);
-                embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
-                embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true).AddField("Region", Context.Guild.VoiceRegionId, true);
-                embed.AddField($"Custom Emojis ({Context.Guild.Emotes.Count})", String.Join(" ", emotes));
-                embed.WithImageUrl(Context.Guild.IconUrl);
+                try
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    embed.WithTitle(Context.Guild.Name);
+                    embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner.Username}#{owner.Discriminator}", true).AddField("Members", users.Count, true);
+                    embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
+                    embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true).AddField("Region", Context.Guild.VoiceRegionId, true);
+                    embed.AddField($"Custom Emojis ({Context.Guild.Emotes.Count})", String.Join(" ", emotes));
+                    embed.WithImageUrl(Context.Guild.IconUrl);
 
-                await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
+                    await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
+                }
+                catch
+                {
+
+                }
             }
 
             [RiasCommand]
