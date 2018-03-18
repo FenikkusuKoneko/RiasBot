@@ -110,7 +110,7 @@
 
    "modlog": {
     "Command": "modlog",
-    "Description": "Set the current channel as \"mod-log\" channel where the bot will post notifications about mute, unmute, kick, ban, softban. Provide no arguments to disable it from the current channel.",
+    "Description": "Set the current channel as \"mod-log\" channel where the bot will post notifications about mute, unmute, kick, ban, softban. Provide no parameters to disable it from the current channel.",
     "Remarks": [
       "[prefix]modlog"
     ]
@@ -361,6 +361,14 @@
     "Description": "Rename a category. You need to separate the old name by the new name with '->'.",
     "Remarks": [
       "[prefix]rncat MEDIA -> MUSIC"
+    ]
+  },
+
+  "channeltopic": {
+    "Command": "channeltopic ct",
+    "Description": "Show the current channel's topic.",
+    "Remarks": [
+      "[prefix]ct"
     ]
   },
 

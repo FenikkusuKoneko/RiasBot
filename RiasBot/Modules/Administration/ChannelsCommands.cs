@@ -189,6 +189,20 @@ namespace RiasBot.Modules.Administration
                 }
             }
         }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireUserPermission(GuildPermission.ManageChannels)]
+        [RequireBotPermission(GuildPermission.ManageChannels)]
+        [RequireContext(ContextType.Guild)]
+        public async Task ChannelTopic()
+        {
+            var channel = (ITextChannel)Context.Channel;
+            if (!String.IsNullOrEmpty(channel.Topic))
+                await Context.Channel.SendConfirmationEmbed("This channel's topic: " + channel.Topic);
+            else
+                await Context.Channel.SendConfirmationEmbed("No topic setted on this channel.");
+        }
     }
 
 }
