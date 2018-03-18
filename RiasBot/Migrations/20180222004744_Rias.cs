@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace RiasBot.Migrations
 {
-    public partial class Kurumi : Migration
+    public partial class Rias : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

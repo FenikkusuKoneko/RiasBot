@@ -10,7 +10,7 @@ using System;
 
 namespace RiasBot.Migrations
 {
-    [DbContext(typeof(KurumiContext))]
+    [DbContext(typeof(RiasContext))]
     [Migration("20180309200130_ModLog")]
     partial class ModLog
     {

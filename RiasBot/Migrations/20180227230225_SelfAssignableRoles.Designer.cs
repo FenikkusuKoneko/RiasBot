@@ -10,7 +10,7 @@ using System;
 
 namespace RiasBot.Migrations
 {
-    [DbContext(typeof(KurumiContext))]
+    [DbContext(typeof(RiasContext))]
     [Migration("20180227230225_SelfAssignableRoles")]
     partial class SelfAssignableRoles
     {

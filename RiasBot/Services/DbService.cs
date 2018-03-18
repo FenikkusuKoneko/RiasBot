@@ -9,29 +9,29 @@ namespace RiasBot.Services
 {
     public class DbService : IRService
     {
-        private readonly DbContextOptions<KurumiContext> options;
-        private readonly DbContextOptions<KurumiContext> migrateOptions;
+        private readonly DbContextOptions<RiasContext> options;
+        private readonly DbContextOptions<RiasContext> migrateOptions;
 
         public DbService()
         {
             var builder = new SqliteConnectionStringBuilder("Data Source=data/RiasBot.db");
             builder.DataSource = Path.Combine(Environment.CurrentDirectory, builder.DataSource);
 
-            var optionsBuilder = new DbContextOptionsBuilder<KurumiContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<RiasContext>();
             optionsBuilder.UseSqlite(builder.ToString());
             options = optionsBuilder.Options;
 
-            optionsBuilder = new DbContextOptionsBuilder<KurumiContext>();
+            optionsBuilder = new DbContextOptionsBuilder<RiasContext>();
             optionsBuilder.UseSqlite(builder.ToString(), x => x.SuppressForeignKeyEnforcement());
             migrateOptions = optionsBuilder.Options;
         }
 
-        public KurumiContext GetDbContext()
+        public RiasContext GetDbContext()
         {
-            var context = new KurumiContext(options);
+            var context = new RiasContext(options);
             if (context.Database.GetPendingMigrations().Any())
             {
-                var mContext = new KurumiContext(migrateOptions);
+                var mContext = new RiasContext(migrateOptions);
                 mContext.Database.Migrate();
                 mContext.SaveChanges();
                 mContext.Dispose();

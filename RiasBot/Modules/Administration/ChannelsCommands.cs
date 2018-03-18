@@ -199,10 +199,26 @@ namespace RiasBot.Modules.Administration
         {
             var channel = (ITextChannel)Context.Channel;
             if (!String.IsNullOrEmpty(channel.Topic))
-                await Context.Channel.SendConfirmationEmbed("This channel's topic: " + channel.Topic);
+                await Context.Channel.SendConfirmationEmbed("This channel's topic: " + Format.Bold(channel.Topic));
             else
                 await Context.Channel.SendConfirmationEmbed("No topic setted on this channel.");
         }
-    }
 
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireUserPermission(GuildPermission.ManageChannels)]
+        [RequireBotPermission(GuildPermission.ManageChannels)]
+        [RequireContext(ContextType.Guild)]
+        public async Task SetChannelTopic([Remainder]string topic = null)
+        {
+            var channel = (ITextChannel)Context.Channel;
+            await channel.ModifyAsync(x => x.Topic = topic);
+            if (String.IsNullOrEmpty(topic))
+                await Context.Channel.SendConfirmationEmbed("Channel' topic seted to " + Format.Bold("null"));
+            else
+            {
+                await Context.Channel.SendConfirmationEmbed("Channel's topic seted to: " + Format.Bold(topic));
+            }
+        }
+    }
 }

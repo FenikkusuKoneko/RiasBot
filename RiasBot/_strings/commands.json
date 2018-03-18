@@ -372,6 +372,14 @@
     ]
   },
 
+  "setchanneltopic": {
+    "Command": "setchanneltopic sct",
+    "Description": "Set this channel's topic",
+    "Remarks": [
+      "[prefix]sct topic"
+    ]
+  },
+
   "warning": {
     "Command": "warning warn",
     "Description": "Warn an user. Also, you can specify a reason.",

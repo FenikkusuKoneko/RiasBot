@@ -139,14 +139,17 @@ namespace RiasBot.Modules.Utility
                     .Replace("/", ".");
 
                 var guildEmotes = Context.Guild.Emotes;
-                string[] emotes = new string[guildEmotes.Count];
-                int emoteIndex = 0;
+                string emotes = null;
 
                 foreach (var emote in guildEmotes)
                 {
-                    emotes[emoteIndex] = emote.ToString();
-                    emoteIndex++;
+                    if ((emotes + guildEmotes).Length <= 1024)
+                    {
+                        emotes += emote.ToString();
+                    }
                 }
+                if (String.IsNullOrEmpty(emotes))
+                    emotes = "-";
 
                 try
                 {
@@ -155,7 +158,7 @@ namespace RiasBot.Modules.Utility
                     embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner.Username}#{owner.Discriminator}", true).AddField("Members", users.Count, true);
                     embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
                     embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true).AddField("Region", Context.Guild.VoiceRegionId, true);
-                    embed.AddField($"Custom Emojis ({Context.Guild.Emotes.Count})", String.Join(" ", emotes));
+                    embed.AddField($"Custom Emojis ({Context.Guild.Emotes.Count})", emotes);
                     embed.WithImageUrl(Context.Guild.IconUrl);
 
                     await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
