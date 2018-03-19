@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace RiasBot.Modules.Utility
 {
@@ -78,6 +79,18 @@ namespace RiasBot.Modules.Utility
         public async Task Donate()
         {
             await Context.Channel.SendConfirmationEmbed($"Support me! Support this project on Patreon: [Onii-chan](https://www.patreon.com/riasbot)");
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        public async Task Ping()
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var msg = await ReplyAsync("pinging...");
+            stopwatch.Stop();
+            await msg.DeleteAsync().ConfigureAwait(false);
+            await Context.Channel.SendConfirmationEmbed(":ping_pong:" + stopwatch.ElapsedMilliseconds + "ms").ConfigureAwait(false);
         }
     }
 }

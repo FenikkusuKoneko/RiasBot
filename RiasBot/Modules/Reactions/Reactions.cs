@@ -33,7 +33,7 @@ namespace RiasBot.Modules.Reactions
             Random rnd = new Random((int)DateTime.UtcNow.Ticks);
 
             await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                $"{user.Mention} you have been patted by {Format.Bold(Context.User.ToString())} <3").ConfigureAwait(false);
+                $"{user.Mention} you have been patted by {Format.Bold(Context.User.ToString())} <3");
         }
 
         [RiasCommand][@Alias]

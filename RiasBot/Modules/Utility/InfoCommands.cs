@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using RiasBot.Services;
 using Discord.WebSocket;
+using System.Globalization;
 
 namespace RiasBot.Modules.Utility
 {
@@ -71,13 +72,9 @@ namespace RiasBot.Modules.Utility
 
                 try
                 {
-                    string joinedServer = user.JoinedAt.Value.UtcDateTime.ToShortDateString()
-                    + " " + user.JoinedAt.Value.UtcDateTime.ToShortTimeString()
-                    .Replace("/", ".");
+                    string joinedServer = user.JoinedAt.Value.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 
-                    string accountCreated = user.CreatedAt.UtcDateTime.ToShortDateString()
-                        + " " + user.JoinedAt.Value.UtcDateTime.ToShortTimeString()
-                        .Replace("/", ".");
+                    string accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 
                     int roleIndex = 0;
                     var getUserRoles = user.RoleIds;
@@ -134,9 +131,7 @@ namespace RiasBot.Modules.Utility
                     if (getUser.Status.ToString() == "Online" || getUser.Status.ToString() == "Idle" || getUser.Status.ToString() == "DoNotDisturb")
                         onlineUsers++;
                 }
-                string serverCreated = Context.Guild.CreatedAt.UtcDateTime.ToShortDateString()
-                    + " " + Context.Guild.CreatedAt.UtcDateTime.ToShortTimeString()
-                    .Replace("/", ".");
+                string serverCreated = Context.Guild.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 
                 var guildEmotes = Context.Guild.Emotes;
                 string emotes = null;

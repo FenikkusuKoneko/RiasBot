@@ -934,6 +934,14 @@
     ]
   },
 
+  "ping": {
+    "Command": "ping",
+    "Description": "Check the ping.",
+    "Remarks": [
+      "[prefix]ping"
+    ]
+  },
+
   "claimwaifu": {
     "Command": "claimwaifu",
     "Description": "Claim your waifu from anime. The price for every waifu is between 5000 and 10000 [currency]. You need to have at least 10000 [currency]. Be careful at the name. Use `[prefix]character name` to search for an anime character. The character must be on AniList database.",
