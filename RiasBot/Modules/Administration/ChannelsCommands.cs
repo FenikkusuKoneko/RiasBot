@@ -192,8 +192,6 @@ namespace RiasBot.Modules.Administration
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
-        [RequireUserPermission(GuildPermission.ManageChannels)]
-        [RequireBotPermission(GuildPermission.ManageChannels)]
         [RequireContext(ContextType.Guild)]
         public async Task ChannelTopic()
         {
@@ -214,10 +212,10 @@ namespace RiasBot.Modules.Administration
             var channel = (ITextChannel)Context.Channel;
             await channel.ModifyAsync(x => x.Topic = topic);
             if (String.IsNullOrEmpty(topic))
-                await Context.Channel.SendConfirmationEmbed("Channel' topic seted to " + Format.Bold("null"));
+                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel' topic seted to {Format.Bold("null")}");
             else
             {
-                await Context.Channel.SendConfirmationEmbed("Channel's topic seted to: " + Format.Bold(topic));
+                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel' topic seted to {Format.Bold(topic)}");
             }
         }
     }
