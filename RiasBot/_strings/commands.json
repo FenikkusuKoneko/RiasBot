@@ -29,7 +29,7 @@
     "Description": "Kick an user. If you provide a reson message the bot will DM the user with the reason.",
     "Remarks": [
       "[prefix]k @User",
-      "[prefix]k @User Your behavior is bad."
+      "[prefix]k @User Your behavior is bad!"
     ]
   },
 
@@ -38,7 +38,7 @@
     "Description": "Ban an user. If you provide a reson message the bot will DM the user with the reason.",
     "Remarks": [
       "[prefix]b @User",
-      "[prefix]b @User You've violated many rules."
+      "[prefix]b @User You've violated many rules!"
     ]
   },
 
@@ -48,7 +48,16 @@
     "Description": "Ban an user, remove his messages from last 7 days, and then unban it.",
     "Remarks": [
       "[prefix]sb @User",
-      "[prefix]sb @User Don't spam here."
+      "[prefix]sb @User Don't spam here!"
+    ]
+  },
+
+  "pruneban": {
+    "Command": "pruneban pb",
+    "Description": "Ban an user, remove his messages from last 7 days. Different from \"softban\" where the user is unbanned.",
+    "Remarks": [
+      "[prefix]pb @User",
+      "[prefix]pb @User DO NOT SPAM HERE!"
     ]
   },
 
@@ -202,6 +211,22 @@
     "Description": "Show a list with voters for today from Discord Bots List.",
     "Remarks": [
       "[prefix]dbl"
+    ]
+  },
+
+  "addemote": {
+    "Command": "addemote",
+    "Description": "Add an emote on this server. PNG, JPG or GIF supported. The image must be under 256 KB.",
+    "Remarks": [
+      "[prefix]addemote https://i.imgur.com/fobETCs.png heart_diamond"
+    ]
+  },
+
+  "deleteemote": {
+    "Command": "deleteemote delemote",
+    "Description": "Delete an emote from this server.",
+    "Remarks": [
+      "[prefix]delemote heart_diamond"
     ]
   },
 

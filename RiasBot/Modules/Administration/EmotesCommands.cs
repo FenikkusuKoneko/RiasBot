@@ -1,0 +1,79 @@
+﻿using Discord;
+using Discord.Commands;
+using RiasBot.Commons.Attributes;
+using RiasBot.Extensions;
+using System;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace RiasBot.Modules.Administration
+{
+    public partial class Administration
+    {
+        public class EmotesCommands : RiasSubmodule
+        {
+            public EmotesCommands()
+            {
+
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireUserPermission(GuildPermission.ManageEmojis)]
+            [RequireBotPermission(GuildPermission.ManageEmojis)]
+            [RequireContext(ContextType.Guild)]
+            public async Task AddEmote(string url, [Remainder]string name)
+            {
+                name = name.Replace(" ", "_");
+
+                try
+                {
+                    using (var http = new HttpClient())
+                    {
+                        var res = await http.GetStreamAsync(new Uri(url)).ConfigureAwait(false);
+
+                        var ms = new MemoryStream();
+                        res.CopyTo(ms);
+                        ms.Position = 0;
+
+                        if (ms.Length / 1024 <= 256) //in KB
+                        {
+                            var emoteImage = new Image(ms);
+                            await Context.Guild.CreateEmoteAsync(name, emoteImage).ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} emote {Format.Bold(name)} was created successfully.").ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the image is bigger than 256 KB.").ConfigureAwait(false);
+                        }
+                    }
+                }
+                catch
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the image or the URL are not good.").ConfigureAwait(false);
+                }
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireUserPermission(GuildPermission.ManageEmojis)]
+            [RequireBotPermission(GuildPermission.ManageEmojis)]
+            [RequireContext(ContextType.Guild)]
+            public async Task DeleteEmote([Remainder]string name)
+            {
+                var emote = Context.Guild.Emotes.Where(x => x.Name.ToLowerInvariant() == name.ToLowerInvariant()).FirstOrDefault();
+                if (emote is null)
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the emote.").ConfigureAwait(false);
+                }
+                else
+                {
+                    await Context.Guild.DeleteEmoteAsync(emote).ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} emote {Format.Bold(emote.Name)} was deleted successfully.");
+                }
+            }
+        }
+    }
+}

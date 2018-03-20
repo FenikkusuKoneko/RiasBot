@@ -212,7 +212,7 @@ namespace RiasBot.Modules.Administration.Services
                 var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
 
                 var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
-                embed.WithDescription("Softban");
+                embed.WithDescription("SoftBan");
                 embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Moderator", moderator, true);
                 if (reason != null)
@@ -241,6 +241,44 @@ namespace RiasBot.Modules.Administration.Services
                 await Task.Delay(1000).ConfigureAwait(false);
                 await guild.AddBanAsync(user, 7).ConfigureAwait(false);
                 await guild.RemoveBanAsync(user).ConfigureAwait(false);
+            }
+        }
+
+        public async Task PrunebanUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, string reason)
+        {
+            using (var db = _db.GetDbContext())
+            {
+                var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
+
+                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                embed.WithDescription("PruneBan");
+                embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
+                embed.AddField("Moderator", moderator, true);
+                if (reason != null)
+                    embed.AddField("Reason", reason);
+
+                try
+                {
+                    var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
+                    if (modlog != null)
+                        await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    else
+                        await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
+                catch
+                {
+                    await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
+
+                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                reasonEmbed.WithDescription($"You have been banned from {Format.Bold(guild.Name)} server!");
+                if (reason != null)
+                    reasonEmbed.AddField("Reason", reason);
+
+                if (!user.IsBot)
+                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                await Task.Delay(1000).ConfigureAwait(false);
+                await guild.AddBanAsync(user, 7).ConfigureAwait(false);
             }
         }
 

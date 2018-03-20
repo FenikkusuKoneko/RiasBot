@@ -66,7 +66,7 @@ namespace RiasBot.Modules.Music
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer()
                 {
                     ApiKey = _creds.GoogleApiKey,
-                    ApplicationName = "Kurumi Bot"
+                    ApplicationName = "Rias Bot"
                 });
 
                 if (Uri.IsWellFormedUriString(keywords, UriKind.Absolute))

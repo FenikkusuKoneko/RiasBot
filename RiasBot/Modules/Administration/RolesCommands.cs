@@ -31,9 +31,16 @@ namespace RiasBot.Modules.Administration
             [Description][@Remarks]
             public async Task Roles(int page = 1)
             {
-                var everyoneRole = Context.Guild.Roles.Where(x => x.Name == "@everyone");
-                var roles = Context.Guild.Roles.OrderByDescending(x => x.Position).Except(everyoneRole).Select(y => y.Name).ToArray();
-                await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, $"List of roles on this server", roles, 15, page - 1);
+                try
+                {
+                    var everyoneRole = Context.Guild.Roles.Where(x => x.Name == "@everyone");
+                    var roles = Context.Guild.Roles.OrderByDescending(x => x.Position).Except(everyoneRole).Select(y => y.Name).ToArray();
+                    await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, $"List of roles on this server", roles, 15, page - 1);
+                }
+                catch
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} No roles on this server.");
+                }
             }
 
             [RiasCommand][@Alias]

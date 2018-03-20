@@ -81,7 +81,6 @@ namespace RiasBot.Modules.Music.Common
             }
         }
 
-
         public async Task Play(string title, string url, string channel, TimeSpan duration, string thumbnail, IGuildUser user)
         {
             try

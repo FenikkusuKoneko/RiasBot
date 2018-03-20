@@ -60,7 +60,10 @@ namespace RiasBot.Modules.Administration.Services
                                 await _adminService.BanUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! Ban punishment applied!").ConfigureAwait(false);
                                 break;
                             case "softban":
-                                await _adminService.BanUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! Softban punishment applied!").ConfigureAwait(false);
+                                await _adminService.SoftbanUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! SoftBan punishment applied!").ConfigureAwait(false);
+                                break;
+                            case "pruneban":
+                                await _adminService.PrunebanUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! PruneBan punishment applied!").ConfigureAwait(false);
                                 break;
                         }
                     }
@@ -156,6 +159,28 @@ namespace RiasBot.Modules.Administration.Services
                     await db.AddAsync(warningPunishment).ConfigureAwait(false);
                     await db.SaveChangesAsync().ConfigureAwait(false);
                     await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("softbanned")}.").ConfigureAwait(false);
+                }
+            }
+        }
+
+        public async Task RegisterPrunebanWarning(IGuild guild, IGuildUser user, IMessageChannel channel, int warns)
+        {
+            using (var db = _db.GetDbContext())
+            {
+                var warnings = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
+                if (warnings != null)
+                {
+                    warnings.WarnsPunishment = warns;
+                    warnings.PunishmentMethod = "pruneban";
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("prunebanned")}.").ConfigureAwait(false);
+                }
+                else
+                {
+                    var warningPunishment = new GuildConfig { GuildId = guild.Id, WarnsPunishment = warns, PunishmentMethod = "pruneban" };
+                    await db.AddAsync(warningPunishment).ConfigureAwait(false);
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("prunebanned")}.").ConfigureAwait(false);
                 }
             }
         }

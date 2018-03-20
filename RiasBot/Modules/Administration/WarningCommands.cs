@@ -255,8 +255,14 @@ namespace RiasBot.Modules.Administration
                             case "sb":
                                 await _service.RegisterSoftbanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
                                 break;
+                            case "pruneban":
+                                await _service.RegisterPrunebanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
+                            case "pb":
+                                await _service.RegisterPrunebanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
+                                break;
                             default:
-                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the punishment method introduced is not valid. Use {Format.Bold("mute, kick or ban")}");
+                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the punishment method introduced is not valid. Use {Format.Bold("mute, kick, ban, softban or pruneban")}");
                                 break;
                         }
                     }

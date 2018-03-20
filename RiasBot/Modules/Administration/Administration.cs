@@ -77,6 +77,23 @@ namespace RiasBot.Modules.Administration
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.BanMembers | GuildPermission.ManageMessages)]
+        [RequireBotPermission(GuildPermission.BanMembers | GuildPermission.ManageMessages)]
+        public async Task PruneBan(IGuildUser user, [Remainder]string reason = null)
+        {
+            if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
+            {
+                await _service.PrunebanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
+            }
+            else
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+            }
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
         [RequireUserPermission(GuildPermission.ManageRoles)]
         [RequireBotPermission(GuildPermission.ManageRoles)]
         [RequireContext(ContextType.Guild)]
