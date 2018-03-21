@@ -24,8 +24,10 @@ namespace RiasBot.Modules.Administration
                 _service = service;
             }
 
-            [RiasCommand][@Alias]
-            [Description][@Remarks]
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
             [RequireUserPermission(GuildPermission.ManageChannels)]
             [RequireBotPermission(GuildPermission.ManageChannels)]
             [RequireContext(ContextType.Guild)]
@@ -50,8 +52,10 @@ namespace RiasBot.Modules.Administration
                 }
             }
 
-            [RiasCommand][@Alias]
-            [Description][@Remarks]
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
             [RequireUserPermission(GuildPermission.ManageChannels)]
             [RequireBotPermission(GuildPermission.ManageChannels)]
             [RequireContext(ContextType.Guild)]
@@ -85,8 +89,10 @@ namespace RiasBot.Modules.Administration
                 }
             }
 
-            [RiasCommand][@Alias]
-            [Description][@Remarks]
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
             [RequireUserPermission(GuildPermission.ManageChannels)]
             [RequireBotPermission(GuildPermission.ManageChannels)]
             [RequireContext(ContextType.Guild)]
@@ -102,8 +108,10 @@ namespace RiasBot.Modules.Administration
                 await Context.Channel.SendConfirmationEmbed($"Category {Format.Bold(name)} was created successfully.");
             }
 
-            [RiasCommand][@Alias]
-            [Description][@Remarks]
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
             [RequireUserPermission(GuildPermission.ManageChannels)]
             [RequireBotPermission(GuildPermission.ManageChannels)]
             [RequireContext(ContextType.Guild)]
@@ -120,8 +128,10 @@ namespace RiasBot.Modules.Administration
                 await Context.Channel.SendConfirmationEmbed($"Category {Format.Bold(name)} was deleted.");
             }
 
-            [RiasCommand][@Alias]
-            [Description][@Remarks]
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
             [RequireUserPermission(GuildPermission.ManageChannels)]
             [RequireBotPermission(GuildPermission.ManageChannels)]
             [RequireContext(ContextType.Guild)]
@@ -157,8 +167,10 @@ namespace RiasBot.Modules.Administration
                 }
             }
 
-            [RiasCommand][@Alias]
-            [Description][@Remarks]
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
             [RequireUserPermission(GuildPermission.ManageChannels)]
             [RequireBotPermission(GuildPermission.ManageChannels)]
             [RequireContext(ContextType.Guild)]
@@ -188,34 +200,34 @@ namespace RiasBot.Modules.Administration
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the category.");
                 }
             }
-        }
 
-        [RiasCommand][@Alias]
-        [Description][@Remarks]
-        [RequireContext(ContextType.Guild)]
-        public async Task ChannelTopic()
-        {
-            var channel = (ITextChannel)Context.Channel;
-            if (!String.IsNullOrEmpty(channel.Topic))
-                await Context.Channel.SendConfirmationEmbed("This channel's topic: " + Format.Bold(channel.Topic));
-            else
-                await Context.Channel.SendConfirmationEmbed("No topic setted on this channel.");
-        }
-
-        [RiasCommand][@Alias]
-        [Description][@Remarks]
-        [RequireUserPermission(GuildPermission.ManageChannels)]
-        [RequireBotPermission(GuildPermission.ManageChannels)]
-        [RequireContext(ContextType.Guild)]
-        public async Task SetChannelTopic([Remainder]string topic = null)
-        {
-            var channel = (ITextChannel)Context.Channel;
-            await channel.ModifyAsync(x => x.Topic = topic);
-            if (String.IsNullOrEmpty(topic))
-                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel' topic seted to {Format.Bold("null")}");
-            else
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireContext(ContextType.Guild)]
+            public async Task ChannelTopic()
             {
-                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel' topic seted to {Format.Bold(topic)}");
+                var channel = (ITextChannel)Context.Channel;
+                if (!String.IsNullOrEmpty(channel.Topic))
+                    await Context.Channel.SendConfirmationEmbed("This channel's topic: " + Format.Bold(channel.Topic));
+                else
+                    await Context.Channel.SendConfirmationEmbed("No topic set on this channel.");
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireUserPermission(GuildPermission.ManageChannels)]
+            [RequireBotPermission(GuildPermission.ManageChannels)]
+            [RequireContext(ContextType.Guild)]
+            public async Task SetChannelTopic([Remainder]string topic = null)
+            {
+                var channel = (ITextChannel)Context.Channel;
+                await channel.ModifyAsync(x => x.Topic = topic);
+                if (String.IsNullOrEmpty(topic))
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel' topic set to {Format.Bold("null")}");
+                else
+                {
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel' topic set to {Format.Bold(topic)}");
+                }
             }
         }
     }

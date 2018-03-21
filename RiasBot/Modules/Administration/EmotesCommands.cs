@@ -35,7 +35,7 @@ namespace RiasBot.Modules.Administration
                         var res = await http.GetStreamAsync(new Uri(url)).ConfigureAwait(false);
 
                         var ms = new MemoryStream();
-                        res.CopyTo(ms);
+                        await res.CopyToAsync(ms);
                         ms.Position = 0;
 
                         if (ms.Length / 1024 <= 256) //in KB

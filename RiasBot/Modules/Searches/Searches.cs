@@ -55,7 +55,7 @@ namespace RiasBot.Modules.Searches
             {
                 if (String.IsNullOrEmpty(_creds.UrbanDictionaryApiKey))
                 {
-                    await Context.Channel.SendErrorEmbed("The urban dictionary api key needs to be seted to use this command!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed("The urban dictionary api key needs to be set to use this command!").ConfigureAwait(false);
                     return;
                 }
 

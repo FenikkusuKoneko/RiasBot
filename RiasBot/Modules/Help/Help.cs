@@ -154,7 +154,8 @@ namespace RiasBot.Modules.Help
 
                 foreach (var command in getModule.Submodules.OrderBy(sb => sb.Name))
                 {
-                    var transformedSb = command.Commands.OrderBy(c => c.Aliases.First()).Select(x =>
+                    var submoduleCommands = command.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
+                    var transformedSb = submoduleCommands.Select(x =>
                     {
                         string nextAlias = null;
                         if (x.Aliases.Skip(1).FirstOrDefault() != null)

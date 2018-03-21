@@ -54,7 +54,7 @@ namespace RiasBot.Modules.Music
 
             if (String.IsNullOrEmpty(_creds.GoogleApiKey))
             {
-                await Context.Channel.SendErrorEmbed("The Google Api Key must be seted to use the music module!").ConfigureAwait(false);
+                await Context.Channel.SendErrorEmbed("The Google Api Key must be set to use the music module!").ConfigureAwait(false);
                 return;
             }
 

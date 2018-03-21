@@ -216,7 +216,7 @@
 
   "addemote": {
     "Command": "addemote",
-    "Description": "Add an emote on this server. PNG, JPG supported. The image must be under 256 KB.",
+    "Description": "Add an emote on this server. PNG, JPG or GIF supported. The image must be under 256 KB.",
     "Remarks": [
       "[prefix]addemote https://i.imgur.com/fobETCs.png heart_diamond"
     ]

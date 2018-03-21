@@ -206,7 +206,7 @@ namespace RiasBot.Modules.Administration
                     guildDb.MuteRole = role.Id;
 
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed("New mute role setted.");
+                    await Context.Channel.SendConfirmationEmbed("New mute role set.");
                 }
                 catch
                 {
@@ -267,7 +267,7 @@ namespace RiasBot.Modules.Administration
                     await db.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
-            await Context.Channel.SendConfirmationEmbed("New announcement message setted for users who join the server!");
+            await Context.Channel.SendConfirmationEmbed("New announcement message set for users who join the server!");
         }
 
         [RiasCommand][@Alias]
@@ -323,7 +323,7 @@ namespace RiasBot.Modules.Administration
                     await db.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
-            await Context.Channel.SendConfirmationEmbed("New announcement message setted for users who leave the server!");
+            await Context.Channel.SendConfirmationEmbed("New announcement message set for users who leave the server!");
         }
 
         [RiasCommand][@Alias]
