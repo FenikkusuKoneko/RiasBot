@@ -6,6 +6,7 @@ using RiasBot.Services;
 using RiasBot.Services.Implementation;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace RiasBot
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.3.1";
+        public static string version = "1.3.2";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
@@ -34,6 +35,7 @@ namespace RiasBot
 
         public async Task StartAsync()
         {
+            SetEnvironmentCurrentDirectory(); //Set Environment#CurrentDirectory with the project's path. Call it for the first time.
             Credentials = new BotCredentials();
 
             var services = new ServiceCollection()      // Begin building the service provider
@@ -71,6 +73,16 @@ namespace RiasBot
             provider.GetRequiredService<PatreonService>();
 
             await Task.Delay(-1).ConfigureAwait(false);     // Prevent the application from closing
+        }
+
+        public void SetEnvironmentCurrentDirectory()
+        {
+            //If your Visual Studio has some issues with the Environment#CurrentDirectory, call this function
+            //Usually the path should be the project's path. But there is the "bin" folder
+            //This is happening just in Visual Studio, works if you build using a command line and dotnet
+            string path = Environment.CurrentDirectory;
+            if (path.Contains("bin"))
+                Environment.CurrentDirectory = Directory.GetParent(path).Parent.Parent.FullName;
         }
     }
 }

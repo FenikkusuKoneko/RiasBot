@@ -44,6 +44,7 @@ namespace RiasBot.Modules.Music.Common
         public int position;
         public float volume = 1.0f;
         public bool isRunning;
+        public bool waited;
         public Stopwatch timer;
 
         public struct Song
@@ -196,8 +197,12 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task PlayByIndex(int index)
         {
-            await UpdateQueue(index).ConfigureAwait(false);
-            position = index;
+            if (!waited)
+            {
+                waited = true;
+                await UpdateQueue(index).ConfigureAwait(false);
+                position = index;
+            }
         }
 
         public async Task UpdateQueue(int index)
@@ -246,7 +251,6 @@ namespace RiasBot.Modules.Music.Common
                 }
                 else
                 {
-                    audioStream = audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
                     tokenSource = new CancellationTokenSource();
                     token = tokenSource.Token;
                 }
@@ -257,7 +261,8 @@ namespace RiasBot.Modules.Music.Common
                     timer = new Stopwatch();
                     timer.Start();
                 }
-                    
+                audioStream = audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
+
                 byte[] buffer = new byte[3840];
                 int bytesRead = 0;
 
@@ -265,6 +270,8 @@ namespace RiasBot.Modules.Music.Common
                 _outStream = p.StandardOutput.BaseStream;
 
                 await _channel.SendMessageAsync("", embed: embed).ConfigureAwait(false);
+                waited = false;
+
                 while ((bytesRead = _outStream.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     AdjustVolume(buffer, volume);
@@ -327,26 +334,35 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Skip()
         {
-            lock (locker)
+            if (!waited)
             {
-                Dispose();
+                lock (locker)
+                {
+                    waited = true;
+                    Dispose();
+                }
+                await _channel.SendConfirmationEmbed("Skipping current song!");
+                await UpdateQueue(++position).ConfigureAwait(false);
             }
-            await _channel.SendConfirmationEmbed("Skipping current song!");
-            await UpdateQueue(++position).ConfigureAwait(false);
         }
 
         public async Task Replay()
         {
-            lock (locker)
+            if (!waited)
             {
-                Dispose();
+                lock (locker)
+                {
+                    waited = true;
+                    Dispose();
+                }
+                await _channel.SendConfirmationEmbed("Replay current song!");
+                await UpdateQueue(position).ConfigureAwait(false);
             }
-            await _channel.SendConfirmationEmbed("Replay current song!");
-            await UpdateQueue(position).ConfigureAwait(false);
         }
 
         public async Task Playlist()
         {
+            waited = true;
             await semaphoreSlim.WaitAsync();
             string[] playlist = new string[Queue.Count];
             lock (locker)
@@ -636,6 +652,7 @@ namespace RiasBot.Modules.Music.Common
             try
             {
                 _outStream.Dispose();
+                audioStream.Dispose();
                 p.Dispose();
             }
             catch
