@@ -128,6 +128,34 @@ namespace RiasBot.Modules.Xp
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
+        [RequireContext(ContextType.Guild)]
+        public async Task GuildXpLeaderboard(int page = 0)
+        {
+            using (var db = _db.GetDbContext())
+            {
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                embed.WithTitle("Server XP Leaderboard");
+
+                var xpSystemDb = db.XpSystem.Where(x => x.GuildId == Context.Guild.Id);
+                var xps = xpSystemDb
+                    .GroupBy(x => new { x.Xp, x.UserId, x.Level })
+                    .OrderByDescending(y => y.Key.Xp)
+                    .Skip(page * 9).Take(9).ToList();
+
+                for (int i = 0; i < xps.Count; i++)
+                {
+                    var user = await Context.Client.GetUserAsync(xps[i].Key.UserId);
+                    embed.AddField($"#{i + 1 + (page * 9)} {user?.ToString() ?? xps[i].Key.UserId.ToString()}", $"{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n", true);
+                }
+                if (xps.Count == 0)
+                    embed.WithDescription("No users on this page");
+
+                await ReplyAsync("", embed: embed.Build());
+            }
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
         [RequireUserPermission(GuildPermission.Administrator)]
         [RequireContext(ContextType.Guild)]
         public async Task XpNotify()

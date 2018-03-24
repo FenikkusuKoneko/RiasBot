@@ -287,6 +287,22 @@
     ]
   },
 
+  "hoistrole": {
+    "Command": "hoistrole hr",
+    "Description": "Set whether or not a role should be displayed independently in the userlist.",
+    "Remarks": [
+      "[prefix]hr Admin"
+    ]
+  },
+
+  "mentionrole": {
+    "Command": "mentionrole mr",
+    "Description": "Set whether or not a role should be mentioned.",
+    "Remarks": [
+      "[prefix]mr Admin"
+    ]
+  },
+
   "iam": {
     "Command": "iam",
     "Description": "Assign to yourself a role from this server's self assignable roles list.",
@@ -325,6 +341,22 @@
     "Remarks": [
       "[prefix]lsar",
       "[prefix]lsar 3"
+    ]
+  },
+
+  "nickname": {
+    "Command": "nickname nick",
+    "Description": "Set an user's nickname in this server. Provide no parameters to remove the nickname.",
+    "Remarks": [
+      "[prefix]nickname @User nickname"
+    ]
+  },
+
+  "setguildname": {
+    "Command": "setservername ssn",
+    "Description": "Set this server's name.",
+    "Remarks": [
+      "[prefix]ssr Rias Club"
     ]
   },
 
@@ -1014,6 +1046,14 @@
     "Description": "Show the global xp leaderboard.",
     "Remarks": [
       "[prefix]xplb"
+    ]
+  },
+
+  "guildxpleaderboard": {
+    "Command": "serverxplb sxplb",
+    "Description": "Show the server xp leaderboard.",
+    "Remarks": [
+      "[prefix]sxplb"
     ]
   },
 
