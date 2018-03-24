@@ -373,7 +373,6 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Playlist()
         {
-            waited = true;
             await semaphoreSlim.WaitAsync();
             string[] playlist = new string[Queue.Count];
             lock (locker)
