@@ -55,6 +55,7 @@ namespace RiasBot.Modules.Music.Common
             public TimeSpan duration;
             public string thumbnail;
             public IGuildUser user;
+            public string dlUrl;
         }
 
         public async Task JoinAudio(IGuild guild, IMessageChannel channel, IVoiceChannel target)
@@ -130,7 +131,7 @@ namespace RiasBot.Modules.Music.Common
                             }
 
                             await _channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-
+                            await Task.Factory.StartNew(async () => await DownloadNextSong());
                             if (!isRunning)
                             {
                                 await UpdateQueue(position).ConfigureAwait(false);
@@ -183,7 +184,8 @@ namespace RiasBot.Modules.Music.Common
                         channel = channel,
                         duration = duration,
                         thumbnail = thumbnail,
-                        user = user
+                        user = user,
+                        dlUrl = null
                     };
                     isRunning = true;
                     Queue.Add(song);
@@ -199,6 +201,7 @@ namespace RiasBot.Modules.Music.Common
         {
             if (!waited)
             {
+                Dispose();
                 waited = true;
                 await UpdateQueue(index).ConfigureAwait(false);
                 position = index;
@@ -225,8 +228,16 @@ namespace RiasBot.Modules.Music.Common
                 embed.AddField("Requested by", $"{song.user}");
                 embed.WithThumbnailUrl(song.thumbnail);
 
-                var audioURL = await GetAudioURL(song.url).ConfigureAwait(false);
-                await Task.Factory.StartNew(() => PlayMusic(audioURL, index, embed.Build())).ConfigureAwait(false);
+                if (!String.IsNullOrEmpty(song.dlUrl))
+                    await Task.Factory.StartNew(() => PlayMusic(song.dlUrl, index, embed.Build())).ConfigureAwait(false);
+                else
+                {
+                    var audioURL = await GetAudioURL(song.url).ConfigureAwait(false);
+                    await Task.Factory.StartNew(() => PlayMusic(audioURL, index, embed.Build())).ConfigureAwait(false);
+                    song.dlUrl = audioURL;
+                    Queue[index] = song;
+                }
+                await Task.Factory.StartNew(async () => await DownloadNextSong());
             }
             catch
             {
@@ -253,6 +264,7 @@ namespace RiasBot.Modules.Music.Common
                 {
                     tokenSource = new CancellationTokenSource();
                     token = tokenSource.Token;
+                    audioStream = audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
                 }
                 if (timer != null)
                     timer.Restart();
@@ -261,7 +273,6 @@ namespace RiasBot.Modules.Music.Common
                     timer = new Stopwatch();
                     timer.Start();
                 }
-                audioStream = audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
 
                 byte[] buffer = new byte[3840];
                 int bytesRead = 0;
@@ -338,8 +349,8 @@ namespace RiasBot.Modules.Music.Common
             {
                 lock (locker)
                 {
-                    waited = true;
                     Dispose();
+                    waited = true;
                 }
                 await _channel.SendConfirmationEmbed("Skipping current song!");
                 await UpdateQueue(++position).ConfigureAwait(false);
@@ -352,8 +363,8 @@ namespace RiasBot.Modules.Music.Common
             {
                 lock (locker)
                 {
-                    waited = true;
                     Dispose();
+                    waited = true;
                 }
                 await _channel.SendConfirmationEmbed("Replay current song!");
                 await UpdateQueue(position).ConfigureAwait(false);
@@ -631,6 +642,25 @@ namespace RiasBot.Modules.Music.Common
             OnPauseChanged?.Invoke(this, pauseTaskSource != null);
         }
 
+        public async Task DownloadNextSong()
+        {
+            try
+            {
+                int index = position + 1;
+                var song = Queue[index];
+                if (String.IsNullOrEmpty(song.dlUrl))
+                {
+                    var audioURL = await GetAudioURL(song.url).ConfigureAwait(false);
+                    song.dlUrl = audioURL;
+                    Queue[index] = song;
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
         private void Dispose()
         {
             GC.Collect();
@@ -652,7 +682,6 @@ namespace RiasBot.Modules.Music.Common
             try
             {
                 _outStream.Dispose();
-                audioStream.Dispose();
                 p.Dispose();
             }
             catch
