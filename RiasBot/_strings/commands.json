@@ -531,7 +531,7 @@
 
   "wheel": {
     "Command": "wheel",
-    "Description": "Bet on wheel. You can win up to 2.3x of the bet.",
+    "Description": "Bet on wheel. You can win up to 2x of the bet.",
     "Remarks": [
       "[prefix]wheel 100"
     ]

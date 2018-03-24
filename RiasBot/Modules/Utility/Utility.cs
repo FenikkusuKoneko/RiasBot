@@ -87,9 +87,8 @@ namespace RiasBot.Modules.Utility
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var msg = await ReplyAsync("pinging...");
+            await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
             stopwatch.Stop();
-            await msg.DeleteAsync().ConfigureAwait(false);
             await Context.Channel.SendConfirmationEmbed(":ping_pong:" + stopwatch.ElapsedMilliseconds + "ms").ConfigureAwait(false);
         }
     }

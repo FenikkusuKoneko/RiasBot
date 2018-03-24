@@ -283,7 +283,7 @@ namespace RiasBot.Modules.Administration
 
                     if (warns > 0)
                     {
-                        if (punish.Contains('e'))
+                        if (punish.Contains("mute"))
                             await Context.Channel.SendConfirmationEmbed($"The punishement method for warning in this server is:\n ~at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold(punish + "d")}~");
                         else
                             await Context.Channel.SendConfirmationEmbed($"The punishement method for warning in this server is:\n ~at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold(punish + "ed")}~");
