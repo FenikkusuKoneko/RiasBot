@@ -283,18 +283,25 @@ namespace RiasBot.Modules.Music.Common
                 byte[] buffer = new byte[3840];
                 int bytesRead = 0;
 
-                p = CreateStream(path);
-                _outStream = p.StandardOutput.BaseStream;
-
-                await _channel.SendMessageAsync("", embed: embed).ConfigureAwait(false);
-                waited = false;
-
-                while ((bytesRead = _outStream.Read(buffer, 0, buffer.Length)) > 0)
+                if (!String.IsNullOrEmpty(path))
                 {
-                    AdjustVolume(buffer, volume);
-                    await audioStream.WriteAsync(buffer, 0, bytesRead, token).ConfigureAwait(false);
+                    p = CreateStream(path);
+                    _outStream = p.StandardOutput.BaseStream;
 
-                    await (pauseTaskSource?.Task ?? Task.CompletedTask);
+                    await _channel.SendMessageAsync("", embed: embed).ConfigureAwait(false);
+                    waited = false;
+
+                    while ((bytesRead = _outStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        AdjustVolume(buffer, volume);
+                        await audioStream.WriteAsync(buffer, 0, bytesRead, token).ConfigureAwait(false);
+
+                        await (pauseTaskSource?.Task ?? Task.CompletedTask);
+                    }
+                }
+                else
+                {
+                    waited = false;
                 }
                 await audioStream.FlushAsync(token).ConfigureAwait(false);
 
@@ -594,9 +601,8 @@ namespace RiasBot.Modules.Music.Common
 
                 return result;
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e);
                 return null;
             }
         }
