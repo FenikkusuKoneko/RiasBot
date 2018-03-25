@@ -44,7 +44,7 @@ namespace RiasBot.Modules.Music.Common
         public int position;
         public float volume = 1.0f;
         public bool isRunning;
-        public bool waited;
+        public bool waited;     //for not spamming
         public Stopwatch timer;
 
         public struct Song
@@ -87,6 +87,10 @@ namespace RiasBot.Modules.Music.Common
         {
             try
             {
+                if (waited)
+                    return;
+
+                waited = true;
                 Song song = new Song
                 {
                     title = title,
@@ -141,6 +145,7 @@ namespace RiasBot.Modules.Music.Common
                         {
                             await _channel.SendErrorEmbed("The current playlist has 50 songs. Clear the playlist if you want to add more.").ConfigureAwait(false);
                         }
+                        waited = false;
                     }
                 }
                 else
@@ -242,6 +247,7 @@ namespace RiasBot.Modules.Music.Common
             catch
             {
                 isRunning = false;
+                waited = false;
             }
             finally
             {
@@ -347,13 +353,20 @@ namespace RiasBot.Modules.Music.Common
         {
             if (!waited)
             {
-                lock (locker)
+                if (position + 1 < Queue.Count)
                 {
-                    Dispose();
-                    waited = true;
+                    lock (locker)
+                    {
+                        Dispose();
+                        waited = true;
+                    }
+                    await _channel.SendConfirmationEmbed("Skipping current song!");
+                    await UpdateQueue(++position).ConfigureAwait(false);
                 }
-                await _channel.SendConfirmationEmbed("Skipping current song!");
-                await UpdateQueue(++position).ConfigureAwait(false);
+                else
+                {
+                    await _channel.SendErrorEmbed("No next song in the playlist!");
+                }
             }
         }
 
