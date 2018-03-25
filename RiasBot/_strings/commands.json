@@ -137,7 +137,7 @@
     "Command": "activity",
     "Description": "Sets the bot's activity status to `Playing`, `Listening to` or `Watching`",
     "Remarks": [
-      "[prefix]activity playing k!h for help"
+      "[prefix]activity playing r!h for help"
     ]
   },
 
@@ -145,7 +145,7 @@
     "Command": "activityrotate",
     "Description": "Sets the bot's activity status rotation.",
     "Remarks": [
-      "[prefix]activityrotate 30 playing k!h for help | watching anime"
+      "[prefix]activityrotate 30 playing r!h for help | watching anime"
     ]
   },
 
@@ -937,7 +937,7 @@
     "Description": "Set the prefix on this server (Require **Administrator**). Provide no parameters to show the current server prefix.",
     "Remarks": [
       "[prefix]prefix",
-      "[prefix]prefix k!"
+      "[prefix]prefix r!"
     ]
   },
 
