@@ -40,7 +40,7 @@ namespace RiasBot.Services
             await _discord.StartAsync().ConfigureAwait(false);
             
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _provider).ConfigureAwait(false);
-            await _commands.RemoveModuleAsync<NSFW>(); //disabled temporary
+            await _commands.RemoveModuleAsync<NSFW>(); //removed temporary
             RiasBot.upTime.Start();
         }
     }

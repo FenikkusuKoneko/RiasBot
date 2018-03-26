@@ -52,8 +52,8 @@ namespace RiasBot.Modules.Administration.Services
                     }
                     else
                     {
-                        await Task.Factory.StartNew(() => MuteService(role, guild));
                         await user.AddRoleAsync(role).ConfigureAwait(false);
+                        await Task.Factory.StartNew(() => MuteService(role, guild));
 
                         var embed = new EmbedBuilder().WithColor(0xffff00);
                         embed.WithDescription("Mute");
@@ -293,7 +293,14 @@ namespace RiasBot.Modules.Administration.Services
             var channels = await guild.GetChannelsAsync();
             foreach (var c in channels)
             {
-                await c.AddPermissionOverwriteAsync(role, permissions).ConfigureAwait(false);
+                try
+                {
+                    await c.AddPermissionOverwriteAsync(role, permissions).ConfigureAwait(false);
+                }
+                catch
+                {
+
+                }
             }
         }
 

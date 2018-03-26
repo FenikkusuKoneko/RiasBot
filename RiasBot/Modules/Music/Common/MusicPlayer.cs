@@ -135,7 +135,7 @@ namespace RiasBot.Modules.Music.Common
                             }
 
                             await _channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-                            await Task.Factory.StartNew(async () => await DownloadNextSong());
+                            await Task.Factory.StartNew(() => DownloadNextSong());
                             if (!isRunning)
                             {
                                 await UpdateQueue(position).ConfigureAwait(false);
@@ -242,7 +242,7 @@ namespace RiasBot.Modules.Music.Common
                     song.dlUrl = audioURL;
                     Queue[index] = song;
                 }
-                await Task.Factory.StartNew(async () => await DownloadNextSong());
+                await Task.Factory.StartNew(() => DownloadNextSong());
             }
             catch
             {
