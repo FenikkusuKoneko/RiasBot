@@ -23,15 +23,17 @@ namespace RiasBot.Modules.Administration
         {
             private readonly CommandHandler _ch;
             private readonly CommandService _service;
+            private readonly IServiceProvider _provider;
             private readonly DbService _db;
             private readonly DiscordSocketClient _client;
             private readonly BotService _botService;
             private readonly IBotCredentials _creds;
 
-            public BotCommands(CommandHandler ch, CommandService service, DbService db, DiscordSocketClient client, BotService botService, IBotCredentials creds)
+            public BotCommands(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordSocketClient client, BotService botService, IBotCredentials creds)
             {
                 _ch = ch;
                 _service = service;
+                _provider = provider;
                 _db = db;
                 _client = client;
                 _botService = botService;
