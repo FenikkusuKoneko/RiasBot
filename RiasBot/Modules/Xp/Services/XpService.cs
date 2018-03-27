@@ -68,7 +68,7 @@ namespace RiasBot.Modules.Xp.Services
             }
         }
 
-        public async Task XpUserGuildMessage(IGuild guild, IGuildUser user, IMessageChannel channel)
+        public async Task XpUserGuildMessage(IGuild guild, IGuildUser user, IMessageChannel channel, bool sendXpNotificationMessage = false)
         {
             using (var db = _db.GetDbContext())
             {
@@ -121,8 +121,11 @@ namespace RiasBot.Modules.Xp.Services
                     catch
                     {
                     }
-                    if (xpNotify)
-                        await channel.SendConfirmationEmbed($"Congratulations {user.Mention}, you've reached server level {nextLevel - 1}").ConfigureAwait(false);
+                    if (sendXpNotificationMessage)
+                    {
+                        if (xpNotify)
+                            await channel.SendConfirmationEmbed($"Congratulations {user.Mention}, you've reached server level {nextLevel - 1}").ConfigureAwait(false);
+                    }
                 }
             }
         }

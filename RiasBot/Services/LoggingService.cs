@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using RiasBot.Modules.Music.MusicServices;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace RiasBot.Services
             _discord.Log += DiscordLogAsync;
             _commands.Log += DiscordLogAsync;
         }
-        
+
         private Task DiscordLogAsync(LogMessage msg)
         {
             if (!Directory.Exists(_logDirectory))     // Create the log directory if it doesn't exist
@@ -32,9 +33,19 @@ namespace RiasBot.Services
             if (!File.Exists(_logFile))               // Create today's log file if it doesn't exist
                 File.Create(_logFile).Dispose();
 
-            string logText = $"{DateTime.UtcNow.ToString("hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
-            File.AppendAllText(_logFile, logText + "\n");     // Write the log text to a file
-            return Console.Out.WriteLineAsync(logText);
+            var logText = new List<string>()
+            {
+                $"{DateTime.UtcNow.ToString("hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}"
+            };
+            try
+            {
+                File.AppendAllLinesAsync(_logFile, logText);     // Write the log text to a file
+            }
+            catch
+            {
+
+            }
+            return Console.Out.WriteLineAsync(logText[0]);
         }
     }
 }

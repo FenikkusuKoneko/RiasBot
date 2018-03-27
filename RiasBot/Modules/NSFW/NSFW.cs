@@ -21,6 +21,7 @@ namespace RiasBot.Modules.NSFW
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
+        [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Hentai([Remainder]string tag = null)
         {
             int retry = 5;
@@ -73,6 +74,7 @@ namespace RiasBot.Modules.NSFW
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
+        [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Danbooru([Remainder]string tag = null)
         {
             var channel = (ITextChannel)Context.Channel;
@@ -111,6 +113,7 @@ namespace RiasBot.Modules.NSFW
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
+        [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Konachan([Remainder]string tag = null)
         {
             var channel = (ITextChannel)Context.Channel;
@@ -149,6 +152,7 @@ namespace RiasBot.Modules.NSFW
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
+        [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Yandere([Remainder]string tag = null)
         {
             var channel = (ITextChannel)Context.Channel;
@@ -187,6 +191,7 @@ namespace RiasBot.Modules.NSFW
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
+        [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task HentaiPlus([Remainder]string tag = null)
         {
             var channel = (ITextChannel)Context.Channel;

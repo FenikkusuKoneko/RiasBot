@@ -8,6 +8,7 @@ using Cleverbot.Net;
 using Discord;
 using RiasBot.Modules.Xp.Services;
 using System.Collections.Concurrent;
+using RiasBot.Extensions;
 
 namespace RiasBot.Services
 {
@@ -43,16 +44,28 @@ namespace RiasBot.Services
 
             var context = new SocketCommandContext(_discord, msg);     // Create the command context
 
-            try
+            if (!context.IsPrivate)
             {
-                var socketGuildUser = context.Guild.GetUser(_discord.CurrentUser.Id);
-                var preconditions = socketGuildUser.GetPermissions((IGuildChannel)context.Channel);
-                if (!preconditions.SendMessages)
-                    return;
-            }
-            catch
-            {
+                try
+                {
+                    var socketGuildUser = context.Guild.GetUser(_discord.CurrentUser.Id);
+                    var preconditions = socketGuildUser.GetPermissions((IGuildChannel)context.Channel);
+                    if (preconditions.SendMessages)
+                    {
+                        await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                        await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel, true);
+                    }
+                    else
+                    {
+                        await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                        await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                        return;
+                    }
+                }
+                catch
+                {
 
+                }
             }
 
             if (!context.IsPrivate)
@@ -88,13 +101,16 @@ namespace RiasBot.Services
 
                 if (result.IsSuccess)
                     RiasBot.commandsRun++;
+                else
+                {
+                    await Task.Factory.StartNew(() => SendErrorResult(msg, result)).ConfigureAwait(false);
+                }
             }
+        }
 
-            if (!context.IsPrivate)
-            {
-                await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
-                await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel);
-            }
+        private async Task SendErrorResult(SocketUserMessage msg, IResult result)
+        {
+            await msg.Channel.SendErrorEmbed(result.ErrorReason).ConfigureAwait(false);
         }
     }
 }
