@@ -480,7 +480,7 @@ namespace RiasBot.Modules.Music
 
             var searchListRequest = youtubeService.Search.List("snippet");
             searchListRequest.Q = keywords;
-            searchListRequest.MaxResults = 10;
+            searchListRequest.MaxResults = 5;
 
             var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
             var videoListRequest = youtubeService.Videos.List("contentDetails");

@@ -165,38 +165,40 @@ namespace RiasBot.Services
                     voteTimer.Restart();
                     using (var db = _db.GetDbContext())
                     {
-                        var voterIds = await dblSelfBot.GetVoterIdsAsync(1);
-                        foreach (var voterId in voterIds)
+                        var voters = await dblSelfBot.GetVotersAsync(1);
+                        foreach (var voter in voters)
                         {
                             try
                             {
-                                var userGuild = _discord.GetGuild(RiasBot.supportServer).GetUser(voterId);
+                                var userGuild = _discord.GetGuild(RiasBot.supportServer).GetUser(voter.Id);
                                 if (userGuild != null)
                                 {
                                     try
                                     {
-                                        var userDb = db.Users.Where(x => x.UserId == voterId).FirstOrDefault();
+                                        var userDb = db.Users.Where(x => x.UserId == voter.Id).FirstOrDefault();
                                         userDb.Currency += 10;
                                     }
                                     catch
                                     {
-                                        var dblVote = new UserConfig { UserId = voterId, Currency = 10 };
+                                        var dblVote = new UserConfig { UserId = voter.Id, Currency = 10 };
                                         await db.AddAsync(dblVote).ConfigureAwait(false);
                                     }
                                 }
+                                
                             }
-                            catch
+                            catch (Exception e)
                             {
-
+                                Console.WriteLine(e);
                             }
+                            
                         }
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
-
+                Console.WriteLine(e);
             }
         }
     }
