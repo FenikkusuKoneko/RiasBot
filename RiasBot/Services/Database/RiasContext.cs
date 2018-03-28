@@ -28,6 +28,7 @@ namespace RiasBot.Services.Database
         public DbSet<Waifus> Waifus { get; set; }
         public DbSet<Patreon> Patreon { get; set; }
         public DbSet<SelfAssignableRoles> SelfAssignableRoles { get; set; }
+        public DbSet<XpRolesSystem> XpRolesSystem { get; set; }
 
         public RiasContext(DbContextOptions<RiasContext> options) : base(options)
         {
@@ -85,6 +86,12 @@ namespace RiasBot.Services.Database
             #region SelfAssignableRoles
 
             var sar = modelBuilder.Entity<SelfAssignableRoles>();
+
+            #endregion
+
+            #region XpRolesSystem
+
+            var xrs = modelBuilder.Entity<XpRolesSystem>();
 
             #endregion
         }

@@ -1072,5 +1072,14 @@
     "Remarks": [
       "[prefix]xpn"
     ]
+  },
+
+  "leveluprolereward": {
+    "Command": "leveluprolereward lurr",
+    "Description": "Add a role in the levelup role reward list. When an user reaches the level he will be rewarded with the role. Only in servers. To remove a role provide no role for the respective level.",
+    "Remarks": [
+      "[prefix]lurr 5 Active",
+	  "[prefix]lurr 5"
+    ]
   }
 }

@@ -182,5 +182,57 @@ namespace RiasBot.Modules.Xp
                     await ReplyAsync($"{Context.User.Mention} Server xp notification disabled.");
             }
         }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireContext(ContextType.Guild)]
+        public async Task LevelUpRoleReward(int level, [Remainder]string name = null)
+        {
+            if (level <= 0)
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you can't set a role reward for a level less or equal than 0.").ConfigureAwait(false);
+                return;
+            }
+            using (var db = _db.GetDbContext())
+            {
+                var xpRolesSystem = db.XpRolesSystem.Where(x => x.GuildId == Context.Guild.Id).ToList();
+                if (String.IsNullOrEmpty(name))
+                {
+                    if (db.XpRolesSystem.Any(x => x.Level == level))
+                    {
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} no role reward for level {Format.Bold(level.ToString())}").ConfigureAwait(false);
+                        var oldRoleReward = xpRolesSystem.Where(x => x.Level == level).FirstOrDefault();
+                        db.Remove(oldRoleReward);
+                    }
+                }
+                else
+                {
+                    var role = Context.Guild.Roles.Where(x => x.Name.ToLowerInvariant() == name.ToLowerInvariant()).FirstOrDefault();
+                    if (role != null)
+                    {
+                        if (db.XpRolesSystem.Any(x => x.Level == level))
+                        {
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} at level {Format.Bold(level.ToString())} " +
+                                $"the users will get {Format.Bold(role.Name)} role").ConfigureAwait(false);
+                            var newRoleReward = xpRolesSystem.Where(x => x.Level == level).FirstOrDefault();
+                            newRoleReward.RoleId = role.Id;
+                        }
+                        else
+                        {
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} at level {Format.Bold(level.ToString())} " +
+                                $"the users will get {Format.Bold(role.Name)} role").ConfigureAwait(false);
+                            var roleReward = new XpRolesSystem { GuildId = Context.Guild.Id, Level = level, RoleId = role.Id};
+                            await db.AddAsync(roleReward).ConfigureAwait(false);
+                        }
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
+                    }
+                }
+                await db.SaveChangesAsync().ConfigureAwait(false);
+            }
+        }
     }
 }

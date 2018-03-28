@@ -118,15 +118,32 @@ namespace RiasBot.Modules.Xp.Services
                     {
                         xpNotify = guildDb.XpGuildNotification;
                     }
-                    catch
-                    {
-                    }
+                    catch { }
+                    
                     if (sendXpNotificationMessage)
                     {
                         if (xpNotify)
                             await channel.SendConfirmationEmbed($"Congratulations {user.Mention}, you've reached server level {nextLevel - 1}").ConfigureAwait(false);
                     }
+                    await RoleRewardUser(guild, user, nextLevel - 1).ConfigureAwait(false);
                 }
+            }
+        }
+
+        public async Task RoleRewardUser(IGuild guild, IGuildUser user, int level)
+        {
+            using (var db = _db.GetDbContext())
+            {
+                try
+                {
+                    var roleReward = db.XpRolesSystem.Where(x => x.GuildId == guild.Id).FirstOrDefault(y => y.Level == level);
+                    if (roleReward != null)
+                    {
+                        var role = guild.GetRole(roleReward.RoleId);
+                        await user.AddRoleAsync(role).ConfigureAwait(false);
+                    }
+                }
+                catch { }
             }
         }
 
