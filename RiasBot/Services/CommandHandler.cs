@@ -101,7 +101,7 @@ namespace RiasBot.Services
 
                 if (result.IsSuccess)
                     RiasBot.commandsRun++;
-                else
+                else if (result.Error == CommandError.UnmetPrecondition)
                 {
                     await Task.Factory.StartNew(() => SendErrorResult(msg, result)).ConfigureAwait(false);
                 }

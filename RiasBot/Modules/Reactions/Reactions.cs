@@ -255,5 +255,44 @@ namespace RiasBot.Modules.Reactions
             await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
                 $"Aww don't cry {Context.Message.Author.Mention}. I will {Format.Italics("pat")} and {Format.Italics("hug")} you <3").ConfigureAwait(false);
         }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireContext(ContextType.Guild)]
+        [Priority(1)]
+        public async Task Grope([Remainder]IGuildUser user)
+        {
+            var gifs = Directory.GetFiles(path + "grope", "*.gif");
+
+            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
+
+            await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
+                $"{user.Mention} you have been groped by {Format.Bold(Context.User.ToString())}").ConfigureAwait(false);
+        }
+
+        [RiasCommand]
+        [@Alias]
+        [Description]
+        [@Remarks]
+        [RequireContext(ContextType.Guild)]
+        [Priority(0)]
+        public async Task Grope([Remainder]string user = null)
+        {
+            var gifs = Directory.GetFiles(path + "grope", "*.gif");
+
+            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
+
+            if (user is null)
+            {
+                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
+                    $"{Format.Italics("Gropes")} {Context.User.Mention}").ConfigureAwait(false);
+            }
+            else
+            {
+                var users = user.Split(" ");
+                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
+                    $"{String.Join(" ", users)} you have been groped by {Format.Bold(Context.User.ToString())}").ConfigureAwait(false);
+            }
+        }
     }
 }

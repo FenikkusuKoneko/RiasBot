@@ -833,6 +833,15 @@
     ]
   },
 
+  "grope": {
+    "Command": "grope",
+    "Description": "Grope an user.",
+    "Remarks": [
+      "[prefix]grope @User",
+      "[prefix]grope Username"
+    ]
+  },
+
   "lick": {
     "Command": "lick",
     "Description": "Lick an user :3.",
