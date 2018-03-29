@@ -48,7 +48,7 @@ namespace RiasBot.Modules.Gambling
                         if (coins[hot] == coin || coins[hot + 2] == coin)
                         {
                             int win = (int)(bet * 1.95);
-                            userDb.Currency += win;
+                            userDb.Currency += win - bet;
                             await db.SaveChangesAsync().ConfigureAwait(false);
 
                             await ReplyAsync($"{Context.User.Mention} you guessed it ^^. You won {win} {RiasBot.currency}");
