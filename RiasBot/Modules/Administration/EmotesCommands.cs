@@ -3,6 +3,7 @@ using Discord.Commands;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -52,7 +53,22 @@ namespace RiasBot.Modules.Administration
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the image or the URL are not good.").ConfigureAwait(false);
+                    var staticEmotes = new List<IEmote>();
+                    var animatedEmotes = new List<IEmote>();
+                    var emotes = Context.Guild.Emotes;
+                    foreach (var emote in emotes)
+                    {
+                        if (emote.Animated)
+                            animatedEmotes.Add(emote);
+                        else
+                            staticEmotes.Add(emote);
+                    }
+                    if (staticEmotes.Count == 50)
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the server already has the limit of 50 non-animated emotes.");
+                    else if (animatedEmotes.Count == 50)
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the server already has the limit of 50 animated emotes.");
+                    else
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the image or the URL are not good.").ConfigureAwait(false);
                 }
             }
 
