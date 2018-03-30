@@ -8,6 +8,7 @@ using RiasBot.Modules.Music.Common;
 using RiasBot.Modules.Music.MusicServices;
 using RiasBot.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -349,6 +350,26 @@ namespace RiasBot.Modules.Music
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
 
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireContext(ContextType.Guild)]
+        [Priority(1)]
+        public async Task Repeat([Remainder]string title)
+        {
+            var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
+            if (voiceChannel is null)
+            {
+                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                return;
+            }
+
+            var mp = _service.GetMusicPlayer(Context.Guild);
+            if (mp != null)
+                await mp.ToggleRepeat().ConfigureAwait(false);
+            else
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
+        }
+
         private async Task PlayList(MusicPlayer mp, YouTubeService youtubeService, string playlist, string videoId = null, int index = 0)
         {
             string title = null;
@@ -472,55 +493,81 @@ namespace RiasBot.Modules.Music
 
         private async Task PlayVideo(MusicPlayer mp, YouTubeService youtubeService, string keywords)
         {
-            string title = null;
-            string url = null;
-            string channel = null;
-            string thumbnail = null;
-            TimeSpan duration = new TimeSpan();
             var user = (IGuildUser)Context.User;
 
             var searchListRequest = youtubeService.Search.List("snippet");
             searchListRequest.Q = keywords;
-            searchListRequest.MaxResults = 5;
+            searchListRequest.MaxResults = 15;
 
             var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
             var videoListRequest = youtubeService.Videos.List("contentDetails");
 
+            var videosList = new List<VideoDetails>();
+            string description = null;
+            int index = 0;
             foreach (var searchResult in searchListResponse.Items)
             {
-                if (searchResult.Id.VideoId != null)
+                if (searchResult.Id.VideoId != null && index < 5)
                 {
-                    url = "https://youtu.be/" + searchResult.Id.VideoId;
-                    title = searchResult.Snippet.Title;
-                    channel = searchResult.Snippet.ChannelTitle;
-                    thumbnail = searchResult.Snippet.Thumbnails.High.Url;
+                    var videoDetails = new VideoDetails();
+                    videoDetails.url = "https://youtu.be/" + searchResult.Id.VideoId;
+                    videoDetails.title = searchResult.Snippet.Title;
+                    videoDetails.channel = searchResult.Snippet.ChannelTitle;
+                    videoDetails.thumbnail = searchResult.Snippet.Thumbnails.High.Url;
 
                     videoListRequest.Id = searchResult.Id.VideoId;
                     var videoResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
-                    duration = System.Xml.XmlConvert.ToTimeSpan(videoResponse.Items.FirstOrDefault().ContentDetails.Duration);
+                    videoDetails.duration = System.Xml.XmlConvert.ToTimeSpan(videoResponse.Items.FirstOrDefault().ContentDetails.Duration);
 
-                    if (duration != new TimeSpan(0, 0, 0))
-                        break;
+                    if (videoDetails.duration != new TimeSpan(0, 0, 0))
+                    {
+                        description += $"#{index+1} {videoDetails.title} {Format.Code($"({videoDetails.duration})")}\n";
+                        videosList.Add(videoDetails);
+                        index++;
+                    }
                 }
             }
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithTitle("Choose a song by typing the index");
+            embed.WithDescription(description);
+            var choose = await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
 
-            if (title != null && url != null && thumbnail != null)
+            if(Int32.TryParse(await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10 * 1000), out int input))
             {
-                if (duration == new TimeSpan(0, 0, 0))
+                input--;
+                await choose.DeleteAsync().ConfigureAwait(false);
+                if (videosList[input].title != null && videosList[input].url != null && videosList[input].thumbnail != null)
                 {
-                    await ReplyAsync("I can't play live YouTube videos");
-                    return;
+                    if (videosList[input].duration == new TimeSpan(0, 0, 0))
+                    {
+                        await ReplyAsync("I can't play live YouTube videos");
+                        return;
+                    }
+                    else
+                    {
+                        await mp.Play(videosList[input].title, videosList[input].url,
+                            videosList[input].channel, videosList[input].duration, videosList[input].thumbnail, user).ConfigureAwait(false);
+                    }
                 }
                 else
                 {
-                    await mp.Play(title, url, channel, duration, thumbnail, user).ConfigureAwait(false);
+                    await ReplyAsync("Please provide a direct YouTube video URL!");
+                    return;
                 }
             }
             else
             {
-                await ReplyAsync("Please provide a direct YouTube video URL!");
-                return;
+                await choose.DeleteAsync().ConfigureAwait(false);
             }
         }
+    }
+
+    public class VideoDetails
+    {
+        public string title = null;
+        public string url = null;
+        public string channel = null;
+        public string thumbnail = null;
+        public TimeSpan duration = new TimeSpan();
     }
 }
