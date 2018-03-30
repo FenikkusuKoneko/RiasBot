@@ -35,6 +35,9 @@ namespace RiasBot.Modules.Gambling
             }
 
             string[] coins = { "h", "t", "heads", "tails" };
+            if (coin != coins[0] && coin != coins[1] && coin != coins[2] && coin != coins[3])
+                return;
+
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
             int hot = rnd.Next(2); //heads or tails
 

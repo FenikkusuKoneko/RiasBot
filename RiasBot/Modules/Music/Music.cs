@@ -534,24 +534,31 @@ namespace RiasBot.Modules.Music
             if(Int32.TryParse(await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10 * 1000), out int input))
             {
                 input--;
-                await choose.DeleteAsync().ConfigureAwait(false);
-                if (videosList[input].title != null && videosList[input].url != null && videosList[input].thumbnail != null)
+                if (input >= 0 && input < 5)
                 {
-                    if (videosList[input].duration == new TimeSpan(0, 0, 0))
+                    await choose.DeleteAsync().ConfigureAwait(false);
+                    if (videosList[input].title != null && videosList[input].url != null && videosList[input].thumbnail != null)
                     {
-                        await ReplyAsync("I can't play live YouTube videos");
-                        return;
+                        if (videosList[input].duration == new TimeSpan(0, 0, 0))
+                        {
+                            await ReplyAsync("I can't play live YouTube videos");
+                            return;
+                        }
+                        else
+                        {
+                            await mp.Play(videosList[input].title, videosList[input].url,
+                                videosList[input].channel, videosList[input].duration, videosList[input].thumbnail, user).ConfigureAwait(false);
+                        }
                     }
                     else
                     {
-                        await mp.Play(videosList[input].title, videosList[input].url,
-                            videosList[input].channel, videosList[input].duration, videosList[input].thumbnail, user).ConfigureAwait(false);
+                        await ReplyAsync("Please provide a direct YouTube video URL!");
+                        return;
                     }
                 }
                 else
                 {
-                    await ReplyAsync("Please provide a direct YouTube video URL!");
-                    return;
+                    await choose.DeleteAsync().ConfigureAwait(false);
                 }
             }
             else
