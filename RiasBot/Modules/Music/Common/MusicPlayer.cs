@@ -642,12 +642,12 @@ namespace RiasBot.Modules.Music.Common
             if (repeat)
             {
                 repeat = false;
-                await _channel.SendConfirmationEmbed("Repeating the current song enabled!");
+                await _channel.SendConfirmationEmbed("Repeating the current song disabled!");
             }
             else
             {
-                repeat = false;
-                await _channel.SendConfirmationEmbed("Repeating the current song disabled!");
+                repeat = true;
+                await _channel.SendConfirmationEmbed("Repeating the current song enabled!");
             }
         }
 

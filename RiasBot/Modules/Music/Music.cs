@@ -313,7 +313,7 @@ namespace RiasBot.Modules.Music
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        [Priority(1)]
+        [Priority(0)]
         public async Task Remove(int index)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
@@ -353,8 +353,7 @@ namespace RiasBot.Modules.Music
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        [Priority(1)]
-        public async Task Repeat([Remainder]string title)
+        public async Task Repeat()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
