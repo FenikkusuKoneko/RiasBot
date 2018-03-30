@@ -695,7 +695,7 @@
   },
 
   "playlist": {
-    "Command": "playlist pl",
+    "Command": "playlist queue",
     "Description": "Show the playlist with songs.",
     "Remarks": [
       "[prefix]playlist"

@@ -18,10 +18,11 @@ namespace RiasBot.Modules.Music.Common
     public class MusicPlayer
     {
         public DiscordSocketClient _client;
-
+        public SongProcessing _sp;
         public MusicPlayer(DiscordSocketClient client)
         {
             _client = client;
+            _sp = new SongProcessing(this);
         }
 
         public IAudioClient audioClient;
@@ -135,7 +136,7 @@ namespace RiasBot.Modules.Music.Common
                             }
 
                             await _channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-                            await Task.Factory.StartNew(() => DownloadNextSong());
+                            await Task.Factory.StartNew(() => _sp.DownloadNextSong());
                             if (!isRunning)
                             {
                                 await UpdateQueue(position).ConfigureAwait(false);
@@ -151,6 +152,7 @@ namespace RiasBot.Modules.Music.Common
                 else
                 {
                     await _channel.SendErrorEmbed("I can't play songs longer than 2 hours!");
+                    waited = false;
                 }
             }
             catch
@@ -210,6 +212,7 @@ namespace RiasBot.Modules.Music.Common
                 waited = true;
                 await UpdateQueue(index).ConfigureAwait(false);
                 position = index;
+                await Task.Factory.StartNew(() => _sp.DownloadNextSong());
             }
         }
 
@@ -237,12 +240,12 @@ namespace RiasBot.Modules.Music.Common
                     await Task.Factory.StartNew(() => PlayMusic(song.dlUrl, index, embed.Build())).ConfigureAwait(false);
                 else
                 {
-                    var audioURL = await GetAudioURL(song.url).ConfigureAwait(false);
+                    var audioURL = await _sp.GetAudioURL(song.url).ConfigureAwait(false);
                     await Task.Factory.StartNew(() => PlayMusic(audioURL, index, embed.Build())).ConfigureAwait(false);
                     song.dlUrl = audioURL;
                     Queue[index] = song;
                 }
-                await Task.Factory.StartNew(() => DownloadNextSong());
+                await Task.Factory.StartNew(() => _sp.DownloadNextSong());
             }
             catch
             {
@@ -285,7 +288,7 @@ namespace RiasBot.Modules.Music.Common
 
                 if (!String.IsNullOrEmpty(path))
                 {
-                    p = CreateStream(path);
+                    p = _sp.CreateStream(path);
                     _outStream = p.StandardOutput.BaseStream;
 
                     await _channel.SendMessageAsync("", embed: embed).ConfigureAwait(false);
@@ -393,7 +396,6 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Playlist()
         {
-            await semaphoreSlim.WaitAsync();
             string[] playlist = new string[Queue.Count];
             lock (locker)
             {
@@ -405,9 +407,7 @@ namespace RiasBot.Modules.Music.Common
                         playlist[i] = $"#{i + 1} {Queue[i].title}";
                 }
             }
-
             await _channel.SendPaginated(_client, "Current playlist", playlist, 10);
-            semaphoreSlim.Release();
         }
 
         public async Task Shuffle()
@@ -473,7 +473,15 @@ namespace RiasBot.Modules.Music.Common
                 {
                     if (index != position)
                     {
-                        Queue.Remove(song);
+                        if (index < position)
+                        {
+                            Queue.Remove(song);
+                            position--;
+                        }
+                        else
+                        {
+                            Queue.Remove(song);
+                        }
                     }
                     else
                     {
@@ -498,8 +506,9 @@ namespace RiasBot.Modules.Music.Common
             bool current = false;
             try
             {
+                var msg = await _channel.SendConfirmationEmbed("Searching the song... Please wait!").ConfigureAwait(false);
                 var titles = Queue.Where(x => x.title.ToLowerInvariant().Contains(title.ToLowerInvariant()));
-
+                await msg.DeleteAsync().ConfigureAwait(false);
                 if (titles.Count() <= 0)
                 {
                     await _channel.SendErrorEmbed($"I couldn't find the song!");
@@ -507,12 +516,20 @@ namespace RiasBot.Modules.Music.Common
                 }
 
                 var song = Queue.Find(x => x.title == titles.FirstOrDefault().title);
-
+                var index = Queue.IndexOf(song);
                 lock (locker)
                 {
                     if (song.title != Queue[position].title)
                     {
-                        Queue.Remove(song);
+                        if (index < position)
+                        {
+                            Queue.Remove(song);
+                            position--;
+                        }
+                        else
+                        {
+                            Queue.Remove(song);
+                        }
                     }
                     else
                     {
@@ -582,48 +599,6 @@ namespace RiasBot.Modules.Music.Common
             return audioSamples;
         }
 
-        public async Task<string> GetAudioURL(string input)
-        {
-            try
-            {
-                //Input can be a video id, or a url. Doesn't matter.
-                Process p = Process.Start(new ProcessStartInfo
-                {
-                    FileName = "youtube-dl",
-                    Arguments = "-f bestaudio -g " + input,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true
-                });
-
-                string result = await p.StandardOutput.ReadToEndAsync();
-
-                result = result.Replace("\r\n", "").Replace("\n", "").Replace("\r", "");
-
-                return result;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private Process CreateStream(string path)
-        {
-            var args = $"-err_detect ignore_err -i {path} -f s16le -ar 48000 -vn -ac 2 pipe:1 -loglevel error";
-            /*if (!_isLocal)
-                args = "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5 " + args;*/
-
-            return Process.Start(new ProcessStartInfo
-            {
-                FileName = "ffmpeg",
-                Arguments = args,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = false,
-                CreateNoWindow = true,
-            });
-        }
-
         public void Unpause()
         {
             lock(locker)
@@ -658,25 +633,6 @@ namespace RiasBot.Modules.Music.Common
                 await _channel.SendConfirmationEmbed("Music playback resumed!");
 
             OnPauseChanged?.Invoke(this, pauseTaskSource != null);
-        }
-
-        public async Task DownloadNextSong()
-        {
-            try
-            {
-                int index = position + 1;
-                var song = Queue[index];
-                if (String.IsNullOrEmpty(song.dlUrl))
-                {
-                    var audioURL = await GetAudioURL(song.url).ConfigureAwait(false);
-                    song.dlUrl = audioURL;
-                    Queue[index] = song;
-                }
-            }
-            catch
-            {
-
-            }
         }
 
         private void Dispose()

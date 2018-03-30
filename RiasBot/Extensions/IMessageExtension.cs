@@ -13,11 +13,11 @@ namespace RiasBot.Extensions
         ///<summary>
         ///Send confirmation embed message in current text channel.
         ///</summary>
-        public static async Task SendConfirmationEmbed(this IMessageChannel channel, string description)
+        public static async Task<IUserMessage> SendConfirmationEmbed(this IMessageChannel channel, string description)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
             embed.WithDescription(description);
-            await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+            return await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
         }
 
         ///<summary>

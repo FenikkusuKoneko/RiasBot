@@ -79,15 +79,22 @@ namespace RiasBot.Modules.Administration
             [RequireContext(ContextType.Guild)]
             public async Task DeleteEmote([Remainder]string name)
             {
-                var emote = Context.Guild.Emotes.Where(x => x.Name.ToLowerInvariant() == name.ToLowerInvariant()).FirstOrDefault();
-                if (emote is null)
+                try
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the emote.").ConfigureAwait(false);
+                    var emote = Context.Guild.Emotes.Where(x => x.Name.ToLowerInvariant() == name.ToLowerInvariant()).FirstOrDefault();
+                    if (emote is null)
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the emote.").ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await Context.Guild.DeleteEmoteAsync(emote).ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} emote {Format.Bold(emote.Name)} was deleted successfully.");
+                    }
                 }
-                else
+                catch
                 {
-                    await Context.Guild.DeleteEmoteAsync(emote).ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} emote {Format.Bold(emote.Name)} was deleted successfully.");
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete the emote. Try again.");
                 }
             }
         }

@@ -22,15 +22,10 @@ namespace RiasBot.Extensions
             private string raw;
             private JObject data;
             private Exception Exception;
-            public GraphQLQueryResult(string text, Exception ex = null)
+            public GraphQLQueryResult(string text)
             {
-                Exception = ex;
                 raw = text;
                 data = text != null ? JObject.Parse(text) : null;
-            }
-            public Exception GetException()
-            {
-                return Exception;
             }
             public string GetRaw()
             {
@@ -114,16 +109,9 @@ namespace RiasBot.Extensions
                     }
                 }
             }
-            catch (WebException ex)
+            catch
             {
-                WebResponse errorResponse = ex.Response;
-                using (Stream responseStream = errorResponse.GetResponseStream())
-                {
-                    StreamReader reader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8"));
-                    String errorText = await reader.ReadToEndAsync();
-                    Console.WriteLine(errorText);
-                    return new GraphQLQueryResult(null, ex);
-                }
+                return new GraphQLQueryResult(null);
             }
         }
     }
