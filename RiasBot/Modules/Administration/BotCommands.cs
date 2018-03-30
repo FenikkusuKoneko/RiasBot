@@ -291,9 +291,10 @@ namespace RiasBot.Modules.Administration
             [RequireOwner]
             public async Task Dbl(int page = 1)
             {
+                page--;
                 AuthDiscordBotListApi dblApi = new AuthDiscordBotListApi(_creds.ClientId, _creds.DiscordBotsListApiKey);
                 var dblSelfBot = await dblApi.GetMeAsync().ConfigureAwait(false);
-                var dbls = await dblSelfBot.GetVotersAsync(1).ConfigureAwait(false);
+                var dbls = (await dblSelfBot.GetVotersAsync(1).ConfigureAwait(false)).GroupBy(x => x.Id).Select(y => y.FirstOrDefault()).ToList();
 
                 string[] voters = new string[dbls.Count];
                 int index = 0;
@@ -303,7 +304,7 @@ namespace RiasBot.Modules.Administration
                     index++;
                 }
                 if (voters.Count() > 0)
-                    await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, "List of voters today", voters, 10, page - 1).ConfigureAwait(false);
+                    await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, "List of voters today", voters, 10, page).ConfigureAwait(false);
                 else
                     await Context.Channel.SendErrorEmbed("No voters today.").ConfigureAwait(false);
             }

@@ -223,10 +223,10 @@ namespace RiasBot.Modules.Administration
                 var channel = (ITextChannel)Context.Channel;
                 await channel.ModifyAsync(x => x.Topic = topic);
                 if (String.IsNullOrEmpty(topic))
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel' topic set to {Format.Bold("null")}");
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel's topic set to {Format.Bold("null")}");
                 else
                 {
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel' topic set to {Format.Bold(topic)}");
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel's topic set to {Format.Bold(topic)}");
                 }
             }
         }

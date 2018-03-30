@@ -102,8 +102,9 @@ namespace RiasBot.Modules.Xp
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task XpLeaderboard(int page = 0)
+        public async Task XpLeaderboard(int page = 1)
         {
+            page--;
             using (var db = _db.GetDbContext())
             {
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -129,8 +130,9 @@ namespace RiasBot.Modules.Xp
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task GuildXpLeaderboard(int page = 0)
+        public async Task GuildXpLeaderboard(int page = 1)
         {
+            page--;
             using (var db = _db.GetDbContext())
             {
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);

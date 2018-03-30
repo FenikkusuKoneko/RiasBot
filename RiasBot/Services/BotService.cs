@@ -165,7 +165,7 @@ namespace RiasBot.Services
                     voteTimer.Restart();
                     using (var db = _db.GetDbContext())
                     {
-                        var voters = await dblSelfBot.GetVotersAsync(1);
+                        var voters = (await dblSelfBot.GetVotersAsync(1).ConfigureAwait(false)).GroupBy(x => x.Id).Select(y => y.FirstOrDefault()).ToList();
                         foreach (var voter in voters)
                         {
                             try

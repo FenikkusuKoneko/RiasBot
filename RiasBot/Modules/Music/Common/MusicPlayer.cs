@@ -46,6 +46,7 @@ namespace RiasBot.Modules.Music.Common
         public float volume = 1.0f;
         public bool isRunning;
         public bool waited;     //for not spamming
+        public bool repeat;     //repeat the current song
         public Stopwatch timer;
 
         public struct Song
@@ -311,7 +312,7 @@ namespace RiasBot.Modules.Music.Common
                 timer.Stop();
                 Dispose();
 
-                index++;
+                index += (repeat) ? 0 : 1;
                 position = index;
 
                 await UpdateQueue(index).ConfigureAwait(false);
@@ -512,6 +513,7 @@ namespace RiasBot.Modules.Music.Common
                 if (titles.Count() <= 0)
                 {
                     await _channel.SendErrorEmbed($"I couldn't find the song!");
+                    semaphoreSlim.Release();
                     return;
                 }
 
@@ -633,6 +635,20 @@ namespace RiasBot.Modules.Music.Common
                 await _channel.SendConfirmationEmbed("Music playback resumed!");
 
             OnPauseChanged?.Invoke(this, pauseTaskSource != null);
+        }
+
+        public async Task ToggleRepeat()
+        {
+            if (repeat)
+            {
+                repeat = false;
+                await _channel.SendConfirmationEmbed("Repeating the current song enabled!");
+            }
+            else
+            {
+                repeat = false;
+                await _channel.SendConfirmationEmbed("Repeating the current song disabled!");
+            }
         }
 
         private void Dispose()

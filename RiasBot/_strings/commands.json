@@ -735,6 +735,14 @@
     ]
   },
 
+  "repeat": {
+    "Command": "repeat",
+    "Description": "Toggle repeating the current song.",
+    "Remarks": [
+      "[prefix]repeat"
+    ]
+  },
+
   "hentai": {
     "Command": "hentai",
     "Description": "Show a hentai image.",

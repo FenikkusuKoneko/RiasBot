@@ -83,6 +83,7 @@ namespace RiasBot.Modules.Utility
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
+        [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Ping()
         {
             var stopwatch = new Stopwatch();
