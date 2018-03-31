@@ -27,28 +27,6 @@ namespace RiasBot.Modules.Searches
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
-        public async Task Neko()
-        {
-            string nekoURL = null;
-
-            using (var http = new HttpClient())
-            {
-                nekoURL = await http.GetStringAsync("https://nekos.life/api/neko");
-            }
-
-            var getNeko = JObject.Parse(nekoURL);
-            var neko = getNeko["neko"];
-
-            var embed = new EmbedBuilder();
-            embed.WithColor(RiasBot.goodColor);
-            embed.WithTitle("Neko <3");
-            embed.WithImageUrl((string)neko);
-
-            await Context.Channel.SendMessageAsync("", false, embed.Build());
-        }
-
-        [RiasCommand][@Alias]
-        [Description][@Remarks]
         public async Task UrbanDictionary([Remainder]string keyword)
         {
             try

@@ -911,17 +911,25 @@
 
   "neko": {
     "Command": "neko",
-    "Description": "Show a neko picture.",
+    "Description": "Show a neko girl picture.",
     "Remarks": [
       "[prefix]neko"
     ]
   },
 
-  "nekolewd": {
-    "Command": "nekolewd",
-    "Description": "Show a lewd neko picture. They are shy, you need to see them in a nsfw channel.",
+  "kitsune": {
+    "Command": "kitsune",
+    "Description": "Show a kitsune girl picture.",
     "Remarks": [
-      "[prefix]nekolewd"
+      "[prefix]kitsune"
+    ]
+  },
+
+  "neko": {
+    "Command": "neko",
+    "Description": "Show a neko picture.",
+    "Remarks": [
+      "[prefix]neko"
     ]
   },
 
