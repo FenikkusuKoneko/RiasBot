@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RiasBot.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -16,17 +17,17 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task<string> GetAudioURL(string input)
         {
+            Process p = null;
             try
             {
                 //Input can be a video id, or a url. Doesn't matter.
-                Process p = Process.Start(new ProcessStartInfo
+                p = Process.Start(new ProcessStartInfo
                 {
                     FileName = "youtube-dl",
                     Arguments = "-f bestaudio -g " + input,
                     UseShellExecute = false,
                     RedirectStandardOutput = true
                 });
-
                 string result = await p.StandardOutput.ReadToEndAsync();
 
                 result = result.Replace("\r\n", "").Replace("\n", "").Replace("\r", "");
@@ -35,7 +36,16 @@ namespace RiasBot.Modules.Music.Common
             }
             catch
             {
-                return null;
+                try
+                {
+                    string error = await p.StandardError.ReadToEndAsync();
+                    await _mp._channel.SendErrorEmbed(error).ConfigureAwait(false);
+                    return null;
+                }
+                catch
+                {
+                    return null;
+                }
             }
         }
 

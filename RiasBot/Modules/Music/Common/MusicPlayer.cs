@@ -226,7 +226,7 @@ namespace RiasBot.Modules.Music.Common
 
                 while (song.duration > new TimeSpan(2, 0, 0))
                 {
-                    await _channel.SendConfirmationEmbed("I can't play songs longer than 2 hours. Playing next song!").ConfigureAwait(false);
+                    await _channel.SendErrorEmbed("I can't play songs longer than 2 hours. Playing next song!").ConfigureAwait(false);
                     song = Queue[++index];
                 }
 
@@ -403,10 +403,10 @@ namespace RiasBot.Modules.Music.Common
                 for (int i = 0; i < Queue.Count; i++)
                 {
                     if (position == i)
-                        playlist[i] = $"➡ #{i + 1} {Queue[i].title}";
+                        playlist[i] = $"➡ #{i + 1} {Queue[i].title} {Format.Code($"({Queue[i].duration})")}";
                     else
-                        playlist[i] = $"#{i + 1} {Queue[i].title}";
-                }
+                        playlist[i] = $"#{i + 1} {Queue[i].title} {Format.Code($"({ Queue[i].duration})")}";
+            }
             }
             await _channel.SendPaginated(_client, "Current playlist", playlist, 10);
         }
@@ -425,7 +425,7 @@ namespace RiasBot.Modules.Music.Common
                 }
 
                 if (Queue.Count == 1)
-                    await _channel.SendConfirmationEmbed("The playlist has only one song!");
+                    await _channel.SendErrorEmbed("The playlist has only one song!");
                 else
                     await _channel.SendConfirmationEmbed($"{Queue.Count} songs have been shuffled!");
             }

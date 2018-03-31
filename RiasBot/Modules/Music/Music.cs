@@ -379,7 +379,7 @@ namespace RiasBot.Modules.Music
 
             await mp.Clear().ConfigureAwait(false);
 
-            await ReplyAsync("Adding songs to playlist, please wait").ConfigureAwait(false);
+            await Context.Channel.SendConfirmationEmbed("Adding songs to playlist, please wait").ConfigureAwait(false);
             int items = 0;
             var nextPageToken = "";
             while (nextPageToken != null)
@@ -432,11 +432,11 @@ namespace RiasBot.Modules.Music
                 }
                 catch
                 {
-                    await ReplyAsync("Please provide a direct and unlisted or public YouTube playlist URL!");
+                    await Context.Channel.SendErrorEmbed("Please provide a direct and unlisted or public YouTube playlist URL!");
                     return;
                 }
             }
-            await ReplyAsync($"Added to playlist {items} songs").ConfigureAwait(false);
+            await Context.Channel.SendConfirmationEmbed($"Added to playlist {items} songs").ConfigureAwait(false);
             await mp.UpdateQueue(index).ConfigureAwait(false);
         }
 
@@ -470,7 +470,7 @@ namespace RiasBot.Modules.Music
                 {
                     if (duration == new TimeSpan(0, 0, 0))
                     {
-                        await ReplyAsync("I can't play live YouTube videos");
+                        await Context.Channel.SendErrorEmbed("I can't play live YouTube videos");
                         return;
                     }
                     else
@@ -480,7 +480,7 @@ namespace RiasBot.Modules.Music
                 }
                 else
                 {
-                    await ReplyAsync("Please provide a direct YouTube video URL!");
+                    await Context.Channel.SendErrorEmbed("Please provide a direct YouTube video URL!");
                     return;
                 }
             }
@@ -541,7 +541,7 @@ namespace RiasBot.Modules.Music
                     {
                         if (videosList[input].duration == new TimeSpan(0, 0, 0))
                         {
-                            await ReplyAsync("I can't play live YouTube videos");
+                            await Context.Channel.SendErrorEmbed("I can't play live YouTube videos");
                             return;
                         }
                         else
@@ -552,7 +552,7 @@ namespace RiasBot.Modules.Music
                     }
                     else
                     {
-                        await ReplyAsync("Please provide a direct YouTube video URL!");
+                        await Context.Channel.SendErrorEmbed("Please provide a direct YouTube video URL!");
                         return;
                     }
                 }
