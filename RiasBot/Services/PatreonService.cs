@@ -116,7 +116,7 @@ namespace RiasBot.Services
                                         await db.AddAsync(user).ConfigureAwait(false);
                                     }
                                     var nextTimeAward = lastTimeAwarded.AddMonths(1);
-                                    patronDb.NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 3);
+                                    patronDb.NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 1, 8, 0, 0);
                                     try
                                     {
                                         var user = (IUser)_client.GetUser(userId);
@@ -136,7 +136,7 @@ namespace RiasBot.Services
                             catch
                             {
                                 var nextTimeAward = DateTime.UtcNow.AddMonths(1);
-                                var patron = new Patreon { UserId = userId, Reward = amountCents * 10, NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 3) };
+                                var patron = new Patreon { UserId = userId, Reward = amountCents * 10, NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 1, 8, 0, 0) };
                                 await db.AddAsync(patron).ConfigureAwait(false);
                             }
 

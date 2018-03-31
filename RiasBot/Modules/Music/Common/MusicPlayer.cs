@@ -577,7 +577,7 @@ namespace RiasBot.Modules.Music.Common
                 {
                     this.volume = ((float)volume) / 100;
                 }
-                await _channel.SendConfirmationEmbed($"Volume set {volume}%");
+                await _channel.SendConfirmationEmbed($"Volume set to {volume}%");
             }
         }
 
