@@ -518,6 +518,8 @@ namespace RiasBot.Modules.Music
                     var videoResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
                     videoDetails.duration = System.Xml.XmlConvert.ToTimeSpan(videoResponse.Items.FirstOrDefault().ContentDetails.Duration);
 
+                    
+
                     if (videoDetails.duration != new TimeSpan(0, 0, 0))
                     {
                         description += $"#{index+1} {videoDetails.title} {Format.Code($"({videoDetails.duration})")}\n";

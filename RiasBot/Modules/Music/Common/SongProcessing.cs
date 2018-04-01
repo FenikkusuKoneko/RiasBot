@@ -36,16 +36,7 @@ namespace RiasBot.Modules.Music.Common
             }
             catch
             {
-                try
-                {
-                    string error = await p.StandardError.ReadToEndAsync();
-                    await _mp._channel.SendErrorEmbed(error).ConfigureAwait(false);
-                    return null;
-                }
-                catch
-                {
-                    return null;
-                }
+                return null;
             }
         }
 

@@ -79,22 +79,19 @@ namespace RiasBot.Services
                 {
                     return;
                 }
-
-                int index = 0;
                 foreach (var pledge in pledges)
                 {
                     int patronPledgeId = pledge.relationships.patron.data.id;
-                    int patronId = patrons[index].id;
+                    var patronUser = patrons.Find(x => x.id == patronPledgeId);
 
-                    if (patronPledgeId == patronId)
+                    if (patronUser != null)
                     {
                         int amountCents = pledge.attributes.amount_cents;
-                        UInt64.TryParse(patrons[index].attributes.social_connections.discord.user_id, out var userId);
+                        UInt64.TryParse(patronUser.attributes.social_connections.discord.user_id, out var userId);
 
                         if (userId > 0)
                         {
                             patronsList.Add(userId);
-
                             var patronDb = db.Patreon.Where(x => x.UserId == userId).FirstOrDefault();
                             var userDb = db.Users.Where(x => x.UserId == userId).FirstOrDefault();
                             if (patronDb != null)
@@ -123,7 +120,7 @@ namespace RiasBot.Services
 
                                         var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                                         embed.WithTitle("Patreon Support!");
-                                        embed.WithDescription("Thank you so much for supporting the project :heart:");
+                                        embed.WithDescription($"Thank you so much for supporting the project :heart:. You received {amountCents * 10}{RiasBot.currency}.");
                                         embed.AddField("Pledge", amountCents + "$", true).AddField("Reward", amountCents * 10 + RiasBot.currency);
                                         await user.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                                     }
@@ -135,21 +132,13 @@ namespace RiasBot.Services
                             }
                             else
                             {
-                                var nextTimeAward = DateTime.UtcNow.AddMonths(1);
+                                var nextTimeAward = DateTime.UtcNow.Subtract(new TimeSpan(8, 0, 0)).AddMonths(1);
                                 var patron = new Patreon { UserId = userId, Reward = amountCents * 10, NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 1, 8, 0, 0) };
                                 await db.AddAsync(patron).ConfigureAwait(false);
+                                Console.WriteLine(userId);
                             }
                             await db.SaveChangesAsync().ConfigureAwait(false);
                         }
-                    }
-                    index++;
-                }
-                foreach(var patronId in patronsList)
-                {
-                    if (validPledges.Any(x => x.UserId != patronId))
-                    {
-                        db.Remove(db.Patreon.Where(x => x.UserId != patronId).FirstOrDefault());
-                        await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                 }
             }
