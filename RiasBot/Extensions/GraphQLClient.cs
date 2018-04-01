@@ -21,7 +21,6 @@ namespace RiasBot.Extensions
         {
             private string raw;
             private JObject data;
-            private Exception Exception;
             public GraphQLQueryResult(string text)
             {
                 raw = text;

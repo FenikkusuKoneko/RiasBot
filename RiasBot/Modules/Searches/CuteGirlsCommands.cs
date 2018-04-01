@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Commands;
 using Newtonsoft.Json.Linq;
 using RiasBot.Commons.Attributes;
 using RiasBot.Modules.Searches.Services;
@@ -26,31 +27,25 @@ namespace RiasBot.Modules.Searches
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
+            [RequireContext(ContextType.Guild)]
+            [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
             public async Task Neko()
             {
-                string nekoURL = null;
-
-                using (var http = new HttpClient())
-                {
-                    nekoURL = await http.GetStringAsync("https://nekos.life/api/neko");
-                }
-
-                var getNeko = JObject.Parse(nekoURL);
-                var neko = getNeko["neko"];
-
-                var embed = new EmbedBuilder();
-                embed.WithColor(RiasBot.goodColor);
+                var neko = _service.GetNekoImage();
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle("Neko <3");
-                embed.WithImageUrl((string)neko);
+                embed.WithImageUrl(neko);
 
-                await Context.Channel.SendMessageAsync("", false, embed.Build());
+                await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
+            [RequireContext(ContextType.Guild)]
+            [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
             public async Task Kitsune()
             {
-                var kitsune = await _service.GetKitsuneImage().ConfigureAwait(false);
+                var kitsune = _service.GetKitsuneImage();
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle("Kitsune <3");
                 embed.WithImageUrl(kitsune);

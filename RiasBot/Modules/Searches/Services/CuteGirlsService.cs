@@ -15,33 +15,74 @@ namespace RiasBot.Modules.Searches.Services
         public CuteGirlsService(IBotCredentials creds)
         {
             _creds = creds;
+            UpdateNekos().GetAwaiter().GetResult();
+            UpdateKitsunes().GetAwaiter().GetResult();
         }
 
-        public async Task<string> GetKitsuneImage()
+        private List<string> nekoList = new List<string>();
+        private List<string> kitsuneList = new List<string>();
+
+        public string GetNekoImage()
+        {
+            var rnd = new Random((int)DateTime.UtcNow.Ticks);
+            int nekoIndex = rnd.Next(0, nekoList.Count);
+            return nekoList[nekoIndex];
+        }
+
+        public async Task UpdateNekos()
         {
             using (var http = new HttpClient())
             {
                 http.DefaultRequestHeaders.Clear();
                 http.DefaultRequestHeaders.Add("Authorization", "Client-ID " + _creds.ImgurClientID);
 
-                var url = "https://api.imgur.com/3/album/aBaoM/images"; //my album with kitsune girls
+                var url = "https://api.imgur.com/3/album/XjyX9/images"; //my album with neko girls
                 var data = await http.GetStringAsync(url);
 
-                var kitsunes = JsonConvert.DeserializeObject<KitsuneData>(data);
+                var nekos = JsonConvert.DeserializeObject<NekoKitsuneData>(data);
 
-                var rnd = new Random((int)DateTime.UtcNow.Ticks);
-                int kitsuneIndex = rnd.Next(0, kitsunes.data.Count);
-                return kitsunes.data[kitsuneIndex].link;
+                foreach (var neko in nekos.data)
+                {
+                    if (!nekoList.Contains(neko.link))
+                        nekoList.Add(neko.link);
+                }
+            }
+        }
+
+        public string GetKitsuneImage()
+        {
+            var rnd = new Random((int)DateTime.UtcNow.Ticks);
+            int kitsuneIndex = rnd.Next(0, kitsuneList.Count);
+            return kitsuneList[kitsuneIndex];
+        }
+
+        public async Task UpdateKitsunes()
+        {
+            using (var http = new HttpClient())
+            {
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Client-ID " + _creds.ImgurClientID);
+
+                var url = "https://api.imgur.com/3/album/aBaoM/images"; //my album with neko girls
+                var data = await http.GetStringAsync(url);
+
+                var kitsunes = JsonConvert.DeserializeObject<NekoKitsuneData>(data);
+
+                foreach (var kitsune in kitsunes.data)
+                {
+                    if (!kitsuneList.Contains(kitsune.link))
+                        kitsuneList.Add(kitsune.link);
+                }
             }
         }
     }
 
-    public class KitsuneData
+    public class NekoKitsuneData
     {
-        public List<Kitsune> data { get; set; }
+        public List<NekoKitsune> data { get; set; }
     }
 
-    public class Kitsune
+    public class NekoKitsune
     {
         public string id { get; set; }
         public string title { get; set; }

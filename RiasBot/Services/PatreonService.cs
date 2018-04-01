@@ -31,7 +31,7 @@ namespace RiasBot.Services
             {
                 var patreon = Task.Run(async () => await Patreon());
                 Task.WaitAll(patreon);
-                timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, new TimeSpan(0), new TimeSpan(1, 0, 0));
+                timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
             }
         }
         public int campaignId;
@@ -139,7 +139,6 @@ namespace RiasBot.Services
                                 var patron = new Patreon { UserId = userId, Reward = amountCents * 10, NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 1, 8, 0, 0) };
                                 await db.AddAsync(patron).ConfigureAwait(false);
                             }
-
                             await db.SaveChangesAsync().ConfigureAwait(false);
                         }
                     }
@@ -149,7 +148,7 @@ namespace RiasBot.Services
                 {
                     if (validPledges.Any(x => x.UserId != patronId))
                     {
-                        db.Remove(db.Patreon.Where(x => x.UserId != patronId));
+                        db.Remove(db.Patreon.Where(x => x.UserId != patronId).FirstOrDefault());
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                 }

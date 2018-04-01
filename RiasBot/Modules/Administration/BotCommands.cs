@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using DiscordBotsList.Api;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
+using RiasBot.Modules.Searches.Services;
 using RiasBot.Services;
 using RiasBot.Services.Database.Models;
 using System;
@@ -30,7 +31,9 @@ namespace RiasBot.Modules.Administration
             private readonly BotService _botService;
             private readonly IBotCredentials _creds;
 
-            public BotCommands(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordSocketClient client, BotService botService, IBotCredentials creds)
+            private readonly CuteGirlsService _cuteGirlsService;
+
+            public BotCommands(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordSocketClient client, BotService botService, IBotCredentials creds, CuteGirlsService cuteGirlsService)
             {
                 _ch = ch;
                 _service = service;
@@ -39,6 +42,8 @@ namespace RiasBot.Modules.Administration
                 _client = client;
                 _botService = botService;
                 _creds = creds;
+
+                _cuteGirlsService = cuteGirlsService;
             }
 
             [RiasCommand][@Alias]
@@ -307,6 +312,17 @@ namespace RiasBot.Modules.Administration
                     await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, "List of voters today", voters, 10, page).ConfigureAwait(false);
                 else
                     await Context.Channel.SendErrorEmbed("No voters today.").ConfigureAwait(false);
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireOwner]
+            public async Task UpdateImages()
+            {
+                await _cuteGirlsService.UpdateNekos();
+                await _cuteGirlsService.UpdateKitsunes();
+
+                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} images updated.");
             }
         }
     }

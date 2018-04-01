@@ -214,6 +214,14 @@
     ]
   },
 
+  "updateimages": {
+    "Command": "updateimages",
+    "Description": "Update images with reactions, neko and kitsune.",
+    "Remarks": [
+      "[prefix]updateimages"
+    ]
+  },
+
   "addemote": {
     "Command": "addemote",
     "Description": "Add an emote on this server. PNG, JPG or GIF supported. The image must be under 256 KB.",
