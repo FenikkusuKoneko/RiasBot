@@ -118,7 +118,8 @@ namespace RiasBot.Modules.Utility
             [RequireContext(ContextType.Guild)]
             public async Task ServerInfo()
             {
-                var users = await Context.Guild.GetUsersAsync();
+                var guild = (SocketGuild)Context.Guild;
+                var users = await Context.Guild.GetUsersAsync().ConfigureAwait(false);
                 var owner = await Context.Guild.GetOwnerAsync().ConfigureAwait(false);
                 var textChannels = await Context.Guild.GetTextChannelsAsync().ConfigureAwait(false);
                 var voiceChannels = await Context.Guild.GetVoiceChannelsAsync().ConfigureAwait(false);
@@ -150,7 +151,7 @@ namespace RiasBot.Modules.Utility
                 {
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithTitle(Context.Guild.Name);
-                    embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner.Username}#{owner.Discriminator}", true).AddField("Members", users.Count, true);
+                    embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner.Username}#{owner.Discriminator}", true).AddField("Members", guild.MemberCount, true);
                     embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
                     embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true).AddField("Region", Context.Guild.VoiceRegionId, true);
                     embed.AddField($"Custom Emojis ({Context.Guild.Emotes.Count})", emotes);

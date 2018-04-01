@@ -5,6 +5,8 @@ using RiasBot.Extensions;
 using RiasBot.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -67,6 +69,29 @@ namespace RiasBot.Modules.Administration
             {
                 await Context.Guild.ModifyAsync(x => x.Name = name);
                 await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} server's name changed to {Format.Bold(name)}.").ConfigureAwait(false);
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireContext(ContextType.Guild)]
+            [RequireUserPermission(GuildPermission.ManageGuild)]
+            [RequireBotPermission(GuildPermission.ManageGuild)]
+            public async Task SetGuildIcon(string url)
+            {
+                try
+                {
+                    var http = new HttpClient();
+                    var res = await http.GetStreamAsync(new Uri(url));
+                    var ms = new MemoryStream();
+                    res.CopyTo(ms);
+                    ms.Position = 0;
+                    await Context.Guild.ModifyAsync(x => x.Icon = new Image(ms)).ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} server's icon changed successfully.").ConfigureAwait(false);
+                }
+                catch
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the image or the url are not good.").ConfigureAwait(false);
+                }
             }
         }
     }
