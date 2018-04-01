@@ -97,7 +97,7 @@ namespace RiasBot.Services
 
                             var patronDb = db.Patreon.Where(x => x.UserId == userId).FirstOrDefault();
                             var userDb = db.Users.Where(x => x.UserId == userId).FirstOrDefault();
-                            try
+                            if (patronDb != null)
                             {
                                 patronDb.Reward = amountCents * 10;
 
@@ -133,7 +133,7 @@ namespace RiasBot.Services
                                     }
                                 }
                             }
-                            catch
+                            else
                             {
                                 var nextTimeAward = DateTime.UtcNow.AddMonths(1);
                                 var patron = new Patreon { UserId = userId, Reward = amountCents * 10, NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 1, 8, 0, 0) };
