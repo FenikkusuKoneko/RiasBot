@@ -135,7 +135,6 @@ namespace RiasBot.Services
                                 var nextTimeAward = DateTime.UtcNow.Subtract(new TimeSpan(8, 0, 0)).AddMonths(1);
                                 var patron = new Patreon { UserId = userId, Reward = amountCents * 10, NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 1, 8, 0, 0) };
                                 await db.AddAsync(patron).ConfigureAwait(false);
-                                Console.WriteLine(userId);
                             }
                             await db.SaveChangesAsync().ConfigureAwait(false);
                         }
