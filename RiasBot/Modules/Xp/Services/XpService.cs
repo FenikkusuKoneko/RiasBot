@@ -149,7 +149,7 @@ namespace RiasBot.Modules.Xp.Services
 
         public async Task<MemoryStream> GenerateXpImage(IGuildUser user, (int, int) level, (int, int) currentXp, (int, int) requiredXp, int globalRank, int guildRank, IRole highestRole)
         {
-            string kurumiPath = "/assets/images/xp/xp_model.png";
+            string riasPath = "/assets/images/xp/xp_model.png";
             string xpWhitePattern = "/assets/images/xp/xp_white_pattern.png";
             string xpBlackPattern = "/assets/images/xp/xp_black_pattern.png";
             string globalXpBarBgPath = "/assets/images/xp/global_xp_bar_bg.png";
@@ -160,7 +160,7 @@ namespace RiasBot.Modules.Xp.Services
             (int globalCurrentXp, int guildCurrentXp) = currentXp;
             (int globalRequiredXp, int guildRequiredXp) = requiredXp;
 
-            using (var img = Image.Load(Environment.CurrentDirectory + kurumiPath))
+            using (var img = Image.Load(Environment.CurrentDirectory + riasPath))
             using (var whitePattern = Image.Load(Environment.CurrentDirectory + xpWhitePattern))
             using (var blackPattern = Image.Load(Environment.CurrentDirectory + xpBlackPattern))
             using (var globalXpBarBg = Image.Load(Environment.CurrentDirectory + globalXpBarBgPath))

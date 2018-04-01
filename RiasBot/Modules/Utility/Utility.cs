@@ -78,7 +78,8 @@ namespace RiasBot.Modules.Utility
         [Description][@Remarks]
         public async Task Donate()
         {
-            await Context.Channel.SendConfirmationEmbed($"Support me! Support this project on Patreon: [Onii-chan](https://www.patreon.com/riasbot)");
+            await Context.Channel.SendConfirmationEmbed($"Support me! Support this project on [Patreon](https://www.patreon.com/riasbot) or on [PayPal](https://paypal.me/PhoenixMusic99).\n" +
+                $"For every dollar donated you will receive 1000 {RiasBot.currency}.");
         }
 
         [RiasCommand][@Alias]

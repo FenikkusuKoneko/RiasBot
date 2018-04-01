@@ -93,7 +93,14 @@ namespace RiasBot.Modules.Xp
                 using (var img = await _service.GenerateXpImage((IGuildUser)user, (globalCurrentLevel, guildCurrentLevel),
                     (globalCurrentXp + globalRequiredXp, guildCurrentXp + guildRequiredXp), ((globalRequiredXp, guildRequiredXp)), globalRank, guildRank, highestRole))
                 {
-                    await Context.Channel.SendFileAsync(img, $"{user.Id}_xp.png").ConfigureAwait(false);
+                    try
+                    {
+                        await Context.Channel.SendFileAsync(img, $"{user.Id}_xp.png").ConfigureAwait(false);
+                    }
+                    catch
+                    {
+
+                    }
                 }
                 return;
             }
