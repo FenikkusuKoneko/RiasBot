@@ -24,7 +24,7 @@ namespace RiasBot.Modules.Music.Common
                 p = Process.Start(new ProcessStartInfo
                 {
                     FileName = "youtube-dl",
-                    Arguments = "--proxy \"\" --geo-bypass -f bestaudio -g " + input,
+                    Arguments = "--geo-bypass -f bestaudio -g " + input,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
