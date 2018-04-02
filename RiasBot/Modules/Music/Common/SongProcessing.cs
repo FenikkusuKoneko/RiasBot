@@ -32,7 +32,7 @@ namespace RiasBot.Modules.Music.Common
                 string result = await p.StandardOutput.ReadToEndAsync();
                 string error = await p.StandardError.ReadToEndAsync();
                 if (!String.IsNullOrEmpty(error))
-                    await _mp._channel.SendErrorEmbed(error);
+                    await _mp._channel.SendErrorEmbed(error.Substring(error.IndexOf("YouTube said:")).TrimStart());
 
                 result = result.Replace("\r\n", "").Replace("\n", "").Replace("\r", "");
 

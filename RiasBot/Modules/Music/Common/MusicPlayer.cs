@@ -304,9 +304,9 @@ namespace RiasBot.Modules.Music.Common
                             await (pauseTaskSource?.Task ?? Task.CompletedTask);
                         }
                     }
-                    catch (Exception e)
+                    catch
                     {
-                        Console.WriteLine(e);
+
                     }
                 }
                 else

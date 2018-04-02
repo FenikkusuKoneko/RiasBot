@@ -26,10 +26,10 @@ namespace RiasBot.Services
             _discord = discord;
             _commands = commands;
 
-            _discord.Ready += Ready;
             _discord.Log += DiscordLogAsync;
             _commands.Log += DiscordLogAsync;
             _commands.CommandExecuted += CommandLogAsync;
+            _discord.Ready += Ready;
         }
 
         private Task DiscordLogAsync(LogMessage msg)
@@ -43,7 +43,7 @@ namespace RiasBot.Services
 
             if (ready)
             {
-                if (msg.Severity == LogSeverity.Error || msg.Severity == LogSeverity.Critical || msg.Severity == LogSeverity.Debug)
+                if (msg.Severity != LogSeverity.Verbose && msg.Severity != LogSeverity.Warning)
                 {
                     logText.Add($"{DateTime.UtcNow.ToString("hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}");
                     try

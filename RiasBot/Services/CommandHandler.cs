@@ -23,8 +23,6 @@ namespace RiasBot.Services
 
         public string _prefix;
 
-        public bool DMChannel;
-
         public CommandHandler(DiscordSocketClient discord, CommandService commands, IBotCredentials creds, IServiceProvider provider, DbService db, XpService xpService)
         {
             _discord = discord;
