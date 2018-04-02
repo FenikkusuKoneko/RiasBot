@@ -26,10 +26,10 @@ namespace RiasBot.Modules.Music.Common
                     FileName = "youtube-dl",
                     Arguments = "-f bestaudio -g " + input,
                     UseShellExecute = false,
-                    RedirectStandardOutput = true
+                    RedirectStandardOutput = true,
                 });
                 string result = await p.StandardOutput.ReadToEndAsync();
-
+                await _mp._channel.SendErrorEmbed(await p.StandardError.ReadToEndAsync());
                 result = result.Replace("\r\n", "").Replace("\n", "").Replace("\r", "");
 
                 return result;

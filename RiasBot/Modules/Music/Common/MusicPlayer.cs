@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace RiasBot.Modules.Music.Common
 {
-    public class MusicPlayer
+    public class MusicPlayer : IDisposable
     {
         public DiscordSocketClient _client;
         public SongProcessing _sp;
@@ -274,7 +274,6 @@ namespace RiasBot.Modules.Music.Common
                 {
                     tokenSource = new CancellationTokenSource();
                     token = tokenSource.Token;
-                    audioStream = audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
                 }
                 if (timer != null)
                     timer.Restart();
@@ -283,7 +282,7 @@ namespace RiasBot.Modules.Music.Common
                     timer = new Stopwatch();
                     timer.Start();
                 }
-
+                audioStream = audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
                 byte[] buffer = new byte[3840];
                 int bytesRead = 0;
 
@@ -295,12 +294,19 @@ namespace RiasBot.Modules.Music.Common
                     await _channel.SendMessageAsync("", embed: embed).ConfigureAwait(false);
                     waited = false;
 
-                    while ((bytesRead = _outStream.Read(buffer, 0, buffer.Length)) > 0)
+                    try
                     {
-                        AdjustVolume(buffer, volume);
-                        await audioStream.WriteAsync(buffer, 0, bytesRead, token).ConfigureAwait(false);
+                        while ((bytesRead = _outStream.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            AdjustVolume(buffer, volume);
+                            await audioStream.WriteAsync(buffer, 0, bytesRead, token).ConfigureAwait(false);
 
-                        await (pauseTaskSource?.Task ?? Task.CompletedTask);
+                            await (pauseTaskSource?.Task ?? Task.CompletedTask);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
                     }
                 }
                 else
@@ -554,19 +560,16 @@ namespace RiasBot.Modules.Music.Common
         {
             try
             {
-                lock(locker)
-                {
-                    tokenSource.Cancel();
-                    tokenSource.Dispose();
-                    tokenSource = new CancellationTokenSource();
-                    token = tokenSource.Token;
+                tokenSource.Cancel();
+                tokenSource.Dispose();
+                tokenSource = new CancellationTokenSource();
+                token = tokenSource.Token;
 
-                    Dispose();
-                }
-                await audioClient.StopAsync().ConfigureAwait(false);
-                await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                Dispose();
             }
             catch { }
+            await audioClient.StopAsync().ConfigureAwait(false);
+            await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
         }
 
         public async Task SetVolume(int volume)
@@ -651,7 +654,7 @@ namespace RiasBot.Modules.Music.Common
             }
         }
 
-        private void Dispose()
+        public void Dispose()
         {
             GC.Collect();
             try
@@ -663,16 +666,16 @@ namespace RiasBot.Modules.Music.Common
             }
             try
             {
-                if (!p.HasExited)
-                    p.Kill();
+                _outStream.Dispose();
+                p.Dispose();
             }
             catch
             {
+
             }
             try
             {
-                _outStream.Dispose();
-                p.Dispose();
+                audioStream.Dispose();
             }
             catch
             {

@@ -56,7 +56,7 @@ namespace RiasBot.Modules.Bot
             {
                 var usersGuild = await guild.GetUsersAsync();
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithDescription($"Leabing {Format.Bold(guild.Name)}");
+                embed.WithDescription($"Leaving {Format.Bold(guild.Name)}");
                 embed.AddField("Id", guild.Id, true).AddField("Users", usersGuild.Count, true);
 
                 await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
