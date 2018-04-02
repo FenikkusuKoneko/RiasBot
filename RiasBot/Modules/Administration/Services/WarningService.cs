@@ -43,7 +43,7 @@ namespace RiasBot.Modules.Administration.Services
                 await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 try
                 {
-                    if (nrWarnings + 1 >= guildDb.WarnsPunishment)
+                    if (nrWarnings + 1 >= guildDb.WarnsPunishment && guildDb.WarnsPunishment != 0)
                     {
                         db.Remove(warning);
                         db.RemoveRange(warnings);
