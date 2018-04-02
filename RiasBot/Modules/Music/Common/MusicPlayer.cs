@@ -46,6 +46,7 @@ namespace RiasBot.Modules.Music.Common
         public float volume = 1.0f;
         public bool isRunning;
         public bool waited;     //for not spamming
+        public bool isDownloading; //downloading the next song
         public bool repeat;     //repeat the current song
         public Stopwatch timer;
 
@@ -137,6 +138,7 @@ namespace RiasBot.Modules.Music.Common
                             }
 
                             await _channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                            isDownloading = true;
                             await Task.Factory.StartNew(() => _sp.DownloadNextSong());
                             if (!isRunning)
                             {
@@ -207,7 +209,7 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task PlayByIndex(int index)
         {
-            if (!waited)
+            if (!waited && !isDownloading)
             {
                 Dispose();
                 waited = true;
@@ -274,6 +276,7 @@ namespace RiasBot.Modules.Music.Common
                 {
                     tokenSource = new CancellationTokenSource();
                     token = tokenSource.Token;
+                    audioStream = audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
                 }
                 if (timer != null)
                     timer.Restart();
@@ -282,7 +285,6 @@ namespace RiasBot.Modules.Music.Common
                     timer = new Stopwatch();
                     timer.Start();
                 }
-                audioStream = audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
                 byte[] buffer = new byte[3840];
                 int bytesRead = 0;
 
@@ -368,7 +370,7 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Skip()
         {
-            if (!waited)
+            if (!waited && !isDownloading)
             {
                 if (position + 1 < Queue.Count)
                 {
@@ -668,14 +670,6 @@ namespace RiasBot.Modules.Music.Common
             {
                 _outStream.Dispose();
                 p.Dispose();
-            }
-            catch
-            {
-
-            }
-            try
-            {
-                audioStream.Dispose();
             }
             catch
             {

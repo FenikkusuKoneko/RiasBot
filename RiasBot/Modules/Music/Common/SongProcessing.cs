@@ -24,7 +24,7 @@ namespace RiasBot.Modules.Music.Common
                 p = Process.Start(new ProcessStartInfo
                 {
                     FileName = "youtube-dl",
-                    Arguments = "-f bestaudio -g " + input,
+                    Arguments = "--proxy \"\" --geo-bypass -f bestaudio -g " + input,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -36,6 +36,7 @@ namespace RiasBot.Modules.Music.Common
 
                 result = result.Replace("\r\n", "").Replace("\n", "").Replace("\r", "");
 
+                _mp.isDownloading = false;
                 return result;
             }
             catch
