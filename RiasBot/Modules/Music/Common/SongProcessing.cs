@@ -27,9 +27,13 @@ namespace RiasBot.Modules.Music.Common
                     Arguments = "-f bestaudio -g " + input,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                 });
                 string result = await p.StandardOutput.ReadToEndAsync();
-                await _mp._channel.SendErrorEmbed(await p.StandardError.ReadToEndAsync());
+                string error = await p.StandardError.ReadToEndAsync();
+                if (!String.IsNullOrEmpty(error))
+                    await _mp._channel.SendErrorEmbed(error);
+
                 result = result.Replace("\r\n", "").Replace("\n", "").Replace("\r", "");
 
                 return result;
