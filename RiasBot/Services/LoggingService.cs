@@ -43,7 +43,7 @@ namespace RiasBot.Services
 
             if (ready)
             {
-                if (msg.Severity == LogSeverity.Error || msg.Severity == LogSeverity.Critical)
+                if (msg.Severity == LogSeverity.Error || msg.Severity == LogSeverity.Critical || msg.Severity == LogSeverity.Debug)
                 {
                     logText.Add($"{DateTime.UtcNow.ToString("hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}");
                     try
@@ -80,7 +80,7 @@ namespace RiasBot.Services
                 $"{DateTime.UtcNow.ToString("hh:mm:ss")} [Command] \"{commandInfo.Name}\"",
                 $"\t[User] \"{context.User}\" ({context.User.Id})",
                 $"\t[Channel] \"{context.Channel.Name}\" ({context.Channel.Id})",
-                $"\t[Guild] \"{context.Guild.Name}\" ({context.Guild.Id})"
+                $"\t[Guild] \"{context.Guild?.Name ?? "DM"}\" ({context.Guild?.Id ?? 0})"
             };
             try
             {
