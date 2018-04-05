@@ -63,10 +63,10 @@ namespace RiasBot.Services
                             {
                                 var greetMsg = guildDb.GreetMessage;
                                 var channel = _discord.GetGuild(user.Guild.Id).GetTextChannel(guildDb.GreetChannel);
-                                if (guildDb.GreetMessage.Contains("%user%"))
-                                {
-                                    greetMsg = greetMsg.Replace("%user%", user.Mention);
-                                }
+                                greetMsg = greetMsg.Replace("%user%", user.Mention);
+                                greetMsg = greetMsg.Replace("%guild%", Format.Bold(user.Guild.Name));
+                                greetMsg = greetMsg.Replace("%server%", Format.Bold(user.Guild.Name));
+
                                 var embed = Extensions.Extensions.EmbedFromJson(greetMsg);
                                 if (embed is null)
                                     await channel.SendMessageAsync(greetMsg).ConfigureAwait(false);
@@ -108,10 +108,10 @@ namespace RiasBot.Services
                             {
                                 var byeMsg = guildDb.ByeMessage;
                                 var channel = _discord.GetGuild(user.Guild.Id).GetTextChannel(guildDb.ByeChannel);
-                                if (guildDb.ByeMessage.Contains("%user%"))
-                                {
-                                    byeMsg = byeMsg.Replace("%user%", $"{user.Username}#{user.Discriminator}");
-                                }
+                                byeMsg = byeMsg.Replace("%user%", user.ToString());
+                                byeMsg = byeMsg.Replace("%guild%", Format.Bold(user.Guild.Name));
+                                byeMsg = byeMsg.Replace("%server%", Format.Bold(user.Guild.Name));
+
                                 var embed = Extensions.Extensions.EmbedFromJson(byeMsg);
                                 if (embed is null)
                                     await channel.SendMessageAsync(byeMsg).ConfigureAwait(false);

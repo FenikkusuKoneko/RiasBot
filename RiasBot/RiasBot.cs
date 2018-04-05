@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using RiasBot.Services;
@@ -18,7 +19,7 @@ namespace RiasBot
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.3.26";
+        public static string version = "1.3.27";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
@@ -42,7 +43,8 @@ namespace RiasBot
                 .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig     // Add the discord client to the service provider
                 {
                     LogLevel = LogSeverity.Info,
-                    MessageCacheSize = 1000     // Tell Discord.Net to cache 1000 messages per channel
+                    MessageCacheSize = 1000,     // Tell Discord.Net to cache 1000 messages per channel
+                    AlwaysDownloadUsers = true,
                 }))
                 .AddSingleton(new CommandService(new CommandServiceConfig     // Add the command service to the service provider
                 {

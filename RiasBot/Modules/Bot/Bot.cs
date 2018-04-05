@@ -6,20 +6,13 @@ using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
 using RiasBot.Modules.Searches.Services;
 using RiasBot.Services;
-using RiasBot.Services.Database.Models;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace RiasBot.Modules.Bot
 {
-    public class Bot : RiasModule
+    public partial class Bot : RiasModule
     {
         private readonly CommandHandler _ch;
         private readonly CommandService _service;
@@ -44,10 +37,8 @@ namespace RiasBot.Modules.Bot
             _cuteGirlsService = cuteGirlsService;
         }
 
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
         [RequireOwner]
         public async Task LeaveGuild(ulong id)
         {
@@ -63,122 +54,6 @@ namespace RiasBot.Modules.Bot
 
                 await guild.LeaveAsync().ConfigureAwait(false);
             }
-        }
-
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
-        [RequireOwner]
-        public async Task Activity(string type = null, [Remainder]string name = null)
-        {
-            try
-            {
-                _botService.status.Dispose();
-            }
-            catch
-            {
-
-            }
-
-            name = name ?? "";
-            type = type?.ToLower();
-            if (type is null)
-                await _client.SetActivityAsync(new Game("", ActivityType.Playing)).ConfigureAwait(false);
-
-            switch (type)
-            {
-                case "playing":
-                    await _client.SetActivityAsync(new Game(name, ActivityType.Playing)).ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"Activity status set to {Format.Bold($"Playing {name}")}");
-                    break;
-                case "listening":
-                    await _client.SetActivityAsync(new Game(name, ActivityType.Listening)).ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"Activity status set to {Format.Bold($"Listening to {name}")}");
-                    break;
-                case "watching":
-                    await _client.SetActivityAsync(new Game(name, ActivityType.Watching)).ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"Activity status set to {Format.Bold($"Watching {name}")}");
-                    break;
-            }
-        }
-
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
-        [RequireOwner]
-        public async Task ActivityRotate(int time, [Remainder]string status)
-        {
-            var statuses = status.Split('\n');
-
-            _botService.statuses = statuses;
-            _botService.status = new Timer(async _ => await _botService.StatusRotate(), null, 0, time * 1000);
-
-            await Context.Channel.SendConfirmationEmbed($"Activity status rotation set: {time} seconds\n{String.Join("\n", statuses)}");
-        }
-
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
-        [RequireOwner]
-        public async Task Status(string status)
-        {
-            status = status.ToLowerInvariant();
-            switch (status)
-            {
-                case "online":
-                    await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.Online);
-                    await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("Online")}");
-                    break;
-                case "idle":
-                    await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.Idle);
-                    await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("Idle")}");
-                    break;
-                case "afk":
-                    await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.AFK);
-                    await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("AFK")}");
-                    break;
-                case "donotdisturb":
-                    await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.DoNotDisturb);
-                    await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("DoNotDisturb")}");
-                    break;
-                case "dnd":
-                    await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.DoNotDisturb);
-                    await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("DoNotDisturb")}");
-                    break;
-                case "invisible":
-                    await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.Invisible);
-                    await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("Invisible")}");
-                    break;
-            }
-        }
-
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
-        [RequireOwner]
-        public async Task Streaming(string url = null, [Remainder]string name = null)
-        {
-            try
-            {
-                _botService.status.Dispose();
-            }
-            catch
-            {
-
-            }
-
-            name = name ?? "";
-            url = url ?? "";
-
-            var game = new Game(name, ActivityType.Streaming);
-            game = new StreamingGame(name, url);
-
-            await _client.SetActivityAsync(game).ConfigureAwait(false);
-            await Context.Channel.SendConfirmationEmbed($"Activity status set to {Format.Bold($"Streaming {name}")}");
         }
 
         [RiasCommand]
@@ -250,57 +125,23 @@ namespace RiasBot.Modules.Bot
         [Description]
         [@Remarks]
         [RequireOwner]
-        public async Task Name([Remainder]string name)
-        {
-            try
-            {
-                await Context.Client.CurrentUser.ModifyAsync(u => u.Username = name);
-                await ReplyAsync("New name " + name);
-            }
-            catch
-            {
-                await ReplyAsync("You need to wait 2 hours to change your name again.");
-            }
-        }
-
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
-        [RequireOwner]
-        public async Task Avatar(string url)
-        {
-            try
-            {
-                var http = new HttpClient();
-                var res = await http.GetStreamAsync(new Uri(url));
-                var ms = new MemoryStream();
-                res.CopyTo(ms);
-                ms.Position = 0;
-                await Context.Client.CurrentUser.ModifyAsync(x => x.Avatar = new Image(ms));
-            }
-            catch
-            {
-
-            }
-        }
-
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
-        [RequireOwner]
         public async Task Edit(string channelMessage, [Remainder]string message)
         {
             try
             {
+                var embed = Extensions.Extensions.EmbedFromJson(message);
                 var ids = channelMessage.Split("|");
                 UInt64.TryParse(ids[0], out ulong channelId);
                 UInt64.TryParse(ids[1], out ulong messageId);
 
+
                 var channel = await Context.Client.GetChannelAsync(channelId).ConfigureAwait(false);
                 var msg = await ((ITextChannel)channel).GetMessageAsync(messageId).ConfigureAwait(false);
-                await ((IUserMessage)msg).ModifyAsync(x => x.Content = message).ConfigureAwait(false);
+
+                if (embed is null)
+                    await ((IUserMessage)msg).ModifyAsync(x => x.Content = message).ConfigureAwait(false);
+                else
+                    await ((IUserMessage)msg).ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
                 await Context.Channel.SendConfirmationEmbed("Message edited!");
             }
             catch

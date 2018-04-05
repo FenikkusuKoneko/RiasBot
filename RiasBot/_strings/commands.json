@@ -95,7 +95,7 @@
 
   "greetmessage": {
     "Command": "greetmsg",
-    "Description": "Set the announcement message when someone joins the server.\nPlaceholders: %user% (will mention the user who joins). Embeds are supported, json form: soon a site for it.",
+    "Description": "Set the announcement message when someone joins the server.\nPlaceholders:\n`%user%` - will mention the user who joins\n`%server%` or `%guild%` - will put the name of the server\nEmbeds are supported, json form: soon a site for it.",
     "Remarks": [
       "[prefix]greetmsg Welcome %user% to..."
     ]
@@ -111,7 +111,7 @@
 
   "byemessage": {
     "Command": "byemsg",
-    "Description": "Set the announcement message when someone leaves the server.\nPlaceholders: %user% (will mention the user who leaves). Embeds are supported, json form: soon a site for it.",
+    "Description": "Set the announcement message when someone leaves the server.\nPlaceholders:\n`%user%` will mention the user who leaves\n`%server%` or `%guild%` - will put the name of the server\nEmbeds are supported, json form: soon a site for it.",
     "Remarks": [
       "[prefix]byemsg %user% left..."
     ]
@@ -219,6 +219,22 @@
     "Description": "Update images with reactions, neko and kitsune.",
     "Remarks": [
       "[prefix]updateimages"
+    ]
+  },
+
+  "event": {
+    "Command": "event",
+    "Description": "Start an event to win [currency].\nGame: counter.\nParameters: reward, maximum, differencePerUser, onlyNumbers, botStarts, message.",
+    "Remarks": [
+      "[prefix]event type parameters"
+    ]
+  },
+
+  "stopevent": {
+    "Command": "stopevent",
+    "Description": "Stop any event that is running",
+    "Remarks": [
+      "[prefix]stopevent"
     ]
   },
 
