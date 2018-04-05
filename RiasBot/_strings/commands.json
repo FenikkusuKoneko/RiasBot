@@ -1129,5 +1129,21 @@
       "[prefix]lurr 5 Active",
 	  "[prefix]lurr 5"
     ]
+  },
+
+  "resetguildexperience": {
+    "Command": "resetserverxp rsxp",
+    "Description": "Reset the xp leaderboard from a server.",
+    "Remarks": [
+      "[prefix]rsxp",
+    ]
+  },
+
+  "removeglobalexperience": {
+    "Command": "removeglobalxp rgxp",
+    "Description": "Remove global xp from an user.",
+    "Remarks": [
+      "[prefix]rgxp 3 100 @User",
+    ]
   }
 }

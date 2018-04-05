@@ -243,5 +243,83 @@ namespace RiasBot.Modules.Xp
                 await db.SaveChangesAsync().ConfigureAwait(false);
             }
         }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireContext(ContextType.Guild)]
+        public async Task ResetGuildExperience()
+        {
+            using (var db = _db.GetDbContext())
+            {
+                var xpSystemDb = db.XpSystem.Where(x => x.GuildId == Context.Guild.Id);
+                foreach (var xpData in xpSystemDb)
+                {
+                    db.Remove(xpData);
+                }
+                await db.SaveChangesAsync().ConfigureAwait(false);
+            }
+            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} server xp leaderboard has been reset.");
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireOwner]
+        public async Task RemoveGlobalExperience(int amount, ulong id)
+        {
+            using (var db = _db.GetDbContext())
+            {
+                var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
+                if (userDb != null)
+                {
+                    if (userDb.Xp - amount < 0)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        userDb.Xp -= amount;
+                    }
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+                    var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
+                    await ReplyAsync($"Took {amount} global xp from {Format.Bold(user.ToString())}").ConfigureAwait(false);
+                }
+                else
+                {
+                    await ReplyAsync("The user doesn't exists in the database");
+                }
+            }
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireOwner]
+        public async Task RemoveGlobalExperience(int level, int amount, string user)
+        {
+            var userSplit = user.Split("#");
+            var getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+            using (var db = _db.GetDbContext())
+            {
+                var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
+                if (userDb != null)
+                {
+                    if (userDb.Xp - amount < 0)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        userDb.Level = level;
+                        userDb.Xp -= amount;
+                    }
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+                    await ReplyAsync($"Took {amount} global xp from {Format.Bold(getUser.ToString())}, current level {level}.").ConfigureAwait(false);
+                }
+                else
+                {
+                    await ReplyAsync("The user doesn't exists in the database");
+                }
+            }
+        }
     }
 }
