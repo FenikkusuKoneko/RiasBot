@@ -32,7 +32,6 @@ namespace RiasBot.Modules.Music
         public async Task Play([Remainder] string keywords)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
-            //var currentVoiceChannel = ((IVoiceState)(await Context.Guild.GetCurrentUserAsync())).VoiceChannel;
             if (voiceChannel is null)
             {
                 await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
@@ -137,7 +136,7 @@ namespace RiasBot.Modules.Music
                 return;
             }
 
-            var mp = _service.GetOrAddMusicPlayer(Context.Guild);
+            var mp = _service.GetMusicPlayer(Context.Guild);
             mp.Unpause();
         }
 

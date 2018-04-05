@@ -157,7 +157,15 @@ namespace RiasBot.Services
             try
             {
                 AuthDiscordBotListApi dblApi = new AuthDiscordBotListApi(_creds.ClientId, _creds.DiscordBotsListApiKey);
-                var dblSelfBot = await dblApi.GetMeAsync().ConfigureAwait(false);
+                IDblSelfBot dblSelfBot;
+                try
+                {
+                    dblSelfBot = await dblApi.GetMeAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    return;
+                }
                 await dblSelfBot.UpdateStatsAsync(_discord.Guilds.Count).ConfigureAwait(false);
 
                 if (TimeSpan.Compare(voteTimer.Elapsed, new TimeSpan(1, 0, 0)) >= 0)
@@ -196,9 +204,9 @@ namespace RiasBot.Services
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e);
+                Console.WriteLine("Error Dbl");
             }
         }
     }

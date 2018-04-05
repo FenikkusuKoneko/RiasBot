@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace RiasBot.Modules.Music.Common
 {
-    public class MusicPlayer : IDisposable
+    public class MusicPlayer
     {
         public DiscordSocketClient _client;
         public SongProcessing _sp;

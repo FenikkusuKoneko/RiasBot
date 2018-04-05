@@ -60,8 +60,8 @@ namespace RiasBot.Modules.Music.MusicServices
                     {
                         return;
                     }
-                    await mp.Destroy("I left because everybody left the voice channel!");
                     MPlayer.TryRemove(userG.Guild.Id, out var musicPlayer);
+                    await musicPlayer.Destroy("I left because everybody left the voice channel!");
                 }
             }
             catch
