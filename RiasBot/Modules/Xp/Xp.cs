@@ -265,7 +265,7 @@ namespace RiasBot.Modules.Xp
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireOwner]
-        public async Task RemoveGlobalExperience(int amount, ulong id)
+        public async Task RemoveGlobalExperience(int level, int amount, ulong id)
         {
             using (var db = _db.GetDbContext())
             {
@@ -282,7 +282,7 @@ namespace RiasBot.Modules.Xp
                     }
                     await db.SaveChangesAsync().ConfigureAwait(false);
                     var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
-                    await ReplyAsync($"Took {amount} global xp from {Format.Bold(user.ToString())}").ConfigureAwait(false);
+                    await ReplyAsync($"Took {amount} global xp from {Format.Bold(user.ToString())}, current level {level}.").ConfigureAwait(false);
                 }
                 else
                 {
