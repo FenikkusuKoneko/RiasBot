@@ -404,7 +404,7 @@
 
   "createchannel": {
     "Command": "createchannel cch",
-    "Description": "Create a text or a voice channel. The type of the channel must be specified: `text` or `voice`.The ",
+    "Description": "Create a text or a voice channel. The type of the channel must be specified: `text` or `voice`.",
     "Remarks": [
       "[prefix]cch text music",
       "[prefix]cch voice Music"
