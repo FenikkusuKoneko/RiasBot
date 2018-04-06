@@ -127,6 +127,7 @@ namespace RiasBot.Modules.Music
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
+        [Priority(2)]
         public async Task Play()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
@@ -137,7 +138,10 @@ namespace RiasBot.Modules.Music
             }
 
             var mp = _service.GetMusicPlayer(Context.Guild);
-            mp.Unpause();
+            if (mp != null)
+                mp.Unpause();
+            else
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
 
         [RiasCommand][@Alias]

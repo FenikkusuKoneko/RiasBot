@@ -10,20 +10,22 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Permissions;
 using System.Threading.Tasks;
 
 namespace RiasBot
 {
     public class RiasBot
     {
+        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.ControlAppDomain)]
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.3.28";
+        public static string version = "1.3.29";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
-        public static string invite = "https://discordapp.com/oauth2/authorize?client_id=381387277764395008&permissions=1609952383&scope=bot";
+        public static string invite = "https://discordapp.com/oauth2/authorize?client_id=381387277764395008&scope=bot&permissions=1610083455";
         public static ulong fenikkusuId = 327927038360944640;
         public static string creatorServer = "https://discord.gg/VPfBvBt";
         public static ulong supportServer = 416492045859946507;
@@ -36,6 +38,9 @@ namespace RiasBot
 
         public async Task StartAsync()
         {
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
+
             SetEnvironmentCurrentDirectory(); //Set Environment#CurrentDirectory with the project's path. Call it for the first time.
             Credentials = new BotCredentials();
 
@@ -85,6 +90,12 @@ namespace RiasBot
             string path = Environment.CurrentDirectory;
             if (path.Contains("bin"))
                 Environment.CurrentDirectory = Directory.GetParent(path).Parent.Parent.FullName;
+        }
+
+        public void MyHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception e = (Exception)args.ExceptionObject;
+            Console.WriteLine("MyHandler caught : " + e.Message);
         }
     }
 }

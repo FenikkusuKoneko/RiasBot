@@ -30,7 +30,6 @@ namespace RiasBot.Modules.Music.Common
         public TaskCompletionSource<bool> pauseTaskSource { get; set; } = null;
         public event Action<MusicPlayer, bool> OnPauseChanged;
 
-        public Object locker = new Object();
         public SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
         public Process p;
@@ -117,25 +116,22 @@ namespace RiasBot.Modules.Music.Common
                         if (Queue.Count < 50)
                         {
                             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                            lock (locker)
+                            var eta = Queue[position].duration;
+                            eta = eta.Subtract(timer.Elapsed);
+
+                            for (int i = position + 1; i < Queue.Count; i++)
                             {
-                                var eta = Queue[position].duration;
-                                eta = eta.Subtract(timer.Elapsed);
-
-                                for (int i = position + 1; i < Queue.Count; i++)
-                                {
-                                    var songQueue = Queue[i];
-                                    eta = eta.Add(songQueue.duration);
-                                }
-                                var timeETA = GetTimeString(eta);
-
-                                Queue.Add(song);
-                                embed.WithAuthor("Added to queue", song.user.GetAvatarUrl() ?? song.user.DefaultAvatarUrl());
-                                embed.WithDescription($"[{song.title}]({song.url})");
-                                embed.AddField("Channel", song.channel, true).AddField("Length", song.duration, true);
-                                embed.AddField("ETA", timeETA, true).AddField("Position", Queue.Count, true);
-                                embed.WithThumbnailUrl(song.thumbnail);
+                                var songQueue = Queue[i];
+                                eta = eta.Add(songQueue.duration);
                             }
+                            var timeETA = GetTimeString(eta);
+
+                            Queue.Add(song);
+                            embed.WithAuthor("Added to queue", song.user.GetAvatarUrl() ?? song.user.DefaultAvatarUrl());
+                            embed.WithDescription($"[{song.title}]({song.url})");
+                            embed.AddField("Channel", song.channel, true).AddField("Length", song.duration, true);
+                            embed.AddField("ETA", timeETA, true).AddField("Position", Queue.Count, true);
+                            embed.WithThumbnailUrl(song.thumbnail);
 
                             await _channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                             isDownloading = true;
@@ -176,30 +172,27 @@ namespace RiasBot.Modules.Music.Common
                 videoListRequestSnippet.Id = playlistItem.Snippet.ResourceId.VideoId;
                 var videoListResponseSnippet = await videoListRequestSnippet.ExecuteAsync().ConfigureAwait(false);
 
-                lock (locker)
+                string title = playlistItem.Snippet.Title;
+                string url = "https://youtu.be/" + playlistItem.Snippet.ResourceId.VideoId;
+                var channel = videoListResponseSnippet.Items.FirstOrDefault().Snippet.ChannelTitle;
+                TimeSpan duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items.FirstOrDefault().ContentDetails.Duration);
+                string thumbnail = playlistItem.Snippet.Thumbnails.High.Url;
+
+                if (title is null || url is null || duration == new TimeSpan(0, 0, 0) || thumbnail is null)
+                    return;
+
+                Song song = new Song()
                 {
-                    string title = playlistItem.Snippet.Title;
-                    string url = "https://youtu.be/" + playlistItem.Snippet.ResourceId.VideoId;
-                    var channel = videoListResponseSnippet.Items.FirstOrDefault().Snippet.ChannelTitle;
-                    TimeSpan duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items.FirstOrDefault().ContentDetails.Duration);
-                    string thumbnail = playlistItem.Snippet.Thumbnails.High.Url;
-
-                    if (title is null || url is null || duration == new TimeSpan(0, 0, 0) || thumbnail is null)
-                        return;
-
-                    Song song = new Song()
-                    {
-                        title = title,
-                        url = url,
-                        channel = channel,
-                        duration = duration,
-                        thumbnail = thumbnail,
-                        user = user,
-                        dlUrl = null
-                    };
-                    isRunning = true;
-                    Queue.Add(song);
-                }
+                    title = title,
+                    url = url,
+                    channel = channel,
+                    duration = duration,
+                    thumbnail = thumbnail,
+                    user = user,
+                    dlUrl = null
+                };
+                isRunning = true;
+                Queue.Add(song);
             }
             finally
             {
@@ -336,9 +329,9 @@ namespace RiasBot.Modules.Music.Common
             try
             {
                 await semaphoreSlim.WaitAsync();
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                lock (locker)
+                if (isRunning)
                 {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     string timerBar = null;
                     double timerPos = (timer.ElapsedMilliseconds / Queue[position].duration.TotalMilliseconds) * 30;
                     for (int i = 0; i < 30; i++)
@@ -358,9 +351,13 @@ namespace RiasBot.Modules.Music.Common
                         $"{Format.Code($"{GetTimeString(timer.Elapsed)}/{GetTimeString(song.duration)}")}\n\n" +
                         $"{Format.Bold("Requested by:")} {song.user}");
                     embed.WithThumbnailUrl(song.thumbnail);
-                }
 
-                await _channel.SendMessageAsync("", embed: embed.Build());
+                    await _channel.SendMessageAsync("", embed: embed.Build());
+                }
+                else
+                {
+                    await _channel.SendErrorEmbed("No song is running!");
+                }
             }
             finally
             {
@@ -374,11 +371,9 @@ namespace RiasBot.Modules.Music.Common
             {
                 if (position + 1 < Queue.Count)
                 {
-                    lock (locker)
-                    {
-                        Dispose();
-                        waited = true;
-                    }
+                    Dispose();
+                    waited = true;
+
                     await _channel.SendConfirmationEmbed("Skipping current song!");
                     await UpdateQueue(++position).ConfigureAwait(false);
                 }
@@ -393,11 +388,9 @@ namespace RiasBot.Modules.Music.Common
         {
             if (!waited)
             {
-                lock (locker)
-                {
-                    Dispose();
-                    waited = true;
-                }
+                Dispose();
+                waited = true;
+
                 await _channel.SendConfirmationEmbed("Replay current song!");
                 await UpdateQueue(position).ConfigureAwait(false);
             }
@@ -406,16 +399,14 @@ namespace RiasBot.Modules.Music.Common
         public async Task Playlist()
         {
             string[] playlist = new string[Queue.Count];
-            lock (locker)
+            for (int i = 0; i < Queue.Count; i++)
             {
-                for (int i = 0; i < Queue.Count; i++)
-                {
-                    if (position == i)
-                        playlist[i] = $"➡ #{i + 1} {Queue[i].title} {Format.Code($"({Queue[i].duration})")}";
-                    else
-                        playlist[i] = $"#{i + 1} {Queue[i].title} {Format.Code($"({ Queue[i].duration})")}";
+                if (position == i)
+                    playlist[i] = $"➡ #{i + 1} {Queue[i].title} {Format.Code($"({Queue[i].duration})")}";
+                else
+                    playlist[i] = $"#{i + 1} {Queue[i].title} {Format.Code($"({ Queue[i].duration})")}";
             }
-            }
+
             await _channel.SendPaginated(_client, "Current playlist", playlist, 10);
         }
 
@@ -424,13 +415,10 @@ namespace RiasBot.Modules.Music.Common
             await semaphoreSlim.WaitAsync();
             try
             {
-                lock(locker)
-                {
-                    Song song = Queue[position];
-                    Queue.Shuffle();
-                    var pos = Queue.IndexOf(song);
-                    position = pos;
-                }
+                Song song = Queue[position];
+                Queue.Shuffle();
+                var pos = Queue.IndexOf(song);
+                position = pos;
 
                 if (Queue.Count == 1)
                     await _channel.SendErrorEmbed("The playlist has only one song!");
@@ -449,19 +437,17 @@ namespace RiasBot.Modules.Music.Common
             await semaphoreSlim.WaitAsync();
             try
             {
-                lock(locker)
-                {
-                    Queue.Clear();
-                    position = 0;
-                    isRunning = false;
+                Queue.Clear();
+                position = 0;
+                isRunning = false;
 
-                    tokenSource.Cancel();
-                    tokenSource.Dispose();
-                    tokenSource = new CancellationTokenSource();
-                    token = tokenSource.Token;
+                tokenSource.Cancel();
+                tokenSource.Dispose();
+                tokenSource = new CancellationTokenSource();
+                token = tokenSource.Token;
 
-                    Dispose();
-                }
+                Dispose();
+
                 await _channel.SendConfirmationEmbed("Current playlist cleared!").ConfigureAwait(false);
             }
             catch
@@ -478,25 +464,23 @@ namespace RiasBot.Modules.Music.Common
             try
             {
                 var song = Queue[index];
-                lock (locker)
+                if (index != position)
                 {
-                    if (index != position)
+                    if (index < position)
                     {
-                        if (index < position)
-                        {
-                            Queue.Remove(song);
-                            position--;
-                        }
-                        else
-                        {
-                            Queue.Remove(song);
-                        }
+                        Queue.Remove(song);
+                        position--;
                     }
                     else
                     {
-                        current = true;
+                        Queue.Remove(song);
                     }
                 }
+                else
+                {
+                    current = true;
+                }
+
                 if (!current)
                     await _channel.SendConfirmationEmbed($"{Format.Bold(song.title)} was removed from the playlist!").ConfigureAwait(false);
                 else
@@ -527,25 +511,23 @@ namespace RiasBot.Modules.Music.Common
 
                 var song = Queue.Find(x => x.title == titles.FirstOrDefault().title);
                 var index = Queue.IndexOf(song);
-                lock (locker)
+                if (song.title != Queue[position].title)
                 {
-                    if (song.title != Queue[position].title)
+                    if (index < position)
                     {
-                        if (index < position)
-                        {
-                            Queue.Remove(song);
-                            position--;
-                        }
-                        else
-                        {
-                            Queue.Remove(song);
-                        }
+                        Queue.Remove(song);
+                        position--;
                     }
                     else
                     {
-                        current = true;
+                        Queue.Remove(song);
                     }
                 }
+                else
+                {
+                    current = true;
+                }
+
                 if (!current)
                     await _channel.SendConfirmationEmbed($"{Format.Bold(song.title)} was removed from the playlist!").ConfigureAwait(false);
                 else
@@ -578,10 +560,7 @@ namespace RiasBot.Modules.Music.Common
         {
             if (volume >= 0 && volume <= 100)
             {
-                lock(locker)
-                {
-                    this.volume = ((float)volume) / 100;
-                }
+                this.volume = ((float)volume) / 100;
                 await _channel.SendConfirmationEmbed($"Volume set to {volume}%");
             }
         }
@@ -608,32 +587,27 @@ namespace RiasBot.Modules.Music.Common
 
         public void Unpause()
         {
-            lock(locker)
+            if (pauseTaskSource != null)
             {
-                if (pauseTaskSource != null)
-                {
-                    pauseTaskSource.TrySetResult(true);
-                    pauseTaskSource = null;
-                }
+                pauseTaskSource.TrySetResult(true);
+                pauseTaskSource = null;
             }
         }
 
         public async Task TogglePause()
         {
             bool pause;
-            lock(locker)
+            if (pauseTaskSource == null)
             {
-                if (pauseTaskSource == null)
-                {
-                    pauseTaskSource = new TaskCompletionSource<bool>();
-                    pause = true;
-                }
-                else
-                {
-                    Unpause();
-                    pause = false;
-                }
+                pauseTaskSource = new TaskCompletionSource<bool>();
+                pause = true;
             }
+            else
+            {
+                Unpause();
+                pause = false;
+            }
+
             if (pause)
                 await _channel.SendConfirmationEmbed("Music playback paused!");
             else
