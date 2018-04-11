@@ -1065,11 +1065,11 @@
     ]
   },
 
-  "primarywaifu": {
-    "Command": "primarywaifu belovedwaifu",
-    "Description": "Make a waifu primary and beloved. In front of her name will be a :heart:. You can set only one waifu. The price is 10000 [currency]. The action is not reversible.",
+  "belovedwaifu": {
+    "Command": "belovedwaifu primarywaifu",
+    "Description": "Make a waifu primary and beloved. In front of her name will be a :heart:. You can set only one waifu. The price is 5000 [currency]. The action is not reversible.",
     "Remarks": [
-      "[prefix]primarywaifu Rias Gremory"
+      "[prefix]belovedwaifu Rias Gremory"
     ]
   },
 

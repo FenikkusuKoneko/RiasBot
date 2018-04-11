@@ -168,14 +168,14 @@ namespace RiasBot.Modules.Utility
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
-            public async Task PrimaryWaifu([Remainder] string waifu)
+            public async Task BelovedWaifu([Remainder] string waifu)
             {
                 using (var db = _db.GetDbContext())
                 {
                     var userDb = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
                     if (userDb != null)
                     {
-                        if (userDb.Currency < 10000)
+                        if (userDb.Currency < 5000)
                         {
                             await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
                             return;
@@ -197,7 +197,7 @@ namespace RiasBot.Modules.Utility
                             {
                                 getWaifu.IsPrimary = true;
                             }
-                            userDb.Currency -= 10000;
+                            userDb.Currency -= 5000;
                             await db.SaveChangesAsync().ConfigureAwait(false);
                             await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {getWaifu.WaifuName} is now your beloved waifu :heart:.");
                         }
