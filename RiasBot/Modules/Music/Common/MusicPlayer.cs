@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using RiasBot.Extensions;
+using RiasBot.Modules.Music.MusicServices;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -308,7 +309,12 @@ namespace RiasBot.Modules.Music.Common
                     }
                     finally
                     {
-                        await audioStream.FlushAsync().ConfigureAwait(false);
+                        try
+                        {
+                            await audioStream.FlushAsync().ConfigureAwait(false);
+                        }
+                        catch
+                        { }
                         Dispose();
                     }
                 }
@@ -324,7 +330,12 @@ namespace RiasBot.Modules.Music.Common
             }
             catch
             {
-
+                if (audioClient.ConnectionState == ConnectionState.Disconnected)
+                {
+                    audioClient = null;
+                }
+                audioStream.Dispose();
+                audioStream = null;
             }
         }
 
