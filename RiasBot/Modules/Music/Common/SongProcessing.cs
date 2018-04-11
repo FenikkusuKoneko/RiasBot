@@ -47,19 +47,27 @@ namespace RiasBot.Modules.Music.Common
 
         public Process CreateStream(string path)
         {
+            Process p = null;
             var args = $"-err_detect ignore_err -i {path} -f s16le -ar 48000 -vn -ac 2 pipe:1 -loglevel error";
-            /*if (!_isLocal)
-                args = "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5 " + args;*/
 
-            return Process.Start(new ProcessStartInfo
+            try
             {
-                FileName = "ffmpeg",
-                Arguments = args,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = false,
-                CreateNoWindow = true,
-            });
+                p = Process.Start(new ProcessStartInfo
+                {
+                    FileName = "ffmpeg",
+                    Arguments = args,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = false,
+                    CreateNoWindow = true,
+                });
+
+                return p;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task DownloadNextSong()

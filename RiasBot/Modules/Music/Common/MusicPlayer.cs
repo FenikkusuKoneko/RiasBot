@@ -286,36 +286,39 @@ namespace RiasBot.Modules.Music.Common
                 if (!String.IsNullOrEmpty(path))
                 {
                     p = _sp.CreateStream(path);
-                    _outStream = p.StandardOutput.BaseStream;
-
-                    await _channel.SendMessageAsync("", embed: embed).ConfigureAwait(false);
-                    waited = false;
-
-                    try
+                    if (p != null)
                     {
-                        while ((bytesRead = await _outStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                        _outStream = p.StandardOutput.BaseStream;
+
+                        await _channel.SendMessageAsync("", embed: embed).ConfigureAwait(false);
+                        waited = false;
+
+                        try
+                        {
+                            while ((bytesRead = await _outStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                            {
+                                try
+                                {
+                                    AdjustVolume(buffer, volume);
+                                    await audioStream.WriteAsync(buffer, 0, bytesRead, token).ConfigureAwait(false);
+                                    await (pauseTaskSource?.Task ?? Task.CompletedTask);
+                                }
+                                catch
+                                {
+
+                                }
+                            }
+                        }
+                        finally
                         {
                             try
                             {
-                                AdjustVolume(buffer, volume);
-                                await audioStream.WriteAsync(buffer, 0, bytesRead, token).ConfigureAwait(false);
-                                await (pauseTaskSource?.Task ?? Task.CompletedTask);
+                                await audioStream.FlushAsync().ConfigureAwait(false);
                             }
                             catch
-                            {
-                                
-                            }
+                            { }
+                            Dispose();
                         }
-                    }
-                    finally
-                    {
-                        try
-                        {
-                            await audioStream.FlushAsync().ConfigureAwait(false);
-                        }
-                        catch
-                        { }
-                        Dispose();
                     }
                 }
                 else
