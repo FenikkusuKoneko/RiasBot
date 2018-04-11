@@ -58,7 +58,7 @@ namespace RiasBot.Extensions
             else
             {
                 embed.WithDescription(String.Join("\n", list.Skip(currentPage * itemsPerPage).Take(itemsPerPage)));
-                embed.WithFooter(currentPage + 1 + "/" + lastPage + 1);
+                embed.WithFooter((currentPage + 1) + "/" + (lastPage + 1));
                 msg = await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
 
@@ -80,7 +80,7 @@ namespace RiasBot.Extensions
                             return;
                         --currentPage;
                         embed.WithDescription(String.Join("\n", list.Skip(currentPage * itemsPerPage).Take(itemsPerPage)));
-                        embed.WithFooter(currentPage + 1 + "/" + lastPage + 1);
+                        embed.WithFooter((currentPage + 1) + "/" + (lastPage + 1));
                         await msg.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
                     }
                     else if (r.Emote.Name == arrow_right.Name)
@@ -89,7 +89,7 @@ namespace RiasBot.Extensions
                         {
                             ++currentPage;
                             embed.WithDescription(String.Join("\n", list.Skip(currentPage * itemsPerPage).Take(itemsPerPage)));
-                            embed.WithFooter(currentPage + 1 + "/" + lastPage + 1);
+                            embed.WithFooter((currentPage + 1) + "/" + (lastPage + 1));
                             await msg.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
                         }
                     }
