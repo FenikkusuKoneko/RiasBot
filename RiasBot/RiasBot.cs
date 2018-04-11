@@ -17,11 +17,10 @@ namespace RiasBot
 {
     public class RiasBot
     {
-        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.ControlAppDomain)]
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.3.29";
+        public static string version = "1.3.32";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
@@ -38,9 +37,6 @@ namespace RiasBot
 
         public async Task StartAsync()
         {
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
-
             SetEnvironmentCurrentDirectory(); //Set Environment#CurrentDirectory with the project's path. Call it for the first time.
             Credentials = new BotCredentials();
 
@@ -90,12 +86,6 @@ namespace RiasBot
             string path = Environment.CurrentDirectory;
             if (path.Contains("bin"))
                 Environment.CurrentDirectory = Directory.GetParent(path).Parent.Parent.FullName;
-        }
-
-        public void MyHandler(object sender, UnhandledExceptionEventArgs args)
-        {
-            Exception e = (Exception)args.ExceptionObject;
-            Console.WriteLine("MyHandler caught : " + e.Message);
         }
     }
 }

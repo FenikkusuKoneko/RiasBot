@@ -271,6 +271,7 @@ namespace RiasBot.Modules.Music.Common
                     token = tokenSource.Token;
                     audioStream = audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
                 }
+
                 if (timer != null)
                     timer.Restart();
                 else
@@ -291,28 +292,31 @@ namespace RiasBot.Modules.Music.Common
 
                     try
                     {
-                        while ((bytesRead = _outStream.Read(buffer, 0, buffer.Length)) > 0)
+                        while ((bytesRead = await _outStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                         {
-                            AdjustVolume(buffer, volume);
-                            await audioStream.WriteAsync(buffer, 0, bytesRead, token).ConfigureAwait(false);
-
-                            await (pauseTaskSource?.Task ?? Task.CompletedTask);
+                            try
+                            {
+                                AdjustVolume(buffer, volume);
+                                await audioStream.WriteAsync(buffer, 0, bytesRead, token).ConfigureAwait(false);
+                                await (pauseTaskSource?.Task ?? Task.CompletedTask);
+                            }
+                            catch
+                            {
+                                
+                            }
                         }
                     }
-                    catch
+                    finally
                     {
-
+                        await audioStream.FlushAsync().ConfigureAwait(false);
+                        Dispose();
                     }
                 }
                 else
                 {
                     waited = false;
                 }
-                await audioStream.FlushAsync(token).ConfigureAwait(false);
-
                 timer.Stop();
-                Dispose();
-
                 index += (repeat) ? 0 : 1;
                 position = index;
 
@@ -396,7 +400,7 @@ namespace RiasBot.Modules.Music.Common
             }
         }
 
-        public async Task Playlist()
+        public async Task Playlist(int currentPage)
         {
             string[] playlist = new string[Queue.Count];
             for (int i = 0; i < Queue.Count; i++)
@@ -407,7 +411,7 @@ namespace RiasBot.Modules.Music.Common
                     playlist[i] = $"#{i + 1} {Queue[i].title} {Format.Code($"({ Queue[i].duration})")}";
             }
 
-            await _channel.SendPaginated(_client, "Current playlist", playlist, 10);
+            await _channel.SendPaginated(_client, "Current playlist", playlist, 10, currentPage - 1);
         }
 
         public async Task Shuffle()

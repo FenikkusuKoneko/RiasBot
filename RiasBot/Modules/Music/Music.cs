@@ -240,7 +240,7 @@ namespace RiasBot.Modules.Music
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Playlist()
+        public async Task Playlist(int currentPage = 1)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -251,7 +251,7 @@ namespace RiasBot.Modules.Music
 
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Playlist().ConfigureAwait(false);
+                await mp.Playlist(currentPage).ConfigureAwait(false);
             else
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }

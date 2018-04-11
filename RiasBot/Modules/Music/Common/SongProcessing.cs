@@ -74,6 +74,10 @@ namespace RiasBot.Modules.Music.Common
                     song.dlUrl = audioURL;
                     _mp.Queue[index] = song;
                 }
+                else
+                {
+                    _mp.isDownloading = false;
+                }
             }
             catch
             {

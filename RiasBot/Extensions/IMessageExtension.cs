@@ -33,7 +33,7 @@ namespace RiasBot.Extensions
         ///<summary>
         ///Send paginated embed in current text channel.
         ///</summary>
-        public static async Task SendPaginated(this IMessageChannel channel, DiscordSocketClient client, string title, string[] list, int itemsPerPage, int currentPage = 0)
+        public static async Task SendPaginated(this IMessageChannel channel, DiscordSocketClient client, string title, string[] list, int itemsPerPage, int currentPage = 0, int timeout = 30000)
         {
             if (currentPage <= 0)
                 currentPage = 0;
@@ -58,7 +58,7 @@ namespace RiasBot.Extensions
             else
             {
                 embed.WithDescription(String.Join("\n", list.Skip(currentPage * itemsPerPage).Take(itemsPerPage)));
-                embed.WithFooter(currentPage + "/" + lastPage);
+                embed.WithFooter(currentPage + 1 + "/" + lastPage + 1);
                 msg = await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
 
@@ -80,7 +80,7 @@ namespace RiasBot.Extensions
                             return;
                         --currentPage;
                         embed.WithDescription(String.Join("\n", list.Skip(currentPage * itemsPerPage).Take(itemsPerPage)));
-                        embed.WithFooter(currentPage + "/" + lastPage);
+                        embed.WithFooter(currentPage + 1 + "/" + lastPage + 1);
                         await msg.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
                     }
                     else if (r.Emote.Name == arrow_right.Name)
@@ -89,7 +89,7 @@ namespace RiasBot.Extensions
                         {
                             ++currentPage;
                             embed.WithDescription(String.Join("\n", list.Skip(currentPage * itemsPerPage).Take(itemsPerPage)));
-                            embed.WithFooter(currentPage + "/" + lastPage);
+                            embed.WithFooter(currentPage + 1 + "/" + lastPage + 1);
                             await msg.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
                         }
                     }
@@ -102,7 +102,7 @@ namespace RiasBot.Extensions
 
             using (msg.OnReaction(client, changePage, changePage))
             {
-                await Task.Delay(30000).ConfigureAwait(false);
+                await Task.Delay(timeout).ConfigureAwait(false);
             }
 
             await msg.RemoveAllReactionsAsync().ConfigureAwait(false);

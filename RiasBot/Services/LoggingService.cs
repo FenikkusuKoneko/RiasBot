@@ -39,58 +39,35 @@ namespace RiasBot.Services
             if (!File.Exists(_logFile))               // Create today's log file if it doesn't exist
                 File.Create(_logFile).Dispose();
 
-            var logText = new List<string>();
-
             if (ready)
             {
                 if (msg.Severity != LogSeverity.Verbose && msg.Severity != LogSeverity.Warning)
                 {
-                    logText.Add($"{DateTime.UtcNow.ToString("hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}");
-                    try
-                    {
-                        File.AppendAllLinesAsync(_logFile, logText);     // Write the log text to a file
-                    }
-                    catch
-                    {
-
-                    }
-                    return Console.Out.WriteLineAsync(logText[0]);
+                    string log = $"{DateTime.UtcNow.ToString("hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
+                    
+                    return Console.Out.WriteLineAsync(log);
                 }
             }
             else
             {
-                logText.Add($"{DateTime.UtcNow.ToString("hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}");
-                try
-                {
-                    File.AppendAllLinesAsync(_logFile, logText);     // Write the log text to a file
-                }
-                catch
-                {
-
-                }
-                return Console.Out.WriteLineAsync(logText[0]);
+                string log = $"{DateTime.UtcNow.ToString("hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
+                
+                return Console.Out.WriteLineAsync(log);
             }
             return null;
         }
 
         private Task CommandLogAsync(CommandInfo commandInfo, ICommandContext context, IResult result)
         {
-            var logText = new List<string>()
+            var log = new List<string>()
             {
                 $"{DateTime.UtcNow.ToString("hh:mm:ss")} [Command] \"{commandInfo.Name}\"",
                 $"\t[User] \"{context.User}\" ({context.User.Id})",
                 $"\t[Channel] \"{context.Channel.Name}\" ({context.Channel.Id})",
                 $"\t[Guild] \"{context.Guild?.Name ?? "DM"}\" ({context.Guild?.Id ?? 0})"
             };
-            try
-            {
-                File.AppendAllLinesAsync(_logFile, logText);     // Write the log text to a file
-            }
-            catch
-            {
-
-            }
-            return Console.Out.WriteLineAsync(String.Join("\n", logText));
+            
+            return Console.Out.WriteLineAsync(String.Join("\n", log));
         }
 
         private Task Ready()
