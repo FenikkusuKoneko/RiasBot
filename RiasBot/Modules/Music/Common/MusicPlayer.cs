@@ -657,23 +657,23 @@ namespace RiasBot.Modules.Music.Common
 
         public void Dispose()
         {
-            GC.Collect();
             try
             {
                 p.StandardOutput.Dispose();
             }
             catch
             {
+
             }
             try
             {
-                _outStream.Dispose();
-                p.Dispose();
+                if (!p.HasExited)
+                    p.Kill();
             }
             catch
             {
-
             }
+            _outStream.Dispose();
         }
 
         public Task<bool> CheckMusicChannel(IMessageChannel channel) => Task<bool>.Factory.StartNew(() =>
