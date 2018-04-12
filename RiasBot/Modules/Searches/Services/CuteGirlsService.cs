@@ -24,55 +24,83 @@ namespace RiasBot.Modules.Searches.Services
 
         public string GetNekoImage()
         {
-            var rnd = new Random((int)DateTime.UtcNow.Ticks);
-            int nekoIndex = rnd.Next(0, nekoList.Count);
-            return nekoList[nekoIndex];
+            try
+            {
+                var rnd = new Random((int)DateTime.UtcNow.Ticks);
+                int nekoIndex = rnd.Next(0, nekoList.Count);
+                return nekoList[nekoIndex];
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task UpdateNekos()
         {
-            using (var http = new HttpClient())
+            try
             {
-                http.DefaultRequestHeaders.Clear();
-                http.DefaultRequestHeaders.Add("Authorization", "Client-ID " + _creds.ImgurClientID);
-
-                var url = "https://api.imgur.com/3/album/XjyX9/images"; //my album with neko girls
-                var data = await http.GetStringAsync(url);
-
-                var nekos = JsonConvert.DeserializeObject<NekoKitsuneData>(data);
-
-                foreach (var neko in nekos.data)
+                using (var http = new HttpClient())
                 {
-                    if (!nekoList.Contains(neko.link))
-                        nekoList.Add(neko.link);
+                    http.DefaultRequestHeaders.Clear();
+                    http.DefaultRequestHeaders.Add("Authorization", "Client-ID " + _creds.ImgurClientID);
+
+                    var url = "https://api.imgur.com/3/album/XjyX9/images"; //my album with neko girls
+                    var data = await http.GetStringAsync(url);
+
+                    var nekos = JsonConvert.DeserializeObject<NekoKitsuneData>(data);
+
+                    foreach (var neko in nekos.data)
+                    {
+                        if (!nekoList.Contains(neko.link))
+                            nekoList.Add(neko.link);
+                    }
                 }
+            }
+            catch
+            {
+
             }
         }
 
         public string GetKitsuneImage()
         {
-            var rnd = new Random((int)DateTime.UtcNow.Ticks);
-            int kitsuneIndex = rnd.Next(0, kitsuneList.Count);
-            return kitsuneList[kitsuneIndex];
+            try
+            {
+                var rnd = new Random((int)DateTime.UtcNow.Ticks);
+                int kitsuneIndex = rnd.Next(0, kitsuneList.Count);
+                return kitsuneList[kitsuneIndex];
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task UpdateKitsunes()
         {
-            using (var http = new HttpClient())
+            try
             {
-                http.DefaultRequestHeaders.Clear();
-                http.DefaultRequestHeaders.Add("Authorization", "Client-ID " + _creds.ImgurClientID);
-
-                var url = "https://api.imgur.com/3/album/aBaoM/images"; //my album with neko girls
-                var data = await http.GetStringAsync(url);
-
-                var kitsunes = JsonConvert.DeserializeObject<NekoKitsuneData>(data);
-
-                foreach (var kitsune in kitsunes.data)
+                using (var http = new HttpClient())
                 {
-                    if (!kitsuneList.Contains(kitsune.link))
-                        kitsuneList.Add(kitsune.link);
+                    http.DefaultRequestHeaders.Clear();
+                    http.DefaultRequestHeaders.Add("Authorization", "Client-ID " + _creds.ImgurClientID);
+
+                    var url = "https://api.imgur.com/3/album/aBaoM/images"; //my album with neko girls
+                    var data = await http.GetStringAsync(url);
+
+                    var kitsunes = JsonConvert.DeserializeObject<NekoKitsuneData>(data);
+
+                    foreach (var kitsune in kitsunes.data)
+                    {
+                        if (!kitsuneList.Contains(kitsune.link))
+                            kitsuneList.Add(kitsune.link);
+                    }
                 }
+            }
+            catch
+            {
+
             }
         }
     }
