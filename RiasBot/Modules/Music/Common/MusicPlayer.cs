@@ -205,11 +205,18 @@ namespace RiasBot.Modules.Music.Common
         {
             if (!waited && !isDownloading)
             {
-                Dispose();
-                waited = true;
-                await UpdateQueue(index).ConfigureAwait(false);
-                position = index;
-                await Task.Factory.StartNew(() => _sp.DownloadNextSong());
+                if (index < Queue.Count)
+                {
+                    Dispose();
+                    waited = true;
+                    await UpdateQueue(index).ConfigureAwait(false);
+                    position = index;
+                    await Task.Factory.StartNew(() => _sp.DownloadNextSong());
+                }
+                else
+                {
+                    await _channel.SendErrorEmbed("The song couldn't be found!").ConfigureAwait(false);
+                }
             }
         }
 
