@@ -191,7 +191,7 @@ namespace RiasBot.Modules.NSFW
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
+        [Ratelimit(1, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task HentaiPlus([Remainder]string tag = null)
         {
             var channel = (ITextChannel)Context.Channel;
