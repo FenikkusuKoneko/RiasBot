@@ -23,7 +23,7 @@ namespace RiasBot.Modules.Music.MusicServices
     {
         private DiscordSocketClient _client;
 
-        private readonly ConcurrentDictionary<ulong, MusicPlayer> MPlayer = new ConcurrentDictionary<ulong, MusicPlayer>();
+        public readonly ConcurrentDictionary<ulong, MusicPlayer> MPlayer = new ConcurrentDictionary<ulong, MusicPlayer>();
 
         /*public bool Paused => pauseTaskSource != null;
         private TaskCompletionSource<bool> pauseTaskSource { get; set; } = null;*/

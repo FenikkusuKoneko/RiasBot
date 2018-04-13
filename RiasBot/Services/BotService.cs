@@ -38,6 +38,7 @@ namespace RiasBot.Services
 
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
+            _discord.Disconnected += Disconnected;
             _discord.UserVoiceStateUpdated += _musicService.CheckIfAlone;
 
             if(!RiasBot.isBeta && !String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
@@ -126,6 +127,12 @@ namespace RiasBot.Services
                     }
                 }
             }
+        }
+
+        public Task Disconnected(Exception ex)
+        {
+            _musicService.MPlayer.Clear();
+            return Task.CompletedTask;
         }
 
         public async Task StatusRotate()

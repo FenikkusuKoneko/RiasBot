@@ -11,6 +11,8 @@ using System.Linq;
 using RiasBot.Services;
 using Discord.WebSocket;
 using System.Globalization;
+using System.Diagnostics;
+using RiasBot.Modules.Music.MusicServices;
 
 namespace RiasBot.Modules.Utility
 {
@@ -20,11 +22,13 @@ namespace RiasBot.Modules.Utility
         {
             private readonly CommandHandler _ch;
             private readonly CommandService _service;
+            private readonly MusicService _musicService;
 
-            public InfoCommands(CommandHandler ch, CommandService service)
+            public InfoCommands(CommandHandler ch, CommandService service, MusicService musicService)
             {
                 _ch = ch;
                 _service = service;
+                _musicService = musicService;
             }
 
             [RiasCommand]
@@ -33,32 +37,46 @@ namespace RiasBot.Modules.Utility
             [Description]
             public async Task Stats()
             {
-                var author = await Context.Client.GetUserAsync(RiasBot.fenikkusuId).ConfigureAwait(false);
-                var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
-
-                int textChannels = 0;
-                int voiceChannels = 0;
-                int users = 0;
-
-                foreach (var guild in guilds)
+                using (var process = Process.GetCurrentProcess())
                 {
-                    textChannels += (await guild.GetTextChannelsAsync().ConfigureAwait(false)).Count;
-                    voiceChannels += (await guild.GetVoiceChannelsAsync().ConfigureAwait(false)).Count;
-                    users += (await guild.GetUsersAsync().ConfigureAwait(false)).Count;
+                    var author = await Context.Client.GetUserAsync(RiasBot.fenikkusuId).ConfigureAwait(false);
+                    var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
+
+                    int textChannels = 0;
+                    int voiceChannels = 0;
+                    int musicRunning = 0;
+                    int musicAfk = 0;
+                    int users = 0;
+
+                    foreach (var guild in guilds)
+                    {
+                        textChannels += (await guild.GetTextChannelsAsync().ConfigureAwait(false)).Count;
+                        voiceChannels += (await guild.GetVoiceChannelsAsync().ConfigureAwait(false)).Count;
+                        users += (await guild.GetUsersAsync().ConfigureAwait(false)).Count;
+                    }
+
+                    foreach (var musicPlayer in _musicService.MPlayer)
+                    {
+                        if (musicPlayer.Value.isRunning)
+                            musicRunning++;
+                        else
+                            musicAfk++;
+                    }
+
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+
+                    embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
+                    embed.AddField("Author", author.Username + "#" + author.Discriminator, true).AddField("Bot ID", Context.Client.CurrentUser.Id.ToString(), true);
+                    embed.AddField("Master ID", author.Id, true).AddField("In server", Context.Guild?.Name ?? "-", true);
+                    embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Commands Run", RiasBot.commandsRun, true);
+                    embed.AddField("Memory", process.PrivateMemorySize64 / 1024 / 1024 + " MB", true)
+                        .AddField("Presence", $"{guilds.Count} Servers\n{textChannels} Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
+                    embed.AddField("Playing Music", $"Running {musicRunning} channels\nAFK {musicAfk} channels", true);
+                    embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
+
+                    //continue
+                    await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
                 }
-
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-
-                embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
-                embed.AddField("Author", author.Username + "#" + author.Discriminator, true).AddField("Bot ID", Context.Client.CurrentUser.Id.ToString(), true);
-                embed.AddField("Master ID", author.Id, true).AddField("In server", Context.Guild?.Name ?? "-", true);
-                embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Commands Run", RiasBot.commandsRun, true);
-                embed.AddField("Memory", Math.Round((double)GC.GetTotalMemory(false) / 1024 / 1024, 2) + " Mb", true)
-                    .AddField("Presence", $"{guilds.Count} Servers\n{textChannels} Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
-                embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
-
-                //continue
-                await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
             }
 
             [RiasCommand]
