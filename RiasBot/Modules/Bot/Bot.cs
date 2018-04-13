@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using DiscordBotsList.Api;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
+using RiasBot.Modules.Reactions.Services;
 using RiasBot.Modules.Searches.Services;
 using RiasBot.Services;
 using System;
@@ -23,8 +24,10 @@ namespace RiasBot.Modules.Bot
         private readonly IBotCredentials _creds;
 
         private readonly CuteGirlsService _cuteGirlsService;
+        private readonly ReactionsService _reactionsService;
 
-        public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordSocketClient client, BotService botService, IBotCredentials creds, CuteGirlsService cuteGirlsService)
+        public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordSocketClient client, BotService botService,
+            IBotCredentials creds, CuteGirlsService cuteGirlsService, ReactionsService reactionsService)
         {
             _ch = ch;
             _service = service;
@@ -35,6 +38,7 @@ namespace RiasBot.Modules.Bot
             _creds = creds;
 
             _cuteGirlsService = cuteGirlsService;
+            _reactionsService = reactionsService;
         }
 
         [RiasCommand][@Alias]
@@ -184,7 +188,16 @@ namespace RiasBot.Modules.Bot
             await _cuteGirlsService.UpdateNekos();
             await _cuteGirlsService.UpdateKitsunes();
 
-            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} images updated.");
+            await _reactionsService.UpdateImages("H1Pqa", _reactionsService.biteList);
+            await _reactionsService.UpdateImages("woGOn", _reactionsService.cryList);
+            await _reactionsService.UpdateImages("GdiXR", _reactionsService.gropeList);
+            await _reactionsService.UpdateImages("KTkPe", _reactionsService.hugList);
+            await _reactionsService.UpdateImages("CotHR", _reactionsService.kissList);
+            await _reactionsService.UpdateImages("5cMDN", _reactionsService.lickList);
+            await _reactionsService.UpdateImages("OQjWy", _reactionsService.patList);
+            await _reactionsService.UpdateImages("AQoU8", _reactionsService.slapList);
+
+            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} reactions, neko and kitsune images, updated");
         }
     }
 }

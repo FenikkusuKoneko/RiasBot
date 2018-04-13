@@ -573,10 +573,9 @@ namespace RiasBot.Modules.Music.Common
                 tokenSource.Dispose();
                 tokenSource = new CancellationTokenSource();
                 token = tokenSource.Token;
-
-                Dispose();
             }
             catch { }
+            Dispose();
             await audioClient.StopAsync().ConfigureAwait(false);
             await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
         }

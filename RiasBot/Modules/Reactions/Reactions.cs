@@ -6,20 +6,15 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using RiasBot.Modules.Reactions.Services;
 
 namespace RiasBot.Modules.Reactions
 {
-    public partial class Reactions : RiasModule
+    public partial class Reactions : RiasModule<ReactionsService>
     {
-        private readonly CommandHandler _ch;
-        private readonly CommandService _service;
-
-        public string path = "assets/reactions/";
-
-        public Reactions(CommandHandler ch, CommandService service)
+        public Reactions()
         {
-            _ch = ch;
-            _service = service;
+            
         }
 
         [RiasCommand][@Alias]
@@ -28,12 +23,11 @@ namespace RiasBot.Modules.Reactions
         [Priority(1)]
         public async Task Pat([Remainder]IGuildUser user)
         {
-            var gifs = Directory.GetFiles(path + "pat", "*.gif");
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.patList));
 
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
-
-            await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                $"{user.Mention} you have been patted by {Format.Bold(Context.User.ToString())} <3");
+            await Context.Channel.SendMessageAsync($"{user.Mention} you have been patted by {Format.Bold(Context.User.ToString())} <3",
+                embed: embed.Build());
         }
 
         [RiasCommand][@Alias]
@@ -42,20 +36,19 @@ namespace RiasBot.Modules.Reactions
         [Priority(0)]
         public async Task Pat([Remainder]string user = null)
         {
-            var gifs = Directory.GetFiles(path + "pat", "*.gif");
-
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.patList));
 
             if (user is null)
             {
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                $"{Format.Italics("Pat pat")} {Context.User.Mention} <3").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{Format.Italics("Pat pat")} {Context.User.Mention} <3",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
             else
             {
                 var users = user.Split(" ");
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{String.Join(" ", users)} you have been patted by {Format.Bold(Context.User.ToString())} <3").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{String.Join(" ", users)} you have been patted by {Format.Bold(Context.User.ToString())} <3",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
         }
 
@@ -65,12 +58,11 @@ namespace RiasBot.Modules.Reactions
         [Priority(1)]
         public async Task Hug([Remainder]IGuildUser user)
         {
-            var gifs = Directory.GetFiles(path + "hug", "*.gif");
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.hugList));
 
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
-
-            await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                $"{user.Mention} you have been hugged by {Format.Bold(Context.User.ToString())} <3").ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync($"{user.Mention} you have been hugged by {Format.Bold(Context.User.ToString())} <3",
+                embed: embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -79,20 +71,19 @@ namespace RiasBot.Modules.Reactions
         [Priority(0)]
         public async Task Hug([Remainder]string user = null)
         {
-            var gifs = Directory.GetFiles(path + "hug", "*.gif");
-
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.hugList));
 
             if (user is null)
             {
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{Format.Italics("Hugs")} {Context.User.Mention} <3").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{Format.Italics("Hugs")} {Context.User.Mention} <3",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
             else
             {
                 var users = user.Split(" ");
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{String.Join(" ", users)} you have been hugged by {Format.Bold(Context.User.ToString())} <3").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{String.Join(" ", users)} you have been hugged by {Format.Bold(Context.User.ToString())} <3",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
         }
 
@@ -102,12 +93,11 @@ namespace RiasBot.Modules.Reactions
         [Priority(1)]
         public async Task Kiss([Remainder]IGuildUser user)
         {
-            var gifs = Directory.GetFiles(path + "kiss", "*.gif");
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.kissList));
 
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
-
-            await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                $"{user.Mention} you have been kissed by {Format.Bold(Context.User.ToString())} ❤️").ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync($"{user.Mention} you have been kissed by {Format.Bold(Context.User.ToString())} ❤️",
+                embed: embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -116,20 +106,19 @@ namespace RiasBot.Modules.Reactions
         [Priority(0)]
         public async Task Kiss([Remainder]string user = null)
         {
-            var gifs = Directory.GetFiles(path + "kiss", "*.gif");
-
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.kissList));
 
             if (user is null)
             {
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{Format.Italics("Kiss")} {Context.User.Mention} ❤️").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{Format.Italics("Kiss")} {Context.User.Mention} ❤️",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
             else
             {
                 var users = user.Split(" ");
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{String.Join(" ", users)} you have been kissed by {Format.Bold(Context.User.ToString())} ❤️").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{String.Join(" ", users)} you have been kissed by {Format.Bold(Context.User.ToString())} ❤️",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
         }
 
@@ -139,12 +128,11 @@ namespace RiasBot.Modules.Reactions
         [Priority(1)]
         public async Task Bite([Remainder]IGuildUser user)
         {
-            var gifs = Directory.GetFiles(path + "bite", "*.gif");
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.biteList));
 
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
-
-            await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                $"{user.Mention} you have been bitten by {Format.Bold(Context.User.ToString())}").ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync($"{user.Mention} you have been bitten by {Format.Bold(Context.User.ToString())}",
+                embed: embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -153,20 +141,19 @@ namespace RiasBot.Modules.Reactions
         [Priority(0)]
         public async Task Bite([Remainder]string user = null)
         {
-            var gifs = Directory.GetFiles(path + "bite", "*.gif");
-
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.biteList));
 
             if (user is null)
             {
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{Format.Italics("Bite")} {Context.User.Mention}").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{Format.Italics("Bite")} {Context.User.Mention}",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
             else
             {
                 var users = user.Split(" ");
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{String.Join(" ", users)} you have been bitten by {Format.Bold(Context.User.ToString())}").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{String.Join(" ", users)} you have been bitten by {Format.Bold(Context.User.ToString())}",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
         }
 
@@ -176,12 +163,11 @@ namespace RiasBot.Modules.Reactions
         [Priority(1)]
         public async Task Lick([Remainder]IGuildUser user)
         {
-            var gifs = Directory.GetFiles(path + "lick", "*.gif");
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.lickList));
 
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
-
-            await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                $"{user.Mention} you have been licked by {Format.Bold(Context.User.ToString())}, lewd").ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync($"{user.Mention} you have been licked by {Format.Bold(Context.User.ToString())}, lewd",
+                embed: embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -190,20 +176,19 @@ namespace RiasBot.Modules.Reactions
         [Priority(0)]
         public async Task Lick([Remainder]string user = null)
         {
-            var gifs = Directory.GetFiles(path + "lick", "*.gif");
-
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.lickList));
 
             if (user is null)
             {
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{Format.Italics("Licks")} {Context.User.Mention} lewd").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{Format.Italics("Licks")} {Context.User.Mention} lewd",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
             else
             {
                 var users = user.Split(" ");
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{String.Join(" ", users)} you have been licked by {Format.Bold(Context.User.ToString())} lewd").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{String.Join(" ", users)} you have been licked by {Format.Bold(Context.User.ToString())} lewd",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
         }
 
@@ -213,12 +198,11 @@ namespace RiasBot.Modules.Reactions
         [Priority(1)]
         public async Task Slap([Remainder]IGuildUser user)
         {
-            var gifs = Directory.GetFiles(path + "slap", "*.gif");
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.slapList));
 
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
-
-            await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                $"{user.Mention} you have been slapped by {Format.Bold(Context.User.ToString())}").ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync($"{user.Mention} you have been slapped by {Format.Bold(Context.User.ToString())}",
+                embed: embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -227,20 +211,19 @@ namespace RiasBot.Modules.Reactions
         [Priority(0)]
         public async Task Slap([Remainder]string user = null)
         {
-            var gifs = Directory.GetFiles(path + "slap", "*.gif");
-
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.slapList));
 
             if (user is null)
             {
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{Format.Italics("Slaps")} {Context.User.Mention}").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{Format.Italics("Slaps")} {Context.User.Mention}",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
             else
             {
                 var users = user.Split(" ");
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{String.Join(" ", users)} you have been slapped by {Format.Bold(Context.User.ToString())}").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{String.Join(" ", users)} you have been slapped by {Format.Bold(Context.User.ToString())}",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
         }
 
@@ -248,12 +231,11 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         public async Task Cry()
         {
-            var gifs = Directory.GetFiles(path + "cry", "*.gif");
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.cryList));
 
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
-
-            await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                $"Aww don't cry {Context.Message.Author.Mention}. I will {Format.Italics("pat")} and {Format.Italics("hug")} you <3").ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync($"Aww don't cry {Context.Message.Author.Mention}. I will {Format.Italics("pat")} and {Format.Italics("hug")} you <3",
+                embed: embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -262,12 +244,11 @@ namespace RiasBot.Modules.Reactions
         [Priority(1)]
         public async Task Grope([Remainder]IGuildUser user)
         {
-            var gifs = Directory.GetFiles(path + "grope", "*.gif");
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.gropeList));
 
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
-
-            await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                $"{user.Mention} you have been groped by {Format.Bold(Context.User.ToString())}").ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync($"{user.Mention} you have been groped by {Format.Bold(Context.User.ToString())}",
+                embed: embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand]
@@ -278,20 +259,19 @@ namespace RiasBot.Modules.Reactions
         [Priority(0)]
         public async Task Grope([Remainder]string user = null)
         {
-            var gifs = Directory.GetFiles(path + "grope", "*.gif");
-
-            Random rnd = new Random((int)DateTime.UtcNow.Ticks);
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.gropeList));
 
             if (user is null)
             {
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{Format.Italics("Gropes")} {Context.User.Mention}").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{Format.Italics("Gropes")} {Context.User.Mention}",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
             else
             {
                 var users = user.Split(" ");
-                await Context.Channel.SendFileAsync(gifs[rnd.Next(gifs.Length)],
-                    $"{String.Join(" ", users)} you have been groped by {Format.Bold(Context.User.ToString())}").ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync($"{String.Join(" ", users)} you have been groped by {Format.Bold(Context.User.ToString())}",
+                    embed: embed.Build()).ConfigureAwait(false);
             }
         }
     }
