@@ -21,6 +21,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(1)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Pat([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -34,6 +35,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(0)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Pat([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -56,6 +58,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(1)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Hug([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -69,6 +72,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(0)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Hug([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -91,6 +95,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(1)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Kiss([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -104,6 +109,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(0)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Kiss([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -126,6 +132,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(1)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Bite([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -139,6 +146,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(0)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Bite([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -161,6 +169,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(1)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Lick([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -174,6 +183,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(0)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Lick([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -196,6 +206,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(1)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Slap([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -209,6 +220,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(0)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Slap([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -229,6 +241,7 @@ namespace RiasBot.Modules.Reactions
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Cry()
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -242,6 +255,7 @@ namespace RiasBot.Modules.Reactions
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(1)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Grope([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
@@ -251,12 +265,11 @@ namespace RiasBot.Modules.Reactions
                 embed: embed.Build()).ConfigureAwait(false);
         }
 
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(0)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Grope([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
