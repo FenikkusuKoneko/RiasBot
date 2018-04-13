@@ -4,7 +4,6 @@ using Discord.WebSocket;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using RiasBot.Extensions;
-using RiasBot.Modules.Music.MusicServices;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -137,10 +136,6 @@ namespace RiasBot.Modules.Music.Common
                             await _channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                             isDownloading = true;
                             await Task.Factory.StartNew(() => _sp.DownloadNextSong());
-                            if (!isRunning)
-                            {
-                                await UpdateQueue(position).ConfigureAwait(false);
-                            }
                         }
                         else
                         {
@@ -253,7 +248,6 @@ namespace RiasBot.Modules.Music.Common
             }
             catch
             {
-                isRunning = false;
                 waited = false;
             }
             finally
@@ -336,7 +330,10 @@ namespace RiasBot.Modules.Music.Common
                 index += (repeat) ? 0 : 1;
                 position = index;
 
-                await UpdateQueue(index).ConfigureAwait(false);
+                if (position < Queue.Count)
+                    await UpdateQueue(index).ConfigureAwait(false);
+                else
+                    isRunning = false;
             }
             catch
             {
