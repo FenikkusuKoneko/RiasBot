@@ -69,9 +69,8 @@ namespace RiasBot.Modules.Utility
                     embed.AddField("Author", author.Username + "#" + author.Discriminator, true).AddField("Bot ID", Context.Client.CurrentUser.Id.ToString(), true);
                     embed.AddField("Master ID", author.Id, true).AddField("In server", Context.Guild?.Name ?? "-", true);
                     embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Commands Run", RiasBot.commandsRun, true);
-                    embed.AddField("Memory", process.PrivateMemorySize64 / 1024 / 1024 + " MB", true)
-                        .AddField("Presence", $"{guilds.Count} Servers\n{textChannels} Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
-                    embed.AddField("Playing Music", $"Running {musicRunning} channels\nAFK {musicAfk} channels", true);
+                    embed.AddField("Presence", $"{guilds.Count} Servers\n{textChannels} Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true)
+                         .AddField("Playing Music", $"Running {musicRunning} Channels\nAFK {musicAfk} Channels", true);
                     embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
 
                     //continue

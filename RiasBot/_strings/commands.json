@@ -1058,7 +1058,7 @@
 
   "choose": {
     "Command": "choose",
-    "Description": "I will choose an item from a list. Separators allowed: \",\", \"|\", \";\"",
+    "Description": "I will choose an item from a list. Separators allowed: `,`, `|`, `;`",
     "Remarks": [
       "[prefix]choose 1, 2, 3, 4, 5",
 	  "[prefix]choose Rias | Mio | Kurumi",
