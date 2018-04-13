@@ -1056,6 +1056,15 @@
     ]
   },
 
+  "choose": {
+    "Command": "choose",
+    "Description": "I will choose an item from a list. Separators allowed: \",\", \"|\", \";\"",
+    "Remarks": [
+      "[prefix]choose 1, 2, 3, 4, 5",
+	  "[prefix]choose Rias | Mio | Kurumi",
+    ]
+  },
+
   "claimwaifu": {
     "Command": "claimwaifu",
     "Description": "Claim your waifu from anime. The price for every waifu is between 5000 and 10000 [currency]. You need to have at least 10000 [currency]. Be careful at the name. Use `[prefix]character name` to search for an anime character. The character must be on AniList database.",

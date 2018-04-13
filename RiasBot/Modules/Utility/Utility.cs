@@ -93,5 +93,16 @@ namespace RiasBot.Modules.Utility
             stopwatch.Stop();
             await Context.Channel.SendConfirmationEmbed(":ping_pong:" + stopwatch.ElapsedMilliseconds + "ms").ConfigureAwait(false);
         }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        public async Task Choose([Remainder]string list)
+        {
+            var choices = list.Split(new Char[] { ',', '|', ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var rnd = new Random((int)DateTime.UtcNow.Ticks);
+            int choice = rnd.Next(choices.Length);
+            await Context.Channel.SendConfirmationEmbed($"I chose: {Format.Bold(choices[choice].Trim())}");
+        }
     }
 }
