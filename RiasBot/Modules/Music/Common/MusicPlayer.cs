@@ -87,7 +87,6 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Play(string title, string url, string channel, TimeSpan duration, string thumbnail, IGuildUser user)
         {
-            Console.WriteLine(isRunning);
             try
             {
                 if (waited)
@@ -199,7 +198,6 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task PlayByIndex(int index)
         {
-            Console.WriteLine(isRunning);
             if (!waited && !isDownloading)
             {
                 if (index < Queue.Count)
@@ -220,7 +218,6 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task UpdateQueue(int index)
         {
-            Console.WriteLine(isRunning);
             try
             {
                 await semaphoreSlim.WaitAsync();
