@@ -339,12 +339,7 @@ namespace RiasBot.Modules.Music.Common
             }
             catch
             {
-                if (audioClient.ConnectionState == ConnectionState.Disconnected)
-                {
-                    audioClient = null;
-                }
-                audioStream.Dispose();
-                audioStream = null;
+                Dispose();
             }
         }
 

@@ -98,13 +98,7 @@ namespace RiasBot.Modules.Bot.Services
                             if (number == maximum)
                             {
                                 gameStarted = false;
-                                string[] players = new string[playerNumbers.Count];
-                                playerNumbers = playerNumbers.GroupBy(x => x.User.ToString()).Select(y => y.FirstOrDefault()).OrderBy(y => y.User.ToString()).ToList();
-                                for (int i = 0; i < playerNumbers.Count; i++)
-                                {
-                                    players[i] = playerNumbers[i].User.ToString();
-                                }
-                                await channel.SendConfirmationEmbed($"Congratulations {Format.Bold(String.Join(" ", players).Trim())} you earned {reward}{RiasBot.currency}!");
+                                await channel.SendConfirmationEmbed($"Congratulations you earned {reward}{RiasBot.currency}!");
                                 await AwardUsers().ConfigureAwait(false);
                             }
                         }
