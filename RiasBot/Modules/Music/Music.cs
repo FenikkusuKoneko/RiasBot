@@ -139,7 +139,7 @@ namespace RiasBot.Modules.Music
 
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                mp.Unpause();
+                await mp.TogglePause(false);
             else
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
@@ -157,7 +157,26 @@ namespace RiasBot.Modules.Music
             }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.TogglePause().ConfigureAwait(false);
+                await mp.TogglePause(true).ConfigureAwait(false);
+            else
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireContext(ContextType.Guild)]
+        public async Task Resume()
+        {
+            var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
+            if (voiceChannel is null)
+            {
+                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                return;
+            }
+
+            var mp = _service.GetMusicPlayer(Context.Guild);
+            if (mp != null)
+                await mp.TogglePause(false);
             else
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
@@ -530,11 +549,13 @@ namespace RiasBot.Modules.Music
                 }
             }
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-            embed.WithTitle("Choose a song by typing the index");
+            embed.WithTitle("Choose a song by typing the index. You have 10 seconds");
             embed.WithDescription(description);
             var choose = await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
 
-            if(Int32.TryParse(await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10 * 1000), out int input))
+            string getUserInput = await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10 * 1000);
+            getUserInput = getUserInput.Replace("#", "");
+            if (Int32.TryParse(getUserInput, out int input))
             {
                 input--;
                 if (input >= 0 && input < 5)

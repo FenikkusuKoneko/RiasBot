@@ -47,6 +47,7 @@ namespace RiasBot.Modules.Music.Common
         public bool waited;     //for not spamming
         public bool isDownloading; //downloading the next song
         public bool repeat;     //repeat the current song
+        public bool isPaused;
         public Stopwatch timer;
 
         public struct Song
@@ -607,35 +608,31 @@ namespace RiasBot.Modules.Music.Common
             return audioSamples;
         }
 
-        public void Unpause()
+        public async Task TogglePause(bool pause)
         {
-            if (pauseTaskSource != null)
+            if (pause != isPaused)
             {
-                pauseTaskSource.TrySetResult(true);
-                pauseTaskSource = null;
-            }
-        }
+                if (pauseTaskSource == null)
+                {
+                    pauseTaskSource = new TaskCompletionSource<bool>();
+                    timer.Stop();
+                    isPaused = pause;
+                }
+                else
+                {
+                    pauseTaskSource.TrySetResult(true);
+                    pauseTaskSource = null;
+                    timer.Start();
+                    isPaused = pause;
+                }
 
-        public async Task TogglePause()
-        {
-            bool pause;
-            if (pauseTaskSource == null)
-            {
-                pauseTaskSource = new TaskCompletionSource<bool>();
-                pause = true;
-            }
-            else
-            {
-                Unpause();
-                pause = false;
-            }
+                if (isPaused)
+                    await _channel.SendConfirmationEmbed("Music playback paused!");
+                else
+                    await _channel.SendConfirmationEmbed("Music playback resumed!");
 
-            if (pause)
-                await _channel.SendConfirmationEmbed("Music playback paused!");
-            else
-                await _channel.SendConfirmationEmbed("Music playback resumed!");
-
-            OnPauseChanged?.Invoke(this, pauseTaskSource != null);
+                OnPauseChanged?.Invoke(this, pauseTaskSource != null);
+            }
         }
 
         public async Task ToggleRepeat()

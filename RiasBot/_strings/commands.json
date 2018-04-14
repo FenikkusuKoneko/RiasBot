@@ -694,6 +694,14 @@
     ]
   },
 
+  "resume": {
+    "Command": "resume unpause",
+    "Description": "Resume the current song.",
+    "Remarks": [
+      "[prefix]resume"
+    ]
+  },
+
   "nowplaying": {
     "Command": "nowplaying np",
     "Description": "Show the current played song",
