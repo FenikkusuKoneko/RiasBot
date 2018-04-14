@@ -87,6 +87,7 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Play(string title, string url, string channel, TimeSpan duration, string thumbnail, IGuildUser user)
         {
+            Console.WriteLine(isRunning);
             try
             {
                 if (waited)
@@ -198,12 +199,14 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task PlayByIndex(int index)
         {
+            Console.WriteLine(isRunning);
             if (!waited && !isDownloading)
             {
                 if (index < Queue.Count)
                 {
                     Dispose();
                     waited = true;
+                    isRunning = true;
                     await UpdateQueue(index).ConfigureAwait(false);
                     position = index;
                     await Task.Factory.StartNew(() => _sp.DownloadNextSong());
@@ -217,6 +220,7 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task UpdateQueue(int index)
         {
+            Console.WriteLine(isRunning);
             try
             {
                 await semaphoreSlim.WaitAsync();
