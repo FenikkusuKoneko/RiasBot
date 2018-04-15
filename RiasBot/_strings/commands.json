@@ -924,6 +924,15 @@
     ]
   },
 
+  "nyaa": {
+    "Command": "nyaa",
+    "Description": "Search torrents from nyaa.si.",
+    "Remarks": [
+      "[prefix]nyaa",
+	  "[prefix]nyaa High School DxD"
+    ]
+  },
+
   "youtube": {
     "Command": "youtube yt",
     "Description": "Search a video or a channel from youtube.",

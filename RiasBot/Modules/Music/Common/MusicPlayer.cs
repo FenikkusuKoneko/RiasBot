@@ -108,6 +108,7 @@ namespace RiasBot.Modules.Music.Common
                 {
                     if (!isRunning)
                     {
+                        await TogglePause(false, false).ConfigureAwait(false);
                         Queue.Add(song);
                         await UpdateQueue(position).ConfigureAwait(false);
                         isRunning = true;
@@ -203,6 +204,7 @@ namespace RiasBot.Modules.Music.Common
             {
                 if (index < Queue.Count)
                 {
+                    await TogglePause(false, false).ConfigureAwait(false);
                     Dispose();
                     waited = true;
                     isRunning = true;
@@ -312,9 +314,15 @@ namespace RiasBot.Modules.Music.Common
                                 }
                             }
                         }
-                        catch
+                        finally
                         {
-
+                            try
+                            {
+                                await audioStream.FlushAsync().ConfigureAwait(false);
+                            }
+                            catch
+                            { }
+                            Dispose();
                         }
                     }
                 }
@@ -322,16 +330,6 @@ namespace RiasBot.Modules.Music.Common
                 {
                     waited = false;
                 }
-                try
-                {
-                    await audioStream.FlushAsync().ConfigureAwait(false);
-                }
-                catch
-                {
-
-                }
-
-                Dispose();
                 timer.Stop();
                 index += (repeat) ? 0 : 1;
                 position = index;
@@ -394,6 +392,7 @@ namespace RiasBot.Modules.Music.Common
             {
                 if (position + 1 < Queue.Count)
                 {
+                    await TogglePause(false, false).ConfigureAwait(false);
                     Dispose();
                     waited = true;
 
@@ -411,6 +410,7 @@ namespace RiasBot.Modules.Music.Common
         {
             if (!waited)
             {
+                await TogglePause(false, false).ConfigureAwait(false);
                 Dispose();
                 waited = true;
 
@@ -460,6 +460,7 @@ namespace RiasBot.Modules.Music.Common
             await semaphoreSlim.WaitAsync();
             try
             {
+                await TogglePause(false, false).ConfigureAwait(false);
                 Queue.Clear();
                 position = 0;
                 isRunning = false;
@@ -607,7 +608,7 @@ namespace RiasBot.Modules.Music.Common
             return audioSamples;
         }
 
-        public async Task TogglePause(bool pause)
+        public async Task TogglePause(bool pause, bool message)
         {
             if (pause != isPaused)
             {
@@ -625,9 +626,9 @@ namespace RiasBot.Modules.Music.Common
                     isPaused = pause;
                 }
 
-                if (isPaused)
+                if (isPaused && message)
                     await _channel.SendConfirmationEmbed("Music playback paused!");
-                else
+                else if (message)
                     await _channel.SendConfirmationEmbed("Music playback resumed!");
 
                 OnPauseChanged?.Invoke(this, pauseTaskSource != null);

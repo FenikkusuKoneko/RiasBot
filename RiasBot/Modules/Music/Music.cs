@@ -139,7 +139,7 @@ namespace RiasBot.Modules.Music
 
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.TogglePause(false);
+                await mp.TogglePause(false, true).ConfigureAwait(false);
             else
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
@@ -157,7 +157,7 @@ namespace RiasBot.Modules.Music
             }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.TogglePause(true).ConfigureAwait(false);
+                await mp.TogglePause(true, true).ConfigureAwait(false);
             else
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
@@ -176,7 +176,7 @@ namespace RiasBot.Modules.Music
 
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.TogglePause(false);
+                await mp.TogglePause(false, true).ConfigureAwait(false);
             else
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }

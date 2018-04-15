@@ -195,6 +195,13 @@ namespace RiasBot.Modules.Searches
                     await ReplyAsync("", embed: embed.Build());
                 }
             }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            public async Task Nyaa([Remainder]string keywords = null)
+            {
+
+            }
         }
     }
 }
