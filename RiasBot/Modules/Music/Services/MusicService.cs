@@ -73,7 +73,7 @@ namespace RiasBot.Modules.Music.MusicServices
 
         public MusicPlayer GetOrAddMusicPlayer(IGuild guild)
         {
-            MusicPlayer mp = new MusicPlayer(_client);
+            MusicPlayer mp = new MusicPlayer(_client, this);
             if (MPlayer.ContainsKey(guild.Id))
             {
                 MPlayer.TryGetValue(guild.Id, out mp);

@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using RiasBot.Extensions;
+using RiasBot.Modules.Music.MusicServices;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,10 +20,12 @@ namespace RiasBot.Modules.Music.Common
     {
         public DiscordSocketClient _client;
         public SongProcessing _sp;
-        public MusicPlayer(DiscordSocketClient client)
+        public MusicService _ms;
+        public MusicPlayer(DiscordSocketClient client, MusicService ms)
         {
             _client = client;
             _sp = new SongProcessing(this);
+            _ms = ms;
         }
 
         public IAudioClient audioClient;
@@ -38,6 +41,7 @@ namespace RiasBot.Modules.Music.Common
         public CancellationTokenSource tokenSource;
         public CancellationToken token;
         public IMessageChannel _channel;
+        public IGuild _guild;
 
         public List<Song> Queue = new List<Song>();
 
@@ -78,6 +82,7 @@ namespace RiasBot.Modules.Music.Common
 
                 audioClient = await target.ConnectAsync().ConfigureAwait(false);
                 _channel = channel;
+                _guild = guild;
                 await _channel.SendConfirmationEmbed($"Joining to {Format.Bold(target.Name)}!");
             }
             finally
@@ -566,17 +571,21 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Destroy(string message)
         {
-            try
+            if (!waited)
             {
-                tokenSource.Cancel();
-                tokenSource.Dispose();
-                tokenSource = new CancellationTokenSource();
-                token = tokenSource.Token;
+                try
+                {
+                    tokenSource.Cancel();
+                    tokenSource.Dispose();
+                    tokenSource = new CancellationTokenSource();
+                    token = tokenSource.Token;
+                }
+                catch { }
+                Dispose();
+                await audioClient.StopAsync().ConfigureAwait(false);
+                await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                _ms.RemoveMusicPlayer(_guild);
             }
-            catch { }
-            Dispose();
-            await audioClient.StopAsync().ConfigureAwait(false);
-            await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
         }
 
         public async Task SetVolume(int volume)
@@ -610,7 +619,7 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task TogglePause(bool pause, bool message)
         {
-            if (pause != isPaused)
+            if (pause != isPaused && isRunning)
             {
                 if (pauseTaskSource == null)
                 {
@@ -667,7 +676,8 @@ namespace RiasBot.Modules.Music.Common
             catch
             {
             }
-            _outStream.Dispose();
+            if (_outStream != null)
+                _outStream.Dispose();
         }
 
         public Task<bool> CheckMusicChannel(IMessageChannel channel) => Task<bool>.Factory.StartNew(() =>

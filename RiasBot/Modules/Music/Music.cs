@@ -211,7 +211,7 @@ namespace RiasBot.Modules.Music
                 return;
             }
 
-            var mp = _service.RemoveMusicPlayer(Context.Guild);
+            var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
                 await mp.Destroy("Stopping music playback!").ConfigureAwait(false);
             else
@@ -554,7 +554,8 @@ namespace RiasBot.Modules.Music
             var choose = await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
 
             string getUserInput = await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10 * 1000);
-            getUserInput = getUserInput.Replace("#", "");
+            if (!String.IsNullOrEmpty(getUserInput))
+                getUserInput = getUserInput.Replace("#", "");
             if (Int32.TryParse(getUserInput, out int input))
             {
                 input--;
