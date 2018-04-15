@@ -393,6 +393,11 @@ namespace RiasBot.Modules.Music
 
         private async Task PlayList(MusicPlayer mp, YouTubeService youtubeService, string playlist, string videoId = null, int index = 0)
         {
+            if (mp.waited)
+                return;
+
+            mp.waited = true;
+
             string title = null;
             string url = null;
             string thumbnail = null;
