@@ -312,15 +312,9 @@ namespace RiasBot.Modules.Music.Common
                                 }
                             }
                         }
-                        finally
+                        catch
                         {
-                            try
-                            {
-                                await audioStream.FlushAsync().ConfigureAwait(false);
-                            }
-                            catch
-                            { }
-                            Dispose();
+
                         }
                     }
                 }
@@ -328,6 +322,16 @@ namespace RiasBot.Modules.Music.Common
                 {
                     waited = false;
                 }
+                try
+                {
+                    await audioStream.FlushAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+
+                }
+
+                Dispose();
                 timer.Stop();
                 index += (repeat) ? 0 : 1;
                 position = index;

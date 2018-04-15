@@ -89,26 +89,5 @@ namespace RiasBot.Modules.Searches
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find anything.");
             }
         }
-
-        [RiasCommand][@Alias]
-        [Description][@Remarks]
-        public async Task Osu(string user)
-        {
-            await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
-
-            try
-            {
-                var http = new HttpClient();
-                var res = await http.GetStreamAsync(new Uri($"http://lemmmy.pw/osusig/sig.php?colour=hexf50057&uname={user}&mode=0&pp=2&countryrank&removeavmargin&flagshadow&darktriangles&opaqueavatar&onlineindicator=undefined&xpbar&xpbarhex"));
-                var ms = new MemoryStream();
-                res.CopyTo(ms);
-                ms.Position = 0;
-                await Context.Channel.SendFileAsync(ms, $"{user}.png").ConfigureAwait(false);
-            }
-            catch
-            {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find anything.");
-            }
-        }
     }
 }

@@ -991,9 +991,33 @@
 
   "osu": {
     "Command": "osu",
-    "Description": "Show osu stats for an osu player.",
+    "Description": "Show osu!standard stats for an osu player.",
     "Remarks": [
       "[prefix]osu Cookiezi"
+    ]
+  },
+
+  "mania": {
+    "Command": "mania",
+    "Description": "Show osu!mania stats for an osu player.",
+    "Remarks": [
+      "[prefix]mania AscensionDTWhen"
+    ]
+  },
+
+  "taiko": {
+    "Command": "taiko",
+    "Description": "Show osu!taiko stats for an osu player.",
+    "Remarks": [
+      "[prefix]taiko _yu68"
+    ]
+  },
+
+  "ctb": {
+    "Command": "ctb",
+    "Description": "Show osu!ctb stats for an osu player.",
+    "Remarks": [
+      "[prefix]ctb Motion"
     ]
   },
 
