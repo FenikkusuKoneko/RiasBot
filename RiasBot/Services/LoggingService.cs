@@ -16,9 +16,6 @@ namespace RiasBot.Services
         private readonly DiscordSocketClient _discord;
         private readonly CommandService _commands;
 
-        private string _logDirectory = Path.Combine(Environment.CurrentDirectory, "logs");
-        private string _logFile => Path.Combine(_logDirectory, $"{DateTime.UtcNow.ToString("yyyy-MM-dd")}.txt");
-
         private bool ready;
         public LoggingService(CommandHandler ch, DiscordSocketClient discord, CommandService commands)
         {
@@ -34,11 +31,6 @@ namespace RiasBot.Services
 
         private Task DiscordLogAsync(LogMessage msg)
         {
-            if (!Directory.Exists(_logDirectory))     // Create the log directory if it doesn't exist
-                Directory.CreateDirectory(_logDirectory);
-            if (!File.Exists(_logFile))               // Create today's log file if it doesn't exist
-                File.Create(_logFile).Dispose();
-
             if (ready)
             {
                 if (msg.Severity != LogSeverity.Verbose && msg.Severity != LogSeverity.Warning)
