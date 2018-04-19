@@ -94,7 +94,36 @@ namespace RiasBot.Modules.Administration
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete the emote. Try again.");
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete the emote.");
+                }
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireUserPermission(GuildPermission.ManageEmojis)]
+            [RequireBotPermission(GuildPermission.ManageEmojis)]
+            [RequireContext(ContextType.Guild)]
+            public async Task RenameEmote([Remainder]string name)
+            {
+                var emotes = name.Split("->");
+                string oldName = emotes[0].TrimEnd().Replace(" ", "_");
+                string newName = emotes[1].TrimStart().Replace(" ", "_");
+                try
+                {
+                    var emote = Context.Guild.Emotes.Where(x => x.Name.ToLowerInvariant() == oldName.ToLowerInvariant()).FirstOrDefault();
+                    if (emote is null)
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the emote.").ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await Context.Guild.ModifyEmoteAsync(emote, x => x.Name = newName).ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} emote {Format.Bold(emote.Name)} was renamed to {Format.Bold(newName)} successfully.");
+                    }
+                }
+                catch
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't rename the emote.");
                 }
             }
         }
