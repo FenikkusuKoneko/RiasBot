@@ -266,7 +266,7 @@
     "Command": "renameemote rnemote",
     "Description": "Rename an emote from this server. You need to separate the old name by the new name with '->'",
     "Remarks": [
-      "[prefix]rnemote heart-> heart_diamond"
+      "[prefix]rnemote heart -> heart_diamond"
     ]
   },
 

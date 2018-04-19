@@ -222,7 +222,7 @@ namespace RiasBot.Modules.Help
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
             int index = 0;
 
-            foreach (var getModule in _service.Modules.OrderBy(x => x.Name))
+            foreach (var getModule in _service.Modules.GroupBy(m => m.GetModule()).Select(m => m.Key).OrderBy(m => m.Name))
             {
                 var moduleCommands = getModule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
 
@@ -251,7 +251,7 @@ namespace RiasBot.Modules.Help
                     embed.AddField(command.Name.Replace("Commands", ""), String.Join("\n", transformedSb), true);
                     index++;
                 }
-                if (embed.Fields.Count > 24)
+                if (embed.Fields.Count > 20)
                 {
                     embed.WithFooter($"For a specific command info type {_ch._prefix + "h <command>"}");
                     embed.WithCurrentTimestamp();
