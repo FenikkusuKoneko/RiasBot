@@ -214,6 +214,56 @@ namespace RiasBot.Modules.Help
             }
         }
 
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [Ratelimit(1, 5, Measure.Seconds, applyPerGuild: true)]
+        public async Task AllCommands()
+        {
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            int index = 0;
+
+            foreach (var getModule in _service.Modules.OrderBy(x => x.Name))
+            {
+                var moduleCommands = getModule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
+
+                var transformed = moduleCommands.Select(x =>
+                {
+                    string nextAlias = null;
+                    if (x.Aliases.Skip(1).FirstOrDefault() != null)
+                        nextAlias = $"[{_ch._prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
+
+                    return $"{_ch._prefix + x.Aliases.First()} {nextAlias}";
+                });
+                embed.WithTitle($"All commands");
+                embed.AddField(getModule.Name, String.Join("\n", transformed), true);
+
+                foreach (var command in getModule.Submodules.OrderBy(sb => sb.Name))
+                {
+                    var submoduleCommands = command.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
+                    var transformedSb = submoduleCommands.Select(x =>
+                    {
+                        string nextAlias = null;
+                        if (x.Aliases.Skip(1).FirstOrDefault() != null)
+                            nextAlias = $"[{_ch._prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
+
+                        return $"{_ch._prefix + x.Aliases.First()} {nextAlias}";
+                    });
+                    embed.AddField(command.Name.Replace("Commands", ""), String.Join("\n", transformedSb), true);
+                    index++;
+                }
+                if (embed.Fields.Count > 24)
+                {
+                    embed.WithFooter($"For a specific command info type {_ch._prefix + "h <command>"}");
+                    embed.WithCurrentTimestamp();
+                    await Context.User.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                }
+            }
+            embed.WithFooter($"For a specific command info type {_ch._prefix + "h <command>"}");
+            embed.WithCurrentTimestamp();
+            await Context.User.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+        }
+
         public string GetCommandRequirements(CommandInfo cmd) =>
             string.Join(", ", cmd.Preconditions
                   .Where(ca => ca is RequireOwnerAttribute || ca is RequireUserPermissionAttribute)

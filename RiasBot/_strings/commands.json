@@ -24,6 +24,14 @@
     ]
   },
 
+  "allcommands": {
+    "Command": "allcommands allcmds",
+    "Description": "Show a list with all commands.",
+    "Remarks": [
+      "[prefix]allcmds"
+    ]
+  },
+
   "kick": {
     "Command": "kick k",
     "Description": "Kick an user. If you provide a reson message the bot will DM the user with the reason.",
@@ -254,6 +262,14 @@
     ]
   },
 
+  "renameemote": {
+    "Command": "renameemote rnemote",
+    "Description": "Rename an emote from this server. You need to separate the old name by the new name with '->'",
+    "Remarks": [
+      "[prefix]rnemote heart-> heart_diamond"
+    ]
+  },
+
   "createrole": {
     "Command": "createrole cr",
     "Description": "Create a role.",
@@ -283,7 +299,16 @@
     "Command": "renamerole rnr",
     "Description": "Rename a Role. You need to separate the old name by the new name with '->'",
     "Remarks": [
-      "[prefix]rnr Rias | Rias-waifu"
+      "[prefix]rnr Rias -> Rias-waifu"
+    ]
+  },
+  
+  "roles": {
+    "Command": "roles",
+    "Description": "Show the roles on this server. Pagination supported.",
+    "Remarks": [
+      "[prefix]roles",
+	  "[prefix]roles 2"
     ]
   },
 
@@ -1061,15 +1086,6 @@
     "Description": "Calculate the determinant of any N x N matrix.",
     "Remarks": [
       "[prefix]det 2 1,2,3,4"
-    ]
-  },
-
-  "roles": {
-    "Command": "roles",
-    "Description": "Show the roles on this server. Pagination supported.",
-    "Remarks": [
-      "[prefix]roles",
-	  "[prefix]roles 2"
     ]
   },
 

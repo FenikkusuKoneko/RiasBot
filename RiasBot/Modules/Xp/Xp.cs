@@ -108,7 +108,6 @@ namespace RiasBot.Modules.Xp
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
-        [RequireContext(ContextType.Guild)]
         public async Task XpLeaderboard(int page = 1)
         {
             page--;
