@@ -144,8 +144,16 @@ namespace RiasBot.Modules.Xp
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle("Server XP Leaderboard");
 
-                var xpSystemDb = db.XpSystem.Where(x => x.GuildId == Context.Guild.Id);
-                var xps = xpSystemDb
+                var xpSystemDb = db.XpSystem.Where(x => x.GuildId == Context.Guild.Id).ToList();
+                var xpSystemDbList = new List<XpSystem>();
+                xpSystemDb.ForEach(async x =>
+                {
+                    var user = await Context.Guild.GetUserAsync(x.UserId);
+                    if (user != null)
+                        xpSystemDbList.Add(x);
+                });
+                    
+                var xps = xpSystemDbList
                     .GroupBy(x => new { x.Xp, x.UserId, x.Level })
                     .OrderByDescending(y => y.Key.Xp)
                     .Skip(page * 9).Take(9).ToList();
