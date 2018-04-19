@@ -111,7 +111,7 @@ namespace RiasBot.Modules.Utility
                     u *= LUMatrix.u[lu, lu];
                 }
 
-                await ReplyAsync("Determinant = " + (l * u).ToString());
+                await Context.Channel.SendConfirmationEmbed("Determinant = " + (l * u).ToString());
             }
         }
     }

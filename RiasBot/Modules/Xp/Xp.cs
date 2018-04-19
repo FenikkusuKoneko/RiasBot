@@ -185,9 +185,9 @@ namespace RiasBot.Modules.Xp
                     await db.SaveChangesAsync().ConfigureAwait(false);
                 }
                 if (!xpNotify)
-                    await ReplyAsync($"{Context.User.Mention} Server xp notification enabled.");
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} Server xp notification enabled.");
                 else
-                    await ReplyAsync($"{Context.User.Mention} Server xp notification disabled.");
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} Server xp notification disabled.");
             }
         }
 
@@ -312,11 +312,11 @@ namespace RiasBot.Modules.Xp
                         userDb.Xp -= amount;
                     }
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await ReplyAsync($"Took {amount} global xp from {Format.Bold(getUser.ToString())}, current level {level}.").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationEmbed($"Took {amount} global xp from {Format.Bold(getUser.ToString())}, current level {level}.").ConfigureAwait(false);
                 }
                 else
                 {
-                    await ReplyAsync("The user doesn't exists in the database");
+                    await Context.Channel.SendErrorEmbed("The user doesn't exists in the database");
                 }
             }
         }

@@ -34,7 +34,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace RiasBot.Modules.Music
                 var preconditions = socketGuildUser.GetPermissions(voiceChannel);
                 if (!preconditions.Connect)
                 {
-                    await ReplyAsync($"{Context.User.Mention} I don't have permission to connect in the channel {Format.Bold(voiceChannel.Name)}!");
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I don't have permission to connect in the channel {Format.Bold(voiceChannel.Name)}!");
                     return;
                 }
             }
@@ -121,7 +121,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -149,7 +149,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -176,7 +176,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -203,7 +203,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -230,7 +230,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -257,7 +257,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -284,7 +284,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -311,7 +311,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -338,7 +338,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -365,7 +365,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -392,7 +392,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -419,7 +419,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -447,7 +447,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -475,7 +475,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -502,7 +502,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await ReplyAsync($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 

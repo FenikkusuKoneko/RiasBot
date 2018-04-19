@@ -39,7 +39,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (user is null)
                 {
-                    await ReplyAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
+                    await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
                     return;
                 }
                 if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
@@ -63,7 +63,7 @@ namespace RiasBot.Modules.Administration
 
                     if (warnings.Count == 0)
                     {
-                        await ReplyAsync($"{Context.User.Mention} No warned users.");
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} No warned users.");
                     }
                     else
                     {
@@ -98,7 +98,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (user is null)
                 {
-                    await ReplyAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
+                    await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
                     return;
                 }
 
@@ -133,7 +133,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (user is null)
                 {
-                    await ReplyAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
+                    await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
                     return;
                 }
 
@@ -143,14 +143,14 @@ namespace RiasBot.Modules.Administration
 
                     if (warnings.Count == 0)
                     {
-                        await ReplyAsync("The user doesn't have any warning.");
+                        await Context.Channel.SendConfirmationEmbed("The user doesn't have any warning.");
                         return;
                     }
                     if ((index - 1) < warnings.Count)
                     {
                         db.Remove(warnings[index - 1]);
                         await db.SaveChangesAsync().ConfigureAwait(false);
-                        await ReplyAsync("Warning removed!");
+                        await Context.Channel.SendConfirmationEmbed("Warning removed!");
                     }
                 }
             }
@@ -164,7 +164,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (user is null)
                 {
-                    await ReplyAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
+                    await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
                     return;
                 }
 
@@ -174,7 +174,7 @@ namespace RiasBot.Modules.Administration
 
                     if (warnings.Count == 0)
                     {
-                        await ReplyAsync("The user doesn't have any warning.");
+                        await Context.Channel.SendConfirmationEmbed("The user doesn't have any warning.");
                     }
                     else
                     {
@@ -185,7 +185,7 @@ namespace RiasBot.Modules.Administration
                                 db.Remove(warning);
                             }
                             await db.SaveChangesAsync().ConfigureAwait(false);
-                            await ReplyAsync("All warnings removed!");
+                            await Context.Channel.SendConfirmationEmbed("All warnings removed!");
                         }
                     }
                 }

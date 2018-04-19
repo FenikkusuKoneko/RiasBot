@@ -50,7 +50,7 @@ namespace RiasBot.Modules.Gambling
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                 }
-                await ReplyAsync($"{Format.Bold(user.ToString())} has been awarded with {amount} {RiasBot.currency}");
+                await Context.Channel.SendConfirmationEmbed($"{Format.Bold(user.ToString())} has been awarded with {amount} {RiasBot.currency}");
             }
 
             [RiasCommand][@Alias]
@@ -75,7 +75,7 @@ namespace RiasBot.Modules.Gambling
                     }
                 }
                 var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
-                await ReplyAsync($"{Format.Bold(user?.ToString() ?? id.ToString())} has been awarded with {amount} {RiasBot.currency}");
+                await Context.Channel.SendConfirmationEmbed($"{Format.Bold(user?.ToString() ?? id.ToString())} has been awarded with {amount} {RiasBot.currency}");
             }
 
             [RiasCommand][@Alias]
@@ -101,7 +101,7 @@ namespace RiasBot.Modules.Gambling
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                 }
-                await ReplyAsync($"{Format.Bold(user.ToString())} has been awarded with {amount} {RiasBot.currency}");
+                await Context.Channel.SendConfirmationEmbed($"{Format.Bold(user.ToString())} has been awarded with {amount} {RiasBot.currency}");
             }
 
             [RiasCommand][@Alias]
@@ -124,11 +124,11 @@ namespace RiasBot.Modules.Gambling
                             userDb.Currency -= amount;
                         }
                         await db.SaveChangesAsync().ConfigureAwait(false);
-                        await ReplyAsync($"Took {amount} {RiasBot.currency} from {Format.Bold(user.ToString())}").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"Took {amount} {RiasBot.currency} from {Format.Bold(user.ToString())}").ConfigureAwait(false);
                     }
                     catch
                     {
-                        await ReplyAsync("The user doesn't exists in the database");
+                        await Context.Channel.SendErrorEmbed("The user doesn't exists in the database");
                     }
                 }
             }
@@ -157,11 +157,11 @@ namespace RiasBot.Modules.Gambling
                             await db.SaveChangesAsync().ConfigureAwait(false);
 
                             var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
-                            await ReplyAsync($"Took {amount} {RiasBot.currency} from {Format.Bold(user.ToString())}").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationEmbed($"Took {amount} {RiasBot.currency} from {Format.Bold(user.ToString())}").ConfigureAwait(false);
                         }
                         catch
                         {
-                            await ReplyAsync($"Took {amount} {RiasBot.currency} from {Format.Bold(id.ToString())}").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationEmbed($"Took {amount} {RiasBot.currency} from {Format.Bold(id.ToString())}").ConfigureAwait(false);
                         }
                     }
                     else
@@ -193,11 +193,11 @@ namespace RiasBot.Modules.Gambling
                             userDb.Currency -= amount;
                         }
                         await db.SaveChangesAsync().ConfigureAwait(false);
-                        await ReplyAsync($"Took {amount} {RiasBot.currency} from {Format.Bold(user.ToString())}").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"Took {amount} {RiasBot.currency} from {Format.Bold(user.ToString())}").ConfigureAwait(false);
                     }
                     catch
                     {
-                        await ReplyAsync("The user doesn't exists in the database");
+                        await Context.Channel.SendErrorEmbed("The user doesn't exists in the database");
                     }
                 }
             }
@@ -219,7 +219,7 @@ namespace RiasBot.Modules.Gambling
                                 firstUser.Currency -= amount;
                                 secondUser.Currency += amount;
                                 await db.SaveChangesAsync().ConfigureAwait(false);
-                                await ReplyAsync($"{user.Mention} you received {amount} {RiasBot.currency} from {Format.Bold(Context.User.ToString())}");
+                                await Context.Channel.SendConfirmationEmbed($"{user.Mention} you received {amount} {RiasBot.currency} from {Format.Bold(Context.User.ToString())}");
                             }
                         }
                     }
@@ -245,9 +245,9 @@ namespace RiasBot.Modules.Gambling
                     {
                         currencyAmount = userDb.Currency;
                         if (user == Context.User)
-                            await ReplyAsync($"{Context.User.Mention} {user} you have {userDb.Currency} {RiasBot.currency}").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} you have {userDb.Currency} {RiasBot.currency}").ConfigureAwait(false);
                         else
-                            await ReplyAsync($"{Context.User.Mention} {user} has {userDb.Currency} {RiasBot.currency}");
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {user} has {userDb.Currency} {RiasBot.currency}");
                     }
                     catch
                     {
@@ -255,9 +255,9 @@ namespace RiasBot.Modules.Gambling
                         await db.Users.AddAsync(currency);
                         await db.SaveChangesAsync();
                         if (user == Context.User)
-                            await ReplyAsync($"{Context.User.Mention} {user} you have 0 {RiasBot.currency}").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} you have 0 {RiasBot.currency}").ConfigureAwait(false);
                         else
-                            await ReplyAsync($"{Context.User.Mention} {user} has 0 {RiasBot.currency}");
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {user} has 0 {RiasBot.currency}");
                     }
                 }
             }

@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using RiasBot.Commons.Attributes;
+using RiasBot.Extensions;
 using RiasBot.Services;
 using System;
 using System.Collections.Generic;
@@ -39,11 +40,11 @@ namespace RiasBot.Modules.Bot
                 try
                 {
                     await Context.Client.CurrentUser.ModifyAsync(u => u.Username = name);
-                    await ReplyAsync("New name " + name);
+                    await Context.Channel.SendConfirmationEmbed("New name " + name);
                 }
                 catch
                 {
-                    await ReplyAsync("You need to wait 2 hours to change your name again.");
+                    await Context.Channel.SendErrorEmbed("You need to wait 2 hours to change your name again.");
                 }
             }
 

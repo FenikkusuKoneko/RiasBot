@@ -37,7 +37,7 @@ namespace RiasBot.Modules.Utility
             var user = (IGuildUser)Context.User;
             if (newPrefix is null)
             {
-                await ReplyAsync($"{user.Mention} the prefix on this server is {Format.Bold(_ch._prefix)}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationEmbed($"{user.Mention} the prefix on this server is {Format.Bold(_ch._prefix)}").ConfigureAwait(false);
             }
             else if (user.GuildPermissions.Administrator)
             {

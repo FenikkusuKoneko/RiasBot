@@ -56,7 +56,7 @@ namespace RiasBot.Modules.Administration
                 }
                 else
                 {
-                    await ReplyAsync("I couldn't find the user.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed("I couldn't find the user.").ConfigureAwait(false);
                 }
             }
 

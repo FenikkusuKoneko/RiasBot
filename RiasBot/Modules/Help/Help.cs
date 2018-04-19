@@ -52,7 +52,7 @@ namespace RiasBot.Modules.Help
 
             if (!result.IsSuccess)
             {
-                await ReplyAsync($"I couldn't find that command. For help type `{_ch._prefix}h` to send you a DM").ConfigureAwait(false);
+                await Context.Channel.SendErrorEmbed($"I couldn't find that command. For help type `{_ch._prefix}h` to send you a DM").ConfigureAwait(false);
                 return;
             }
 

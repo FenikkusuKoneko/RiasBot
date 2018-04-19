@@ -36,7 +36,7 @@ namespace RiasBot.Modules.Searches
                 var obj = await _service.AnimeSearch(anime);
 
                 if (obj is null)
-                    await ReplyAsync("I couldn't find the anime.");
+                    await Context.Channel.SendErrorEmbed("I couldn't find the anime.");
                 else
                 {
                     string title = $"{(string)obj.title.romaji ?? (string)obj.title.english} (AniList URL)";
@@ -102,10 +102,21 @@ namespace RiasBot.Modules.Searches
                 var obj = await _service.CharacterSearch(character);
 
                 if (obj is null)
-                    await ReplyAsync("Sorry I couldn't find the character.");
+                    await Context.Channel.SendErrorEmbed("I couldn't find the character.");
                 else
                 {
                     string name = $"{(string)obj.name.first} {(string)obj.name.last} (AniList URL)";
+                    string firstName = (string)obj.name.first;
+                    string lastName = (string)obj.name.last;
+                    string nativeName = (string)obj.name.native;
+
+                    if (String.IsNullOrEmpty(firstName))
+                        firstName = "-";
+                    if (String.IsNullOrEmpty(lastName))
+                        lastName = "-";
+                    if (String.IsNullOrEmpty(nativeName))
+                        nativeName = "-";
+
                     string alternative = String.Join(",\n", (JArray)obj.name.alternative);
                     string description = (string)obj.description;
                     if (description.Length > 1024)
@@ -114,8 +125,7 @@ namespace RiasBot.Modules.Searches
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
                     embed.WithAuthor(name, null, (string)obj.siteUrl);
-                    embed.AddField("First Name", (string)obj.name.first ?? "-", true).AddField("Last Name", (string)obj.name.last ?? "-", true)
-                        .AddField("Native", (string)obj.name.native ?? "-", true);
+                    embed.AddField("First Name", firstName, true).AddField("Last Name", lastName, true).AddField("Native", nativeName, true);
                     embed.AddField("Alternative", (alternative != "") ? alternative : "-", true).AddField("Id", (int)obj.id);
                     embed.AddField("Description", (description != "") ? description : "-");
                     embed.WithImageUrl((string)obj.image.large);
@@ -132,12 +142,22 @@ namespace RiasBot.Modules.Searches
 
                 var characters = (JArray)obj.characters;
                 if (characters.Count == 0)
-                    await ReplyAsync("Sorry I couldn't find the character.");
+                    await Context.Channel.SendErrorEmbed("I couldn't find the character.");
                 else
                 {
                     if (characters.Count <= 1)
                     {
                         string name = $"{(string)obj.characters[0].name.first} {(string)obj.characters[0].name.last} (AniList URL)";
+                        string firstName = (string)obj.characters[0].name.first;
+                        string lastName = (string)obj.characters[0].name.last;
+                        string nativeName = (string)obj.characters[0].name.native;
+
+                        if (String.IsNullOrEmpty(firstName))
+                            firstName = "-";
+                        if (String.IsNullOrEmpty(lastName))
+                            lastName = "-";
+                        if (String.IsNullOrEmpty(nativeName))
+                            nativeName = "-";
                         string alternative = String.Join(", ", (JArray)obj.characters[0].name.alternative);
                         string description = (string)obj.characters[0].description;
                         if (description.Length > 1024)
@@ -146,8 +166,7 @@ namespace RiasBot.Modules.Searches
                         var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
                         embed.WithAuthor(name, null, (string)obj.characters[0].siteUrl);
-                        embed.AddField("First Name", (string)obj.characters[0].name.first ?? "-", true).AddField("Last Name", (string)obj.characters[0].name.last ?? "-", true)
-                            .AddField("Native", (string)obj.characters[0].name.native ?? "-", true);
+                        embed.AddField("First Name", firstName, true).AddField("Last Name", lastName, true).AddField("Native", nativeName, true);
                         embed.AddField("Alternative", (alternative != "") ? alternative : "-", true).AddField("Id", (int)obj.characters[0].id);
                         embed.AddField("Description", description);
                         embed.WithImageUrl((string)obj.characters[0].image.large);
@@ -174,7 +193,7 @@ namespace RiasBot.Modules.Searches
                 var obj = await _service.AnimeListSearch(anime);
 
                 if (obj is null)
-                    await ReplyAsync("Sorry I couldn't find anime.");
+                    await Context.Channel.SendErrorEmbed("I couldn't find anime.");
                 else
                 {
                     string description = null;

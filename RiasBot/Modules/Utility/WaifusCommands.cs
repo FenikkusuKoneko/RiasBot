@@ -33,7 +33,7 @@ namespace RiasBot.Modules.Utility
                 var obj = await _service.CharacterSearch(character);
 
                 if (obj is null)
-                    await ReplyAsync("Sorry I couldn't find the character.");
+                    await Context.Channel.SendErrorEmbed("I couldn't find the character.");
                 else
                 {
                     int waifuId = (int)obj.id;
@@ -97,7 +97,7 @@ namespace RiasBot.Modules.Utility
 
                 var characters = (JArray)obj.characters;
                 if (characters.Count == 0)
-                    await ReplyAsync("Sorry I couldn't find the character.");
+                    await Context.Channel.SendErrorEmbed("I couldn't find the character.");
                 else
                 {
                     if (characters.Count <= 1)

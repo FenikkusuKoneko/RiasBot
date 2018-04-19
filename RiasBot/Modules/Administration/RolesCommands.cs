@@ -225,17 +225,17 @@ namespace RiasBot.Modules.Administration
                     if (role.IsHoisted)
                     {
                         await role.ModifyAsync(x => x.Hoist = false);
-                        await ReplyAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} is not displayed independently in the userlist.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} is not displayed independently in the userlist.").ConfigureAwait(false);
                     }
                     else
                     {
                         await role.ModifyAsync(x => x.Hoist = true);
-                        await ReplyAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} is now displayed independently in the userlist.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} is now displayed independently in the userlist.").ConfigureAwait(false);
                     }
                 }
                 catch
                 {
-                    await ReplyAsync($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }
             }
 
@@ -252,17 +252,17 @@ namespace RiasBot.Modules.Administration
                     if (role.IsMentionable)
                     {
                         await role.ModifyAsync(x => x.Mentionable = false).ConfigureAwait(false);
-                        await ReplyAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} is not mentionable.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} is not mentionable.").ConfigureAwait(false);
                     }
                     else
                     {
                         await role.ModifyAsync(x => x.Mentionable = true).ConfigureAwait(false);
-                        await ReplyAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} is now mentionable.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} is now mentionable.").ConfigureAwait(false);
                     }
                 }
                 catch
                 {
-                    await ReplyAsync($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }
             }
         }
