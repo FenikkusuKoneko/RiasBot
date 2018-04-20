@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Webhook;
 using Discord.WebSocket;
-using DiscordBotsList.Api;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
 using RiasBot.Modules.Reactions.Services;
@@ -159,23 +159,9 @@ namespace RiasBot.Modules.Bot
         [Description]
         [@Remarks]
         [RequireOwner]
-        public async Task Dbl(int page = 1)
+        public async Task Dbl()
         {
-            AuthDiscordBotListApi dblApi = new AuthDiscordBotListApi(_creds.ClientId, _creds.DiscordBotsListApiKey);
-            var dblSelfBot = await dblApi.GetMeAsync().ConfigureAwait(false);
-            var dbls = (await dblSelfBot.GetVotersAsync(1).ConfigureAwait(false)).GroupBy(x => x.Id).Select(y => y.FirstOrDefault()).ToList();
-
-            string[] voters = new string[dbls.Count];
-            int index = 0;
-            foreach (var dbl in dbls)
-            {
-                voters[index] = $"#{index + 1} {dbl.Username}#{dbl.Discriminator} ({dbl.Id})";
-                index++;
-            }
-            if (voters.Count() > 0)
-                await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, "List of voters today", voters, 10, page - 1).ConfigureAwait(false);
-            else
-                await Context.Channel.SendErrorEmbed("No voters today.").ConfigureAwait(false);
+            await Context.Channel.SendErrorEmbed("You need to learn html, css, js, create a webserver, a webhook and then to make me to get the voters! Baka!").ConfigureAwait(false);
         }
 
         [RiasCommand]

@@ -19,7 +19,7 @@
   <ItemGroup>
     <Compile Remove="Migrations\20180328104423_XpRolesSystem.cs" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Cleverbot.Net" Version="1.0.0" />
     <PackageReference Include="CoreCLR-NCalc" Version="2.2.33" />
@@ -30,8 +30,6 @@
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.32.2.1162" />
     <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.32.2.1146" />
     <PackageReference Include="GoogleApi" Version="3.2.21" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud" Version="2.1.0" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud.TextToSpeech.v1" Version="2.1.0" />
 	  <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00194" />
     <PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha9-00189" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-final" />

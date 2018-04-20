@@ -1,13 +1,13 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using DiscordBotsList.Api;
 using RiasBot.Modules.Music.MusicServices;
 using RiasBot.Services.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -163,57 +163,28 @@ namespace RiasBot.Services
         {
             try
             {
-                AuthDiscordBotListApi dblApi = new AuthDiscordBotListApi(_creds.ClientId, _creds.DiscordBotsListApiKey);
-                IDblSelfBot dblSelfBot;
-                try
-                {
-                    dblSelfBot = await dblApi.GetMeAsync().ConfigureAwait(false);
-                }
-                catch
-                {
+                if (string.IsNullOrWhiteSpace(_creds.DiscordBotsListApiKey))
                     return;
-                }
-                await dblSelfBot.UpdateStatsAsync(_discord.Guilds.Count).ConfigureAwait(false);
-
-                if (TimeSpan.Compare(voteTimer.Elapsed, new TimeSpan(1, 0, 0)) >= 0)
+                using (var http = new HttpClient())
                 {
-                    voteTimer.Restart();
-                    using (var db = _db.GetDbContext())
+                    using (var content = new FormUrlEncodedContent(
+                        new Dictionary<string, string> {
+                                    /*{ "shard_count",  _discord.TotalShards.ToString()},
+                                    { "shard_id", _discord.ShardId.ToString() },*/
+                                    { "server_count", _discord.Guilds.Count().ToString() }
+                        }))
                     {
-                        var voters = (await dblSelfBot.GetVotersAsync(1).ConfigureAwait(false)).GroupBy(x => x.Id).Select(y => y.FirstOrDefault()).ToList();
-                        foreach (var voter in voters)
-                        {
-                            try
-                            {
-                                var userGuild = _discord.GetGuild(RiasBot.supportServer).GetUser(voter.Id);
-                                if (userGuild != null)
-                                {
-                                    try
-                                    {
-                                        var userDb = db.Users.Where(x => x.UserId == voter.Id).FirstOrDefault();
-                                        userDb.Currency += 10;
-                                    }
-                                    catch
-                                    {
-                                        var dblVote = new UserConfig { UserId = voter.Id, Currency = 10 };
-                                        await db.AddAsync(dblVote).ConfigureAwait(false);
-                                    }
-                                }
-                                
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e);
-                            }
-                            
-                        }
-                        await db.SaveChangesAsync().ConfigureAwait(false);
+                        content.Headers.Clear();
+                        content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                        http.DefaultRequestHeaders.Add("Authorization", _creds.DiscordBotsListApiKey);
+
+                        await http.PostAsync($"https://discordbots.org/api/bots/{_discord.CurrentUser.Id}/stats", content).ConfigureAwait(false);
                     }
                 }
             }
             catch
             {
-                Console.WriteLine("Error Dbl");
+                Console.WriteLine("DBL Error!");
             }
         }
     }

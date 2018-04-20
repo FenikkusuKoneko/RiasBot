@@ -3,8 +3,6 @@ using Discord.Audio;
 using Discord.WebSocket;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
-using IBM.WatsonDeveloperCloud.TextToSpeech.v1;
-using IBM.WatsonDeveloperCloud.TextToSpeech.v1.Model;
 using RiasBot.Extensions;
 using RiasBot.Modules.Music.Common;
 using RiasBot.Services;

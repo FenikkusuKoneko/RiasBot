@@ -20,7 +20,7 @@ namespace RiasBot
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.4.10";
+        public static string version = "1.4.11";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
@@ -45,15 +45,14 @@ namespace RiasBot
                 {
                     LogLevel = LogSeverity.Info,
                     MessageCacheSize = 1000,     // Tell Discord.Net to cache 1000 messages per channel
-                    AlwaysDownloadUsers = true,
+                    AlwaysDownloadUsers = true
                 }))
                 .AddSingleton(new CommandService(new CommandServiceConfig     // Add the command service to the service provider
                 {
                     DefaultRunMode = RunMode.Async,     // Force all commands to run async
                     LogLevel = LogSeverity.Verbose
                 }))
-                .AddSingleton<IBotCredentials>(Credentials);
-
+                .AddSingleton<IBotCredentials>(Credentials); 
             var assembly = Assembly.GetAssembly(typeof(RiasBot));
 
             var IKServices = assembly.GetTypes()
