@@ -182,9 +182,9 @@ namespace RiasBot.Services
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("DBL Error!");
+                Console.WriteLine(ex);
             }
         }
     }
