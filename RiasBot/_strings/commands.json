@@ -1122,6 +1122,23 @@
     ]
   },
 
+  "convertlist": {
+    "Command": "convertlist",
+    "Description": "Show a list with all units categories the converter. Type [prefix]convertlist <category> to get the units from a category.",
+    "Remarks": [
+      "[prefix]convertlist",
+	  "[prefix]convertlist length"
+    ]
+  },
+
+  "converter": {
+    "Command": "convert",
+    "Description": "Convert from a unit to other unit. The category need to be passed. The name of the units are case-sensitive.",
+    "Remarks": [
+      "[prefix]convert length meter centimeter 100"
+    ]
+  },
+
   "claimwaifu": {
     "Command": "claimwaifu",
     "Description": "Claim your waifu from anime. The price for every waifu is between 5000 and 10000 [currency]. You need to have at least 10000 [currency]. Be careful at the name. Use `[prefix]character name` to search for an anime character. The character must be on AniList database.",

@@ -45,6 +45,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0-preview1-final" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Unirest-API" Version="1.0.7.6" />
+    <PackageReference Include="UnitsNet" Version="3.96.0" />
     <PackageReference Include="Urban.NET" Version="1.0.0" />
   </ItemGroup>
 

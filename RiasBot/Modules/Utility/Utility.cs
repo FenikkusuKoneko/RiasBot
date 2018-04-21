@@ -13,6 +13,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using UnitsNet;
+using Discord.WebSocket;
+using System.Globalization;
 
 namespace RiasBot.Modules.Utility
 {
@@ -103,6 +106,102 @@ namespace RiasBot.Modules.Utility
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
             int choice = rnd.Next(choices.Length);
             await Context.Channel.SendConfirmationEmbed($"I chose: {Format.Bold(choices[choice].Trim())}");
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        public async Task ConvertList()
+        {
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithTitle($"All categories for converter. Type {_ch._prefix}convertlist <category> to get the units from a category");
+            string unitCategories = "";
+            var quantityTypes = Enum.GetValues(typeof(QuantityType)).Cast<QuantityType>().Skip(1).ToArray();
+
+            int index = 0;
+            foreach (var quantity in quantityTypes)
+            {
+                Type type = Assembly.Load("UnitsNet").GetTypes().First(t => t.Name == quantity.ToString());
+                
+                if (unitCategories.Length <= 1024)
+                {
+                    unitCategories += $"#{index+1} {Format.Bold(quantity.ToString())}\n";
+                }
+                else
+                {
+                    embed.WithDescription(unitCategories);
+                    await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    unitCategories = $"#{index+1} {Format.Bold(quantity.ToString())}\n";
+                }
+                index++;
+            }
+            embed.WithDescription(unitCategories);
+            await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        public async Task ConvertList(string quantityIndex)
+        {
+            var quantityType = Enum.GetValues(typeof(QuantityType)).Cast<QuantityType>().Where(x => x.ToString().ToLowerInvariant() == quantityIndex.ToLowerInvariant()).FirstOrDefault();
+            if (quantityType == QuantityType.Undefined)
+            {
+                return;
+            }
+            Type type = Assembly.Load("UnitsNet").GetTypes().First(t => t.Name == quantityType.ToString());
+            var method = type.GetMethod("get_Units");
+            var unitsEnum = (Array)method.Invoke(null, null);
+
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithTitle($"All units for {type.Name}");
+
+            string[] units = new string[unitsEnum.Length];
+            int index = 0;
+            foreach (var unit in unitsEnum)
+            {
+                if (unit.ToString() != "Undefined")
+                {
+                    units[index] = unit.ToString();
+                    index++;
+                }
+            }
+            embed.WithDescription(String.Join("\n", units));
+            await ReplyAsync("", embed: embed.Build());
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        public async Task Converter(string category, string from, string to, double value)
+        {
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            if (!UnitConverter.TryConvertByName(value, ToTitleCase(category), ToTitleCase(from), ToTitleCase(to), out double result))
+            {
+                if (UnitConverter.TryConvertByAbbreviation(value, ToTitleCase(category), from.ToLower(), to.ToLower(), out result))
+                {
+                    embed.AddField("From", ToTitleCase(from), true).AddField("To", ToTitleCase(to), true);
+                    embed.AddField("Result", result);
+                    await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
+                else
+                {
+                    await Context.Channel.SendErrorEmbed("Invalid units").ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                embed.AddField("From", ToTitleCase(from), true).AddField("To", ToTitleCase(to), true);
+                embed.AddField("Result", result);
+                await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+            }
+        }
+
+        public static string ToTitleCase(string input)
+        {
+            switch (input)
+            {
+                case null: throw new ArgumentNullException(nameof(input));
+                case "": throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input));
+                default: return input.First().ToString().ToUpper() + input.Substring(1);
+            }
         }
     }
 }

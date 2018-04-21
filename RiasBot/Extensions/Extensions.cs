@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using RiasBot.Commons;
 using System;
 using System.Threading.Tasks;
+using UnitsNet;
+using UnitsNet.Units;
 
 namespace RiasBot.Extensions
 {

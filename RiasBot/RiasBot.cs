@@ -20,12 +20,13 @@ namespace RiasBot
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.4.12";
+        public static string version = "1.4.13";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
         public static string invite = "https://discordapp.com/oauth2/authorize?client_id=381387277764395008&scope=bot&permissions=1610083455";
-        public static ulong fenikkusuId = 327927038360944640;
+        public static string author = "Koneko#4096";
+        public static ulong konekoID = 327927038360944640;
         public static string creatorServer = "https://discord.gg/VPfBvBt";
         public static ulong supportServer = 416492045859946507;
         public static Stopwatch upTime = new Stopwatch();
@@ -44,8 +45,7 @@ namespace RiasBot
                 .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig     // Add the discord client to the service provider
                 {
                     LogLevel = LogSeverity.Info,
-                    MessageCacheSize = 1000,     // Tell Discord.Net to cache 1000 messages per channel
-                    AlwaysDownloadUsers = true
+                    MessageCacheSize = 1000     // Tell Discord.Net to cache 1000 messages per channel
                 }))
                 .AddSingleton(new CommandService(new CommandServiceConfig     // Add the command service to the service provider
                 {

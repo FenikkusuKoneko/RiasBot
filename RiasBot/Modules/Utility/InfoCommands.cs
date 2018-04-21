@@ -39,7 +39,7 @@ namespace RiasBot.Modules.Utility
             {
                 using (var process = Process.GetCurrentProcess())
                 {
-                    var author = await Context.Client.GetUserAsync(RiasBot.fenikkusuId).ConfigureAwait(false);
+                    var author = await Context.Client.GetUserAsync(RiasBot.konekoID).ConfigureAwait(false);
                     var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
 
                     int textChannels = 0;
@@ -66,8 +66,8 @@ namespace RiasBot.Modules.Utility
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
                     embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
-                    embed.AddField("Author", author.Username + "#" + author.Discriminator, true).AddField("Bot ID", Context.Client.CurrentUser.Id.ToString(), true);
-                    embed.AddField("Master ID", author.Id, true).AddField("In server", Context.Guild?.Name ?? "-", true);
+                    embed.AddField("Author", author?.ToString() ?? RiasBot.author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
+                    embed.AddField("Master ID", RiasBot.konekoID, true).AddField("In server", Context.Guild?.Name ?? "-", true);
                     embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Commands Run", RiasBot.commandsRun, true);
                     embed.AddField("Presence", $"{guilds.Count} Servers\n{textChannels} Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true)
                          .AddField("Playing Music", $"Running {musicRunning} Channels\nAFK {musicAfk} Channels", true);
