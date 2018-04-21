@@ -34,11 +34,19 @@ namespace RiasBot.Modules.Xp
             using (var db = _db.GetDbContext())
             {
                 var userDb = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
-                var guildXp = db.XpSystem.Where(x => x.GuildId == Context.Guild.Id);
-                var xpDb = guildXp.Where(x => x.UserId == user.Id).FirstOrDefault();
+                var guildXp = db.XpSystem.Where(x => x.GuildId == Context.Guild.Id).ToList();
+                var guildXpList = new List<XpSystem>();
+                guildXp.ForEach(async x =>
+                {
+                    var userXp = await Context.Guild.GetUserAsync(x.UserId);
+                    if (userXp != null)
+                        guildXpList.Add(x);
+                });
+
+                var xpDb = guildXpList.Where(x => x.UserId == user.Id).FirstOrDefault();
 
                 var globalRanks = db.Users.OrderByDescending(x => x.Xp).Select(y => y.Xp).ToList();
-                var guildRanks = guildXp.OrderByDescending(x => x.Xp).Select(y => y.Xp).ToList();
+                var guildRanks = guildXpList.OrderByDescending(x => x.Xp).Select(y => y.Xp).ToList();
 
                 int globalRank = globalRanks.IndexOf(userDb?.Xp ?? -1) + 1;
                 int guildRank = guildRanks.IndexOf(xpDb?.Xp ?? -1) + 1;

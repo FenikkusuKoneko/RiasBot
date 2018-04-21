@@ -54,15 +54,15 @@ namespace RiasBot.Modules.Music.Common
         public bool isPaused;
         public Stopwatch timer;
 
-        public struct Song
+        public class Song
         {
-            public string title;
-            public string url;
-            public string channel;
-            public TimeSpan duration;
-            public string thumbnail;
-            public IGuildUser user;
-            public string dlUrl;
+            public string title { get; set; }
+            public string url { get; set; }
+            public string channel { get; set; }
+            public TimeSpan duration { get; set; }
+            public string thumbnail { get; set; }
+            public IGuildUser user { get; set; }
+            public string dlUrl { get; set; }
         }
 
         public async Task JoinAudio(IGuild guild, IMessageChannel channel, IVoiceChannel target)
@@ -84,6 +84,10 @@ namespace RiasBot.Modules.Music.Common
                 _channel = channel;
                 _guild = guild;
                 await _channel.SendConfirmationEmbed($"Joining to {Format.Bold(target.Name)}!");
+            }
+            catch
+            {
+                await Destroy("Something went wrong on connecting, please try again!");
             }
             finally
             {
@@ -588,7 +592,8 @@ namespace RiasBot.Modules.Music.Common
                 }
                 catch { }
                 Dispose();
-                await audioClient.StopAsync().ConfigureAwait(false);
+                if (audioClient.ConnectionState == ConnectionState.Connected)
+                    await audioClient.StopAsync().ConfigureAwait(false);
                 await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
                 _ms.RemoveMusicPlayer(_guild);
             }
