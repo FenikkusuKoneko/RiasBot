@@ -15,7 +15,7 @@ namespace RiasBot.Services.Implementation
         public string UrbanDictionaryApiKey { get; }
         public string PatreonAccessToken { get; }
         public string DiscordBotsListApiKey { get; }
-        public string ImgurClientID { get; set; } //this client id is from Fenikkusu who manage the lists of images
+        public string ImgurClientID { get; } //this client id is from who manage the lists of images
         public string HelpDM { get; }
 
         private readonly string _credsFileName = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");

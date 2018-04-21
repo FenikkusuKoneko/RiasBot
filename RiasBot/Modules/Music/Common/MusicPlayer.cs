@@ -85,10 +85,6 @@ namespace RiasBot.Modules.Music.Common
                 _guild = guild;
                 await _channel.SendConfirmationEmbed($"Joining to {Format.Bold(target.Name)}!");
             }
-            catch
-            {
-                await Destroy("Something went wrong on connecting, please try again!");
-            }
             finally
             {
                 semaphoreSlim.Release();
@@ -117,10 +113,10 @@ namespace RiasBot.Modules.Music.Common
                 {
                     if (!isRunning)
                     {
+                        isRunning = true;
                         await TogglePause(false, false).ConfigureAwait(false);
                         Queue.Add(song);
                         await UpdateQueue(position).ConfigureAwait(false);
-                        isRunning = true;
                     }
                     else
                     {
@@ -172,6 +168,8 @@ namespace RiasBot.Modules.Music.Common
             try
             {
                 await semaphoreSlim.WaitAsync();
+                position = index;
+
                 videoListRequest.Id = playlistItem.Snippet.ResourceId.VideoId;
                 var videoListResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
 
@@ -478,13 +476,12 @@ namespace RiasBot.Modules.Music.Common
                 await TogglePause(false, false).ConfigureAwait(false);
                 Queue.Clear();
                 position = 0;
-                isRunning = false;
 
                 tokenSource.Cancel();
                 tokenSource.Dispose();
                 tokenSource = new CancellationTokenSource();
                 token = tokenSource.Token;
-
+                
                 Dispose();
 
                 await _channel.SendConfirmationEmbed("Current playlist cleared!").ConfigureAwait(false);
@@ -493,6 +490,7 @@ namespace RiasBot.Modules.Music.Common
             {
                 // Playlist already cleared or is not created yet
             }
+            isRunning = false;
             semaphoreSlim.Release();
         }
 
@@ -690,11 +688,6 @@ namespace RiasBot.Modules.Music.Common
             if (_outStream != null)
                 _outStream.Dispose();
         }
-
-        public Task<bool> CheckMusicChannel(IMessageChannel channel) => Task<bool>.Factory.StartNew(() =>
-        {
-            return _channel == channel;
-        });
 
         public static string GetTimeString(TimeSpan timeSpan)
         {
