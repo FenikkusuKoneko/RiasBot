@@ -136,7 +136,7 @@ namespace RiasBot.Modules.Utility
                     embed.AddField("Activity", activity ?? "-", true).AddField("ID", user.Id, true);
                     embed.AddField("Status", user.Status, true).AddField("Joined Server", joinedServer, true);
                     embed.AddField("Joined Discord", accountCreated, true).AddField($"Roles ({roleIndex})",
-                        (roleIndex == 0) ? "-" : String.Join("\n", userRoles));
+                        (roleIndex == 0) ? "-" : String.Join("\n", userRoles), true);
                     try
                     {
                         embed.WithThumbnailUrl(user.RealAvatarUrl(1024));
