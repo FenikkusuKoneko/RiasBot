@@ -89,8 +89,27 @@ namespace RiasBot.Modules.Utility
 
                 try
                 {
-                    string joinedServer = user.JoinedAt.Value.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
+                    string activity = user.Activity?.Name;
+                    var activityType = user.Activity?.Type;
 
+                    switch (activityType)
+                    {
+                        case ActivityType.Playing:
+                            activity = "Playing " + activity;
+                            break;
+                        case ActivityType.Streaming:
+                            activity = "Streaming " + activity;
+                            break;
+                        case ActivityType.Listening:
+                            activity = "Listening to " + activity;
+                            break;
+                        case ActivityType.Watching:
+                            activity = "Watching " + activity;
+                            break;
+                    }
+
+
+                    string joinedServer = user.JoinedAt.Value.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
                     string accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 
                     int roleIndex = 0;
@@ -114,16 +133,24 @@ namespace RiasBot.Modules.Utility
 
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.AddField("Name", user, true).AddField("Nickname", user.Nickname ?? "-", true);
-                    embed.AddField("ID", user.Id, true).AddField("Status", user.Status, true);
-                    embed.AddField("Joined Server", joinedServer, true).AddField("Joined Discord", accountCreated, true);
-                    embed.AddField($"Roles ({roleIndex})",
+                    embed.AddField("Activity", activity ?? "-", true).AddField("ID", user.Id, true);
+                    embed.AddField("Status", user.Status, true).AddField("Joined Server", joinedServer, true);
+                    embed.AddField("Joined Discord", accountCreated, true).AddField($"Roles ({roleIndex})",
                         (roleIndex == 0) ? "-" : String.Join("\n", userRoles));
-                    embed.WithThumbnailUrl(user.RealAvatarUrl() ?? user.DefaultAvatarUrl());
+                    try
+                    {
+                        embed.WithThumbnailUrl(user.RealAvatarUrl(1024));
+                    }
+                    catch
+                    {
+                        embed.WithThumbnailUrl(user.DefaultAvatarUrl());
+                    }
 
                     await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex);
                     await Context.Channel.SendErrorEmbed("I couldn't find the user.");
                 }
             }
