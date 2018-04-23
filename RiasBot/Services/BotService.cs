@@ -129,13 +129,13 @@ namespace RiasBot.Services
             }
         }
 
-        public Task Disconnected(Exception ex, DiscordSocketClient client)
+        public async Task Disconnected(Exception ex, DiscordSocketClient client)
         {
             foreach (var guild in client.Guilds)
             {
-                _musicService.RemoveMusicPlayer(guild);
+                var mp = _musicService.GetMusicPlayer(guild);
+                await mp.Destroy("", true).ConfigureAwait(false);
             }
-            return Task.CompletedTask;
         }
 
         public async Task StatusRotate()
@@ -172,8 +172,8 @@ namespace RiasBot.Services
                 {
                     using (var content = new FormUrlEncodedContent(
                         new Dictionary<string, string> {
-                                    /*{ "shard_count",  _discord.TotalShards.ToString()},
-                                    { "shard_id", _discord.ShardId.ToString() },*/
+                                    { "shard_count",  _discord.Shards.Count.ToString()},
+                                    //{ "shard_id", _discord.ShardId.ToString() },
                                     { "server_count", _discord.Guilds.Count().ToString() }
                         }))
                     {

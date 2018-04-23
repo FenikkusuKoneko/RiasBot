@@ -577,7 +577,7 @@ namespace RiasBot.Modules.Music.Common
             semaphoreSlim.Release();
         }
 
-        public async Task Destroy(string message)
+        public async Task Destroy(string message, bool forced = false)
         {
             if (!waited)
             {
@@ -592,7 +592,8 @@ namespace RiasBot.Modules.Music.Common
                 Dispose();
                 if (audioClient.ConnectionState == ConnectionState.Connected)
                     await audioClient.StopAsync().ConfigureAwait(false);
-                await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                if (!forced)
+                    await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
                 _ms.RemoveMusicPlayer(_guild);
             }
         }
