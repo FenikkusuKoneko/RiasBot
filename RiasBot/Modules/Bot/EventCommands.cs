@@ -31,7 +31,7 @@ namespace RiasBot.Modules.Bot
             {
                 if (!String.IsNullOrEmpty(message))
                     await Context.Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
-                await _service.CounterSetup(Context.Channel, reward, maximum, differencePerUser, onlyNumbers, botStarts).ConfigureAwait(false);
+                await Task.Factory.StartNew(() => _service.CounterSetup(Context.Channel, reward, maximum, differencePerUser, onlyNumbers, botStarts)).ConfigureAwait(false);
             }
 
             [RiasCommand][@Alias]
@@ -42,7 +42,7 @@ namespace RiasBot.Modules.Bot
                 IUserMessage userMessage = null;
                 if (!String.IsNullOrEmpty(message))
                     userMessage = await Context.Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
-                await _service.Hearts(userMessage, timeout, reward).ConfigureAwait(false);
+                await Task.Factory.StartNew(() => _service.Hearts(userMessage, timeout, reward)).ConfigureAwait(false);
             }
 
             [RiasCommand][@Alias]

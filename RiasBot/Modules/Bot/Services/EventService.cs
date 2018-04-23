@@ -185,8 +185,11 @@ namespace RiasBot.Modules.Bot.Services
                     {
                         if (!heartUsers.Any(x => x == r.User.Value))
                         {
-                            heartUsers.Enqueue(r.User.Value);
-                            await AwardUsersHearts(r.User.Value, reward).ConfigureAwait(false);
+                            if (r.User.Value != _client.CurrentUser)
+                            {
+                                heartUsers.Enqueue(r.User.Value);
+                                await AwardUsersHearts(r.User.Value, reward).ConfigureAwait(false);
+                            }
                         }
                     }
                     if (!gameStarted)
