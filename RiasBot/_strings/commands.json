@@ -232,9 +232,10 @@
 
   "event": {
     "Command": "event",
-    "Description": "Start an event to win [currency].\nGame: counter.\nParameters: reward, maximum, differencePerUser, onlyNumbers, botStarts, message.",
+    "Description": "Start an event to win [currency].\nParameters: time (s), reward, maximum, differencePerUser, onlyNumbers, botStarts, message.",
     "Remarks": [
-      "[prefix]event type parameters"
+      "[prefix]event time message (heart event)",
+	  "[prefix]event 0 reward, maximum, differencePerUser, onlyNumbers, botStarts, message (counter event)"
     ]
   },
 

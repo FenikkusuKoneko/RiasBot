@@ -16,7 +16,9 @@ namespace RiasBot.Modules.Bot.Services
         private readonly DiscordShardedClient _client;
         private readonly DbService _db;
 
+        //Counter event
         private List<PlayerNumbers> playerNumbers;
+        private Queue<IUser> heartUsers;
 
         private IMessageChannel channel;
         private int reward;
@@ -33,7 +35,7 @@ namespace RiasBot.Modules.Bot.Services
             _client = client;
             _db = db;
 
-            _client.MessageReceived += onMessageReceived;
+            _client.MessageReceived += OnMessageReceived;
         }
 
         public async Task CounterSetup(IMessageChannel channel, int reward, int maximum, int differencePerUser, bool onlyNumbers, bool botStarts)
@@ -55,7 +57,7 @@ namespace RiasBot.Modules.Bot.Services
             }
         }
 
-        public async Task onMessageReceived(SocketMessage s)
+        public async Task OnMessageReceived(SocketMessage s)
         {
             if (gameStarted)
             {
@@ -99,7 +101,7 @@ namespace RiasBot.Modules.Bot.Services
                             {
                                 gameStarted = false;
                                 await channel.SendConfirmationEmbed($"Congratulations you earned {reward}{RiasBot.currency}!");
-                                await AwardUsers().ConfigureAwait(false);
+                                await AwardUsersCounter().ConfigureAwait(false);
                             }
                         }
                         else
@@ -136,7 +138,7 @@ namespace RiasBot.Modules.Bot.Services
                             players[i] = playerNumbers[i].User.ToString();
                         }
                         await channel.SendConfirmationEmbed($"Congratulations {String.Join(" ", players)} you earned {reward}{RiasBot.currency}!");
-                        await AwardUsers().ConfigureAwait(false);
+                        await AwardUsersCounter().ConfigureAwait(false);
                     }
                 }
                 else
@@ -146,7 +148,7 @@ namespace RiasBot.Modules.Bot.Services
             }
         }
 
-        public async Task AwardUsers()
+        public async Task AwardUsersCounter()
         {
             using (var db = _db.GetDbContext())
             {
@@ -163,6 +165,62 @@ namespace RiasBot.Modules.Bot.Services
                         var userConfig = new UserConfig { UserId = player.User.Id, Currency = reward };
                         await db.AddAsync(userConfig).ConfigureAwait(false);
                     }
+                }
+                await db.SaveChangesAsync().ConfigureAwait(false);
+            }
+        }
+
+        public async Task Hearts(IUserMessage message, int timeout, int reward)
+        {
+            gameStarted = true;
+            heartUsers = new Queue<IUser>();
+            IEmote heart = Emote.Parse(RiasBot.currency);
+            await message.AddReactionAsync(heart).ConfigureAwait(false);
+
+            Action<SocketReaction> heartReaction = async r =>
+            {
+                try
+                {
+                    if (r.Emote.Name == heart.Name)
+                    {
+                        if (!heartUsers.Any(x => x == r.User.Value))
+                        {
+                            heartUsers.Enqueue(r.User.Value);
+                            await AwardUsersHearts(r.User.Value, reward).ConfigureAwait(false);
+                        }
+                    }
+                    if (!gameStarted)
+                    {
+                        await message.DeleteAsync().ConfigureAwait(false);
+                        return;
+                    }
+                }
+                catch
+                {
+                    //ignored
+                }
+            };
+
+            using (message.OnReaction(_client, heartReaction))
+            {
+                await Task.Delay(timeout * 1000).ConfigureAwait(false);
+            }
+            await message.DeleteAsync().ConfigureAwait(false);
+        }
+
+        public async Task AwardUsersHearts(IUser user, int reward)
+        {
+            using (var db = _db.GetDbContext())
+            {
+                var userDb = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
+                if (userDb != null)
+                {
+                    userDb.Currency += reward;
+                }
+                else
+                {
+                    var userConfig = new UserConfig { UserId = user.Id, Currency = reward };
+                    await db.AddAsync(userConfig).ConfigureAwait(false);
                 }
                 await db.SaveChangesAsync().ConfigureAwait(false);
             }

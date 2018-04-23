@@ -4,6 +4,7 @@ using Discord.Webhook;
 using Discord.WebSocket;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
+using RiasBot.Modules.Music.MusicServices;
 using RiasBot.Modules.Reactions.Services;
 using RiasBot.Modules.Searches.Services;
 using RiasBot.Services;
@@ -23,11 +24,12 @@ namespace RiasBot.Modules.Bot
         private readonly BotService _botService;
         private readonly IBotCredentials _creds;
 
+        private readonly MusicService _musicService;
         private readonly CuteGirlsService _cuteGirlsService;
         private readonly ReactionsService _reactionsService;
 
         public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordShardedClient client, BotService botService,
-            IBotCredentials creds, CuteGirlsService cuteGirlsService, ReactionsService reactionsService)
+            IBotCredentials creds, MusicService musicService, CuteGirlsService cuteGirlsService, ReactionsService reactionsService)
         {
             _ch = ch;
             _service = service;
@@ -37,6 +39,7 @@ namespace RiasBot.Modules.Bot
             _botService = botService;
             _creds = creds;
 
+            _musicService = musicService;
             _cuteGirlsService = cuteGirlsService;
             _reactionsService = reactionsService;
         }
@@ -68,6 +71,10 @@ namespace RiasBot.Modules.Bot
         public async Task Die()
         {
             await Context.Channel.SendConfirmationEmbed("Shutting down...").ConfigureAwait(false);
+            foreach (var mp in _musicService.MPlayer)
+            {
+                await mp.Value.Destroy("", true).ConfigureAwait(false);
+            }
             await Context.Client.StopAsync().ConfigureAwait(false);
             Environment.Exit(0);
         }

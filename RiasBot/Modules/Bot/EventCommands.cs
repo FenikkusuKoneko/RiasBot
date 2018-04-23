@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
 using RiasBot.Modules.Bot.Services;
@@ -26,17 +27,22 @@ namespace RiasBot.Modules.Bot
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireOwner]
-            public async Task Event(string game, int reward, int maximum = 0, int differencePerUser = 0, bool onlyNumbers = false, bool botStarts = false, [Remainder]string message = null)
+            public async Task Event(int timeout, int reward, int maximum = 0, int differencePerUser = 0, bool onlyNumbers = false, bool botStarts = false, [Remainder]string message = null)
             {
-                game = game.ToLowerInvariant();
                 if (!String.IsNullOrEmpty(message))
                     await Context.Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
-                switch (game)
-                {
-                    case "counter":
-                        await _service.CounterSetup(Context.Channel, reward, maximum, differencePerUser, onlyNumbers, botStarts).ConfigureAwait(false);
-                        break;
-                }
+                await _service.CounterSetup(Context.Channel, reward, maximum, differencePerUser, onlyNumbers, botStarts).ConfigureAwait(false);
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireOwner]
+            public async Task Event(int timeout, int reward, [Remainder]string message = null)
+            {
+                IUserMessage userMessage = null;
+                if (!String.IsNullOrEmpty(message))
+                    userMessage = await Context.Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                await _service.Hearts(userMessage, timeout, reward).ConfigureAwait(false);
             }
 
             [RiasCommand][@Alias]
