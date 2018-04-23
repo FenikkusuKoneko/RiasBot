@@ -20,12 +20,14 @@ namespace RiasBot.Modules.Utility
     {
         public class InfoCommands : RiasModule
         {
+            private readonly DiscordShardedClient _client;
             private readonly CommandHandler _ch;
             private readonly CommandService _service;
             private readonly MusicService _musicService;
 
-            public InfoCommands(CommandHandler ch, CommandService service, MusicService musicService)
+            public InfoCommands(DiscordShardedClient client, CommandHandler ch, CommandService service, MusicService musicService)
             {
+                _client = client;
                 _ch = ch;
                 _service = service;
                 _musicService = musicService;
@@ -67,10 +69,11 @@ namespace RiasBot.Modules.Utility
 
                     embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
                     embed.AddField("Author", author?.ToString() ?? RiasBot.author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
-                    embed.AddField("Master ID", RiasBot.konekoID, true).AddField("In server", Context.Guild?.Name ?? "-", true);
-                    embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Commands Run", RiasBot.commandsRun, true);
-                    embed.AddField("Presence", $"{guilds.Count} Servers\n{textChannels} Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true)
-                         .AddField("Playing Music", $"Running {musicRunning} Channels\nAFK {musicAfk} Channels", true);
+                    embed.AddField("Master ID", RiasBot.konekoID, true).AddField("Shard", $"#{_client.GetShardIdFor(Context.Guild) + 1}/{_client.Shards.Count()}", true);
+                    embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.commandsRun, true);
+                    embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Presence", $"{guilds.Count} Servers\n{textChannels} " +
+                        $"Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
+                    embed.AddField("Playing Music", $"Running {musicRunning} Channels\nAFK {musicAfk} Channels", true);
                     embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
 
                     //continue
