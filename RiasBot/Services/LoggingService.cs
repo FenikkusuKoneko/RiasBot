@@ -13,11 +13,11 @@ namespace RiasBot.Services
     public class LoggingService : IRService
     {
         private readonly CommandHandler _ch;
-        private readonly DiscordSocketClient _discord;
+        private readonly DiscordShardedClient _discord;
         private readonly CommandService _commands;
 
         private bool ready;
-        public LoggingService(CommandHandler ch, DiscordSocketClient discord, CommandService commands)
+        public LoggingService(CommandHandler ch, DiscordShardedClient discord, CommandService commands)
         {
             _ch = ch;
             _discord = discord;
@@ -26,7 +26,7 @@ namespace RiasBot.Services
             _discord.Log += DiscordLogAsync;
             _commands.Log += DiscordLogAsync;
             _commands.CommandExecuted += CommandLogAsync;
-            _discord.Ready += Ready;
+            _discord.ShardReady += Ready;
         }
 
         private Task DiscordLogAsync(LogMessage msg)
@@ -62,7 +62,7 @@ namespace RiasBot.Services
             return Console.Out.WriteLineAsync(String.Join("\n", log));
         }
 
-        private Task Ready()
+        private Task Ready(DiscordSocketClient _client)
         {
             ready = true;
             return null;

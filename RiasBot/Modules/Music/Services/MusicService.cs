@@ -19,13 +19,13 @@ namespace RiasBot.Modules.Music.MusicServices
 {
     public class MusicService : IRService
     {
-        private DiscordSocketClient _client;
+        private DiscordShardedClient _client;
 
         public readonly ConcurrentDictionary<ulong, MusicPlayer> MPlayer = new ConcurrentDictionary<ulong, MusicPlayer>();
 
         /*public bool Paused => pauseTaskSource != null;
         private TaskCompletionSource<bool> pauseTaskSource { get; set; } = null;*/
-        public MusicService(DiscordSocketClient client)
+        public MusicService(DiscordShardedClient client)
         {
             _client = client;
         }

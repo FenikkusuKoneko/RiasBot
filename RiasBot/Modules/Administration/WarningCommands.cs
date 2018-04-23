@@ -18,12 +18,12 @@ namespace RiasBot.Modules.Administration
     {
         public class WarningCommands : RiasSubmodule<WarningService>
         {
-            private DiscordSocketClient _client;
+            private DiscordShardedClient _client;
             private readonly CommandHandler _ch;
             private readonly DbService _db;
             private readonly AdministrationService _adminService;
 
-            public WarningCommands(DiscordSocketClient client, CommandHandler ch, DbService db, AdministrationService adminService)
+            public WarningCommands(DiscordShardedClient client, CommandHandler ch, DbService db, AdministrationService adminService)
             {
                 _client = client;
                 _ch = ch;

@@ -172,7 +172,7 @@ namespace RiasBot.Modules.Administration
                             lsar[index] = $"#{index + 1} {role.RoleName}";
                             index++;
                         }
-                        await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, "Self assignable roles on this server", lsar, 15, page - 1);
+                        await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, "Self assignable roles on this server", lsar, 15, page - 1);
                     }
                     else
                     {

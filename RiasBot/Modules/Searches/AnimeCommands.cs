@@ -180,7 +180,7 @@ namespace RiasBot.Modules.Searches
                             string waifuName1 = $"{(string)obj.characters[i].name.first} { (string)obj.characters[i].name.last}";
                             listCharacters[i] = $"{waifuName1}\tId: {obj.characters[i].id}\n";
                         }
-                        await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, $"I've found {characters.Count()} characters for {character}. Search the character by id",
+                        await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"I've found {characters.Count()} characters for {character}. Search the character by id",
                             listCharacters, 10);
                     }
                 }

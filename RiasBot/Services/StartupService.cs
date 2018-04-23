@@ -12,13 +12,13 @@ namespace RiasBot.Services
 {
     public class StartupService : IRService
     {
-        private readonly DiscordSocketClient _discord;
+        private readonly DiscordShardedClient _discord;
         private readonly CommandService _commands;
         private readonly IServiceProvider _provider;
         private readonly IBotCredentials _creds;
 
         public StartupService(
-            DiscordSocketClient discord, CommandService commands, IServiceProvider provider, IBotCredentials creds)
+            DiscordShardedClient discord, CommandService commands, IServiceProvider provider, IBotCredentials creds)
         {
             _creds = creds;
             _discord = discord;

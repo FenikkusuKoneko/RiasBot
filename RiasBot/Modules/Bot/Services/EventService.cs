@@ -13,7 +13,7 @@ namespace RiasBot.Modules.Bot.Services
 {
     public class EventService : IRService
     {
-        private readonly DiscordSocketClient _client;
+        private readonly DiscordShardedClient _client;
         private readonly DbService _db;
 
         private List<PlayerNumbers> playerNumbers;
@@ -28,7 +28,7 @@ namespace RiasBot.Modules.Bot.Services
         private int numberCounter;
         public bool gameStarted;
 
-        public EventService(DiscordSocketClient client, DbService db)
+        public EventService(DiscordShardedClient client, DbService db)
         {
             _client = client;
             _db = db;

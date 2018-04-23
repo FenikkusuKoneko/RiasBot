@@ -14,7 +14,7 @@ namespace RiasBot.Services
 {
     public class CommandHandler : IRService
     {
-        private readonly DiscordSocketClient _discord;
+        private readonly DiscordShardedClient _discord;
         private readonly CommandService _commands;
         private readonly IBotCredentials _creds;
         private readonly IServiceProvider _provider;
@@ -23,7 +23,7 @@ namespace RiasBot.Services
 
         public string _prefix;
 
-        public CommandHandler(DiscordSocketClient discord, CommandService commands, IBotCredentials creds, IServiceProvider provider, DbService db, XpService xpService)
+        public CommandHandler(DiscordShardedClient discord, CommandService commands, IBotCredentials creds, IServiceProvider provider, DbService db, XpService xpService)
         {
             _discord = discord;
             _commands = commands;
@@ -42,7 +42,7 @@ namespace RiasBot.Services
             if (msg.Author.Id == _discord.CurrentUser.Id) return;     // Ignore self when checking commands
             if (msg.Author.IsBot) return;       // Ignore other bots
 
-            var context = new SocketCommandContext(_discord, msg);     // Create the command context
+            var context = new ShardedCommandContext(_discord, msg);     // Create the command context
 
             if (!context.IsPrivate)
             {

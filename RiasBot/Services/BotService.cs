@@ -16,7 +16,7 @@ namespace RiasBot.Services
 {
     public class BotService : IRService
     {
-        private readonly DiscordSocketClient _discord;
+        private readonly DiscordShardedClient _discord;
         private readonly DbService _db;
         private readonly IBotCredentials _creds;
 
@@ -29,7 +29,7 @@ namespace RiasBot.Services
         public string[] statuses;
         private int statusCount = 0;
 
-        public BotService(DiscordSocketClient discord, DbService db, IBotCredentials creds, MusicService musicService)
+        public BotService(DiscordShardedClient discord, DbService db, IBotCredentials creds, MusicService musicService)
         {
             _discord = discord;
             _db = db;
@@ -38,7 +38,7 @@ namespace RiasBot.Services
 
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
-            _discord.Disconnected += Disconnected;
+            _discord.ShardDisconnected += Disconnected;
             _discord.UserVoiceStateUpdated += _musicService.CheckIfAlone;
 
             if(!RiasBot.isBeta && !String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
@@ -129,9 +129,12 @@ namespace RiasBot.Services
             }
         }
 
-        public Task Disconnected(Exception ex)
+        public Task Disconnected(Exception ex, DiscordSocketClient client)
         {
-            _musicService.MPlayer.Clear();
+            foreach (var guild in client.Guilds)
+            {
+                _musicService.RemoveMusicPlayer(guild);
+            }
             return Task.CompletedTask;
         }
 

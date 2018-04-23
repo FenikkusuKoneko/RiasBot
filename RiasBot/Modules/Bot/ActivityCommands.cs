@@ -19,10 +19,10 @@ namespace RiasBot.Modules.Bot
             private readonly CommandHandler _ch;
             private readonly CommandService _service;
             private readonly DbService _db;
-            private readonly DiscordSocketClient _client;
+            private readonly DiscordShardedClient _client;
             private readonly BotService _botService;
 
-            public ActivityCommands(CommandHandler ch, CommandService service, DbService db, DiscordSocketClient client, BotService botService)
+            public ActivityCommands(CommandHandler ch, CommandService service, DbService db, DiscordShardedClient client, BotService botService)
             {
                 _ch = ch;
                 _service = service;
@@ -93,27 +93,27 @@ namespace RiasBot.Modules.Bot
                 switch (status)
                 {
                     case "online":
-                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.Online);
+                        await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.Online);
                         await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("Online")}");
                         break;
                     case "idle":
-                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.Idle);
+                        await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.Idle);
                         await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("Idle")}");
                         break;
                     case "afk":
-                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.AFK);
+                        await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.AFK);
                         await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("AFK")}");
                         break;
                     case "donotdisturb":
-                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.DoNotDisturb);
+                        await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.DoNotDisturb);
                         await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("DoNotDisturb")}");
                         break;
                     case "dnd":
-                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.DoNotDisturb);
+                        await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.DoNotDisturb);
                         await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("DoNotDisturb")}");
                         break;
                     case "invisible":
-                        await ((DiscordSocketClient)Context.Client).SetStatusAsync(UserStatus.Invisible);
+                        await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.Invisible);
                         await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("Invisible")}");
                         break;
                 }

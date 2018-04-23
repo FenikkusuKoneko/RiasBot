@@ -14,9 +14,9 @@ namespace RiasBot.Modules.Administration.Services
 {
     public class AdministrationService : IRService
     {
-        private readonly DiscordSocketClient _client;
+        private readonly DiscordShardedClient _client;
         private readonly DbService _db;
-        public AdministrationService(DiscordSocketClient client, DbService db)
+        public AdministrationService(DiscordShardedClient client, DbService db)
         {
             _client = client;
             _db = db;

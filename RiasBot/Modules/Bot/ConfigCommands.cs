@@ -20,10 +20,10 @@ namespace RiasBot.Modules.Bot
             private readonly CommandHandler _ch;
             private readonly CommandService _service;
             private readonly DbService _db;
-            private readonly DiscordSocketClient _client;
+            private readonly DiscordShardedClient _client;
             private readonly BotService _botService;
 
-            public ConfigCommands(CommandHandler ch, CommandService service, DbService db, DiscordSocketClient client, BotService botService)
+            public ConfigCommands(CommandHandler ch, CommandService service, DbService db, DiscordShardedClient client, BotService botService)
             {
                 _ch = ch;
                 _service = service;

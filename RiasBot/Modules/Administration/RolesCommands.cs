@@ -35,7 +35,7 @@ namespace RiasBot.Modules.Administration
                 {
                     var everyoneRole = Context.Guild.Roles.Where(x => x.Name == "@everyone");
                     var roles = Context.Guild.Roles.OrderByDescending(x => x.Position).Except(everyoneRole).Select(y => y.Name).ToArray();
-                    await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, $"List of roles on this server", roles, 15, page - 1);
+                    await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"List of roles on this server", roles, 15, page - 1);
                 }
                 catch
                 {

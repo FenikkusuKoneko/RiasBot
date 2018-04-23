@@ -160,7 +160,7 @@ namespace RiasBot.Modules.Utility
                             string waifuName1 = $"{(string)obj.characters[i].name.first} { (string)obj.characters[i].name.last}";
                             listCharacters[i] = $"{waifuName1}\tId: {obj.characters[i].id}\n";
                         }
-                        await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, $"I've found {characters.Count()} characters for {character}. Claim a waifu by id",
+                        await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"I've found {characters.Count()} characters for {character}. Claim a waifu by id",
                             listCharacters, 10);
                     }
                 }
@@ -274,7 +274,7 @@ namespace RiasBot.Modules.Utility
                         }
 
                         if (waifusDb.Count() > 0)
-                            await Context.Channel.SendPaginated((DiscordSocketClient)Context.Client, $"All waifus for {user}", waifus, 10);
+                            await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"All waifus for {user}", waifus, 10);
                         else if (user == Context.Message.Author)
                             await ReplyAsync($"{user.Mention} you don't have any waifu.");
                         else

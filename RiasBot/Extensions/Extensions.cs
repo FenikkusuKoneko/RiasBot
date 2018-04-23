@@ -22,7 +22,7 @@ namespace RiasBot.Extensions
             return module;
         }
 
-        public static ReactionEventWrapper OnReaction(this IUserMessage msg, DiscordSocketClient client, Action<SocketReaction> reactionAdded, Action<SocketReaction> reactionRemoved = null)
+        public static ReactionEventWrapper OnReaction(this IUserMessage msg, DiscordShardedClient client, Action<SocketReaction> reactionAdded, Action<SocketReaction> reactionRemoved = null)
         {
             if (reactionRemoved == null)
                 reactionRemoved = delegate { };

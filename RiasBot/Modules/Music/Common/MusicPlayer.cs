@@ -18,10 +18,10 @@ namespace RiasBot.Modules.Music.Common
 {
     public class MusicPlayer
     {
-        public DiscordSocketClient _client;
+        public DiscordShardedClient _client;
         public SongProcessing _sp;
         public MusicService _ms;
-        public MusicPlayer(DiscordSocketClient client, MusicService ms)
+        public MusicPlayer(DiscordShardedClient client, MusicService ms)
         {
             _client = client;
             _sp = new SongProcessing(this);

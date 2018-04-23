@@ -33,7 +33,7 @@ namespace RiasBot.Extensions
         ///<summary>
         ///Send paginated embed in current text channel.
         ///</summary>
-        public static async Task SendPaginated(this IMessageChannel channel, DiscordSocketClient client, string title, string[] list, int itemsPerPage, int currentPage = 0, int timeout = 30000)
+        public static async Task SendPaginated(this IMessageChannel channel, DiscordShardedClient client, string title, string[] list, int itemsPerPage, int currentPage = 0, int timeout = 30000)
         {
             if (currentPage <= 0)
                 currentPage = 0;

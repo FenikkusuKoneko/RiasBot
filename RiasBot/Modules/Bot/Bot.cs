@@ -19,14 +19,14 @@ namespace RiasBot.Modules.Bot
         private readonly CommandService _service;
         private readonly IServiceProvider _provider;
         private readonly DbService _db;
-        private readonly DiscordSocketClient _client;
+        private readonly DiscordShardedClient _client;
         private readonly BotService _botService;
         private readonly IBotCredentials _creds;
 
         private readonly CuteGirlsService _cuteGirlsService;
         private readonly ReactionsService _reactionsService;
 
-        public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordSocketClient client, BotService botService,
+        public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordShardedClient client, BotService botService,
             IBotCredentials creds, CuteGirlsService cuteGirlsService, ReactionsService reactionsService)
         {
             _ch = ch;

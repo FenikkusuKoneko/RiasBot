@@ -15,13 +15,13 @@ namespace RiasBot.Services
 {
     public class PatreonService : IRService
     {
-        private readonly DiscordSocketClient _client;
+        private readonly DiscordShardedClient _client;
         private readonly DbService _db;
         private readonly IBotCredentials _creds;
 
         private Timer timer;
 
-        public PatreonService(DiscordSocketClient client, DbService db, IBotCredentials creds)
+        public PatreonService(DiscordShardedClient client, DbService db, IBotCredentials creds)
         {
             _client = client;
             _db = db;

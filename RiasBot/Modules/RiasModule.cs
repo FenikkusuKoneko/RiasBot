@@ -24,7 +24,7 @@ namespace RiasBot.Modules
         public async Task<string> GetUserInputAsync(ulong userId, ulong channelId, int timeout) //seconds
         {
             var userInputTask = new TaskCompletionSource<string>();
-            var dsc = (DiscordSocketClient)Context.Client;
+            var dsc = (DiscordShardedClient)Context.Client;
             try
             {
                 dsc.MessageReceived += MessageReceived;

@@ -14,7 +14,7 @@ namespace RiasBot.Commons
         public event Action<SocketReaction> OnReactionRemoved = delegate { };
         public event Action OnReactionsCleared = delegate { };
 
-        public ReactionEventWrapper(DiscordSocketClient client, IUserMessage msg)
+        public ReactionEventWrapper(DiscordShardedClient client, IUserMessage msg)
         {
             Message = msg ?? throw new ArgumentNullException(nameof(msg));
             _client = client;
@@ -80,7 +80,7 @@ namespace RiasBot.Commons
         }
 
         private bool disposing = false;
-        private readonly DiscordSocketClient _client;
+        private readonly DiscordShardedClient _client;
 
         public void Dispose()
         {
