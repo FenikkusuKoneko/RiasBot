@@ -208,6 +208,7 @@ namespace RiasBot.Modules.Bot.Services
             {
                 await Task.Delay(timeout * 1000).ConfigureAwait(false);
             }
+            gameStarted = false;
             await message.DeleteAsync().ConfigureAwait(false);
         }
 
