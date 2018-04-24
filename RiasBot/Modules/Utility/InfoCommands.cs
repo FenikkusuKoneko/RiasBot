@@ -43,6 +43,9 @@ namespace RiasBot.Modules.Utility
                 {
                     var author = await Context.Client.GetUserAsync(RiasBot.konekoID).ConfigureAwait(false);
                     var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
+                    int shard = 0;
+                    if (Context.Guild != null)
+                        shard = _client.GetShardIdFor(Context.Guild) + 1;
 
                     int textChannels = 0;
                     int voiceChannels = 0;
@@ -69,7 +72,7 @@ namespace RiasBot.Modules.Utility
 
                     embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
                     embed.AddField("Author", author?.ToString() ?? RiasBot.author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
-                    embed.AddField("Master ID", RiasBot.konekoID, true).AddField("Shard", $"#{_client.GetShardIdFor(Context.Guild) + 1}/{_client.Shards.Count()}", true);
+                    embed.AddField("Master ID", RiasBot.konekoID, true).AddField("Shard", $"#{shard}/{_client.Shards.Count()}", true);
                     embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.commandsRun, true);
                     embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Presence", $"{guilds.Count} Servers\n{textChannels} " +
                         $"Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);

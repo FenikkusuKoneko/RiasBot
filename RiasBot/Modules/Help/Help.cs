@@ -122,7 +122,7 @@ namespace RiasBot.Modules.Help
                 }
             }
             embed.WithDescription(String.Join("\n\n", modulesDescription));
-            embed.WithFooter($"To see all commands for a module or submodule, type {_ch._prefix + "cmds <module>"} or {_ch._prefix + "cmds <module>"}");
+            embed.WithFooter($"To see all commands for a module or submodule, type {_ch._prefix + "cmds <module>"} or {_ch._prefix + "cmds <submodule>"}");
             embed.WithCurrentTimestamp();
             await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
         }

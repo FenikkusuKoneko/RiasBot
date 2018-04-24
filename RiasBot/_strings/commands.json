@@ -646,7 +646,7 @@
 
   "userinfo": {
     "Command": "userinfo uinfo",
-    "Description": "Show the info for a mentioned user. Provide no parameters to show your info.",
+    "Description": "Show the info for an user. Provide no parameters to show your info.",
     "Remarks": [
       "[prefix]uinfo",
       "[prefix]uinfo @User"
@@ -663,7 +663,7 @@
 
   "userid": {
     "Command": "userid uid",
-    "Description": "Show the ID of a mentioned user. Provide no parameters to see your ID.",
+    "Description": "Show the ID of an user. Provide no parameters to see your ID.",
     "Remarks": [
       "[prefix]uid",
       "[prefix]uid @User"
@@ -688,7 +688,7 @@
 
   "useravatar": {
     "Command": "useravatar uav",
-    "Description": "Show the avatar for a mentioned user. Provide no parameters to see your avatar.",
+    "Description": "Show the avatar for an user. Provide no parameters to see your avatar.",
     "Remarks": [
       "[prefix]uav",
       "[prefix]uav @User"
