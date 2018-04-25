@@ -72,7 +72,6 @@ namespace RiasBot.Services
             {
                 var pledges = patreonCampaign.Data?.Where(x => x.type == "pledge").ToList();
                 var patrons = patreonCampaign.Included?.Where(x => x.type == "user").ToList();
-                var validPledges = db.Patreon.ToList();
                 var patronsList = new List<ulong>();
 
                 if (pledges is null || patrons is null)
@@ -86,6 +85,7 @@ namespace RiasBot.Services
 
                     if (patronUser != null)
                     {
+
                         int amountCents = pledge.attributes.amount_cents;
                         UInt64.TryParse(patronUser.attributes.social_connections.discord.user_id, out var userId);
 
@@ -136,10 +136,19 @@ namespace RiasBot.Services
                                 var patron = new Patreon { UserId = userId, Reward = amountCents * 10, NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 1, 8, 0, 0) };
                                 await db.AddAsync(patron).ConfigureAwait(false);
                             }
-                            await db.SaveChangesAsync().ConfigureAwait(false);
                         }
                     }
                 }
+                await db.SaveChangesAsync().ConfigureAwait(false);
+
+                foreach (var dbPatron in db.Patreon)
+                {
+                    if (!patronsList.Contains(dbPatron.UserId))
+                    {
+                        db.Remove(dbPatron);
+                    }
+                }
+                await db.SaveChangesAsync().ConfigureAwait(false);
             }
         }
     }
