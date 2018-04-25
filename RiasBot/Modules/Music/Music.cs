@@ -69,7 +69,7 @@ namespace RiasBot.Modules.Music
 
             try
             {
-                var mp = _service.GetOrAddMusicPlayer(Context.Guild);
+                var mp = await _service.GetOrAddMusicPlayer(Context.Guild);
                 await mp.JoinAudio(Context.Guild, Context.Channel, voiceChannel).ConfigureAwait(false);
 
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer()
@@ -536,7 +536,7 @@ namespace RiasBot.Modules.Music
 
             await mp.Clear().ConfigureAwait(false);
 
-            await Context.Channel.SendConfirmationEmbed("Adding songs to playlist, please wait").ConfigureAwait(false);
+            await Context.Channel.SendConfirmationEmbed("Adding songs to the playlist, please wait!").ConfigureAwait(false);
             int items = 0;
             var nextPageToken = "";
             while (nextPageToken != null)
@@ -553,7 +553,7 @@ namespace RiasBot.Modules.Music
 
                     foreach (var playlistItem in playlistItemsListResponse.Items)
                     {
-                        if (items < 50)
+                        if (items < mp.queueLimit)
                         {
                             try
                             {
@@ -571,6 +571,8 @@ namespace RiasBot.Modules.Music
                                 if (title != null && url != null && duration != new TimeSpan(0, 0, 0))
                                 {
                                     await mp.Playlist((IGuildUser)Context.User, youtubeService, videoListRequest, playlistItem, index);
+                                    if (mp.destroyed)
+                                        return;
                                     items++;
                                 }
                             }
@@ -594,7 +596,8 @@ namespace RiasBot.Modules.Music
                 }
             }
             await Context.Channel.SendConfirmationEmbed($"Added to playlist {items} songs").ConfigureAwait(false);
-            await mp.UpdateQueue(index).ConfigureAwait(false);
+            mp.registeringPlaylist = false;
+            mp.waited = false;
         }
 
         private async Task PlayVideoURL(MusicPlayer mp, YouTubeService youtubeService, string videoId)

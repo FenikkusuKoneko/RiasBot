@@ -18,7 +18,7 @@ namespace RiasBot.Modules.Administration
         public readonly CommandHandler _ch;
         public readonly DbService _db;
 
-        public Administration(CommandHandler ch, CommandService service, DbService db)
+        public Administration(CommandHandler ch, DbService db)
         {
             _ch = ch;
             _db = db;

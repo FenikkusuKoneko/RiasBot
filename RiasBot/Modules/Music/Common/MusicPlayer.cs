@@ -52,7 +52,14 @@ namespace RiasBot.Modules.Music.Common
         public bool isDownloading; //downloading the next song
         public bool repeat;     //repeat the current song
         public bool isPaused;
+        public bool registeringPlaylist;
+        public bool destroyed;
         public Stopwatch timer;
+
+        //Patreon features
+        public bool volumeFeature;
+        public int queueLimit = 50; //default
+        public TimeSpan durationLimit = new TimeSpan(2, 5, 0); // I'll make a little exception of 5 minutes
 
         public class Song
         {
@@ -95,6 +102,11 @@ namespace RiasBot.Modules.Music.Common
         {
             try
             {
+                if (registeringPlaylist)
+                {
+                    await _channel.SendErrorEmbed("I still adding the songs to the playlist. Please wait!");
+                    return;
+                }
                 if (waited)
                     return;
 
@@ -109,7 +121,7 @@ namespace RiasBot.Modules.Music.Common
                     user = user
                 };
 
-                if (duration <= new TimeSpan(2, 0, 0))
+                if (duration <= durationLimit)
                 {
                     if (!isRunning)
                     {
@@ -120,7 +132,7 @@ namespace RiasBot.Modules.Music.Common
                     }
                     else
                     {
-                        if (Queue.Count < 50)
+                        if (Queue.Count < queueLimit)
                         {
                             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                             var eta = Queue[position].duration;
@@ -146,14 +158,16 @@ namespace RiasBot.Modules.Music.Common
                         }
                         else
                         {
-                            await _channel.SendErrorEmbed("The current playlist has 50 songs. Clear the playlist if you want to add more.").ConfigureAwait(false);
+                            await _channel.SendErrorEmbed($"The current playlist has {queueLimit} songs. Clear the playlist if you want to add more. " +
+                                $"The owner of this server can support on Patreon to raise the limit. More details [here]({RiasBot.patreon}).").ConfigureAwait(false);
                         }
                         waited = false;
                     }
                 }
                 else
                 {
-                    await _channel.SendErrorEmbed("I can't play songs longer than 2 hours!");
+                    await _channel.SendErrorEmbed($"I can't play songs longer than {durationLimit.Hours} hours. " +
+                        $"The owner of this server can support on Patreon to raise the limit. More details [here]({RiasBot.patreon}).");
                     waited = false;
                 }
             }
@@ -198,6 +212,14 @@ namespace RiasBot.Modules.Music.Common
                 };
                 isRunning = true;
                 Queue.Add(song);
+                if (!registeringPlaylist)
+                {
+                    if (index < Queue.Count)
+                    {
+                        await Task.Factory.StartNew(() => UpdateQueue(index));
+                        registeringPlaylist = true;
+                    }
+                }
             }
             finally
             {
@@ -207,6 +229,11 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task PlayByIndex(int index)
         {
+            if (registeringPlaylist)
+            {
+                await _channel.SendErrorEmbed("I still adding the songs to the playlist. Please wait!");
+                return;
+            }
             if (!waited && !isDownloading)
             {
                 if (index < Queue.Count)
@@ -233,9 +260,10 @@ namespace RiasBot.Modules.Music.Common
                 await semaphoreSlim.WaitAsync();
                 var song = Queue[index];
 
-                while (song.duration > new TimeSpan(2, 0, 0))
+                while (song.duration > durationLimit)
                 {
-                    await _channel.SendErrorEmbed("I can't play songs longer than 2 hours. Playing next song!").ConfigureAwait(false);
+                    await _channel.SendErrorEmbed($"I can't play songs longer than {durationLimit} hours. Playing next song. " +
+                        $"The owner of this server can support on Patreon to raise the limit. More details [here]({RiasBot.patreon}).").ConfigureAwait(false);
                     song = Queue[++index];
                 }
 
@@ -310,7 +338,8 @@ namespace RiasBot.Modules.Music.Common
                     _outStream = p.StandardOutput.BaseStream;
 
                     await _channel.SendMessageAsync("", embed: embed).ConfigureAwait(false);
-                    waited = false;
+                    if (!registeringPlaylist)
+                        waited = false;
 
                     try
                     {
@@ -401,6 +430,11 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Skip()
         {
+            if (registeringPlaylist)
+            {
+                await _channel.SendErrorEmbed("I still adding the songs to the playlist. Please wait!");
+                return;
+            }
             if (!waited && !isDownloading)
             {
                 if (position + 1 < Queue.Count)
@@ -448,6 +482,11 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Shuffle()
         {
+            if (registeringPlaylist)
+            {
+                await _channel.SendErrorEmbed("I still adding the songs to the playlist. Please wait!");
+                return;
+            }
             await semaphoreSlim.WaitAsync();
             try
             {
@@ -470,11 +509,17 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Clear()
         {
+            if (registeringPlaylist)
+            {
+                await _channel.SendErrorEmbed("I still adding the songs to the playlist. Please wait!");
+                return;
+            }
             await semaphoreSlim.WaitAsync();
             try
             {
                 await TogglePause(false, false).ConfigureAwait(false);
                 Queue.Clear();
+                registeringPlaylist = false;
                 position = 0;
 
                 tokenSource.Cancel();
@@ -579,7 +624,7 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Destroy(string message, bool forced = false)
         {
-            if (!waited)
+            if (!waited || forced)
             {
                 try
                 {
@@ -594,16 +639,24 @@ namespace RiasBot.Modules.Music.Common
                     await audioClient.StopAsync().ConfigureAwait(false);
                 if (!forced)
                     await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                destroyed = true;
                 _ms.RemoveMusicPlayer(_guild);
             }
         }
 
         public async Task SetVolume(int volume)
         {
-            if (volume >= 0 && volume <= 100)
+            if (volumeFeature)
             {
-                this.volume = ((float)volume) / 100;
-                await _channel.SendConfirmationEmbed($"Volume set to {volume}%");
+                if (volume >= 0 && volume <= 100)
+                {
+                    this.volume = ((float)volume) / 100;
+                    await _channel.SendConfirmationEmbed($"Volume set to {volume}%");
+                }
+            }
+            else
+            {
+                await _channel.SendErrorEmbed($"This feature is not available. The owner of this server can support on Patreon to unlock it. More details [here]({RiasBot.patreon}).");
             }
         }
 
@@ -629,6 +682,9 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task TogglePause(bool pause, bool message)
         {
+            if (waited)
+                return;
+
             if (pause != isPaused && isRunning)
             {
                 if (pauseTaskSource == null)
