@@ -163,6 +163,7 @@ namespace RiasBot.Modules.Music.MusicServices
             {
                 mp.volumeFeature = true;
                 mp.queueLimit = 500;
+                mp.durationLimit = new TimeSpan(4, 5, 0);
             }
         }
     }
