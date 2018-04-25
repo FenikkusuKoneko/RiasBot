@@ -62,7 +62,7 @@ namespace RiasBot.Modules.Music.MusicServices
                         return;
                     }
                     MPlayer.TryGetValue(userG.Guild.Id, out var musicPlayer);
-                    await musicPlayer.Destroy("I left because everybody left the voice channel!", true);
+                    await musicPlayer.Destroy("I left because everybody left the voice channel!", true, true);
                 }
             }
             catch
