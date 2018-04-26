@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RiasBot.Extensions;
 
 namespace RiasBot.Modules.Gambling
 {
@@ -26,7 +27,9 @@ namespace RiasBot.Modules.Gambling
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
-        public async Task BetFlip(int bet, string coin)
+        [RequireContext(ContextType.Guild)]
+        [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
+        public async Task BetRoll(int bet)
         {
             if(bet < 20)
             {
@@ -34,12 +37,8 @@ namespace RiasBot.Modules.Gambling
                 return;
             }
 
-            string[] coins = { "h", "t", "heads", "tails" };
-            if (coin != coins[0] && coin != coins[1] && coin != coins[2] && coin != coins[3])
-                return;
-
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
-            int hot = rnd.Next(2); //heads or tails
+            int roll = rnd.Next(100) + 1; //heads or tails
 
             using (var db = _db.GetDbContext())
             {
@@ -48,20 +47,44 @@ namespace RiasBot.Modules.Gambling
                 {
                     if (bet <= userDb.Currency)
                     {
-                        if (coins[hot] == coin || coins[hot + 2] == coin)
+                        int win = 0;
+                        float multiplier = 0;
+                        if (roll >= 97)
                         {
-                            int win = (int)(bet * 1.95);
+                            win += bet * 10;
+                            multiplier = 10;
+                        }
+                        else if (roll >= 90)
+                        {
+                            win += bet * 5;
+                            multiplier = 5;
+                        }
+                        else if (roll >= 80)
+                        {
+                            win += bet * 2;
+                            multiplier = 2;
+                        }
+                        else if (roll >= 70)
+                        {
+                            win += (int)(bet * 1.5f);
+                            multiplier = 1.5f;
+                        }
+                        else if (roll >= 60)
+                        {
+                            win += bet;
+                            multiplier = 1;
+                        }
+                        if (win > 0)
+                        {
                             userDb.Currency += win - bet;
-                            await db.SaveChangesAsync().ConfigureAwait(false);
-
-                            await ReplyAsync($"{Context.User.Mention} you guessed it ^^. You won {win} {RiasBot.currency}");
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User} you rolled {roll} {Format.Bold($"(x{multiplier})")}. You won {win}{RiasBot.currency}");
                         }
                         else
                         {
-                            userDb.Currency -= bet;
-                            await db.SaveChangesAsync().ConfigureAwait(false);
-                            await ReplyAsync($"{Context.User.Mention} you didn't guess it. You lost {bet} {RiasBot.currency}");
+                            userDb.Currency += win - bet;
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User} you rolled {roll} {Format.Bold("(x0)")}.");
                         }
+                        await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                     else
                     {
@@ -74,6 +97,7 @@ namespace RiasBot.Modules.Gambling
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
+        [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Wheel(int bet)
         {
             if (bet < 50)

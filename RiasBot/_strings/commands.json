@@ -579,11 +579,11 @@
     ]
   },
 
-  "betflip": {
-    "Command": "betflip bf",
-    "Description": "Bet on heads or tails. If you guess you will win 1.95x of the bet.",
+  "betroll": {
+    "Command": "betroll br",
+    "Description": "Bet on roll. Over 70 -> 1x, over 80 -> 2x, over 90 -> 5x, over 97 -> 10x of the bet.",
     "Remarks": [
-      "[prefix]bf 100 h"
+      "[prefix]br 100"
     ]
   },
 
