@@ -635,8 +635,9 @@ namespace RiasBot.Modules.Music.Common
                 }
                 catch { }
                 Dispose();
-                if (audioClient.ConnectionState == ConnectionState.Connected)
-                    await audioClient.StopAsync().ConfigureAwait(false);
+                if (audioClient != null)
+                    if (audioClient.ConnectionState == ConnectionState.Connected)
+                        await audioClient.StopAsync().ConfigureAwait(false);
                 if (!forced)
                     await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
                 if(noUsers)
