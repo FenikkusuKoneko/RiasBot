@@ -214,7 +214,7 @@ namespace RiasBot.Modules.Music.Common
                 Queue.Add(song);
                 if (!registeringPlaylist)
                 {
-                    if (index < Queue.Count)
+                    if (index > -1 && index < Queue.Count)
                     {
                         await Task.Factory.StartNew(() => UpdateQueue(index));
                         registeringPlaylist = true;

@@ -185,7 +185,7 @@ namespace RiasBot.Modules.Bot.Services
                     {
                         if (!heartUsers.Any(x => x == r.User.Value))
                         {
-                            if (r.User.Value != _client.CurrentUser)
+                            if (r.User.Value.Id != _client.CurrentUser.Id)
                             {
                                 heartUsers.Enqueue(r.User.Value);
                                 await AwardUsersHearts(r.User.Value, reward).ConfigureAwait(false);

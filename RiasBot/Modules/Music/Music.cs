@@ -521,7 +521,7 @@ namespace RiasBot.Modules.Music
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
 
-        private async Task PlayList(MusicPlayer mp, YouTubeService youtubeService, string playlist, string videoId = null, int index = 0)
+        private async Task PlayList(MusicPlayer mp, YouTubeService youtubeService, string playlist, string videoId = null, int index = -1)
         {
             if (mp.waited)
                 return;
@@ -559,7 +559,7 @@ namespace RiasBot.Modules.Music
                             {
                                 string id = playlistItem.Snippet.ResourceId.VideoId;
                                 if (id == videoId)
-                                    index = (int?)playlistItem.Snippet.Position ?? 0;
+                                    index = (int?)playlistItem.Snippet.Position ?? -1;
 
                                 videoListRequest.Id = playlistItem.Snippet.ResourceId.VideoId;
                                 var videoListResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
@@ -586,18 +586,21 @@ namespace RiasBot.Modules.Music
                             break;
                         }
                     }
-
                     nextPageToken = playlistItemsListResponse.NextPageToken;
                 }
                 catch
                 {
                     await Context.Channel.SendErrorEmbed("Please provide a direct and unlisted or public YouTube playlist URL!");
+                    mp.waited = false;
                     return;
                 }
             }
             await Context.Channel.SendConfirmationEmbed($"Added to playlist {items} songs").ConfigureAwait(false);
             mp.registeringPlaylist = false;
-            mp.waited = false;
+            if (index > -1)
+                mp.waited = false;
+            else
+                await Task.Factory.StartNew(() => mp.UpdateQueue(0));
         }
 
         private async Task PlayVideoURL(MusicPlayer mp, YouTubeService youtubeService, string videoId)

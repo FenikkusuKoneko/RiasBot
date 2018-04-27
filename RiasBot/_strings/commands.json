@@ -234,8 +234,8 @@
     "Command": "event",
     "Description": "Start an event to win [currency].\nParameters: time (s), reward, maximum, differencePerUser, onlyNumbers, botStarts, message.",
     "Remarks": [
-      "[prefix]event time message (heart event)",
-	  "[prefix]event 0 reward, maximum, differencePerUser, onlyNumbers, botStarts, message (counter event)"
+      "[prefix]event timeout reward message (heart event)",
+	  "[prefix]event 0 reward maximum differencePerUser onlyNumbers botStarts message (counter event)"
     ]
   },
 
