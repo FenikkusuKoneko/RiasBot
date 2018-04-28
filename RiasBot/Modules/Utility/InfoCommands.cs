@@ -78,8 +78,7 @@ namespace RiasBot.Modules.Utility
                     embed.AddField("Playing Music", $"Running {musicRunning} Channels\nAFK {musicAfk} Channels", true);
                     embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
 
-                    //continue
-                    await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
+                    await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
                 }
             }
 
@@ -151,7 +150,7 @@ namespace RiasBot.Modules.Utility
                         embed.WithThumbnailUrl(user.DefaultAvatarUrl());
                     }
 
-                    await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
+                    await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -206,7 +205,7 @@ namespace RiasBot.Modules.Utility
                     embed.AddField($"Custom Emojis ({Context.Guild.Emotes.Count})", emotes);
                     embed.WithImageUrl(Context.Guild.IconUrl);
 
-                    await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
+                    await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
                 }
                 catch
                 {
@@ -271,7 +270,7 @@ namespace RiasBot.Modules.Utility
                     embed.WithImageUrl(user.DefaultAvatarUrl());
                 }
 
-                await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
 
             [RiasCommand]
@@ -285,7 +284,7 @@ namespace RiasBot.Modules.Utility
                 embed.WithColor(RiasBot.goodColor);
                 embed.WithImageUrl(Context.Guild.IconUrl + "?size=1024");
 
-                await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
         }
 

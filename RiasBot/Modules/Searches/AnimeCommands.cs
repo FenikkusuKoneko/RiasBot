@@ -90,7 +90,7 @@ namespace RiasBot.Modules.Searches
                     embed.AddField("Duration", duration, true).AddField("Genres", genres, true).AddField("Is Adult", (bool)obj.isAdult, true);
                     embed.AddField("Description", description);
                     embed.WithImageUrl((string)obj.coverImage.large);
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
             }
 
@@ -129,7 +129,7 @@ namespace RiasBot.Modules.Searches
                     embed.AddField("Alternative", (alternative != "") ? alternative : "-", true).AddField("Id", (int)obj.id);
                     embed.AddField("Description", (description != "") ? description : "-");
                     embed.WithImageUrl((string)obj.image.large);
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
             }
 
@@ -170,7 +170,7 @@ namespace RiasBot.Modules.Searches
                         embed.AddField("Alternative", (alternative != "") ? alternative : "-", true).AddField("Id", (int)obj.characters[0].id);
                         embed.AddField("Description", description);
                         embed.WithImageUrl((string)obj.characters[0].image.large);
-                        await ReplyAsync("", embed: embed.Build());
+                        await Context.Channel.SendMessageAsync("", embed: embed.Build());
                     }
                     else
                     {
@@ -211,15 +211,8 @@ namespace RiasBot.Modules.Searches
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithDescription(description);
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
-            }
-
-            [RiasCommand][@Alias]
-            [Description][@Remarks]
-            public async Task Nyaa([Remainder]string keywords = null)
-            {
-
             }
         }
     }

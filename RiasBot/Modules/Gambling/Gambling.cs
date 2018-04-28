@@ -31,9 +31,9 @@ namespace RiasBot.Modules.Gambling
         [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task BetRoll(int bet)
         {
-            if(bet < 20)
+            if(bet < 50)
             {
-                await ReplyAsync($"{Context.User.Mention} you can't bet less than 20 {RiasBot.currency}");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you can't bet less than 50 {RiasBot.currency}");
                 return;
             }
 
@@ -88,7 +88,7 @@ namespace RiasBot.Modules.Gambling
                     }
                     else
                     {
-                        await ReplyAsync($"{Context.User.Mention} you don't have enough {RiasBot.currency}");
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}");
                     }
                 }
                 catch { }
@@ -102,7 +102,7 @@ namespace RiasBot.Modules.Gambling
         {
             if (bet < 50)
             {
-                await ReplyAsync($"{Context.User.Mention} you can't bet less than 50 {RiasBot.currency}");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you can't bet less than 50 {RiasBot.currency}");
                 return;
             }
 
@@ -125,11 +125,11 @@ namespace RiasBot.Modules.Gambling
                         var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                         embed.WithTitle($"{Context.User} you won {win} {RiasBot.currency}");
                         embed.WithDescription($"「1.7x」\t「0.0x」\t「0.3x」\n\n「0.1x」\t    {arrow[wheel]}    \t「1.3x」\n\n「0.5x」\t「2.0x」\t「1.5x」");
-                        await ReplyAsync("", embed: embed.Build());
+                        await Context.Channel.SendMessageAsync("", embed: embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync($"{Context.User.Mention} you don't have enough {RiasBot.currency}");
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}");
                     }
                 }
                 catch

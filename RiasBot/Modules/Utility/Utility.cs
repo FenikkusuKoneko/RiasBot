@@ -129,13 +129,13 @@ namespace RiasBot.Modules.Utility
                 else
                 {
                     embed.WithDescription(unitCategories);
-                    await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                     unitCategories = $"#{index+1} {Format.Bold(quantity.ToString())}\n";
                 }
                 index++;
             }
             embed.WithDescription(unitCategories);
-            await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -165,7 +165,7 @@ namespace RiasBot.Modules.Utility
                 }
             }
             embed.WithDescription(String.Join("\n", units));
-            await ReplyAsync("", embed: embed.Build());
+            await Context.Channel.SendMessageAsync("", embed: embed.Build());
         }
 
         [RiasCommand][@Alias]
@@ -179,7 +179,7 @@ namespace RiasBot.Modules.Utility
                 {
                     embed.AddField("From", ToTitleCase(from), true).AddField("To", ToTitleCase(to), true);
                     embed.AddField("Result", result);
-                    await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
                 else
                 {
@@ -190,7 +190,7 @@ namespace RiasBot.Modules.Utility
             {
                 embed.AddField("From", ToTitleCase(from), true).AddField("To", ToTitleCase(to), true);
                 embed.AddField("Result", result);
-                await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
         }
 

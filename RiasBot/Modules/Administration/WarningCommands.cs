@@ -115,7 +115,7 @@ namespace RiasBot.Modules.Administration
                     }
                     if (warningsUser.Count == 0)
                     {
-                        await ReplyAsync($"{Context.User.Mention} {user} doesn't have any warning!");
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {user} doesn't have any warning!");
                     }
                     else
                     {

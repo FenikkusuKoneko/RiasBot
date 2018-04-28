@@ -46,13 +46,13 @@ namespace RiasBot.Modules.Searches
                 {
                     case "video":
                         if (searches.Length > 0)
-                            await ReplyAsync("https://youtu.be/" + searches[random]).ConfigureAwait(false);
+                            await Context.Channel.SendMessageAsync("https://youtu.be/" + searches[random]).ConfigureAwait(false);
                         else
                             await Context.Channel.SendErrorEmbed("I couldn't find any video.").ConfigureAwait(false);
                         break;
                     case "channel":
                         if (searches.Length > 0)
-                            await ReplyAsync("https://www.youtube.com/channel/" + searches[0]).ConfigureAwait(false);
+                            await Context.Channel.SendMessageAsync("https://www.youtube.com/channel/" + searches[0]).ConfigureAwait(false);
                         else
                             await Context.Channel.SendErrorEmbed("I couldn't find any channel.").ConfigureAwait(false);
                         break;
@@ -77,7 +77,7 @@ namespace RiasBot.Modules.Searches
                 if (searches.Length == 0)
                     embed.WithDescription("I couldn't find anything");
 
-                await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
 
             [RiasCommand][@Alias]
@@ -96,7 +96,7 @@ namespace RiasBot.Modules.Searches
                 if (searches.Length == 0)
                     embed.WithDescription("I couldn't find anything");
 
-                await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
         }
     }

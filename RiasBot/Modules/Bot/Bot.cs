@@ -57,7 +57,7 @@ namespace RiasBot.Modules.Bot
                 embed.WithDescription($"Leaving {Format.Bold(guild.Name)}");
                 embed.AddField("Id", guild.Id, true).AddField("Users", usersGuild.Count, true);
 
-                await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
 
                 await guild.LeaveAsync().ConfigureAwait(false);
             }

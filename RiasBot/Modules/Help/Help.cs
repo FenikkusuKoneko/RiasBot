@@ -97,7 +97,7 @@ namespace RiasBot.Modules.Help
                 }
             }
             embed.WithCurrentTimestamp();
-            await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -124,7 +124,7 @@ namespace RiasBot.Modules.Help
             embed.WithDescription(String.Join("\n\n", modulesDescription));
             embed.WithFooter($"To see all commands for a module or submodule, type {_ch._prefix + "cmds <module>"} or {_ch._prefix + "cmds <submodule>"}");
             embed.WithCurrentTimestamp();
-            await ReplyAsync("", false, embed.Build()).ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -168,7 +168,7 @@ namespace RiasBot.Modules.Help
                 }
                 embed.WithFooter($"For a specific command info type {_ch._prefix + "h <command>"}");
                 embed.WithCurrentTimestamp();
-                await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
             else
             {
@@ -205,7 +205,7 @@ namespace RiasBot.Modules.Help
                     embed.WithDescription(String.Join("\n", transformed));
                     embed.WithFooter($"For a specific command info type {_ch._prefix + "h <command>"}");
                     embed.WithCurrentTimestamp();
-                    await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
                 catch
                 {

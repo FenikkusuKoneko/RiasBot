@@ -59,12 +59,12 @@ namespace RiasBot.Modules.Utility
                         {
                             if (userDb.Currency < 10000)
                             {
-                                await ReplyAsync($"You need to have at least 10000 {RiasBot.currency} to claim a waifu.");
+                                await Context.Channel.SendMessageAsync($"You need to have at least 10000 {RiasBot.currency} to claim a waifu.");
                                 return;
                             }
                             if (waifuDb.Any(x => x.WaifuId == waifuId))
                             {
-                                await ReplyAsync($"{Context.User.Mention} you already claimed this waifu.");
+                                await Context.Channel.SendMessageAsync($"{Context.User.Mention} you already claimed this waifu.");
                                 return;
                             }
 
@@ -78,7 +78,7 @@ namespace RiasBot.Modules.Utility
                             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                             embed.WithDescription($"Congratulations!\nYou successfully claimed {Format.Bold(waifuName)} for {Format.Bold(price.ToString())} {RiasBot.currency}");
                             embed.WithThumbnailUrl(waifuPicture);
-                            await ReplyAsync("", embed: embed.Build());
+                            await Context.Channel.SendMessageAsync("", embed: embed.Build());
                         }
                         catch
                         {
@@ -125,12 +125,12 @@ namespace RiasBot.Modules.Utility
                             {
                                 if (userDb.Currency < 10000)
                                 {
-                                    await ReplyAsync($"You need to have at least 10000 {RiasBot.currency} to claim a waifu.");
+                                    await Context.Channel.SendMessageAsync($"You need to have at least 10000 {RiasBot.currency} to claim a waifu.");
                                     return;
                                 }
                                 if (waifuDb.Any(x => x.WaifuId == waifuId))
                                 {
-                                    await ReplyAsync($"{Context.User.Mention} you already claimed this waifu.");
+                                    await Context.Channel.SendMessageAsync($"{Context.User.Mention} you already claimed this waifu.");
                                     return;
                                 }
 
@@ -144,7 +144,7 @@ namespace RiasBot.Modules.Utility
                                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                                 embed.WithDescription($"Congratulations!\nYou successfully claimed {Format.Bold(waifuName)} for {Format.Bold(price.ToString())} {RiasBot.currency}");
                                 embed.WithThumbnailUrl(waifuPicture);
-                                await ReplyAsync("", embed: embed.Build());
+                                await Context.Channel.SendMessageAsync("", embed: embed.Build());
                             }
                             catch
                             {
@@ -238,16 +238,16 @@ namespace RiasBot.Modules.Utility
                             embed.WithDescription($"You successfully divorced from {waifu.WaifuName}. You received {waifuCashback} {RiasBot.currency} back.");
                             embed.WithThumbnailUrl(waifu.WaifuPicture);
 
-                            await ReplyAsync("", embed: embed.Build());
+                            await Context.Channel.SendMessageAsync("", embed: embed.Build());
                         }
                         else
                         {
-                            await ReplyAsync($"{Context.User.Mention} I couldn't find your waifu.");
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find your waifu.");
                         }
                     }
                     else
                     {
-                        await ReplyAsync($"{Context.User.Mention} you don't have any waifu.");
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have any waifu.");
                     }
                 }
             }
@@ -276,9 +276,9 @@ namespace RiasBot.Modules.Utility
                         if (waifusDb.Count() > 0)
                             await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"All waifus for {user}", waifus, 10);
                         else if (user == Context.Message.Author)
-                            await ReplyAsync($"{user.Mention} you don't have any waifu.");
+                            await Context.Channel.SendErrorEmbed($"{user.Mention} you don't have any waifu.");
                         else
-                            await ReplyAsync($"{Context.Message.Author.Mention} {user} doesn't have have any waifu.");
+                            await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} {user} doesn't have have any waifu.");
                     }
                     catch
                     {

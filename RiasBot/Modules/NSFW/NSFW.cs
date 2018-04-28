@@ -55,14 +55,14 @@ namespace RiasBot.Modules.NSFW
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithImageUrl(image);
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
                 else
                 {
                     var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
                     embed.WithDescription("I couldn't find anything.");
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
             }
             catch
@@ -94,14 +94,14 @@ namespace RiasBot.Modules.NSFW
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithImageUrl(image);
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
                 else
                 {
                     var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
                     embed.WithDescription("I couldn't find anything.");
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
             }
             catch
@@ -133,14 +133,14 @@ namespace RiasBot.Modules.NSFW
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithImageUrl(image);
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
                 else
                 {
                     var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
                     embed.WithDescription("I couldn't find anything.");
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
             }
             catch
@@ -172,14 +172,14 @@ namespace RiasBot.Modules.NSFW
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithImageUrl(image);
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
                 else
                 {
                     var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
                     embed.WithDescription("I couldn't find anything.");
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
             }
             catch
@@ -217,7 +217,7 @@ namespace RiasBot.Modules.NSFW
                 {
                     if (!String.IsNullOrEmpty(image))
                     {
-                        await ReplyAsync(image);
+                        await Context.Channel.SendMessageAsync(image);
                         count++;
                     }
                 }
@@ -227,7 +227,7 @@ namespace RiasBot.Modules.NSFW
                     embed.WithColor(RiasBot.badColor);
                     embed.WithDescription("I couldn't find anything.");
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
             }
             catch

@@ -285,7 +285,7 @@ namespace RiasBot.Modules.Gambling
                     if (userDb.Count == 0)
                         embed.WithDescription("No users on this page");
 
-                    await ReplyAsync("", embed: embed.Build());
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
             }
         }

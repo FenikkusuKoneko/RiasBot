@@ -55,7 +55,7 @@ namespace RiasBot.Modules.Searches
                 embed.WithAuthor(word, "https://i.imgur.com/G3VoNuJ.jpg");
                 embed.WithDescription(def);
 
-                await ReplyAsync("", embed: embed.Build()).ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
             catch
             {
@@ -82,7 +82,7 @@ namespace RiasBot.Modules.Searches
                 var page = item["pages"][0];
                 var url = page["fullurl"].ToString();
 
-                await ReplyAsync(url).ConfigureAwait(false);
+                await Context.Channel.SendMessageAsync(url).ConfigureAwait(false);
             }
             catch
             {

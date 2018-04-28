@@ -137,7 +137,7 @@ namespace RiasBot.Modules.Xp
                 if (xps.Count == 0)
                     embed.WithDescription("No users on this page");
 
-                await ReplyAsync("", embed: embed.Build());
+                await Context.Channel.SendMessageAsync("", embed: embed.Build());
             }
         }
 
@@ -174,7 +174,7 @@ namespace RiasBot.Modules.Xp
                 if (xps.Count == 0)
                     embed.WithDescription("No users on this page");
 
-                await ReplyAsync("", embed: embed.Build());
+                await Context.Channel.SendMessageAsync("", embed: embed.Build());
             }
         }
 
@@ -297,11 +297,11 @@ namespace RiasBot.Modules.Xp
                     }
                     await db.SaveChangesAsync().ConfigureAwait(false);
                     var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
-                    await ReplyAsync($"Took {amount} global xp from {Format.Bold(user.ToString())}, current level {level}.").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationEmbed($"Took {amount} global xp from {Format.Bold(user.ToString())}, current level {level}.").ConfigureAwait(false);
                 }
                 else
                 {
-                    await ReplyAsync("The user doesn't exists in the database");
+                    await Context.Channel.SendErrorEmbed("The user doesn't exists in the database");
                 }
             }
         }
