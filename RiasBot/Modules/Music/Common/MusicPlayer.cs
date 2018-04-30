@@ -638,11 +638,16 @@ namespace RiasBot.Modules.Music.Common
                 if (audioClient != null)
                     if (audioClient.ConnectionState == ConnectionState.Connected)
                         await audioClient.StopAsync().ConfigureAwait(false);
-                if (!forced)
-                    await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
-                if(noUsers)
-                    await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
-                destroyed = true;
+                try
+                {
+                    if (!forced)
+                        await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                    if (noUsers)
+                        await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                    destroyed = true;
+                }
+                catch
+                { }
                 _ms.RemoveMusicPlayer(_guild);
             }
         }
