@@ -11,6 +11,7 @@ namespace RiasBot.Services.Database.Models
         public string WaifuName { get; set; }
         public string WaifuUrl { get; set; }
         public string WaifuPicture { get; set; }
+        public string BelovedWaifuPicture { get; set; }
         public int WaifuPrice { get; set; }
         public bool IsPrimary { get; set; }
     }

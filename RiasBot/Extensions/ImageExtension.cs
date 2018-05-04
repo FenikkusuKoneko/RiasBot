@@ -1,4 +1,5 @@
-﻿using ImageSharp;
+﻿using ImageMagick;
+using ImageSharp;
 using SixLabors.Shapes;
 using System;
 

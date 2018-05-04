@@ -223,7 +223,7 @@ namespace RiasBot.Modules.Utility
                 if (user is null)
                     user = (IGuildUser)Context.User;
 
-                await Context.Channel.SendConfirmationEmbed($"{user.Mention} the ID of {user} is {Format.Code(user.Id.ToString())}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the ID of {user} is {Format.Code(user.Id.ToString())}").ConfigureAwait(false);
             }
 
             [RiasCommand]
@@ -233,7 +233,7 @@ namespace RiasBot.Modules.Utility
             [RequireContext(ContextType.Guild)]
             public async Task ChannelId()
             {
-                await Context.Channel.SendConfirmationEmbed($"{Context.Message.Author.Mention} the ID of this channel is {Format.Code(Context.Channel.Id.ToString())}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the ID of this channel is {Format.Code(Context.Channel.Id.ToString())}").ConfigureAwait(false);
             }
 
             [RiasCommand]
@@ -244,7 +244,7 @@ namespace RiasBot.Modules.Utility
             public async Task ServerId()
             {
 
-                await Context.Channel.SendConfirmationEmbed($"{Context.Message.Author.Mention} the ID of this server is {Format.Code(Context.Guild.Id.ToString())}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the ID of this server is {Format.Code(Context.Guild.Id.ToString())}").ConfigureAwait(false);
             }
 
             [RiasCommand]

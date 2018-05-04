@@ -110,7 +110,6 @@ namespace RiasBot.Modules.Xp
 
                     }
                 }
-                return;
             }
         }
 

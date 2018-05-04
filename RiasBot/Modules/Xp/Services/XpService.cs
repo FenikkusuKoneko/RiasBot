@@ -280,10 +280,6 @@ namespace RiasBot.Modules.Xp.Services
                         new PointF(125, 290),
                     });
 
-                    var imageData = new MemoryStream();
-                    img.SaveAsPng(imageData);
-                    imageData.Position = 0;
-
                     img.DrawText($"{globalCurrentXp}/{globalRequiredXp}", new Font(whitneyBold, 17), Rgba32.Black, new PointF(300, 165), new TextGraphicsOptions(true)
                     {
                         BlenderMode = ImageSharp.PixelFormats.PixelBlenderMode.Src,

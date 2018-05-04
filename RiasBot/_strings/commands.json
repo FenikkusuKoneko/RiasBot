@@ -125,7 +125,7 @@
     ]
   },
 
-   "modlog": {
+  "modlog": {
     "Command": "modlog",
     "Description": "Set the current channel as \"mod-log\" channel where the bot will post notifications about mute, unmute, kick, ban, softban. Provide no parameters to disable it from the current channel.",
     "Remarks": [
@@ -235,7 +235,7 @@
     "Description": "Start an event to win [currency].\nParameters: time (s), reward, maximum, differencePerUser, onlyNumbers, botStarts, message.",
     "Remarks": [
       "[prefix]event timeout reward message (heart event)",
-	  "[prefix]event 0 reward maximum differencePerUser onlyNumbers botStarts message (counter event)"
+      "[prefix]event 0 reward maximum differencePerUser onlyNumbers botStarts message (counter event)"
     ]
   },
 
@@ -303,13 +303,13 @@
       "[prefix]rnr Rias -> Rias-waifu"
     ]
   },
-  
+
   "roles": {
     "Command": "roles",
     "Description": "Show the roles on this server. Pagination supported.",
     "Remarks": [
       "[prefix]roles",
-	  "[prefix]roles 2"
+      "[prefix]roles 2"
     ]
   },
 
@@ -600,39 +600,6 @@
     "Description": "Play a game of rock-paper-scissors.",
     "Remarks": [
       "[prefix]rps rock"
-    ]
-  },
-
-  "trivia": {
-    "Command": "trivia",
-    "Description": "Start a trivia game. You can choose on how many question to answer (5 to 30, default 10)",
-    "Remarks": [
-	"[prefix]trivia",
-      "[prefix]trivia 5"
-    ]
-  },
-
-  "triviacategory": {
-    "Command": "triviacategory triviacat",
-    "Description": "Set the current trivia game's category. Type `[prefix]triviacats` to see all categories.",
-    "Remarks": [
-      "[prefix]triviacat 1"
-    ]
-  },
-
-  "triviacategories": {
-    "Command": "triviacategories triviacats",
-    "Description": "Show all Trivia game's categories",
-    "Remarks": [
-      "[prefix]triviacats"
-    ]
-  },
-
-  "triviadifficulty": {
-    "Command": "triviadificulty triviacat",
-    "Description": "Set the current trivia game's difficulty (easy, medium, hard, any).",
-    "Remarks": [
-      "[prefix]trivia 5"
     ]
   },
 
@@ -955,7 +922,7 @@
     "Description": "Search torrents from nyaa.si.",
     "Remarks": [
       "[prefix]nyaa",
-	  "[prefix]nyaa High School DxD"
+      "[prefix]nyaa High School DxD"
     ]
   },
 
@@ -997,14 +964,6 @@
     "Description": "Show a kitsune girl picture.",
     "Remarks": [
       "[prefix]kitsune"
-    ]
-  },
-
-  "neko": {
-    "Command": "neko",
-    "Description": "Show a neko picture.",
-    "Remarks": [
-      "[prefix]neko"
     ]
   },
 
@@ -1090,6 +1049,40 @@
     ]
   },
 
+  "profile": {
+    "Command": "profile",
+    "Description": "Show your profile or for an user.",
+    "Remarks": [
+      "[prefix]profile",
+      "[prefix]profile @User"
+
+    ]
+  },
+
+  "backgroundimage": {
+    "Command": "backgroundimage bgimg",
+    "Description": "Set the profile's background image. The price is 1000 [currency]. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 500x300.",
+    "Remarks": [
+      "[prefix]bgimg https://i.imgur.com/pQAwZJ3.png"
+    ]
+  },
+
+  "backgrounddim": {
+    "Command": "backgrounddim bgdim",
+    "Description": "Set the profile's background dim. Default set 50.",
+    "Remarks": [
+      "[prefix]bgdim 50"
+    ]
+  },
+
+  "biography": {
+    "Command": "biography bio",
+    "Description": "Set the profile's background bio.",
+    "Remarks": [
+      "[prefix]bio Rias is my waifu."
+    ]
+  },
+
   "invite": {
     "Command": "invite",
     "Description": "Invite the bot to your server.",
@@ -1119,7 +1112,7 @@
     "Description": "I will choose an item from a list. Separators allowed: `,`, `|`, `;`",
     "Remarks": [
       "[prefix]choose 1, 2, 3, 4, 5",
-	  "[prefix]choose Rias | Mio | Kurumi",
+      "[prefix]choose Rias | Mio | Kurumi"
     ]
   },
 
@@ -1128,7 +1121,7 @@
     "Description": "Show a list with all units categories the converter. Type [prefix]convertlist <category> to get the units from a category.",
     "Remarks": [
       "[prefix]convertlist",
-	  "[prefix]convertlist length"
+      "[prefix]convertlist length"
     ]
   },
 
@@ -1151,7 +1144,7 @@
 
   "belovedwaifu": {
     "Command": "belovedwaifu primarywaifu",
-    "Description": "Make a waifu primary and beloved. In front of her name will be a :heart:. You can set only one waifu. The price is 5000 [currency]. The action is not reversible.",
+    "Description": "Make a waifu primary and beloved. You can set only one waifu. The price is 5000 [currency]. The action is not reversible.",
     "Remarks": [
       "[prefix]belovedwaifu Rias Gremory"
     ]
@@ -1170,6 +1163,14 @@
     "Description": "Show all your claimed waifus or for an user.",
     "Remarks": [
       "[prefix]waifus"
+    ]
+  },
+
+  "belovedwaifuavatar": {
+    "Command": "belovedwaifuavatar bwa",
+    "Description": "Set to you beloved waifu a new avatar. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 100x155.",
+    "Remarks": [
+      "[prefix]bwa https://i.imgur.com/YDTpwMj.jpg"
     ]
   },
 
@@ -1211,7 +1212,7 @@
     "Description": "Add a role in the levelup role reward list. When an user reaches the level he will be rewarded with the role. Only in servers. To remove a role provide no role for the respective level.",
     "Remarks": [
       "[prefix]lurr 5 Active",
-	  "[prefix]lurr 5"
+      "[prefix]lurr 5"
     ]
   },
 
@@ -1219,7 +1220,7 @@
     "Command": "resetserverxp rsxp",
     "Description": "Reset the xp leaderboard from a server.",
     "Remarks": [
-      "[prefix]rsxp",
+      "[prefix]rsxp"
     ]
   },
 
@@ -1227,7 +1228,7 @@
     "Command": "removeglobalxp rgxp",
     "Description": "Remove global xp from an user.",
     "Remarks": [
-      "[prefix]rgxp 3 100 @User",
+      "[prefix]rgxp 3 100 @User"
     ]
   }
 }

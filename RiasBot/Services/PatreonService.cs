@@ -120,8 +120,8 @@ namespace RiasBot.Services
 
                                         var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                                         embed.WithTitle("Patreon Support!");
-                                        embed.WithDescription($"Thank you so much for supporting the project :heart:. You received {amountCents * 10}{RiasBot.currency}.");
-                                        embed.AddField("Pledge", amountCents + "$", true).AddField("Reward", amountCents * 10 + RiasBot.currency);
+                                        embed.WithDescription($"Thank you so much for supporting the project :heart:.");
+                                        embed.AddField("Pledge", amountCents / 100 + "$", true).AddField("Reward", amountCents * 10 + RiasBot.currency);
                                         await user.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                                     }
                                     catch

@@ -191,6 +191,7 @@ namespace RiasBot.Modules.Utility
                             if (lastPrimaryWaifu != null)
                             {
                                 lastPrimaryWaifu.IsPrimary = false;
+                                lastPrimaryWaifu.BelovedWaifuPicture = null;
                                 getWaifu.IsPrimary = true;
                             }
                             else
@@ -198,8 +199,8 @@ namespace RiasBot.Modules.Utility
                                 getWaifu.IsPrimary = true;
                             }
                             userDb.Currency -= 5000;
-                            await db.SaveChangesAsync().ConfigureAwait(false);
                             await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {getWaifu.WaifuName} is now your beloved waifu :heart:.");
+                            await db.SaveChangesAsync().ConfigureAwait(false);
                         }
                         else
                         {
@@ -236,7 +237,10 @@ namespace RiasBot.Modules.Utility
                             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                             embed.WithTitle("Divorce!");
                             embed.WithDescription($"You successfully divorced from {waifu.WaifuName}. You received {waifuCashback} {RiasBot.currency} back.");
-                            embed.WithThumbnailUrl(waifu.WaifuPicture);
+                            if (!String.IsNullOrEmpty(waifu.BelovedWaifuPicture))
+                                embed.WithThumbnailUrl(waifu.BelovedWaifuPicture);
+                            else
+                                embed.WithThumbnailUrl(waifu.WaifuPicture);
 
                             await Context.Channel.SendMessageAsync("", embed: embed.Build());
                         }
@@ -275,14 +279,52 @@ namespace RiasBot.Modules.Utility
 
                         if (waifusDb.Count() > 0)
                             await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"All waifus for {user}", waifus, 10);
-                        else if (user == Context.Message.Author)
-                            await Context.Channel.SendErrorEmbed($"{user.Mention} you don't have any waifu.");
+                        else if (user == Context.User)
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have any waifu.");
                         else
-                            await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} {user} doesn't have have any waifu.");
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} {user} doesn't have have any waifu.");
                     }
                     catch
                     {
                         
+                    }
+                }
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            public async Task BelovedWaifuAvatar(string url)
+            {
+                if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
+                    return;
+                }
+                if (!url.Contains(".png") && !url.Contains(".jpg") && !url.Contains(".jpeg"))
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direck link for a png, jpg or jpeg image.").ConfigureAwait(false);
+                    return;
+                }
+                using (var db = _db.GetDbContext())
+                {
+                    var waifus = db.Waifus.Where(x => x.UserId == Context.User.Id);
+                    if (waifus != null)
+                    {
+                        var belovedWaifu = waifus.Where(x => x.IsPrimary == true).FirstOrDefault();
+                        if (belovedWaifu != null)
+                        {
+                            belovedWaifu.BelovedWaifuPicture = url;
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} new avatar set for {Format.Bold(belovedWaifu.WaifuName)}.");
+                            await db.SaveChangesAsync().ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have a beloved waifu.").ConfigureAwait(false);
+                        }
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have any waifu.").ConfigureAwait(false);
                     }
                 }
             }

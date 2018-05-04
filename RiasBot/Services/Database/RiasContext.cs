@@ -29,6 +29,7 @@ namespace RiasBot.Services.Database
         public DbSet<Patreon> Patreon { get; set; }
         public DbSet<SelfAssignableRoles> SelfAssignableRoles { get; set; }
         public DbSet<XpRolesSystem> XpRolesSystem { get; set; }
+        public DbSet<Profile> Profile { get; set; }
 
         public RiasContext(DbContextOptions<RiasContext> options) : base(options)
         {
@@ -92,6 +93,15 @@ namespace RiasBot.Services.Database
             #region XpRolesSystem
 
             var xrs = modelBuilder.Entity<XpRolesSystem>();
+
+            #endregion
+
+            #region Profile
+
+            var profile = modelBuilder.Entity<Profile>();
+            profile
+                .HasIndex(c => c.UserId)
+                .IsUnique();
 
             #endregion
         }
