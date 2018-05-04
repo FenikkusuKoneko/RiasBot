@@ -1174,6 +1174,14 @@
     ]
   },
 
+  "createwaifu": {
+    "Command": "createwaifu",
+    "Description": "Create your own waifu. Put a direct link link and a name. The price is 15000 [currency]. She will have the beloved status automatically.",
+    "Remarks": [
+      "[prefix]createwaifu https://i.imgur.com/RFpeSOe.jpg Rias Gremory"
+    ]
+  },
+
   "experience": {
     "Command": "xp",
     "Description": "Show your global level and xp.",

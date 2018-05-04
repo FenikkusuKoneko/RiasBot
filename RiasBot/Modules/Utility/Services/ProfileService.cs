@@ -22,7 +22,7 @@ namespace RiasBot.Modules.Utility.Services
             _db = db;
         }
 
-        private readonly string DefaultProfileBackground = "https://i.imgur.com/pQAwZJ3.png"; //Rias
+        private readonly string DefaultProfileBackground = "https://i.imgur.com/CeazwG7.png";
         private readonly string DefaultProfileBio = "Nothing here, just dust.";
 
         public async Task<MemoryStream> GenerateProfileImage(IGuildUser user, IRole highestRole)
@@ -215,15 +215,22 @@ namespace RiasBot.Modules.Utility.Services
                         }
                         catch
                         {
-                            using (var belovedWaifu = await http.GetStreamAsync(profileInfo.BelovedWaifu.WaifuPicture))
-                            using (var tempBelovedWaifu = new MagickImage(belovedWaifu))
+                            try
                             {
-                                MagickGeometry size = new MagickGeometry(100, 155)
+                                using (var belovedWaifu = await http.GetStreamAsync(profileInfo.BelovedWaifu.WaifuPicture))
+                                using (var tempBelovedWaifu = new MagickImage(belovedWaifu))
                                 {
-                                    IgnoreAspectRatio = false,
-                                };
-                                tempBelovedWaifu.Resize(size);
-                                img.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
+                                    MagickGeometry size = new MagickGeometry(100, 155)
+                                    {
+                                        IgnoreAspectRatio = false,
+                                    };
+                                    tempBelovedWaifu.Resize(size);
+                                    img.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
+                                }
+                            }
+                            catch
+                            {
+                                // the image does not exists
                             }
                         }
                     }

@@ -59,7 +59,7 @@ namespace RiasBot.Modules.Utility
                         {
                             if (userDb.Currency < 10000)
                             {
-                                await Context.Channel.SendMessageAsync($"You need to have at least 10000 {RiasBot.currency} to claim a waifu.");
+                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
                                 return;
                             }
                             if (waifuDb.Any(x => x.WaifuId == waifuId))
@@ -125,7 +125,7 @@ namespace RiasBot.Modules.Utility
                             {
                                 if (userDb.Currency < 10000)
                                 {
-                                    await Context.Channel.SendMessageAsync($"You need to have at least 10000 {RiasBot.currency} to claim a waifu.");
+                                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
                                     return;
                                 }
                                 if (waifuDb.Any(x => x.WaifuId == waifuId))
@@ -325,6 +325,60 @@ namespace RiasBot.Modules.Utility
                     else
                     {
                         await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have any waifu.").ConfigureAwait(false);
+                    }
+                }
+            }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            public async Task CreateWaifu(string url, [Remainder]string name)
+            {
+                if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
+                    return;
+                }
+                if (!url.Contains(".png") && !url.Contains(".jpg") && !url.Contains(".jpeg"))
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direck link for a png, jpg or jpeg image.").ConfigureAwait(false);
+                    return;
+                }
+                using (var db = _db.GetDbContext())
+                {
+                    var userDb = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
+                    var waifuDb = db.Waifus.Where(x => x.UserId == Context.User.Id);
+                    if (userDb != null)
+                    {
+                        if (userDb.Currency >= 15000)
+                        {
+                            if (waifuDb != null)
+                            {
+                                var lastPrimaryWaifu = waifuDb.Where(x => x.IsPrimary == true).FirstOrDefault();
+                                if (lastPrimaryWaifu != null)
+                                {
+                                    lastPrimaryWaifu.IsPrimary = false;
+                                    lastPrimaryWaifu.BelovedWaifuPicture = null;
+                                }
+                            }
+                            var waifu = new Waifus { UserId = Context.User.Id, WaifuName = name, WaifuPicture = url, WaifuPrice = 15000, IsPrimary = true };
+                            await db.AddAsync(waifu).ConfigureAwait(false);
+                            userDb.Currency -= 15000;
+
+                            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                            embed.WithDescription($"Congratulations!\nYou successfully created {Format.Bold(name)}.");
+                            embed.WithThumbnailUrl(url);
+                            await Context.Channel.SendMessageAsync("", embed: embed.Build());
+
+                            await db.SaveChangesAsync().ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
+                        }
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
                     }
                 }
             }
