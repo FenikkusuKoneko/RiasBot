@@ -26,6 +26,7 @@ namespace RiasBot.Modules.Utility
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireContext(ContextType.Guild)]
+            [Ratelimit(1, 30, Measure.Seconds, applyPerGuild: true)]
             public async Task Profile([Remainder]IUser user = null)
             {
                 user = user ?? Context.User;
@@ -75,7 +76,6 @@ namespace RiasBot.Modules.Utility
                         var image = new Profile { UserId = Context.User.Id, BackgroundUrl = url, BackgroundDim = 50 };
                         await db.AddAsync(image).ConfigureAwait(false);
                     }
-                    userDb.Currency -= 1000;
                     await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} new profile's background image set.").ConfigureAwait(false);
                     await db.SaveChangesAsync().ConfigureAwait(false);
                 }

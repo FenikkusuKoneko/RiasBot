@@ -49,27 +49,22 @@ namespace RiasBot.Modules.Gambling
                     {
                         int win = 0;
                         float multiplier = 0;
-                        if (roll >= 97)
-                        {
-                            win += bet * 10;
-                            multiplier = 10;
-                        }
-                        else if (roll >= 90)
+                        if (roll >= 99)
                         {
                             win += bet * 5;
                             multiplier = 5;
                         }
-                        else if (roll >= 80)
+                        else if (roll >= 95)
                         {
                             win += bet * 2;
                             multiplier = 2;
                         }
-                        else if (roll >= 70)
+                        else if (roll >= 90)
                         {
                             win += (int)(bet * 1.5f);
                             multiplier = 1.5f;
                         }
-                        else if (roll >= 60)
+                        else if (roll >= 80)
                         {
                             win += bet;
                             multiplier = 1;
@@ -107,7 +102,7 @@ namespace RiasBot.Modules.Gambling
             }
 
             string[] arrow = { "⬆", "↗", "➡", "↘", "⬇", "↙", "⬅", "↖" };
-            float[] wheelMultiple = { 0.0f, 0.3f, 1.3f, 1.5f, 2.0f, 0.5f, 0.1f, 1.7f };
+            float[] wheelMultiple = { 1.7f, 2.0f, 1.2f, 0.5f, 0.3f, 0.0f, 0.2f, 1.5f };
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
             int wheel = rnd.Next(8);
 
@@ -124,7 +119,7 @@ namespace RiasBot.Modules.Gambling
 
                         var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                         embed.WithTitle($"{Context.User} you won {win} {RiasBot.currency}");
-                        embed.WithDescription($"「1.7x」\t「0.0x」\t「0.3x」\n\n「0.1x」\t    {arrow[wheel]}    \t「1.3x」\n\n「0.5x」\t「2.0x」\t「1.5x」");
+                        embed.WithDescription($"「1.5x」\t「1.7x」\t「2.0x」\n\n「0.2x」\t    {arrow[wheel]}    \t「1.2x」\n\n「0.0x」\t「0.3x」\t「0.5x」");
                         await Context.Channel.SendMessageAsync("", embed: embed.Build());
                     }
                     else

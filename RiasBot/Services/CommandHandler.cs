@@ -110,7 +110,9 @@ namespace RiasBot.Services
 
         private async Task SendErrorResult(SocketUserMessage msg, IResult result)
         {
-            await msg.Channel.SendErrorEmbed(result.ErrorReason).ConfigureAwait(false);
+            var timeoutMsg = await msg.Channel.SendErrorEmbed(result.ErrorReason).ConfigureAwait(false);
+            await Task.Delay(10000);
+            await timeoutMsg.DeleteAsync().ConfigureAwait(false);
         }
     }
 }

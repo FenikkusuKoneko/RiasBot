@@ -161,20 +161,16 @@ namespace RiasBot.Modules.Bot
             }
         }
 
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
         [RequireOwner]
         public async Task Dbl()
         {
             await Context.Channel.SendErrorEmbed("You need to learn html, css, js, create a webserver, a webhook and then to make me to get the voters! Baka!").ConfigureAwait(false);
         }
 
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
         [RequireOwner]
         public async Task UpdateImages()
         {
@@ -191,6 +187,88 @@ namespace RiasBot.Modules.Bot
             await _reactionsService.UpdateImages("AQoU8", _reactionsService.slapList);
 
             await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} reactions, neko and kitsune images, updated");
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireOwner]
+        public async Task Delete(ulong id)
+        {
+            await Context.Channel.SendConfirmationEmbed($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
+            var input = await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10000);
+            if (input == "confirm")
+            {
+                var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
+                using (var db = _db.GetDbContext())
+                {
+                    var userDb = db.Users.Where(x => x.UserId == id);
+                    if (userDb != null)
+                    {
+                        db.Remove(userDb);
+                    }
+                    var waifusDb = db.Waifus.Where(x => x.UserId == id);
+                    if (waifusDb != null)
+                    {
+                        db.RemoveRange(waifusDb);
+                    }
+                    var profileDb = db.Profile.Where(x => x.UserId == id);
+                    if (profileDb != null)
+                    {
+                        db.Remove(profileDb);
+                    }
+                    if (user != null)
+                    {
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {user} has been deleted from the database").ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {id} has been deleted from the database").ConfigureAwait(false);
+                    }
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+                }
+            }
+            await confirm.DeleteAsync().ConfigureAwait(false);
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireOwner]
+        public async Task Delete([Remainder]string user)
+        {
+            var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
+            var input = await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10000);
+            if (input == "confirm")
+            {
+                var userSplit = user.Split("#");
+                var getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+
+                if (getUser is null)
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user couldn't be found");
+                    return;
+                }
+                using (var db = _db.GetDbContext())
+                {
+                    var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
+                    if (userDb != null)
+                    {
+                        db.Remove(userDb);
+                    }
+                    var waifusDb = db.Waifus.Where(x => x.UserId == getUser.Id);
+                    if (waifusDb != null)
+                    {
+                        db.RemoveRange(waifusDb);
+                    }
+                    var profileDb = db.Profile.Where(x => x.UserId == getUser.Id).FirstOrDefault();
+                    if (profileDb != null)
+                    {
+                        db.Remove(profileDb);
+                    }
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {user} has been deleted from the database").ConfigureAwait(false);
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+                }
+            }
+            await confirm.DeleteAsync().ConfigureAwait(false);
         }
     }
 }

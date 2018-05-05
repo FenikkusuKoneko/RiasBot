@@ -26,6 +26,7 @@ namespace RiasBot.Modules.Xp
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
+        [Ratelimit(1, 30, Measure.Seconds, applyPerGuild: true)]
         public async Task Experience([Remainder]IUser user = null)
         {
             user = user ?? Context.User;

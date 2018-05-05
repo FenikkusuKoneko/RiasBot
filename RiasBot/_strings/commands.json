@@ -230,6 +230,14 @@
     ]
   },
 
+  "delete": {
+    "Command": "delete",
+    "Description": "Delete an user from the database. The currency, global xp, waifus and profile settings will be erased.",
+    "Remarks": [
+      "[prefix]delete"
+    ]
+  },
+
   "event": {
     "Command": "event",
     "Description": "Start an event to win [currency].\nParameters: time (s), reward, maximum, differencePerUser, onlyNumbers, botStarts, message.",
@@ -581,7 +589,7 @@
 
   "betroll": {
     "Command": "betroll br",
-    "Description": "Bet on roll. Over 70 -> 1x, over 80 -> 2x, over 90 -> 5x, over 97 -> 10x of the bet.",
+    "Description": "Bet on roll. Over 80 -> 1x, over 90 -> 1.5x, over 95 -> 2x, over 99 -> 5x of the bet.",
     "Remarks": [
       "[prefix]br 100"
     ]
@@ -589,7 +597,7 @@
 
   "wheel": {
     "Command": "wheel",
-    "Description": "Bet on wheel. You can win up to 2x of the bet.",
+    "Description": "Bet on wheel. You can win up to 2.4x of the bet.",
     "Remarks": [
       "[prefix]wheel 100"
     ]
@@ -1061,7 +1069,7 @@
 
   "backgroundimage": {
     "Command": "backgroundimage bgimg",
-    "Description": "Set the profile's background image. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 500x300.",
+    "Description": "Set the profile's background image. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 500x300. NSFW images are not allowed, if someone uses, report them to the support server and they will be banned.",
     "Remarks": [
       "[prefix]bgimg https://i.imgur.com/pQAwZJ3.png"
     ]

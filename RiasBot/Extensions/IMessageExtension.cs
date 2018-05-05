@@ -23,11 +23,11 @@ namespace RiasBot.Extensions
         ///<summary>
         ///Send error embed message in current text channel.
         ///</summary>
-        public static async Task SendErrorEmbed(this IMessageChannel channel, string description)
+        public static async Task<IUserMessage> SendErrorEmbed(this IMessageChannel channel, string description)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
             embed.WithDescription(description);
-            await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+            return await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
         }
 
         ///<summary>

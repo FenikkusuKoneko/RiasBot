@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using RiasBot.Modules.NSFW;
 
 namespace RiasBot.Services
 {
@@ -40,7 +39,6 @@ namespace RiasBot.Services
             await _discord.StartAsync().ConfigureAwait(false);
             
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _provider).ConfigureAwait(false);
-            //await _commands.RemoveModuleAsync<Music>().ConfigureAwait(false);
             RiasBot.upTime.Start();
         }
     }
