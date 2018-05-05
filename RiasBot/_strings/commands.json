@@ -1077,7 +1077,7 @@
 
   "backgrounddim": {
     "Command": "backgrounddim bgdim",
-    "Description": "Set the profile's background dim. Default is 50.",
+    "Description": "Set the profile's background dim. Default is 50%.",
     "Remarks": [
       "[prefix]bgdim 50"
     ]
@@ -1085,7 +1085,7 @@
 
   "biography": {
     "Command": "biography bio",
-    "Description": "Set the profile's background bio.",
+    "Description": "Set the profile's bio.",
     "Remarks": [
       "[prefix]bio Rias is my waifu."
     ]
