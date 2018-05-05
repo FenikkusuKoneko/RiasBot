@@ -194,7 +194,7 @@ namespace RiasBot.Modules.Bot
         [RequireOwner]
         public async Task Delete(ulong id)
         {
-            await Context.Channel.SendConfirmationEmbed($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
+            var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
             var input = await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10000);
             if (input == "confirm")
             {
