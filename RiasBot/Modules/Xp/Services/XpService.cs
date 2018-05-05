@@ -172,6 +172,7 @@ namespace RiasBot.Modules.Xp.Services
                     var avatarUrl = user.RealAvatarUrl() ?? user.DefaultAvatarUrl();
                     int usernameSize = (user.ToString().Length < 15) ? 25 : 25 - user.ToString().Length / 5;
                     FontCollection fonts = new FontCollection();
+                    FontFamily meiryioFont = fonts.Install(Environment.CurrentDirectory + "/assets/fonts/meiryo.ttf");
                     FontFamily whitneyBold = fonts.Install(Environment.CurrentDirectory + "/assets/fonts/WhitneyBold.ttf");
                     FontFamily arialFont = fonts.Install(Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf");
                     var roleColor = GetUserHighRoleColor(highestRole);
@@ -228,7 +229,7 @@ namespace RiasBot.Modules.Xp.Services
                     var xpBgColor = new Rgba32(roleColor.R, roleColor.G, roleColor.B, 150);
 
                     //Username, GlobalLevel
-                    img.DrawText(user.ToString(), new Font(whitneyBold, usernameSize), foreColor, new PointF(250, 100), new TextGraphicsOptions()
+                    img.DrawText(user.ToString(), new Font(meiryioFont, usernameSize), foreColor, new PointF(250, 100), new TextGraphicsOptions()
                     {
                         VerticalAlignment = VerticalAlignment.Center,
                         HorizontalAlignment = HorizontalAlignment.Center

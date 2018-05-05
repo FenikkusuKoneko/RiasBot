@@ -734,6 +734,7 @@ namespace RiasBot.Modules.Music.Common
 
         public void Dispose()
         {
+            GC.Collect();
             try
             {
                 p.StandardOutput.Dispose();

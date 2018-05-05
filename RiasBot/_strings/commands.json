@@ -1069,7 +1069,7 @@
 
   "backgrounddim": {
     "Command": "backgrounddim bgdim",
-    "Description": "Set the profile's background dim. Default set 50.",
+    "Description": "Set the profile's background dim. Default is 50.",
     "Remarks": [
       "[prefix]bgdim 50"
     ]
