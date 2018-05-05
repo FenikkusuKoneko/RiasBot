@@ -73,7 +73,14 @@ namespace RiasBot.Modules.Bot
             await Context.Channel.SendConfirmationEmbed("Shutting down...").ConfigureAwait(false);
             foreach (var mp in _musicService.MPlayer)
             {
-                await mp.Value.Destroy("", true).ConfigureAwait(false);
+                try
+                {
+                    await mp.Value.Destroy("", true).ConfigureAwait(false);
+                }
+                catch
+                {
+
+                }
             }
             await Context.Client.StopAsync().ConfigureAwait(false);
             Environment.Exit(0);
