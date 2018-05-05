@@ -1061,7 +1061,7 @@
 
   "backgroundimage": {
     "Command": "backgroundimage bgimg",
-    "Description": "Set the profile's background image. The price is 1000 [currency]. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 500x300.",
+    "Description": "Set the profile's background image. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 500x300.",
     "Remarks": [
       "[prefix]bgimg https://i.imgur.com/pQAwZJ3.png"
     ]

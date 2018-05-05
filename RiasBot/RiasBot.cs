@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Permissions;
 using System.Threading.Tasks;
 
 namespace RiasBot
@@ -20,7 +19,7 @@ namespace RiasBot
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.5.0";
+        public static string version = "1.5.1";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";

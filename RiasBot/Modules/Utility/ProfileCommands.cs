@@ -65,34 +65,19 @@ namespace RiasBot.Modules.Utility
 
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
-                    if (userDb != null)
+                    var profileDb = db.Profile.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
+                    if (profileDb != null)
                     {
-                        if (userDb.Currency >= 1000)
-                        {
-                            var profileDb = db.Profile.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
-                            if (profileDb != null)
-                            {
-                                profileDb.BackgroundUrl = url;
-                            }
-                            else
-                            {
-                                var image = new Profile { UserId = Context.User.Id, BackgroundUrl = url, BackgroundDim = 50 };
-                                await db.AddAsync(image).ConfigureAwait(false);
-                            }
-                            userDb.Currency -= 1000;
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} new profile's background image set.").ConfigureAwait(false);
-                            await db.SaveChangesAsync().ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.").ConfigureAwait(false);
-                        }
+                        profileDb.BackgroundUrl = url;
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.").ConfigureAwait(false);
+                        var image = new Profile { UserId = Context.User.Id, BackgroundUrl = url, BackgroundDim = 50 };
+                        await db.AddAsync(image).ConfigureAwait(false);
                     }
+                    userDb.Currency -= 1000;
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} new profile's background image set.").ConfigureAwait(false);
+                    await db.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
 
