@@ -144,7 +144,7 @@ namespace RiasBot.Modules.Administration
             if (amount > 100)
                 amount = 100;
 
-            var msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days <= 14);
+            var msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days < 14);
             if (msgs.Count() > 0)
             {
                 await Task.Delay(1000).ConfigureAwait(false);
@@ -174,7 +174,7 @@ namespace RiasBot.Modules.Administration
             if (amount > 100)
                 amount = 100;
 
-            var msgs = (await channel.GetMessagesAsync(100).FlattenAsync()).Where((x) => x.Author.Id == user.Id).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days <= 14).Take(amount);
+            var msgs = (await channel.GetMessagesAsync(100).FlattenAsync()).Where((x) => x.Author.Id == user.Id).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days < 14).Take(amount);
             if (msgs.Count() > 0)
             {
                 await Task.Delay(1000).ConfigureAwait(false);
