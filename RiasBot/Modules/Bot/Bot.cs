@@ -171,9 +171,21 @@ namespace RiasBot.Modules.Bot
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireOwner]
-        public async Task Dbl()
+        public async Task Dbl(int page = 1)
         {
-            await Context.Channel.SendErrorEmbed("You need to learn html, css, js, create a webserver, a webhook and then to make me to get the voters! Baka!").ConfigureAwait(false);
+            if (page < 1)
+                return;
+
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            string[] votes = new string[_botService.votesList.Count];
+            int index = 0;
+            foreach (var vote in _botService.votesList)
+            {
+                var user = await Context.Client.GetUserAsync(vote.user);
+                votes[index] = $"#{index+1} {user?.ToString()} ({vote.user})";
+                index++;
+            }
+            await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, "List of voters today", votes, 15, page - 1).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]

@@ -1,11 +1,13 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 using RiasBot.Modules.Music.MusicServices;
 using RiasBot.Services.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -23,8 +25,11 @@ namespace RiasBot.Services
         private readonly MusicService _musicService;
 
         private Timer dblTimer;
-        private Stopwatch voteTimer;
+        private Timer dblVotesTimer;
         public Timer status;
+
+        public List<Votes> votesList = new List<Votes>();
+        private bool populateVotesList = true;
 
         public string[] statuses;
         private int statusCount = 0;
@@ -44,9 +49,9 @@ namespace RiasBot.Services
             if(!RiasBot.isBeta && !String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
             {
                 dblTimer = new Timer(new TimerCallback(async _ => await DblStats()), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
-                voteTimer = new Stopwatch();
-                voteTimer.Start();
+                
             }
+            dblVotesTimer = new Timer(new TimerCallback(async _ => await DblVotes()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
         }
 
         private async Task UserJoined(SocketGuildUser user)
@@ -190,5 +195,75 @@ namespace RiasBot.Services
                 Console.WriteLine(ex);
             }
         }
+
+        public async Task DblVotes()
+        {
+            try
+            {
+                using (var db = _db.GetDbContext())
+                using (var http = new HttpClient())
+                {
+                    string votesApi = await http.GetStringAsync(RiasBot.website + "api/votes.json");
+                    var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
+                    var votes = dblVotes.data.votes.Where(x => x.type == "upvote");
+                    votesList = new List<Votes>();
+                    foreach (var vote in votes)
+                    {
+                        if (DateTime.TryParseExact(vote.date, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.CurrentCulture, DateTimeStyles.None, out var date))
+                        {
+                            date = date.AddDays(1);
+                            if (DateTime.Compare(date.ToUniversalTime(), DateTime.UtcNow) >= 1)
+                            {
+                                votesList.Add(vote);
+                                if (!populateVotesList)
+                                {
+                                    var getGuildUser = _discord.GetGuild(RiasBot.supportServer).GetUser(vote.user);
+                                    if (getGuildUser != null)
+                                    {
+                                        var userDb = db.Users.Where(x => x.UserId == vote.user).FirstOrDefault();
+                                        if (userDb != null)
+                                        {
+                                            userDb.Currency += 10;
+                                        }
+                                        else
+                                        {
+                                            var currency = new UserConfig { UserId = vote.user, Currency = 10 };
+                                        }
+                                        await db.SaveChangesAsync().ConfigureAwait(false);
+                                    }
+                                    else
+                                    {
+                                        //User not in the support server!
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    populateVotesList = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+
+    public class DBL
+    {
+        public Data data { get; set; }
+    }
+    public class Data
+    {
+        public Votes[] votes { get; set; }
+        public string date { get; set; }
+    }
+    public class Votes
+    {
+        public ulong bot { get; set; }
+        public ulong user { get; set; }
+        public string type { get; set; }
+        public string query { get; set; }
+        public string date { get; set; }
     }
 }
