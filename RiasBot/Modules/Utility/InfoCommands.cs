@@ -75,7 +75,7 @@ namespace RiasBot.Modules.Utility
                     embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.commandsRun, true);
                     embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Presence", $"{guilds.Count} Servers\n{textChannels} " +
                         $"Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
-                    embed.AddField("Playing Music", $"Running {musicRunning} Channels\nAFK {musicAfk} Channels", true);
+                    //embed.AddField("Playing Music", $"Running {musicRunning} Channels\nAFK {musicAfk} Channels", true);
                     embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
 
                     await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
