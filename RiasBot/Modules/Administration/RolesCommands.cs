@@ -114,7 +114,7 @@ namespace RiasBot.Modules.Administration
                     var oldRole = Context.Guild.Roles.Where(r => r.Name.ToLower() == oldName.ToLower()).First();
                     oldName = oldRole.Name;
                     await oldRole.ModifyAsync(r => r.Name = newName).ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the name of role {Format.Bold(oldName)} was renamed to {Format.Bold(oldRole.Name)} successfully.").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the name of role {Format.Bold(oldName)} was renamed to {Format.Bold(newName)} successfully.").ConfigureAwait(false);
                 }
                 catch
                 {
