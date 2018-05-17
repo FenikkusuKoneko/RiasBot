@@ -25,11 +25,10 @@ namespace RiasBot.Modules.Bot
         private readonly IBotCredentials _creds;
 
         private readonly MusicService _musicService;
-        private readonly CuteGirlsService _cuteGirlsService;
         private readonly ReactionsService _reactionsService;
 
         public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordShardedClient client, BotService botService,
-            IBotCredentials creds, MusicService musicService, CuteGirlsService cuteGirlsService, ReactionsService reactionsService)
+            IBotCredentials creds, MusicService musicService, ReactionsService reactionsService)
         {
             _ch = ch;
             _service = service;
@@ -40,7 +39,6 @@ namespace RiasBot.Modules.Bot
             _creds = creds;
 
             _musicService = musicService;
-            _cuteGirlsService = cuteGirlsService;
             _reactionsService = reactionsService;
         }
 
@@ -193,9 +191,6 @@ namespace RiasBot.Modules.Bot
         [RequireOwner]
         public async Task UpdateImages()
         {
-            await _cuteGirlsService.UpdateNekos();
-            await _cuteGirlsService.UpdateKitsunes();
-
             await _reactionsService.UpdateImages("H1Pqa", _reactionsService.biteList);
             await _reactionsService.UpdateImages("woGOn", _reactionsService.cryList);
             await _reactionsService.UpdateImages("GdiXR", _reactionsService.gropeList);
@@ -205,7 +200,7 @@ namespace RiasBot.Modules.Bot
             await _reactionsService.UpdateImages("OQjWy", _reactionsService.patList);
             await _reactionsService.UpdateImages("AQoU8", _reactionsService.slapList);
 
-            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} reactions, neko and kitsune images, updated");
+            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} reactions images, updated");
         }
 
         [RiasCommand][@Alias]

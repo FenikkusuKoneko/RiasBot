@@ -31,7 +31,7 @@ namespace RiasBot.Modules.Searches
             [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
             public async Task Neko()
             {
-                var neko = _service.GetNekoImage();
+                var neko = await _service.GetNekoImage();
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle("Neko <3");
                 embed.WithImageUrl(neko);
@@ -45,7 +45,7 @@ namespace RiasBot.Modules.Searches
             [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
             public async Task Kitsune()
             {
-                var kitsune = _service.GetKitsuneImage();
+                var kitsune = await _service.GetKitsuneImage();
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle("Kitsune <3");
                 embed.WithImageUrl(kitsune);
