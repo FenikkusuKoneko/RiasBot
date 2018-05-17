@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Text.RegularExpressions;
 
 namespace RiasBot.Modules.NSFW.Services
 {
@@ -36,6 +37,8 @@ namespace RiasBot.Modules.NSFW.Services
 
         public async Task<string> DownloadImages(NSFWSite site, string tag = null)
         {
+            //if (tag == "loli")
+                //return null;
             string api = null;
             string images = null;
 
@@ -66,7 +69,18 @@ namespace RiasBot.Modules.NSFW.Services
                 if (data.Count > 0)
                 {
                     int random = rnd.Next(data.Count);
-                    string imageUrl = data[random].File_Url;
+                    var hentai = data[random];
+                    int retry = 0; // don't get in an infinity loop
+                    while (Regex.IsMatch(hentai.Tags, @"\bloli\b") && retry < 5)
+                    {
+                        random = rnd.Next(data.Count);
+                        hentai = data[random];
+                        retry++;
+                    }
+                    if (retry == 5)
+                        return null;
+
+                    string imageUrl = hentai.File_Url;
                     if (site == NSFWSite.Danbooru)
                     {
                         if (!imageUrl.Contains("donmai.us"))
