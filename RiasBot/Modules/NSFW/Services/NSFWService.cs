@@ -71,11 +71,25 @@ namespace RiasBot.Modules.NSFW.Services
                     int random = rnd.Next(data.Count);
                     var hentai = data[random];
                     int retry = 0; // don't get in an infinity loop
-                    while (Regex.IsMatch(hentai.Tags, @"\bloli\b") && retry < 5)
+                    while (retry < 5)
                     {
-                        random = rnd.Next(data.Count);
-                        hentai = data[random];
-                        retry++;
+                        if (!String.IsNullOrEmpty(hentai.Tags))
+                        {
+                            if (Regex.IsMatch(hentai.Tags, @"\bloli\b"))
+                            {
+                                random = rnd.Next(data.Count);
+                                hentai = data[random];
+                                retry++;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                     if (retry == 5)
                         return null;
@@ -83,10 +97,15 @@ namespace RiasBot.Modules.NSFW.Services
                     string imageUrl = hentai.File_Url;
                     if (site == NSFWSite.Danbooru)
                     {
-                        if (!imageUrl.Contains("donmai.us"))
-                            return "http://danbooru.donmai.us" + imageUrl;
+                        if (!String.IsNullOrEmpty(imageUrl))
+                        {
+                            if (!imageUrl.Contains("donmai.us"))
+                                return "http://danbooru.donmai.us" + imageUrl;
+                            else
+                                return imageUrl;
+                        }
                         else
-                            return imageUrl;
+                            return null;
                     }
                     else
                         return imageUrl;
