@@ -46,8 +46,7 @@ namespace RiasBot
                 .AddSingleton(new DiscordShardedClient(new DiscordSocketConfig     // Add the discord client to the service provider
                 {
                     LogLevel = LogSeverity.Info,
-                    MessageCacheSize = 1000,     // Tell Discord.Net to cache 1000 messages per channel
-                    AlwaysDownloadUsers = true
+                    MessageCacheSize = 500
                 }))
                 .AddSingleton(new CommandService(new CommandServiceConfig     // Add the command service to the service provider
                 {

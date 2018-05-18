@@ -286,6 +286,32 @@ namespace RiasBot.Modules.Utility
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
+
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            [RequireContext(ContextType.Guild)]
+            public async Task WhoIsPlaying([Remainder]string game)
+            {
+                game = game.ToLowerInvariant();
+                var playingUsers = new List<UserActivity>();
+                var guildUsers = await Context.Guild.GetUsersAsync().ConfigureAwait(false);
+                foreach (var guildUser in guildUsers)
+                {
+                    var activityName = guildUser.Activity?.Name;
+                    if (!String.IsNullOrEmpty(activityName))
+                        if (activityName.ToLowerInvariant().StartsWith(game))
+                        {
+                            var userActivity = new UserActivity
+                            {
+                                Username = guildUser.ToString(),
+                                ActivityName = activityName
+                            };
+                            playingUsers.Add(userActivity);
+                        }
+                }
+                await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"User who play {Format.Bold(playingUsers.First().ActivityName.ToTitleCase())}",
+                    playingUsers.OrderBy(x => x.Username).Select(y => y.Username).ToArray(), 15).ConfigureAwait(false);
+            }
         }
 
         public static string GetTimeString(TimeSpan timeSpan)
@@ -307,6 +333,12 @@ namespace RiasBot.Modules.Utility
                 seconds = "0" + seconds;
 
             return $"{days} days {hours}:{minutes}:{seconds}";
+        }
+
+        public class UserActivity
+        {
+            public string Username { get; set; }
+            public string ActivityName { get; set; }
         }
     }
 }

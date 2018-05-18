@@ -215,7 +215,7 @@ namespace RiasBot.Modules.Bot
                 var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == id);
+                    var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
                     if (userDb != null)
                     {
                         db.Remove(userDb);
@@ -225,7 +225,7 @@ namespace RiasBot.Modules.Bot
                     {
                         db.RemoveRange(waifusDb);
                     }
-                    var profileDb = db.Profile.Where(x => x.UserId == id);
+                    var profileDb = db.Profile.Where(x => x.UserId == id).FirstOrDefault();
                     if (profileDb != null)
                     {
                         db.Remove(profileDb);

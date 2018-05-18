@@ -426,6 +426,14 @@
     ]
   },
 
+  "whoisplaying": {
+    "Command": "whoisplaying whosplaying",
+    "Description": "Show a list with all users from the server that play a game.",
+    "Remarks": [
+      "[prefix]whoisplaying Osu!"
+    ]
+  },
+
   "prune": {
     "Command": "prune purge",
     "Description": "`[prefix]prune x` removes last x number of messages from the channel (up to 100).\n`[prefix]prune @User` removes all User's messages in the last 100 messages.\n`[prefix]prune @Someone x` removes last x number of User's messages in the channel.",

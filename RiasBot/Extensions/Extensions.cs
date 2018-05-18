@@ -5,6 +5,8 @@ using ImageSharp;
 using Newtonsoft.Json;
 using RiasBot.Commons;
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using UnitsNet;
 using UnitsNet.Units;
@@ -68,6 +70,11 @@ namespace RiasBot.Extensions
             {
                 return null;
             }
+        }
+
+        public static string ToTitleCase(this string input)
+        {
+            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input);
         }
     }
 
