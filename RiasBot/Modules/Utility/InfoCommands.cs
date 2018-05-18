@@ -309,7 +309,7 @@ namespace RiasBot.Modules.Utility
                             playingUsers.Add(userActivity);
                         }
                 }
-                await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"User who play {Format.Bold(playingUsers.First().ActivityName.ToTitleCase())}",
+                await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"Users who play {Format.Bold(playingUsers.First().ActivityName.ToTitleCase())}",
                     playingUsers.OrderBy(x => x.Username).Select(y => y.Username).ToArray(), 15).ConfigureAwait(false);
             }
         }
