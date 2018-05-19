@@ -428,7 +428,7 @@
 
   "whoisplaying": {
     "Command": "whoisplaying whosplaying",
-    "Description": "Show a list with all users from this server that play a specific game.",
+    "Description": "Show a list with all users from the server that play a game.",
     "Remarks": [
       "[prefix]whoisplaying Osu!"
     ]
