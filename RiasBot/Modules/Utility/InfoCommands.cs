@@ -311,8 +311,18 @@ namespace RiasBot.Modules.Utility
                 }
                 if (playingUsers.Count != 0)
                 {
-                    await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"Users who play {Format.Bold(playingUsers.First().ActivityName.ToTitleCase())}",
-                    playingUsers.OrderBy(x => x.Username).Select(y => y.Username).ToArray(), 15).ConfigureAwait(false);
+                    var playingUsersArray = new List<string>();
+
+                    var groupPlayingUsers = playingUsers.OrderBy(x => x.Username).GroupBy(y => y.ActivityName);
+                    foreach (var group in groupPlayingUsers)
+                    {
+                        playingUsersArray.Add($"•{Format.Bold(group.Key)}");
+                        foreach (var subGroup in group)
+                        {
+                            playingUsersArray.Add($"\t~>{subGroup.Username}");
+                        }
+                    }
+                    await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"Users who play {game}", playingUsersArray.ToArray(), 15).ConfigureAwait(false);
                 }
                 else
                 {
