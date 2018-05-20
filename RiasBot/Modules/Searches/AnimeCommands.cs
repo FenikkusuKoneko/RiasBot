@@ -119,8 +119,15 @@ namespace RiasBot.Modules.Searches
 
                     string alternative = String.Join(",\n", (JArray)obj.name.alternative);
                     string description = (string)obj.description;
-                    if (description.Length > 1024)
-                        description = $"{description.Substring(0, 950)}... [More]({(string)obj.siteUrl})";
+                    if (!String.IsNullOrEmpty(description))
+                    {
+                        if (description.Length > 1024)
+                            description = $"{description.Substring(0, 950)}... [More]({(string)obj.characters[0].siteUrl})";
+                    }
+                    else
+                    {
+                        description = "-";
+                    }
 
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
@@ -160,8 +167,15 @@ namespace RiasBot.Modules.Searches
                             nativeName = "-";
                         string alternative = String.Join(", ", (JArray)obj.characters[0].name.alternative);
                         string description = (string)obj.characters[0].description;
-                        if (description.Length > 1024)
-                            description = $"{description.Substring(0, 950)}... [More]({(string)obj.characters[0].siteUrl})";
+                        if (!String.IsNullOrEmpty(description))
+                        {
+                            if (description.Length > 1024)
+                                description = $"{description.Substring(0, 950)}... [More]({(string)obj.characters[0].siteUrl})";
+                        }
+                        else
+                        {
+                            description = "-";
+                        }
 
                         var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
