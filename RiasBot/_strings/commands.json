@@ -1151,7 +1151,7 @@
 
   "claimwaifu": {
     "Command": "claimwaifu",
-    "Description": "Claim your waifu from anime. The price for every waifu is between 5000 and 10000 [currency]. You need to have at least 10000 [currency]. Be careful at the name. Use `[prefix]character name` to search for an anime character. The character must be on AniList database.",
+    "Description": "Claim your waifu from anime. The price for every waifu starts from 1000 [currency] and is rising with each claim with 10 [currency], also willl decrease for each divorce. The character must be on AniList database.",
     "Remarks": [
       "[prefix]claimwaifu Rias Gremory",
       "[prefix]claimwaifu 50389"
@@ -1192,7 +1192,7 @@
 
   "createwaifu": {
     "Command": "createwaifu",
-    "Description": "Create your own waifu. Put a direct link link and a name. The price is 15000 [currency]. She will have the beloved status automatically.",
+    "Description": "Create your own waifu. Put a direct link link and a name. The price is 10000 [currency]. She will have the beloved status automatically.",
     "Remarks": [
       "[prefix]createwaifu https://i.imgur.com/RFpeSOe.jpg Rias Gremory"
     ]

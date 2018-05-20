@@ -10,19 +10,22 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using RiasBot.Modules.Utility.Services;
 
 namespace RiasBot.Modules.Utility
 {
     public partial class Utility
     {
-        public class WaifusCommands : RiasSubmodule<AnimeService>
+        public class WaifusCommands : RiasSubmodule<WaifusService>
         {
             private readonly CommandHandler _ch;
             private readonly DbService _db;
-            public WaifusCommands(CommandHandler ch, DbService db)
+            private readonly AnimeService _animeService;
+            public WaifusCommands(CommandHandler ch, DbService db, AnimeService animeService)
             {
                 _ch = ch;
                 _db = db;
+                _animeService = animeService;
             }
 
             [RiasCommand][@Alias]
@@ -30,61 +33,13 @@ namespace RiasBot.Modules.Utility
             [Priority(1)]
             public async Task ClaimWaifu([Remainder]int character)
             {
-                var obj = await _service.CharacterSearch(character);
+                var obj = await _animeService.CharacterSearch(character);
 
                 if (obj is null)
                     await Context.Channel.SendErrorEmbed("I couldn't find the character.");
                 else
                 {
-                    int waifuId = (int)obj.id;
-                    string waifuName = null;
-
-                    if (String.IsNullOrEmpty((string)obj.name.first))
-                        waifuName = (string)obj.name.last;
-                    else if (String.IsNullOrEmpty((string)obj.name.last))
-                        waifuName = (string)obj.name.first;
-                    else
-                        waifuName = $"{(string)obj.name.first} {(string)obj.name.last}";
-
-                    string waifuUrl = (string)obj.siteUrl;
-                    string waifuPicture = (string)obj.image.large;
-                    var random = new Random((int)DateTime.UtcNow.Ticks);
-                    int price = random.Next(5000, 10001);
-
-                    using (var db = _db.GetDbContext())
-                    {
-                        var userDb = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
-                        var waifuDb = db.Waifus.Where(x => x.UserId == Context.User.Id);
-                        try
-                        {
-                            if (userDb.Currency < 10000)
-                            {
-                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
-                                return;
-                            }
-                            if (waifuDb.Any(x => x.WaifuId == waifuId))
-                            {
-                                await Context.Channel.SendMessageAsync($"{Context.User.Mention} you already claimed this waifu.");
-                                return;
-                            }
-
-                            userDb.Currency -= price;
-
-                            var waifus = new Waifus { UserId = Context.User.Id, WaifuId = waifuId, WaifuName = waifuName,
-                                WaifuUrl = waifuUrl, WaifuPicture = waifuPicture, WaifuPrice = price };
-                            await db.AddAsync(waifus).ConfigureAwait(false);
-                            await db.SaveChangesAsync().ConfigureAwait(false);
-
-                            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                            embed.WithDescription($"Congratulations!\nYou successfully claimed {Format.Bold(waifuName)} for {Format.Bold(price.ToString())} {RiasBot.currency}");
-                            embed.WithThumbnailUrl(waifuPicture);
-                            await Context.Channel.SendMessageAsync("", embed: embed.Build());
-                        }
-                        catch
-                        {
-
-                        }
-                    }
+                    await _service.ClaimWaifu((IGuildUser)Context.User, Context.Channel, obj, this);
                 }
             }
 
@@ -93,7 +48,7 @@ namespace RiasBot.Modules.Utility
             [Priority(0)]
             public async Task ClaimWaifu([Remainder]string character)
             {
-                var obj = await _service.CharacterSearch(character);
+                var obj = await _animeService.CharacterSearch(character);
 
                 var characters = (JArray)obj.characters;
                 if (characters.Count == 0)
@@ -102,55 +57,7 @@ namespace RiasBot.Modules.Utility
                 {
                     if (characters.Count <= 1)
                     {
-                        int waifuId = (int)obj.characters[0].id;
-                        string waifuName = null;
-
-                        if (String.IsNullOrEmpty((string)obj.characters[0].name.first))
-                            waifuName = (string)obj.characters[0].name.last;
-                        else if (String.IsNullOrEmpty((string)obj.characters[0].name.last))
-                            waifuName = (string)obj.characters[0].name.first;
-                        else
-                            waifuName = $"{(string)obj.characters[0].name.first} {(string)obj.characters[0].name.last}";
-
-                        string waifuUrl = (string)obj.characters[0].siteUrl;
-                        string waifuPicture = (string)obj.characters[0].image.large;
-                        var random = new Random((int)DateTime.UtcNow.Ticks);
-                        int price = random.Next(5000, 10001);
-
-                        using (var db = _db.GetDbContext())
-                        {
-                            var userDb = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
-                            var waifuDb = db.Waifus.Where(x => x.UserId == Context.User.Id);
-                            try
-                            {
-                                if (userDb.Currency < 10000)
-                                {
-                                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
-                                    return;
-                                }
-                                if (waifuDb.Any(x => x.WaifuId == waifuId))
-                                {
-                                    await Context.Channel.SendMessageAsync($"{Context.User.Mention} you already claimed this waifu.");
-                                    return;
-                                }
-
-                                userDb.Currency -= price;
-
-                                var waifus = new Waifus { UserId = Context.User.Id, WaifuId = waifuId, WaifuName = waifuName,
-                                    WaifuUrl = waifuUrl, WaifuPicture = waifuPicture, WaifuPrice = price };
-                                await db.AddAsync(waifus).ConfigureAwait(false);
-                                await db.SaveChangesAsync().ConfigureAwait(false);
-
-                                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                                embed.WithDescription($"Congratulations!\nYou successfully claimed {Format.Bold(waifuName)} for {Format.Bold(price.ToString())} {RiasBot.currency}");
-                                embed.WithThumbnailUrl(waifuPicture);
-                                await Context.Channel.SendMessageAsync("", embed: embed.Build());
-                            }
-                            catch
-                            {
-
-                            }
-                        }
+                        await _service.ClaimWaifu((IGuildUser)Context.User, Context.Channel, obj.characters[0], this);
                     }
                     else
                     {
@@ -349,7 +256,7 @@ namespace RiasBot.Modules.Utility
                     var waifuDb = db.Waifus.Where(x => x.UserId == Context.User.Id);
                     if (userDb != null)
                     {
-                        if (userDb.Currency >= 15000)
+                        if (userDb.Currency >= 10000)
                         {
                             if (waifuDb != null)
                             {
@@ -360,9 +267,9 @@ namespace RiasBot.Modules.Utility
                                     lastPrimaryWaifu.BelovedWaifuPicture = null;
                                 }
                             }
-                            var waifu = new Waifus { UserId = Context.User.Id, WaifuName = name, WaifuPicture = url, WaifuPrice = 15000, IsPrimary = true };
+                            var waifu = new Waifus { UserId = Context.User.Id, WaifuName = name, WaifuPicture = url, WaifuPrice = 10000, IsPrimary = true };
                             await db.AddAsync(waifu).ConfigureAwait(false);
-                            userDb.Currency -= 15000;
+                            userDb.Currency -= 10000;
 
                             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                             embed.WithDescription($"Congratulations!\nYou successfully created {Format.Bold(name)}.");
