@@ -122,7 +122,7 @@ namespace RiasBot.Modules.Searches
                     if (!String.IsNullOrEmpty(description))
                     {
                         if (description.Length > 1024)
-                            description = $"{description.Substring(0, 950)}... [More]({(string)obj.characters[0].siteUrl})";
+                            description = $"{description.Substring(0, 950)}... [More]({(string)obj.siteUrl})";
                     }
                     else
                     {
