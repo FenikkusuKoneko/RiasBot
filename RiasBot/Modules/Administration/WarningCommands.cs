@@ -42,18 +42,25 @@ namespace RiasBot.Modules.Administration
             {
                 if (user.Id == Context.User.Id)
                     return;
-                if (user is null)
+                if (user.Id != Context.Guild.OwnerId)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
-                    return;
-                }
-                if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
-                {
-                    await _service.WarnUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
+                    if (user is null)
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
+                        return;
+                    }
+                    if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
+                    {
+                        await _service.WarnUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot warn the owner of the server.").ConfigureAwait(false);
                 }
             }
 
