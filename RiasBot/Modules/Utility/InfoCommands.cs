@@ -13,6 +13,7 @@ using Discord.WebSocket;
 using System.Globalization;
 using System.Diagnostics;
 using RiasBot.Modules.Music.MusicServices;
+using Discord.Addons.Interactive;
 
 namespace RiasBot.Modules.Utility
 {
@@ -23,13 +24,15 @@ namespace RiasBot.Modules.Utility
             private readonly DiscordShardedClient _client;
             private readonly CommandHandler _ch;
             private readonly CommandService _service;
+            private readonly InteractiveService _is;
             private readonly MusicService _musicService;
 
-            public InfoCommands(DiscordShardedClient client, CommandHandler ch, CommandService service, MusicService musicService)
+            public InfoCommands(DiscordShardedClient client, CommandHandler ch, CommandService service, InteractiveService interactiveService, MusicService musicService)
             {
                 _client = client;
                 _ch = ch;
                 _service = service;
+                _is = interactiveService;
                 _musicService = musicService;
             }
 
@@ -39,47 +42,44 @@ namespace RiasBot.Modules.Utility
             [Description]
             public async Task Stats()
             {
-                using (var process = Process.GetCurrentProcess())
+                var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
+                int shard = 0;
+                if (Context.Guild != null)
+                    shard = _client.GetShardIdFor(Context.Guild) + 1;
+
+                int textChannels = 0;
+                int voiceChannels = 0;
+                int musicRunning = 0;
+                int musicAfk = 0;
+                int users = 0;
+
+                foreach (SocketGuild guild in guilds)
                 {
-                    var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
-                    int shard = 0;
-                    if (Context.Guild != null)
-                        shard = _client.GetShardIdFor(Context.Guild) + 1;
-
-                    int textChannels = 0;
-                    int voiceChannels = 0;
-                    int musicRunning = 0;
-                    int musicAfk = 0;
-                    int users = 0;
-
-                    foreach (var guild in guilds)
-                    {
-                        textChannels += (await guild.GetTextChannelsAsync().ConfigureAwait(false)).Count;
-                        voiceChannels += (await guild.GetVoiceChannelsAsync().ConfigureAwait(false)).Count;
-                        users += (await guild.GetUsersAsync().ConfigureAwait(false)).Count;
-                    }
-
-                    foreach (var musicPlayer in _musicService.MPlayer)
-                    {
-                        if (musicPlayer.Value.isRunning)
-                            musicRunning++;
-                        else
-                            musicAfk++;
-                    }
-
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-
-                    embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
-                    embed.AddField("Author", RiasBot.author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
-                    embed.AddField("Master ID", RiasBot.konekoID, true).AddField("Shard", $"#{shard}/{_client.Shards.Count()}", true);
-                    embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.commandsRun, true);
-                    embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Presence", $"{guilds.Count} Servers\n{textChannels} " +
-                        $"Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
-                    //embed.AddField("Playing Music", $"Running {musicRunning} Channels\nAFK {musicAfk} Channels", true);
-                    embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
-
-                    await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
+                    textChannels += guild.TextChannels.Count;
+                    voiceChannels += guild.VoiceChannels.Count;
+                    users += guild.MemberCount;
                 }
+
+                foreach (var musicPlayer in _musicService.MPlayer)
+                {
+                    if (musicPlayer.Value.isRunning)
+                        musicRunning++;
+                    else
+                        musicAfk++;
+                }
+
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+
+                embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
+                embed.AddField("Author", RiasBot.author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
+                embed.AddField("Master ID", RiasBot.konekoID, true).AddField("Shard", $"#{shard}/{_client.Shards.Count()}", true);
+                embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.commandsRun, true);
+                embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Presence", $"{guilds.Count} Servers\n{textChannels} " +
+                    $"Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
+                //embed.AddField("Playing Music", $"Running {musicRunning} Channels\nAFK {musicAfk} Channels", true);
+                embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
+
+                await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
 
             [RiasCommand]
@@ -118,17 +118,20 @@ namespace RiasBot.Modules.Utility
 
                     int roleIndex = 0;
                     var getUserRoles = user.RoleIds;
-                    string[] userRoles = new string[getUserRoles.Count];
-                    int[] userRolesPositions = new int[getUserRoles.Count];
+                    string[] userRoles = new string[getUserRoles.Count - 1];
+                    int[] userRolesPositions = new int[getUserRoles.Count - 1];
 
                     foreach (var role in getUserRoles)
                     {
                         var r = Context.Guild.GetRole(role);
                         if (roleIndex < 10)
                         {
-                            userRoles[roleIndex] = r.Name;
-                            userRolesPositions[roleIndex] = r.Position;
-                            roleIndex++;
+                            if (r.Id != Context.Guild.EveryoneRole.Id)
+                            {
+                                userRoles[roleIndex] = r.Name;
+                                userRolesPositions[roleIndex] = r.Position;
+                                roleIndex++;
+                            }
                         }
                     }
 
@@ -311,18 +314,32 @@ namespace RiasBot.Modules.Utility
                 }
                 if (playingUsers.Count != 0)
                 {
-                    var playingUsersArray = new List<string>();
+                    var playingUsersList = new List<string>();
 
                     var groupPlayingUsers = playingUsers.OrderBy(x => x.Username).GroupBy(y => y.ActivityName);
                     foreach (var group in groupPlayingUsers)
                     {
-                        playingUsersArray.Add($"•{Format.Bold(group.Key)}");
+                        playingUsersList.Add($"•{Format.Bold(group.Key)}");
                         foreach (var subGroup in group)
                         {
-                            playingUsersArray.Add($"\t~>{subGroup.Username}");
+                            playingUsersList.Add($"\t~>{subGroup.Username}");
                         }
                     }
-                    await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"Users who play {game}", playingUsersArray.ToArray(), 15).ConfigureAwait(false);
+                    var pager = new PaginatedMessage
+                    {
+                        Title = $"Users who play {game}",
+                        Color = new Color(RiasBot.goodColor),
+                        Pages = playingUsersList,
+                        Options = new PaginatedAppearanceOptions
+                        {
+                            ItemsPerPage = 15,
+                            Timeout = TimeSpan.FromMinutes(1),
+                            DisplayInformationIcon = false,
+                            JumpDisplayOptions = JumpDisplayOptions.Never
+                        }
+
+                    };
+                    await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
                 }
                 else
                 {

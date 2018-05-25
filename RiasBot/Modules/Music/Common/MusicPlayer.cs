@@ -1,5 +1,7 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Audio;
+using Discord.Commands;
 using Discord.WebSocket;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
@@ -466,18 +468,31 @@ namespace RiasBot.Modules.Music.Common
             }
         }
 
-        public async Task Playlist(int currentPage)
+        public async Task Playlist(ShardedCommandContext context, InteractiveService _is)
         {
-            string[] playlist = new string[Queue.Count];
+            var playlist = new List<string>();
             for (int i = 0; i < Queue.Count; i++)
             {
                 if (position == i)
-                    playlist[i] = $"➡ #{i + 1} {Queue[i].title} {Format.Code($"({Queue[i].duration})")}";
+                    playlist.Add($"➡ #{i + 1} {Queue[i].title} {Format.Code($"({Queue[i].duration})")}");
                 else
-                    playlist[i] = $"#{i + 1} {Queue[i].title} {Format.Code($"({ Queue[i].duration})")}";
+                    playlist.Add($"#{i + 1} {Queue[i].title} {Format.Code($"({ Queue[i].duration})")}");
             }
+            var pager = new PaginatedMessage
+            {
+                Title = "Current playlist",
+                Color = new Color(RiasBot.goodColor),
+                Pages = playlist,
+                Options = new PaginatedAppearanceOptions
+                {
+                    ItemsPerPage = 10,
+                    Timeout = TimeSpan.FromMinutes(1),
+                    DisplayInformationIcon = false,
+                    JumpDisplayOptions = JumpDisplayOptions.Never
+                }
 
-            await _channel.SendPaginated(_client, "Current playlist", playlist, 10, currentPage - 1);
+            };
+            await _is.SendPaginatedMessageAsync(context, pager);
         }
 
         public async Task Shuffle()

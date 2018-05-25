@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using RiasBot.Commons.Attributes;
@@ -19,11 +20,13 @@ namespace RiasBot.Modules.Administration
         {
             private readonly CommandHandler _ch;
             private readonly CommandService _service;
+            private readonly InteractiveService _is;
             private readonly DbService _db;
-            public SelfAssignableRolesCommands(CommandHandler ch, CommandService service, DbService db)
+            public SelfAssignableRolesCommands(CommandHandler ch, CommandService service, InteractiveService interactiveService, DbService db)
             {
                 _ch = ch;
                 _service = service;
+                _is = interactiveService;
                 _db = db;
             }
 
@@ -88,25 +91,32 @@ namespace RiasBot.Modules.Administration
                 using (var db = _db.GetDbContext())
                 {
                     var role = Context.Guild.Roles.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefault();
-
                     if (role != null)
                     {
-                        if (!db.SelfAssignableRoles.Where(x => x.GuildId == Context.Guild.Id).Any(x => x.RoleId == role.Id))
+                        if (!role.IsManaged)
                         {
-                            var sar = new SelfAssignableRoles { GuildId = Context.Guild.Id, RoleName = role.Name, RoleId = role.Id };
-                            await db.AddAsync(sar).ConfigureAwait(false);
-                            await db.SaveChangesAsync().ConfigureAwait(false);
+                            if (!db.SelfAssignableRoles.Where(x => x.GuildId == Context.Guild.Id).Any(x => x.RoleId == role.Id))
+                            {
+                                var sar = new SelfAssignableRoles { GuildId = Context.Guild.Id, RoleName = role.Name, RoleId = role.Id };
+                                await db.AddAsync(sar).ConfigureAwait(false);
+                                await db.SaveChangesAsync().ConfigureAwait(false);
 
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} was added in the self assignable roles list successfully.");
+                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} was added in the self assignable roles list successfully.").ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(role.Name)} is already in the self assignable roles list.").ConfigureAwait(false);
+                            }
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(role.Name)} is already in the self assignable roles list.");
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(role.Name)} cannot be added to the self assignable roles list " +
+                                $"because is automatically managed by Discord").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the role.");
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the role.").ConfigureAwait(false);
                     }
                 }
             }
@@ -143,7 +153,7 @@ namespace RiasBot.Modules.Administration
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireContext(ContextType.Guild)]
-            public async Task ListSelfAssignableRoles(int page = 1)
+            public async Task ListSelfAssignableRoles()
             {
                 using (var db = _db.GetDbContext())
                 {
@@ -165,14 +175,28 @@ namespace RiasBot.Modules.Administration
 
                     if (sar.Count > 0)
                     {
-                        string[] lsar = new string[sar.Count];
+                        var lsar = new List<string>();
                         int index = 0;
                         foreach (var role in sar)
                         {
-                            lsar[index] = $"#{index + 1} {role.RoleName}";
+                            lsar.Add($"#{index + 1} {role.RoleName}");
                             index++;
                         }
-                        await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, "Self assignable roles on this server", lsar, 15, page - 1);
+                        var pager = new PaginatedMessage
+                        {
+                            Title = "Self assignable roles on this server",
+                            Color = new Color(RiasBot.goodColor),
+                            Pages = lsar,
+                            Options = new PaginatedAppearanceOptions
+                            {
+                                ItemsPerPage = 15,
+                                Timeout = TimeSpan.FromMinutes(1),
+                                DisplayInformationIcon = false,
+                                JumpDisplayOptions = JumpDisplayOptions.Never
+                            }
+
+                        };
+                        await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
                     }
                     else
                     {

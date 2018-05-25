@@ -9,6 +9,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using Discord.Addons.Interactive;
+using System.Globalization;
 
 namespace RiasBot.Modules.Administration
 {
@@ -18,26 +20,42 @@ namespace RiasBot.Modules.Administration
         {
             private readonly CommandHandler _ch;
             private readonly CommandService _service;
+            private readonly InteractiveService _is;
             private readonly DbService _db;
 
-            public RolesCommands(CommandHandler ch, CommandService service, DbService db)
+            public RolesCommands(CommandHandler ch, CommandService service, InteractiveService interactiveService, DbService db)
             {
                 _ch = ch;
                 _service = service;
+                _is = interactiveService;
                 _db = db;
             }
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
-            public async Task Roles(int page = 1)
+            public async Task Roles()
             {
-                try
+                var everyoneRole = Context.Guild.Roles.Where(x => x.Name == "@everyone");
+                var roles = Context.Guild.Roles.OrderByDescending(x => x.Position).Except(everyoneRole).Select(y => y.Name).ToList();
+                if (roles.Count > 0)
                 {
-                    var everyoneRole = Context.Guild.Roles.Where(x => x.Name == "@everyone");
-                    var roles = Context.Guild.Roles.OrderByDescending(x => x.Position).Except(everyoneRole).Select(y => y.Name).ToArray();
-                    await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"List of roles on this server", roles, 15, page - 1);
+                    var pager = new PaginatedMessage
+                    {
+                        Title = "List of roles on this server",
+                        Color = new Color(RiasBot.goodColor),
+                        Pages = roles,
+                        Options = new PaginatedAppearanceOptions
+                        {
+                            ItemsPerPage = 15,
+                            Timeout = TimeSpan.FromMinutes(1),
+                            DisplayInformationIcon = false,
+                            JumpDisplayOptions = JumpDisplayOptions.Never
+                        }
+
+                    };
+                    await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
                 }
-                catch
+                else
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} No roles on this server.");
                 }
@@ -61,14 +79,21 @@ namespace RiasBot.Modules.Administration
             [RequireBotPermission(GuildPermission.ManageRoles)]
             public async Task DeleteRole([Remainder]string name)
             {
-                try
+                var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
+                if (role != null)
                 {
-                    var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
-                    await role.DeleteAsync().ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(name)} was deleted successfully.").ConfigureAwait(false);
-
+                    if (!role.IsManaged)
+                    {
+                        await role.DeleteAsync().ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(name)} was deleted successfully.").ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(role.Name)} cannot be deleted " +
+                                $"because is automatically managed by Discord").ConfigureAwait(false);
+                    }
                 }
-                catch
+                else
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be deleted.").ConfigureAwait(false);
                 }
@@ -80,19 +105,32 @@ namespace RiasBot.Modules.Administration
             [RequireUserPermission(GuildPermission.ManageRoles)]
             [RequireBotPermission(GuildPermission.ManageRoles)]
             public async Task RoleColor(string color, [Remainder]string name)
-            { 
-                try
+            {
+                color = color.Replace("#", "");
+                if (color.Length != 6)
                 {
-                    var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
-
-                    var red = Convert.ToByte(Convert.ToInt32(color.Substring(0, 2), 16));
-                    var green = Convert.ToByte(Convert.ToInt32(color.Substring(2, 2), 16));
-                    var blue = Convert.ToByte(Convert.ToInt32(color.Substring(4, 2), 16));
-
-                    await role.ModifyAsync(r => r.Color = new Color(red, green, blue)).ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the color of role {Format.Bold(name)} was changed successfully.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the color is not a valid hex color.").ConfigureAwait(false);
+                    return;
                 }
-                catch
+                var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
+                if (role != null)
+                {
+                    if (Int32.TryParse(color.Substring(0, 2), NumberStyles.HexNumber, null, out int redColor) &&
+                        Int32.TryParse(color.Substring(2, 2), NumberStyles.HexNumber, null, out int greenColor) &&
+                        Int32.TryParse(color.Substring(4, 2), NumberStyles.HexNumber, null, out int blueColor))
+                    {
+                        var red = Convert.ToByte(redColor);
+                        var green = Convert.ToByte(greenColor);
+                        var blue = Convert.ToByte(blueColor);
+                        await role.ModifyAsync(r => r.Color = new Color(red, green, blue)).ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the color of role {Format.Bold(name)} was changed successfully.").ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the color is not a valid hex color.").ConfigureAwait(false);
+                    }
+                }
+                else
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }
@@ -105,18 +143,18 @@ namespace RiasBot.Modules.Administration
             [RequireBotPermission(GuildPermission.ManageRoles)]
             public async Task RenameRole([Remainder]string role)
             {
-                try
-                {
-                    var roles = role.Split("->");
-                    string oldName = roles[0].TrimEnd();
-                    string newName = roles[1].TrimStart();
+                var roles = role.Split("->");
+                string oldName = roles[0].TrimEnd();
+                string newName = roles[1].TrimStart();
 
-                    var oldRole = Context.Guild.Roles.Where(r => r.Name.ToLower() == oldName.ToLower()).First();
+                var oldRole = Context.Guild.Roles.Where(r => r.Name.ToLower() == oldName.ToLower()).First();
+                if (oldRole != null)
+                {
                     oldName = oldRole.Name;
                     await oldRole.ModifyAsync(r => r.Name = newName).ConfigureAwait(false);
                     await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the name of role {Format.Bold(oldName)} was renamed to {Format.Bold(newName)} successfully.").ConfigureAwait(false);
                 }
-                catch
+                else
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }
@@ -129,13 +167,21 @@ namespace RiasBot.Modules.Administration
             [RequireBotPermission(GuildPermission.ManageRoles)]
             public async Task SetRole(IGuildUser user, [Remainder] string name)
             {
-                try
+                var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
+                if (role != null)
                 {
-                    var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
-                    await user.AddRoleAsync(role);
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} was added to {user.Mention} successfully.").ConfigureAwait(false);
+                    if (!role.IsManaged)
+                    {
+                        await user.AddRoleAsync(role);
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} was added to {user.Mention} successfully.").ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(role.Name)} cannot be added " +
+                                $"because is automatically managed by Discord").ConfigureAwait(false);
+                    }
                 }
-                catch
+                else
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role or the user couldn't be found.").ConfigureAwait(false);
                 }
@@ -148,14 +194,13 @@ namespace RiasBot.Modules.Administration
             [RequireBotPermission(GuildPermission.ManageRoles)]
             public async Task RemoveRole(IGuildUser user, [Remainder] string name)
             {
-                try
+                var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
+                if (role != null)
                 {
-                    var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
-                    await user.RemoveRoleAsync(role);
-
+                    await user.RemoveRoleAsync(role).ConfigureAwait(false);
                     await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} was removed from {user.Mention} successfully.").ConfigureAwait(false);
                 }
-                catch
+                else
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role or the user couldn't be found.").ConfigureAwait(false);
                 }
@@ -176,18 +221,26 @@ namespace RiasBot.Modules.Administration
                         var getRole = Context.Guild.Roles.Where(x => x.Name.ToLower() == role.ToLower()).FirstOrDefault();
                         if (getRole != null)
                         {
-                            try
+                            if (!getRole.IsManaged)
                             {
-                                guildDb.AutoAssignableRole = getRole.Id;
-                                await db.SaveChangesAsync().ConfigureAwait(false);
+                                if (guildDb != null)
+                                {
+                                    guildDb.AutoAssignableRole = getRole.Id;
+                                    await db.SaveChangesAsync().ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    var aar = new GuildConfig { GuildId = Context.Guild.Id, AutoAssignableRole = getRole.Id };
+                                    await db.AddAsync(aar).ConfigureAwait(false);
+                                    await db.SaveChangesAsync().ConfigureAwait(false);
+                                }
+                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(getRole.Name)} will be auto-assigned to the new users.").ConfigureAwait(false);
                             }
-                            catch
+                            else
                             {
-                                var aar = new GuildConfig { GuildId = Context.Guild.Id, AutoAssignableRole = getRole.Id };
-                                await db.AddAsync(aar).ConfigureAwait(false);
-                                await db.SaveChangesAsync().ConfigureAwait(false);
+                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(getRole.Name)} cannot be auto-assigned " +
+                                $"because is automatically managed by Discord").ConfigureAwait(false);
                             }
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(getRole.Name)} will be auto-assigned to the new users.").ConfigureAwait(false);
                         }
                         else
                         {
@@ -196,13 +249,13 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        try
+                        if (guildDb != null)
                         {
                             guildDb.AutoAssignableRole = 0;
                             await db.SaveChangesAsync().ConfigureAwait(false);
                             await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} auto-assignable role disabled.").ConfigureAwait(false);
                         }
-                        catch
+                        else
                         {
                             var aar = new GuildConfig { GuildId = Context.Guild.Id, AutoAssignableRole = 0 };
                             await db.AddAsync(aar).ConfigureAwait(false);
@@ -219,9 +272,9 @@ namespace RiasBot.Modules.Administration
             [RequireBotPermission(GuildPermission.ManageRoles)]
             public async Task HoistRole([Remainder]string name)
             {
-                try
+                var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
+                if (role != null)
                 {
-                    var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
                     if (role.IsHoisted)
                     {
                         await role.ModifyAsync(x => x.Hoist = false);
@@ -233,7 +286,7 @@ namespace RiasBot.Modules.Administration
                         await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} is now displayed independently in the userlist.").ConfigureAwait(false);
                     }
                 }
-                catch
+                else
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }
@@ -246,9 +299,9 @@ namespace RiasBot.Modules.Administration
             [RequireBotPermission(GuildPermission.ManageRoles)]
             public async Task MentionRole([Remainder]string name)
             {
-                try
+                var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
+                if (role != null)
                 {
-                    var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
                     if (role.IsMentionable)
                     {
                         await role.ModifyAsync(x => x.Mentionable = false).ConfigureAwait(false);
@@ -260,7 +313,7 @@ namespace RiasBot.Modules.Administration
                         await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} is now mentionable.").ConfigureAwait(false);
                     }
                 }
-                catch
+                else
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }

@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
@@ -18,10 +19,12 @@ namespace RiasBot.Modules.Music
 {
     public class Music : RiasModule<MusicService>
     {
+        private readonly InteractiveService _is;
         public IBotCredentials _creds;
 
-        public Music(IBotCredentials creds)
+        public Music(InteractiveService interactiveService, IBotCredentials creds)
         {
+            _is = interactiveService;
             _creds = creds;
         }
 
@@ -352,7 +355,7 @@ namespace RiasBot.Modules.Music
 
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Playlist(currentPage).ConfigureAwait(false);
+                await mp.Playlist((ShardedCommandContext)Context, _is).ConfigureAwait(false);
             else
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
@@ -690,14 +693,15 @@ namespace RiasBot.Modules.Music
                 }
             }
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-            embed.WithTitle("Choose a song by typing the index. You have 10 seconds");
+            embed.WithTitle("Choose a song by typing the index. You have 30 seconds");
             embed.WithDescription(description);
             var choose = await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
 
-            string getUserInput = await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10 * 1000);
-            if (!String.IsNullOrEmpty(getUserInput))
-                getUserInput = getUserInput.Replace("#", "");
-            if (Int32.TryParse(getUserInput, out int input))
+            string userInput = null;
+            var getUserInput = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+            if (getUserInput != null)
+                userInput = getUserInput.Content.Replace("#", "");
+            if (Int32.TryParse(userInput, out int input))
             {
                 input--;
                 if (input >= 0 && input < 5)

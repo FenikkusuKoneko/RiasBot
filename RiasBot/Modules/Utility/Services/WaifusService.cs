@@ -1,4 +1,6 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
+using Discord.Commands;
 using RiasBot.Extensions;
 using RiasBot.Services;
 using RiasBot.Services.Database.Models;
@@ -13,14 +15,16 @@ namespace RiasBot.Modules.Utility.Services
 {
     public class WaifusService : IRService
     {
+        private readonly InteractiveService _is;
         private readonly DbService _db;
 
-        public WaifusService(DbService db)
+        public WaifusService(InteractiveService interactiveService, DbService db)
         {
+            _is = interactiveService;
             _db = db;
         }
 
-        public async Task ClaimWaifu(IGuildUser user, IMessageChannel channel, dynamic obj, WaifusCommands baseModule)
+        public async Task ClaimWaifu(ShardedCommandContext context, IGuildUser user, IMessageChannel channel, dynamic obj)
         {
             int waifuId = (int)obj.id;
             string waifuName = null;
@@ -57,15 +61,12 @@ namespace RiasBot.Modules.Utility.Services
                     waifuEmbed.WithThumbnailUrl(waifuPicture);
                     var waifuClaimMsg = await channel.SendMessageAsync("", embed: waifuEmbed.Build());
 
-                    string input = await baseModule.GetUserInputAsync(user.Id, channel.Id, 30 * 1000);
-                    if (!String.IsNullOrEmpty(input))
+                    var input = await _is.NextMessageAsync(context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+                    if (input != null)
                     {
-                        if (input != "confirm")
+                        if (input.Content != "confirm")
                         {
-                            await waifuClaimMsg.DeleteAsync(new RequestOptions
-                            {
-                                Timeout = 1000
-                            });
+                            await channel.SendErrorEmbed("Claim waifu canceled!").ConfigureAwait(false);
                             return;
                         }
                     }

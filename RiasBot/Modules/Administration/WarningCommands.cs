@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using RiasBot.Commons.Attributes;
@@ -22,13 +23,15 @@ namespace RiasBot.Modules.Administration
             private readonly CommandHandler _ch;
             private readonly DbService _db;
             private readonly AdministrationService _adminService;
+            private readonly InteractiveService _is;
 
-            public WarningCommands(DiscordShardedClient client, CommandHandler ch, DbService db, AdministrationService adminService)
+            public WarningCommands(DiscordShardedClient client, CommandHandler ch, DbService db, AdministrationService adminService, InteractiveService interactiveService)
             {
                 _client = client;
                 _ch = ch;
                 _db = db;
                 _adminService = adminService;
+                _is = interactiveService;
             }
 
             [RiasCommand] [@Alias] [Description] [@Remarks]
@@ -68,13 +71,13 @@ namespace RiasBot.Modules.Administration
                     else
                     {
                         int index = 0;
-                        string[] warnUsers = new string[warnings.Count];
+                        var warnUsers = new List<string>();
                         foreach (var warn in warnings)
                         {
                             var user = await Context.Guild.GetUserAsync(warnings[index].UserId).ConfigureAwait(false);
                             if (user != null)
                             {
-                                warnUsers[index] = $"{index + 1}. {user}";
+                                warnUsers.Add($"{index + 1}. {user}");
                                 index++;
                             }
                             else
@@ -84,7 +87,23 @@ namespace RiasBot.Modules.Administration
                         }
                         await db.SaveChangesAsync().ConfigureAwait(false);
                         if (warnUsers.Any(x => !String.IsNullOrEmpty(x)))
-                            await Context.Channel.SendPaginated(_client, "All warned users", warnUsers, 10);
+                        {
+                            var pager = new PaginatedMessage
+                            {
+                                Title = "All warned users",
+                                Color = new Color(RiasBot.goodColor),
+                                Pages = warnUsers,
+                                Options = new PaginatedAppearanceOptions
+                                {
+                                    ItemsPerPage = 10,
+                                    Timeout = TimeSpan.FromMinutes(1),
+                                    DisplayInformationIcon = false,
+                                    JumpDisplayOptions = JumpDisplayOptions.Never
+                                }
+
+                            };
+                            await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
+                        }
                         else
                             await Context.Channel.SendErrorEmbed($"{Context.User.Mention} No warned users.");
                     }
@@ -107,11 +126,11 @@ namespace RiasBot.Modules.Administration
                     var warnings = db.Warnings.Where(x => x.GuildId == Context.Guild.Id);
                     var warningsUser = warnings.Where(x => x.UserId == user.Id).ToList();
 
-                    string[] reasons = new string[warningsUser.Count];
+                    var reasons = new List<string>();
                     for (int i = 0; i < warningsUser.Count; i++)
                     {
                         var moderator = await Context.Guild.GetUserAsync(warningsUser[i].Moderator).ConfigureAwait(false);
-                        reasons[i] = $"#{i+1} {warningsUser[i].Reason ?? "-"}\n{Format.Bold("Moderator:")} {moderator.Username}#{moderator.Discriminator}\n";
+                        reasons.Add($"#{i+1} {warningsUser[i].Reason ?? "-"}\n{Format.Bold("Moderator:")} {moderator.Username}#{moderator.Discriminator}\n");
                     }
                     if (warningsUser.Count == 0)
                     {
@@ -119,7 +138,21 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        await Context.Channel.SendPaginated(_client, $"All warnings for {user}", reasons, 5);
+                        var pager = new PaginatedMessage
+                        {
+                            Title = $"All warnings for {user}",
+                            Color = new Color(RiasBot.goodColor),
+                            Pages = reasons,
+                            Options = new PaginatedAppearanceOptions
+                            {
+                                ItemsPerPage = 5,
+                                Timeout = TimeSpan.FromMinutes(1),
+                                DisplayInformationIcon = false,
+                                JumpDisplayOptions = JumpDisplayOptions.Never
+                            }
+
+                        };
+                        await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
                     }
                 }
             }

@@ -11,6 +11,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using RiasBot.Modules.Utility.Services;
+using System.Collections.Generic;
+using Discord.Addons.Interactive;
 
 namespace RiasBot.Modules.Utility
 {
@@ -21,11 +23,13 @@ namespace RiasBot.Modules.Utility
             private readonly CommandHandler _ch;
             private readonly DbService _db;
             private readonly AnimeService _animeService;
-            public WaifusCommands(CommandHandler ch, DbService db, AnimeService animeService)
+            private readonly InteractiveService _is;
+            public WaifusCommands(CommandHandler ch, DbService db, AnimeService animeService, InteractiveService interactiveService)
             {
                 _ch = ch;
                 _db = db;
                 _animeService = animeService;
+                _is = interactiveService;
             }
 
             [RiasCommand][@Alias]
@@ -39,7 +43,7 @@ namespace RiasBot.Modules.Utility
                     await Context.Channel.SendErrorEmbed("I couldn't find the character.");
                 else
                 {
-                    await _service.ClaimWaifu((IGuildUser)Context.User, Context.Channel, obj, this);
+                    await _service.ClaimWaifu((ShardedCommandContext)Context, (IGuildUser)Context.User, Context.Channel, obj);
                 }
             }
 
@@ -57,18 +61,31 @@ namespace RiasBot.Modules.Utility
                 {
                     if (characters.Count <= 1)
                     {
-                        await _service.ClaimWaifu((IGuildUser)Context.User, Context.Channel, obj.characters[0], this);
+                        await _service.ClaimWaifu((ShardedCommandContext)Context, (IGuildUser)Context.User, Context.Channel, obj.characters[0]);
                     }
                     else
                     {
-                        string[] listCharacters = new string[characters.Count];
+                        var listCharacters = new List<string>();
                         for (int i = 0; i < characters.Count(); i++)
                         {
                             string waifuName1 = $"{(string)obj.characters[i].name.first} { (string)obj.characters[i].name.last}";
-                            listCharacters[i] = $"{waifuName1}\tId: {obj.characters[i].id}\n";
+                            listCharacters.Add($"{waifuName1}\tId: {obj.characters[i].id}\n");
                         }
-                        await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"I've found {characters.Count()} characters for {character}. Claim a waifu by id",
-                            listCharacters, 10);
+                        var pager = new PaginatedMessage
+                        {
+                            Title = $"I've found {characters.Count()} characters for {character}. Claim a waifu by id",
+                            Color = new Color(RiasBot.goodColor),
+                            Pages = listCharacters,
+                            Options = new PaginatedAppearanceOptions
+                            {
+                                ItemsPerPage = 10,
+                                Timeout = TimeSpan.FromMinutes(1),
+                                DisplayInformationIcon = false,
+                                JumpDisplayOptions = JumpDisplayOptions.Never
+                            }
+
+                        };
+                        await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
                     }
                 }
             }
@@ -175,17 +192,33 @@ namespace RiasBot.Modules.Utility
 
                     try
                     {
-                        string[] waifus = new string[waifusDb.Count()];
+                        var waifus = new List<string>();
                         for (int i = 0; i < waifusDb.Count(); i++)
                         {
                             if (waifusDb[i].IsPrimary)
-                                waifus[i] = $"#{i+1} ❤️ [{waifusDb[i].WaifuName}]({waifusDb[i].WaifuUrl})\tId: {waifusDb[i].WaifuId}\tPrice: {waifusDb[i].WaifuPrice} {RiasBot.currency}";
+                                waifus.Add($"#{i+1} ❤️ [{waifusDb[i].WaifuName}]({waifusDb[i].WaifuUrl})\tId: {waifusDb[i].WaifuId}\tPrice: {waifusDb[i].WaifuPrice} {RiasBot.currency}");
                             else
-                                waifus[i] = $"#{i+1}[{waifusDb[i].WaifuName}]({waifusDb[i].WaifuUrl})\tId: {waifusDb[i].WaifuId}\tPrice: {waifusDb[i].WaifuPrice} {RiasBot.currency}";
+                                waifus.Add($"#{i+1}[{waifusDb[i].WaifuName}]({waifusDb[i].WaifuUrl})\tId: {waifusDb[i].WaifuId}\tPrice: {waifusDb[i].WaifuPrice} {RiasBot.currency}");
                         }
 
                         if (waifusDb.Count() > 0)
-                            await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"All waifus for {user}", waifus, 10);
+                        {
+                            var pager = new PaginatedMessage
+                            {
+                                Title = $"All waifus for {user}",
+                                Color = new Color(RiasBot.goodColor),
+                                Pages = waifus,
+                                Options = new PaginatedAppearanceOptions
+                                {
+                                    ItemsPerPage = 5,
+                                    Timeout = TimeSpan.FromMinutes(1),
+                                    DisplayInformationIcon = false,
+                                    JumpDisplayOptions = JumpDisplayOptions.Never
+                                }
+
+                            };
+                            await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
+                        }
                         else if (user == Context.User)
                             await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have any waifu.");
                         else

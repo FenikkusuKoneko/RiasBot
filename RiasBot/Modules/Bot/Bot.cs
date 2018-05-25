@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Webhook;
 using Discord.WebSocket;
@@ -9,6 +10,7 @@ using RiasBot.Modules.Reactions.Services;
 using RiasBot.Modules.Searches.Services;
 using RiasBot.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,13 +24,14 @@ namespace RiasBot.Modules.Bot
         private readonly DbService _db;
         private readonly DiscordShardedClient _client;
         private readonly BotService _botService;
+        private readonly InteractiveService _is;
         private readonly IBotCredentials _creds;
 
         private readonly MusicService _musicService;
         private readonly ReactionsService _reactionsService;
 
         public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordShardedClient client, BotService botService,
-            IBotCredentials creds, MusicService musicService, ReactionsService reactionsService)
+            InteractiveService interactiveService, IBotCredentials creds, MusicService musicService, ReactionsService reactionsService)
         {
             _ch = ch;
             _service = service;
@@ -36,6 +39,7 @@ namespace RiasBot.Modules.Bot
             _db = db;
             _client = client;
             _botService = botService;
+            _is = interactiveService;
             _creds = creds;
 
             _musicService = musicService;
@@ -169,21 +173,32 @@ namespace RiasBot.Modules.Bot
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireOwner]
-        public async Task Dbl(int page = 1)
+        public async Task Dbl()
         {
-            if (page < 1)
-                return;
-
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-            string[] votes = new string[_botService.votesList.Count];
+            var votes = new List<string>();
             int index = 0;
             foreach (var vote in _botService.votesList)
             {
                 var user = await Context.Client.GetUserAsync(vote.user);
-                votes[index] = $"#{index+1} {user?.ToString()} ({vote.user})";
+                votes.Add($"#{index+1} {user?.ToString()} ({vote.user})");
                 index++;
             }
-            await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, "List of voters today", votes, 15, page - 1).ConfigureAwait(false);
+            var pager = new PaginatedMessage
+            {
+                Title = "List of voters today",
+                Color = new Color(RiasBot.goodColor),
+                Pages = votes,
+                Options = new PaginatedAppearanceOptions
+                {
+                    ItemsPerPage = 15,
+                    Timeout = TimeSpan.FromMinutes(1),
+                    DisplayInformationIcon = false,
+                    JumpDisplayOptions = JumpDisplayOptions.Never
+                }
+
+            };
+            await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
         }
 
         [RiasCommand][@Alias]
@@ -209,39 +224,41 @@ namespace RiasBot.Modules.Bot
         public async Task Delete(ulong id)
         {
             var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
-            var input = await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10000);
-            if (input == "confirm")
+            var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+            if (input != null)
             {
-                var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
-                using (var db = _db.GetDbContext())
+                if (input.Content == "confirm")
                 {
-                    var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
-                    if (userDb != null)
+                    var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
+                    using (var db = _db.GetDbContext())
                     {
-                        db.Remove(userDb);
+                        var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
+                        if (userDb != null)
+                        {
+                            db.Remove(userDb);
+                        }
+                        var waifusDb = db.Waifus.Where(x => x.UserId == id);
+                        if (waifusDb != null)
+                        {
+                            db.RemoveRange(waifusDb);
+                        }
+                        var profileDb = db.Profile.Where(x => x.UserId == id).FirstOrDefault();
+                        if (profileDb != null)
+                        {
+                            db.Remove(profileDb);
+                        }
+                        if (user != null)
+                        {
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {user} has been deleted from the database").ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {id} has been deleted from the database").ConfigureAwait(false);
+                        }
+                        await db.SaveChangesAsync().ConfigureAwait(false);
                     }
-                    var waifusDb = db.Waifus.Where(x => x.UserId == id);
-                    if (waifusDb != null)
-                    {
-                        db.RemoveRange(waifusDb);
-                    }
-                    var profileDb = db.Profile.Where(x => x.UserId == id).FirstOrDefault();
-                    if (profileDb != null)
-                    {
-                        db.Remove(profileDb);
-                    }
-                    if (user != null)
-                    {
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {user} has been deleted from the database").ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {id} has been deleted from the database").ConfigureAwait(false);
-                    }
-                    await db.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
-            await confirm.DeleteAsync().ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -250,39 +267,41 @@ namespace RiasBot.Modules.Bot
         public async Task Delete([Remainder]string user)
         {
             var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
-            var input = await GetUserInputAsync(Context.User.Id, Context.Channel.Id, 10000);
-            if (input == "confirm")
+            var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+            if (input != null)
             {
-                var userSplit = user.Split("#");
-                var getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                if (input.Content == "confirm")
+                {
+                    var userSplit = user.Split("#");
+                    var getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
 
-                if (getUser is null)
-                {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user couldn't be found");
-                    return;
-                }
-                using (var db = _db.GetDbContext())
-                {
-                    var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
-                    if (userDb != null)
+                    if (getUser is null)
                     {
-                        db.Remove(userDb);
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user couldn't be found");
+                        return;
                     }
-                    var waifusDb = db.Waifus.Where(x => x.UserId == getUser.Id);
-                    if (waifusDb != null)
+                    using (var db = _db.GetDbContext())
                     {
-                        db.RemoveRange(waifusDb);
+                        var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
+                        if (userDb != null)
+                        {
+                            db.Remove(userDb);
+                        }
+                        var waifusDb = db.Waifus.Where(x => x.UserId == getUser.Id);
+                        if (waifusDb != null)
+                        {
+                            db.RemoveRange(waifusDb);
+                        }
+                        var profileDb = db.Profile.Where(x => x.UserId == getUser.Id).FirstOrDefault();
+                        if (profileDb != null)
+                        {
+                            db.Remove(profileDb);
+                        }
+                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {user} has been deleted from the database").ConfigureAwait(false);
+                        await db.SaveChangesAsync().ConfigureAwait(false);
                     }
-                    var profileDb = db.Profile.Where(x => x.UserId == getUser.Id).FirstOrDefault();
-                    if (profileDb != null)
-                    {
-                        db.Remove(profileDb);
-                    }
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {user} has been deleted from the database").ConfigureAwait(false);
-                    await db.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
-            await confirm.DeleteAsync().ConfigureAwait(false);
         }
     }
 }

@@ -300,7 +300,7 @@
     "Description": "Set a color for a role.",
     "Remarks": [
       "[prefix]rc color(hex format) roleName",
-      "[prefix]rc ffffff Rias"
+      "[prefix]rc #ffffff Rias"
     ]
   },
 

@@ -6,7 +6,6 @@ using RiasBot.Services.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RiasBot.Modules.Bot.Services
@@ -19,6 +18,7 @@ namespace RiasBot.Modules.Bot.Services
         //Counter event
         private List<PlayerNumbers> playerNumbers;
         private Queue<IUser> heartUsers;
+        private IEmote heart;
 
         private IMessageChannel channel;
         private int reward;
@@ -30,14 +30,16 @@ namespace RiasBot.Modules.Bot.Services
         private int numberCounter;
         public bool gameStarted;
 
+        private IUserMessage message;
+
         public EventService(DiscordShardedClient client, DbService db)
         {
             _client = client;
             _db = db;
 
             _client.MessageReceived += OnMessageReceived;
+            _client.ReactionAdded += OnReactionAdded;
         }
-
         public async Task CounterSetup(IMessageChannel channel, int reward, int maximum, int differencePerUser, bool onlyNumbers, bool botStarts)
         {
             this.channel = channel;
@@ -172,47 +174,19 @@ namespace RiasBot.Modules.Bot.Services
 
         public async Task Hearts(IUserMessage message, int timeout, int reward)
         {
+            this.message = message;
+            this.reward = reward;
             gameStarted = true;
             heartUsers = new Queue<IUser>();
-            IEmote heart = Emote.Parse(RiasBot.currency);
-            await message.AddReactionAsync(heart).ConfigureAwait(false);
+            heart = Emote.Parse(RiasBot.currency);
+            await this.message.AddReactionAsync(heart).ConfigureAwait(false);
 
-            Action<SocketReaction> heartReaction = async r =>
-            {
-                try
-                {
-                    if (r.Emote.Name == heart.Name)
-                    {
-                        if (!heartUsers.Any(x => x == r.User.Value))
-                        {
-                            if (r.User.Value.Id != _client.CurrentUser.Id)
-                            {
-                                heartUsers.Enqueue(r.User.Value);
-                                await AwardUsersHearts(r.User.Value, reward).ConfigureAwait(false);
-                            }
-                        }
-                    }
-                    if (!gameStarted)
-                    {
-                        await message.DeleteAsync().ConfigureAwait(false);
-                        return;
-                    }
-                }
-                catch
-                {
-                    //ignored
-                }
-            };
-
-            using (message.OnReaction(_client, heartReaction))
-            {
-                await Task.Delay(timeout * 1000).ConfigureAwait(false);
-            }
+            await Task.Delay(timeout * 1000).ConfigureAwait(false);
             gameStarted = false;
-            await message.DeleteAsync().ConfigureAwait(false);
+            await this.message.DeleteAsync().ConfigureAwait(false);
         }
 
-        public async Task AwardUsersHearts(IUser user, int reward)
+        public async Task AwardUserHearts(IUser user, int reward)
         {
             using (var db = _db.GetDbContext())
             {
@@ -227,6 +201,27 @@ namespace RiasBot.Modules.Bot.Services
                     await db.AddAsync(userConfig).ConfigureAwait(false);
                 }
                 await db.SaveChangesAsync().ConfigureAwait(false);
+            }
+        }
+
+        private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+            if (message.Value.Id == message.Id)
+            {
+                if (gameStarted)
+                {
+                    if (reaction.Emote.Name == heart.Name)
+                    {
+                        if (!heartUsers.Any(x => x == reaction.User.Value))
+                        {
+                            if (reaction.User.Value.Id != _client.CurrentUser.Id)
+                            {
+                                heartUsers.Enqueue(reaction.User.Value);
+                                await AwardUserHearts(reaction.User.Value, reward).ConfigureAwait(false);
+                            }
+                        }
+                    }
+                }
             }
         }
     }

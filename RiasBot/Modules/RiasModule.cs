@@ -16,54 +16,8 @@ namespace RiasBot.Modules
 
         protected RiasModule(bool isTopLevelModule = true)
         {
-            //if it's top level module
             ModuleTypeName = isTopLevelModule ? this.GetType().Name : this.GetType().DeclaringType.Name;
             LowerModuleTypeName = ModuleTypeName.ToLowerInvariant();
-        }
-
-        public async Task<string> GetUserInputAsync(ulong userId, ulong channelId, int timeout) //seconds
-        {
-            var userInputTask = new TaskCompletionSource<string>();
-            var dsc = (DiscordShardedClient)Context.Client;
-            try
-            {
-                dsc.MessageReceived += MessageReceived;
-
-                if ((await Task.WhenAny(userInputTask.Task, Task.Delay(timeout))) != userInputTask.Task)
-                {
-                    return null;
-                }
-
-                return await userInputTask.Task;
-            }
-            finally
-            {
-                dsc.MessageReceived -= MessageReceived;
-            }
-
-            Task MessageReceived(SocketMessage arg)
-            {
-                var _ = Task.Run(() =>
-                {
-                    if (!(arg is SocketUserMessage userMsg) ||
-                        !(userMsg.Channel is ITextChannel chan) ||
-                        userMsg.Author.Id != userId ||
-                        userMsg.Channel.Id != channelId)
-                    {
-                        return Task.CompletedTask;
-                    }
-
-                    if (userInputTask.TrySetResult(arg.Content))
-                    {
-                        userMsg.DeleteAsync(new RequestOptions
-                        {
-                            Timeout = 1000
-                        });
-                    }
-                    return Task.CompletedTask;
-                });
-                return Task.CompletedTask;
-            }
         }
     }
 

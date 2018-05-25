@@ -24,17 +24,6 @@ namespace RiasBot.Extensions
             return module;
         }
 
-        public static ReactionEventWrapper OnReaction(this IUserMessage msg, DiscordShardedClient client, Action<SocketReaction> reactionAdded, Action<SocketReaction> reactionRemoved = null)
-        {
-            if (reactionRemoved == null)
-                reactionRemoved = delegate { };
-
-            var wrap = new ReactionEventWrapper(client, msg);
-            wrap.OnReactionAdded += (r) => { var _ = Task.Run(() => reactionAdded(r)); };
-            wrap.OnReactionRemoved += (r) => { var _ = Task.Run(() => reactionRemoved(r)); };
-            return wrap;
-        }
-
         public static EmbedBuilder EmbedFromJson(string json)
         {
             try

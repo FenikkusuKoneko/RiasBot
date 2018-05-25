@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using Discord.Addons.Interactive;
 
 namespace RiasBot.Modules.Searches
 {
@@ -24,10 +25,12 @@ namespace RiasBot.Modules.Searches
         public class AnimeCommands : RiasSubmodule<AnimeService>
         {
             public readonly CommandHandler _ch;
+            private InteractiveService _is;
 
-            public AnimeCommands(CommandHandler ch, CommandService service)
+            public AnimeCommands(CommandHandler ch, InteractiveService interactiveService)
             {
                 _ch = ch;
+                _is = interactiveService;
             }
 
             [RiasCommand] [@Alias] [Description] [@Remarks]
@@ -188,14 +191,27 @@ namespace RiasBot.Modules.Searches
                     }
                     else
                     {
-                        string[] listCharacters = new string[characters.Count];
+                        var listCharacters = new List<string>();
                         for (int i = 0; i < characters.Count(); i++)
                         {
                             string waifuName1 = $"{(string)obj.characters[i].name.first} { (string)obj.characters[i].name.last}";
-                            listCharacters[i] = $"{waifuName1}\tId: {obj.characters[i].id}\n";
+                            listCharacters.Add($"{waifuName1}\tId: {obj.characters[i].id}\n");
                         }
-                        await Context.Channel.SendPaginated((DiscordShardedClient)Context.Client, $"I've found {characters.Count()} characters for {character}. Search the character by id",
-                            listCharacters, 10);
+                        var pager = new PaginatedMessage
+                        {
+                            Title = $"I've found {characters.Count()} characters for {character}. Search the character by id",
+                            Color = new Color(RiasBot.goodColor),
+                            Pages = listCharacters,
+                            Options = new PaginatedAppearanceOptions
+                            {
+                                ItemsPerPage = 10,
+                                Timeout = TimeSpan.FromMinutes(1),
+                                DisplayInformationIcon = false,
+                                JumpDisplayOptions = JumpDisplayOptions.Never
+                            }
+
+                        };
+                        await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
                     }
                 }
             }
