@@ -30,7 +30,7 @@ namespace RiasBot.Modules.Administration.Services
                 try
                 {
                     IRole role = null;
-                    try
+                    if (guildDb != null)
                     {
                         role = guild.GetRole(guildDb.MuteRole);
                         if (role is null)
@@ -39,7 +39,7 @@ namespace RiasBot.Modules.Administration.Services
                             guildDb.MuteRole = role.Id;
                         }
                     }
-                    catch
+                    else
                     {
                         role = await guild.CreateRoleAsync("rias-mute").ConfigureAwait(false);
                         var newRole = new GuildConfig { GuildId = guild.Id, MuteRole = role.Id };
@@ -53,6 +53,7 @@ namespace RiasBot.Modules.Administration.Services
                     else
                     {
                         await user.AddRoleAsync(role).ConfigureAwait(false);
+                        await user.ModifyAsync(x => x.Mute = true).ConfigureAwait(false);
                         await Task.Factory.StartNew(() => MuteService(role, guild));
 
                         var embed = new EmbedBuilder().WithColor(0xffff00);
@@ -87,11 +88,16 @@ namespace RiasBot.Modules.Administration.Services
                 try
                 {
                     IRole role = null;
-                    try
+                    if (guildDb != null)
                     {
                         role = guild.GetRole(guildDb.MuteRole);
+                        if (role is null)
+                        {
+                            role = await guild.CreateRoleAsync("rias-mute").ConfigureAwait(false);
+                            guildDb.MuteRole = role.Id;
+                        }
                     }
-                    catch
+                    else
                     {
                         role = await guild.CreateRoleAsync("rias-mute").ConfigureAwait(false);
                         var newRole = new GuildConfig { GuildId = guild.Id, MuteRole = role.Id };
@@ -101,6 +107,7 @@ namespace RiasBot.Modules.Administration.Services
                     if (user.RoleIds.Any(r => r == role.Id))
                     {
                         await user.RemoveRoleAsync(role).ConfigureAwait(false);
+                        await user.ModifyAsync(x => x.Mute = false).ConfigureAwait(false);
 
                         var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                         embed.WithDescription("Unmute");
@@ -119,7 +126,7 @@ namespace RiasBot.Modules.Administration.Services
                     }
                     else
                     {
-                        await channel.SendConfirmationEmbed($"{moderator.Mention} {Format.Bold(user.ToString())} is not muted from text and voice channels!");
+                        await channel.SendErrorEmbed($"{moderator.Mention} {Format.Bold(user.ToString())} is not muted from text and voice channels!");
                     }
                 }
                 catch
@@ -284,23 +291,12 @@ namespace RiasBot.Modules.Administration.Services
 
         public async Task MuteService(IRole role, IGuild guild)
         {
-            OverwritePermissions permissions = new OverwritePermissions()
-                .Modify(PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Deny,
-                PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit,
-                PermValue.Inherit, PermValue.Inherit, PermValue.Deny, PermValue.Deny, PermValue.Inherit,
-                PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit, PermValue.Inherit);
+            OverwritePermissions permissions = new OverwritePermissions().Modify(sendMessages: PermValue.Deny);
 
-            var channels = await guild.GetChannelsAsync();
+            var channels = await guild.GetTextChannelsAsync();
             foreach (var c in channels)
             {
-                try
-                {
-                    await c.AddPermissionOverwriteAsync(role, permissions).ConfigureAwait(false);
-                }
-                catch
-                {
-
-                }
+                await c.AddPermissionOverwriteAsync(role, permissions).ConfigureAwait(false);
             }
         }
 

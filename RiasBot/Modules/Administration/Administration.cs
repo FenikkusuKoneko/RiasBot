@@ -31,6 +31,8 @@ namespace RiasBot.Modules.Administration
         [RequireBotPermission(GuildPermission.KickMembers)]
         public async Task Kick(IGuildUser user, [Remainder] string reason = null)
         {
+            if (user.Id == Context.User.Id)
+                return;
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
                 await _service.KickUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);
@@ -48,6 +50,8 @@ namespace RiasBot.Modules.Administration
         [RequireBotPermission(GuildPermission.BanMembers)]
         public async Task Ban(IGuildUser user, [Remainder] string reason = null)
         {
+            if (user.Id == Context.User.Id)
+                return;
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
                 await _service.BanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
@@ -65,6 +69,8 @@ namespace RiasBot.Modules.Administration
         [RequireBotPermission(GuildPermission.BanMembers | GuildPermission.ManageMessages)]
         public async Task SoftBan(IGuildUser user, [Remainder]string reason = null)
         {
+            if (user.Id == Context.User.Id)
+                return;
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
                 await _service.SoftbanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
@@ -82,6 +88,8 @@ namespace RiasBot.Modules.Administration
         [RequireBotPermission(GuildPermission.BanMembers | GuildPermission.ManageMessages)]
         public async Task PruneBan(IGuildUser user, [Remainder]string reason = null)
         {
+            if (user.Id == Context.User.Id)
+                return;
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
                 await _service.PrunebanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
@@ -99,6 +107,8 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         public async Task Mute(IGuildUser user, [Remainder]string reason = null)
         {
+            if (user.Id == Context.User.Id)
+                return;
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
                 await _service.MuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);
@@ -116,6 +126,8 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         public async Task UnMute(IGuildUser user, [Remainder]string reason = null)
         {
+            if (user.Id == Context.User.Id)
+                return;
             if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
             {
                 await _service.UnmuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);

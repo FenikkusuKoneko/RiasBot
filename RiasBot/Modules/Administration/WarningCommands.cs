@@ -40,6 +40,8 @@ namespace RiasBot.Modules.Administration
             [RequireContext(ContextType.Guild)]
             public async Task Warning(IGuildUser user, [Remainder]string reason = null)
             {
+                if (user.Id == Context.User.Id)
+                    return;
                 if (user is null)
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
