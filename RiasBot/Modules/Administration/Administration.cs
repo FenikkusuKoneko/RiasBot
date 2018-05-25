@@ -102,8 +102,8 @@ namespace RiasBot.Modules.Administration
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
-        [RequireUserPermission(GuildPermission.ManageRoles)]
-        [RequireBotPermission(GuildPermission.ManageRoles)]
+        [RequireUserPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
+        [RequireBotPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
         [RequireContext(ContextType.Guild)]
         public async Task Mute(IGuildUser user, [Remainder]string reason = null)
         {
