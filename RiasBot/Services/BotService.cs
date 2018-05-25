@@ -178,7 +178,7 @@ namespace RiasBot.Services
                         new Dictionary<string, string> {
                                     { "shard_count",  _discord.Shards.Count.ToString()},
                                     //{ "shard_id", _discord.ShardId.ToString() },
-                                    { "server_count", _discord.Guilds.Count().ToString() }
+                                    { "server_count", _discord.Guilds.Count.ToString() }
                         }))
                     {
                         content.Headers.Clear();
