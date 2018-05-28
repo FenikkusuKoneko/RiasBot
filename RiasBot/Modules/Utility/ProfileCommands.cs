@@ -60,7 +60,7 @@ namespace RiasBot.Modules.Utility
                 }
                 if (!url.Contains(".png") && !url.Contains(".jpg") && !url.Contains(".jpeg"))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direck link for a png, jpg or jpeg image.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direct link for a png, jpg or jpeg image.").ConfigureAwait(false);
                     return;
                 }
 

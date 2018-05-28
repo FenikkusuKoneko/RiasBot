@@ -205,7 +205,7 @@ namespace RiasBot.Modules.Utility
                     embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner.Username}#{owner.Discriminator}", true).AddField("Members", guild.MemberCount, true);
                     embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
                     embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true).AddField("Region", Context.Guild.VoiceRegionId, true);
-                    embed.AddField($"Custom Emojis ({Context.Guild.Emotes.Count})", emotes);
+                    embed.AddField($"Custom Emotes ({Context.Guild.Emotes.Count})", emotes);
                     embed.WithImageUrl(Context.Guild.IconUrl);
 
                     await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);

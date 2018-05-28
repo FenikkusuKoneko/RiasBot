@@ -206,7 +206,7 @@ namespace RiasBot.Modules.Administration
             }
             else
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete any message because they are older thatn 14 days.");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete any message because they are older than 14 days.");
             }
         }
 
@@ -236,7 +236,7 @@ namespace RiasBot.Modules.Administration
             }
             else
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete any message because they are older thatn 14 days.");
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete any message because they are older than 14 days.");
             }
         }
 

@@ -36,7 +36,7 @@ namespace RiasBot.Modules.Administration.Services
                 var embed = new EmbedBuilder().WithColor(0xffff00);
                 embed.WithTitle($"Warn");
                 embed.AddField("Username", $"{user}", true).AddField("ID", user.Id.ToString(), true);
-                embed.AddField("Warn nr.", nrWarnings + 1).AddField("Moderator", moderator, true);
+                embed.AddField("Warn no.", nrWarnings + 1).AddField("Moderator", moderator, true);
                 if (!String.IsNullOrEmpty(reason))
                     embed.AddField("Reason", reason, true);
 

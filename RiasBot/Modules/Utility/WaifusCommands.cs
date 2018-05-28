@@ -222,7 +222,7 @@ namespace RiasBot.Modules.Utility
                         else if (user == Context.User)
                             await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have any waifu.");
                         else
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} {user} doesn't have have any waifu.");
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} {user} doesn't have any waifu.");
                     }
                     catch
                     {
@@ -242,7 +242,7 @@ namespace RiasBot.Modules.Utility
                 }
                 if (!url.Contains(".png") && !url.Contains(".jpg") && !url.Contains(".jpeg"))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direck link for a png, jpg or jpeg image.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direct link for a png, jpg or jpeg image.").ConfigureAwait(false);
                     return;
                 }
                 using (var db = _db.GetDbContext())
@@ -280,7 +280,7 @@ namespace RiasBot.Modules.Utility
                 }
                 if (!url.Contains(".png") && !url.Contains(".jpg") && !url.Contains(".jpeg"))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direck link for a png, jpg or jpeg image.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direct link for a png, jpg or jpeg image.").ConfigureAwait(false);
                     return;
                 }
                 using (var db = _db.GetDbContext())

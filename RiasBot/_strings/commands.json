@@ -34,7 +34,7 @@
 
   "kick": {
     "Command": "kick k",
-    "Description": "Kick an user. If you provide a reson message the bot will DM the user with the reason.",
+    "Description": "Kick an user. If you provide a reason message the bot will DM the user with the reason.",
     "Remarks": [
       "[prefix]k @User",
       "[prefix]k @User Your behavior is bad!"
@@ -43,7 +43,7 @@
 
   "ban": {
     "Command": "ban b",
-    "Description": "Ban an user. If you provide a reson message the bot will DM the user with the reason.",
+    "Description": "Ban an user. If you provide a reason message the bot will DM the user with the reason.",
     "Remarks": [
       "[prefix]b @User",
       "[prefix]b @User You've violated many rules!"
@@ -95,7 +95,7 @@
 
   "greet": {
     "Command": "greet",
-    "Description": "Togle announcements on the current channel when someone joins the server.",
+    "Description": "Toggle announcements on the current channel when someone joins the server.",
     "Remarks": [
       "[prefix]greet"
     ]
@@ -111,7 +111,7 @@
 
   "bye": {
     "Command": "bye",
-    "Description": "Togle announcements on the current channel when someone leaves the server.",
+    "Description": "Toggle announcements on the current channel when someone leaves the server.",
     "Remarks": [
       "[prefix]bye"
     ]
@@ -379,7 +379,7 @@
 
   "addselfassignablerole": {
     "Command": "asar",
-    "Description": "Add a role in the server's self assginable roles list.",
+    "Description": "Add a role in the server's self assignable roles list.",
     "Remarks": [
       "[prefix]asar kawaii"
     ]
@@ -387,7 +387,7 @@
 
   "deleteselfassignablerole": {
     "Command": "dsar",
-    "Description": "Delete a role from the server's self assginable roles list.",
+    "Description": "Delete a role from the server's self assignable roles list.",
     "Remarks": [
       "[prefix]dsar kawaii"
     ]
@@ -395,7 +395,7 @@
 
   "listselfassignableroles": {
     "Command": "lsar",
-    "Description": "Show a list with the server's self assginable roles list.",
+    "Description": "Show a list with the server's self assignable roles list.",
     "Remarks": [
       "[prefix]lsar",
       "[prefix]lsar 3"
@@ -704,7 +704,7 @@
   },
 
   "resume": {
-    "Command": "resume unpause",
+    "Command": "resume",
     "Description": "Resume the current song.",
     "Remarks": [
       "[prefix]resume"
@@ -1042,7 +1042,7 @@
 
   "calculator": {
     "Command": "calculator calc",
-    "Description": "Calculate any expresion.",
+    "Description": "Calculate any expression.",
     "Remarks": [
       "[prefix]calc 2+2",
       "[prefix]calc sqrt(2)"
@@ -1051,7 +1051,7 @@
 
   "calcops": {
     "Command": "calcops",
-    "Description": "Show all expresion options for `calc` command.",
+    "Description": "Show all expression options for `calc` command.",
     "Remarks": [
       "[prefix]calcops"
     ]
@@ -1109,7 +1109,7 @@
 
   "donate": {
     "Command": "donate",
-    "Description": "Support this project on Patreon. You will receive 1000 [currency] for eacg 1$.",
+    "Description": "Support this project on Patreon. You will receive 1000 [currency] for each 1$.",
     "Remarks": [
       "[prefix]donate"
     ]
@@ -1151,7 +1151,7 @@
 
   "claimwaifu": {
     "Command": "claimwaifu",
-    "Description": "Claim your waifu from anime. The price for every waifu starts from 1000 [currency] and is rising with each claim with 10 [currency], also willl decrease for each divorce. The character must be on AniList database.",
+    "Description": "Claim your waifu from anime. The price for every waifu starts from 1000 [currency] and is rising with each claim with 10 [currency], also will decrease for each divorce. The character must be on AniList database.",
     "Remarks": [
       "[prefix]claimwaifu Rias Gremory",
       "[prefix]claimwaifu 50389"
