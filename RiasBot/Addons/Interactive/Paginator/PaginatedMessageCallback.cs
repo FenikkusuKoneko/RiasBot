@@ -62,7 +62,7 @@ namespace Discord.Addons.Interactive
                     || (options.JumpDisplayOptions == JumpDisplayOptions.WithManageMessages && manageMessages))
                     await message.AddReactionAsync(options.Jump);
 
-                await message.AddReactionAsync(options.Stop);
+               //await message.AddReactionAsync(options.Stop);
 
                 if (options.DisplayInformationIcon)
                     await message.AddReactionAsync(options.Info);
@@ -98,11 +98,11 @@ namespace Discord.Addons.Interactive
             }
             else if (emote.Equals(options.Last))
                 page = pages;
-            else if (emote.Equals(options.Stop))
+            /*else if (emote.Equals(options.Stop))
             {
                 await Message.DeleteAsync().ConfigureAwait(false);
                 return true;
-            }
+            }*/
             else if (emote.Equals(options.Jump))
             {
                 _ = Task.Run(async () =>
@@ -116,7 +116,7 @@ namespace Discord.Addons.Interactive
                     if (request < 1 || request > pages)
                     {
                         _ = response.DeleteAsync().ConfigureAwait(false);
-                        await Interactive.ReplyAndDeleteAsync(Context, options.Stop.Name);
+                        //await Interactive.ReplyAndDeleteAsync(Context, options.Stop.Name);
                         return;
                     }
                     page = request;

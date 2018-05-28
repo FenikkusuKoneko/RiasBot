@@ -10,7 +10,7 @@ namespace Discord.Addons.Interactive
         public IEmote Back = new Emoji("◀");
         public IEmote Next = new Emoji("▶");
         public IEmote Last = new Emoji("⏭");
-        public IEmote Stop = new Emoji("⏹");
+        //public IEmote Stop = new Emoji("⏹");
         public IEmote Jump = new Emoji("🔢");
         public IEmote Info = new Emoji("ℹ");
 

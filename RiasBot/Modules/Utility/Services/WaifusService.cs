@@ -56,7 +56,7 @@ namespace RiasBot.Modules.Utility.Services
 
                     var waifuEmbed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     waifuEmbed.WithTitle(waifuName);
-                    waifuEmbed.WithDescription("Do you want to claim thim waifu? Type `confirm` or `cancel`");
+                    waifuEmbed.WithDescription("Do you want to claim this waifu? Type `confirm` or `cancel`");
                     waifuEmbed.AddField("Claimed by", $"{waifus?.Count() ?? 0} users", true).AddField("Price", waifuPrice, true);
                     waifuEmbed.WithThumbnailUrl(waifuPicture);
                     var waifuClaimMsg = await channel.SendMessageAsync("", embed: waifuEmbed.Build());

@@ -1184,7 +1184,7 @@
 
   "belovedwaifuavatar": {
     "Command": "belovedwaifuavatar bwa",
-    "Description": "Set to you beloved waifu a new avatar. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 100x155.",
+    "Description": "Set to your beloved waifu a new avatar. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 100x155.",
     "Remarks": [
       "[prefix]bwa https://i.imgur.com/YDTpwMj.jpg"
     ]
