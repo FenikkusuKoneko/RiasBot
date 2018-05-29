@@ -17,6 +17,7 @@ namespace RiasBot.Modules.Reactions.Services
             _creds = creds;
             UpdateImages("H1Pqa", biteList).GetAwaiter().GetResult();
             UpdateImages("woGOn", cryList).GetAwaiter().GetResult();
+            UpdateImages("Xqjh9UM", cuddleList).GetAwaiter().GetResult();
             UpdateImages("GdiXR", gropeList).GetAwaiter().GetResult();
             UpdateImages("KTkPe", hugList).GetAwaiter().GetResult();
             UpdateImages("CotHR", kissList).GetAwaiter().GetResult();
@@ -27,6 +28,7 @@ namespace RiasBot.Modules.Reactions.Services
 
         public List<string> biteList = new List<string>();
         public List<string> cryList = new List<string>();
+        public List<string> cuddleList = new List<string>();
         public List<string> gropeList = new List<string>();
         public List<string> hugList = new List<string>();
         public List<string> kissList = new List<string>();

@@ -899,6 +899,15 @@
     ]
   },
 
+  "cuddle": {
+    "Command": "cuddle",
+    "Description": "Cuddle an user.",
+    "Remarks": [
+      "[prefix]cuddle @User",
+      "[prefix]cuddle Username"
+    ]
+  },
+
   "lick": {
     "Command": "lick",
     "Description": "Lick an user :3.",

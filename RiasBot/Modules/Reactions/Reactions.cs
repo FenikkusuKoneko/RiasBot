@@ -287,5 +287,44 @@ namespace RiasBot.Modules.Reactions
                     embed: embed.Build()).ConfigureAwait(false);
             }
         }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireContext(ContextType.Guild)]
+        [Priority(1)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
+        public async Task Cuddle([Remainder]IGuildUser user)
+        {
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.cuddleList));
+
+            await Context.Channel.SendMessageAsync($"{user.Mention}, {Format.Bold(Context.User.ToString())} is cuddling you",
+                embed: embed.Build()).ConfigureAwait(false);
+        }
+
+        [RiasCommand]
+        [@Alias]
+        [Description]
+        [@Remarks]
+        [RequireContext(ContextType.Guild)]
+        [Priority(0)]
+        [Ratelimit(2, 5, Measure.Seconds, applyPerGuild: true)]
+        public async Task Cuddle([Remainder]string user = null)
+        {
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithImageUrl(_service.GetImage(_service.cuddleList));
+
+            if (user is null)
+            {
+                await Context.Channel.SendMessageAsync($"{Format.Italics("Cuddling")} {Context.User.Mention}",
+                    embed: embed.Build()).ConfigureAwait(false);
+            }
+            else
+            {
+                var users = user.Split(" ");
+                await Context.Channel.SendMessageAsync($"{String.Join(" ", users)}, {Format.Bold(Context.User.ToString())} is cuddling you",
+                    embed: embed.Build()).ConfigureAwait(false);
+            }
+        }
     }
 }

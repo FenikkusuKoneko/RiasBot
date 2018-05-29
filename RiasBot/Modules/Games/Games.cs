@@ -2,7 +2,6 @@
 using Discord.Commands;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
-using RiasBot.Modules.Games.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;

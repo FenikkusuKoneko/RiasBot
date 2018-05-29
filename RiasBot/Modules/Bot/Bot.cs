@@ -214,6 +214,7 @@ namespace RiasBot.Modules.Bot
             await _reactionsService.UpdateImages("5cMDN", _reactionsService.lickList);
             await _reactionsService.UpdateImages("OQjWy", _reactionsService.patList);
             await _reactionsService.UpdateImages("AQoU8", _reactionsService.slapList);
+            await _reactionsService.UpdateImages("Xqjh9UM", _reactionsService.cuddleList);
 
             await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} reactions images, updated");
         }

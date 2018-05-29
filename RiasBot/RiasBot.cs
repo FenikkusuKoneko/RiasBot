@@ -19,12 +19,12 @@ namespace RiasBot
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.5.6.6";
+        public static string version = "1.5.6.7";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
         public static string invite = "https://discordapp.com/oauth2/authorize?client_id=381387277764395008&scope=bot&permissions=1609952503";
-        public static string author = "Koneko#6174";
+        public static string author = "Koneko#0001";
         public static ulong konekoID = 327927038360944640;
         public static string creatorServer = "https://discord.gg/VPfBvBt";
         public static ulong supportServer = 416492045859946507;

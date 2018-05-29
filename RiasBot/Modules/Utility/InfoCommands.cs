@@ -42,6 +42,7 @@ namespace RiasBot.Modules.Utility
             [Description]
             public async Task Stats()
             {
+                var author = _client.GetUser(RiasBot.konekoID);
                 var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
                 int shard = 0;
                 if (Context.Guild != null)
@@ -71,7 +72,7 @@ namespace RiasBot.Modules.Utility
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
 
                 embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
-                embed.AddField("Author", RiasBot.author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
+                embed.AddField("Author", author?.ToString() ?? RiasBot.author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
                 embed.AddField("Master ID", RiasBot.konekoID, true).AddField("Shard", $"#{shard}/{_client.Shards.Count()}", true);
                 embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.commandsRun, true);
                 embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Presence", $"{guilds.Count} Servers\n{textChannels} " +
