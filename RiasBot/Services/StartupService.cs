@@ -6,21 +6,23 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Discord.Rest;
 
 namespace RiasBot.Services
 {
     public class StartupService : IRService
     {
         private readonly DiscordShardedClient _discord;
+        private readonly DiscordRestClient _restDiscord;
         private readonly CommandService _commands;
         private readonly IServiceProvider _provider;
         private readonly IBotCredentials _creds;
 
-        public StartupService(
-            DiscordShardedClient discord, CommandService commands, IServiceProvider provider, IBotCredentials creds)
+        public StartupService(DiscordShardedClient discord, DiscordRestClient restDiscord, CommandService commands, IServiceProvider provider, IBotCredentials creds)
         {
             _creds = creds;
             _discord = discord;
+            _restDiscord = restDiscord;
             _provider = provider;
             _commands = commands;
         }
@@ -36,6 +38,7 @@ namespace RiasBot.Services
 
             string discordToken = _creds.Token;
             await _discord.LoginAsync(TokenType.Bot, discordToken).ConfigureAwait(false);
+            await _restDiscord.LoginAsync(TokenType.Bot, discordToken).ConfigureAwait(false);
             await _discord.StartAsync().ConfigureAwait(false);
             
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _provider).ConfigureAwait(false);

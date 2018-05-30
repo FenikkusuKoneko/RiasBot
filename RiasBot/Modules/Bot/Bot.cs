@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.Webhook;
 using Discord.WebSocket;
 using RiasBot.Commons.Attributes;
@@ -23,6 +24,7 @@ namespace RiasBot.Modules.Bot
         private readonly IServiceProvider _provider;
         private readonly DbService _db;
         private readonly DiscordShardedClient _client;
+        private readonly DiscordRestClient _restClient;
         private readonly BotService _botService;
         private readonly InteractiveService _is;
         private readonly IBotCredentials _creds;
@@ -30,14 +32,15 @@ namespace RiasBot.Modules.Bot
         private readonly MusicService _musicService;
         private readonly ReactionsService _reactionsService;
 
-        public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordShardedClient client, BotService botService,
-            InteractiveService interactiveService, IBotCredentials creds, MusicService musicService, ReactionsService reactionsService)
+        public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordShardedClient client, DiscordRestClient restClient,
+            BotService botService, InteractiveService interactiveService, IBotCredentials creds, MusicService musicService, ReactionsService reactionsService)
         {
             _ch = ch;
             _service = service;
             _provider = provider;
             _db = db;
             _client = client;
+            _restClient = restClient;
             _botService = botService;
             _is = interactiveService;
             _creds = creds;
@@ -65,10 +68,8 @@ namespace RiasBot.Modules.Bot
             }
         }
 
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
         [RequireOwner]
         public async Task Die()
         {
@@ -88,10 +89,8 @@ namespace RiasBot.Modules.Bot
             Environment.Exit(0);
         }
 
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
         [RequireOwner]
         public async Task Send(string id, [Remainder]string message)
         {
@@ -302,6 +301,66 @@ namespace RiasBot.Modules.Bot
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                 }
+            }
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireOwner]
+        [Priority(1)]
+        public async Task FindUser(ulong id)
+        {
+            var user = await _restClient.GetUserAsync(id);
+            if (user is null)
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                return;
+            }
+
+            string accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
+
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.AddField("Name", user, true).AddField("ID", user.Id, true);
+            embed.AddField("Status", user.Status, true).AddField("Joined Discord", accountCreated, true);
+            try
+            {
+                embed.WithImageUrl(user.RealAvatarUrl(1024));
+            }
+            catch
+            {
+                embed.WithImageUrl(user.DefaultAvatarUrl());
+            }
+            await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireOwner]
+        public async Task Db(ulong id)
+        {
+            var user = await _restClient.GetUserAsync(id);
+            if (user is null)
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                return;
+            }
+            using (var db = _db.GetDbContext())
+            {
+                var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
+                var xpDb = db.XpSystem.Where(x => x.UserId == id);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                embed.WithAuthor(user.ToString());
+                embed.AddField("ID", user.Id, true).AddField("Currency", $"{userDb?.Currency} {RiasBot.currency}", true);
+                embed.AddField("Global level", userDb?.Level, true).AddField("Global XP", userDb?.Xp, true);
+                try
+                {
+                    embed.WithImageUrl(user.RealAvatarUrl(1024));
+                }
+                catch
+                {
+                    embed.WithImageUrl(user.DefaultAvatarUrl());
+                }
+                await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
         }
     }

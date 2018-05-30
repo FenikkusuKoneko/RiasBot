@@ -238,6 +238,22 @@
     ]
   },
 
+  "finduser": {
+    "Command": "finduser",
+    "Description": "Search an user from Discord and show it's info.",
+    "Remarks": [
+      "[prefix]finduser 327927038360944640"
+    ]
+  },
+
+  "db": {
+    "Command": "db",
+    "Description": "Show details about an user from the database",
+    "Remarks": [
+      "[prefix]db 327927038360944640"
+    ]
+  },
+
   "event": {
     "Command": "event",
     "Description": "Start an event to win [currency].\nParameters: time (s), reward, maximum, differencePerUser, onlyNumbers, botStarts, message.",

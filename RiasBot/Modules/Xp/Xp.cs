@@ -124,18 +124,25 @@ namespace RiasBot.Modules.Xp
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle("Global XP Leaderboard");
 
+                var xpUser = new List<string>();
+
                 var xps = db.Users
                     .GroupBy(x => new { x.Xp, x.UserId, x.Level })
                     .OrderByDescending(y => y.Key.Xp)
-                    .Skip(page * 9).Take(9).ToList();
+                    .Skip(page * 10).Take(10).ToList();
 
                 for (int i = 0; i < xps.Count; i++)
                 {
                     var user = await Context.Client.GetUserAsync(xps[i].Key.UserId);
-                    embed.AddField($"#{i+1 + (page * 9)} {user?.ToString() ?? xps[i].Key.UserId.ToString()}", $"{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n", true);
+                    if (user != null)
+                        xpUser.Add(($"#{i+1 + (page * 10)} {user} ({user.Id})\n\t\t{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n"));
+                    else
+                        xpUser.Add(($"#{i+1 + (page * 10)} {xps[i].Key.UserId.ToString()}\n\t\t{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n"));
                 }
                 if (xps.Count == 0)
                     embed.WithDescription("No users on this page");
+                else
+                    embed.WithDescription(String.Join('\n', xpUser));
 
                 await Context.Channel.SendMessageAsync("", embed: embed.Build());
             }
@@ -152,6 +159,8 @@ namespace RiasBot.Modules.Xp
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle("Server XP Leaderboard");
 
+                var xpUser = new List<string>();
+
                 var xpSystemDb = db.XpSystem.Where(x => x.GuildId == Context.Guild.Id).ToList();
                 var xpSystemDbList = new List<XpSystem>();
                 xpSystemDb.ForEach(async x =>
@@ -164,15 +173,20 @@ namespace RiasBot.Modules.Xp
                 var xps = xpSystemDbList
                     .GroupBy(x => new { x.Xp, x.UserId, x.Level })
                     .OrderByDescending(y => y.Key.Xp)
-                    .Skip(page * 9).Take(9).ToList();
+                    .Skip(page * 10).Take(10).ToList();
 
                 for (int i = 0; i < xps.Count; i++)
                 {
                     var user = await Context.Client.GetUserAsync(xps[i].Key.UserId);
-                    embed.AddField($"#{i + 1 + (page * 9)} {user?.ToString() ?? xps[i].Key.UserId.ToString()}", $"{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n", true);
+                    if (user != null)
+                        xpUser.Add(($"#{i + 1 + (page * 10)} {user} ({user.Id})\n\t\t{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n"));
+                    else
+                        xpUser.Add(($"#{i + 1 + (page * 10)} {xps[i].Key.UserId.ToString()}\n\t\t{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n"));
                 }
                 if (xps.Count == 0)
                     embed.WithDescription("No users on this page");
+                else
+                    embed.WithDescription(String.Join('\n', xpUser));
 
                 await Context.Channel.SendMessageAsync("", embed: embed.Build());
             }
