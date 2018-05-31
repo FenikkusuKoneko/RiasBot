@@ -113,7 +113,6 @@ namespace RiasBot.Modules.Utility
                             break;
                     }
 
-
                     string joinedServer = user.JoinedAt.Value.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
                     string accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 

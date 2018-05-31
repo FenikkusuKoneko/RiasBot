@@ -111,30 +111,43 @@ namespace RiasBot.Modules.Bot
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireOwner]
-            public async Task Db(ulong id)
+            public async Task Db([Remainder]string user)
             {
-                var user = await _restClient.GetUserAsync(id);
-                if (user is null)
+                IUser getUser;
+                bool mutualServers = false;
+                if (UInt64.TryParse(user, out var id))
+                {
+                    getUser = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
+                }
+                else
+                {
+                    var userSplit = user.Split("#");
+                    if (userSplit.Length == 2)
+                        getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                    else
+                        getUser = null;
+                }
+                if (getUser is null)
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                     return;
                 }
+
+                var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
+                mutualServers = guilds.Any(x => x.GetUserAsync(getUser.Id).GetAwaiter().GetResult() != null);
+
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
-                    var xpDb = db.XpSystem.Where(x => x.UserId == id);
+                    var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
+                    var xpDb = db.XpSystem.Where(x => x.UserId == getUser.Id);
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                     embed.WithAuthor(user.ToString());
-                    embed.AddField("ID", user.Id, true).AddField("Currency", $"{userDb?.Currency} {RiasBot.currency}", true);
+                    embed.AddField("ID", getUser.Id, true).AddField("Currency", $"{userDb?.Currency} {RiasBot.currency}", true);
                     embed.AddField("Global level", userDb?.Level, true).AddField("Global XP", userDb?.Xp, true);
-                    try
-                    {
-                        embed.WithImageUrl(user.RealAvatarUrl(1024));
-                    }
-                    catch
-                    {
-                        embed.WithImageUrl(user.DefaultAvatarUrl());
-                    }
+                    embed.AddField("Is blacklisted", (userDb.IsBlacklisted) ? "true" : "false", true).AddField("Is banned", (userDb.IsBanned) ? "true" : "false", true);
+                    embed.AddField("Mutual servers (probable)", (mutualServers) ? "true" : "false", true);
+                    embed.WithImageUrl(getUser.RealAvatarUrl(1024));
+
                     await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
                 }
             }

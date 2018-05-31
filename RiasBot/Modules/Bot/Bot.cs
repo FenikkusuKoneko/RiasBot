@@ -222,27 +222,43 @@ namespace RiasBot.Modules.Bot
         [Description][@Remarks]
         [RequireOwner]
         [Priority(1)]
-        public async Task FindUser(ulong id)
+        public async Task FindUser([Remainder]string user)
         {
-            var user = await _restClient.GetUserAsync(id);
-            if (user is null)
+            IUser getUser;
+            bool mutualServers = false;
+            if (UInt64.TryParse(user, out var id))
+            {
+                getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
+            }
+            else
+            {
+                var userSplit = user.Split("#");
+                if (userSplit.Length == 2)
+                    getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                else
+                    getUser = null;
+            }
+            if (getUser is null)
             {
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                 return;
             }
 
-            string accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
+            var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
+            mutualServers = guilds.Any(x => x.GetUserAsync(getUser.Id).GetAwaiter().GetResult() != null);
+
+            string accountCreated = getUser.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 
             var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-            embed.AddField("Name", user, true).AddField("ID", user.Id, true);
-            embed.AddField("Status", user.Status, true).AddField("Joined Discord", accountCreated, true);
+            embed.AddField("Name", getUser, true).AddField("ID", getUser.Id, true);
+            embed.AddField("Joined Discord", accountCreated, true).AddField("Mutual servers (probable)", (mutualServers) ? "true" : "false", true);
             try
             {
-                embed.WithImageUrl(user.RealAvatarUrl(1024));
+                embed.WithImageUrl(getUser.RealAvatarUrl(1024));
             }
             catch
             {
-                embed.WithImageUrl(user.DefaultAvatarUrl());
+                embed.WithImageUrl(getUser.DefaultAvatarUrl());
             }
             await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
         }
