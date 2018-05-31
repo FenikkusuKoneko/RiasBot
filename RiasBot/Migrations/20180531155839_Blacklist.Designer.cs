@@ -12,9 +12,10 @@ using RiasBot.Services.Database;
 namespace RiasBot.Migrations
 {
     [DbContext(typeof(RiasContext))]
-    partial class RiasContextModelSnapshot : ModelSnapshot
+    [Migration("20180531155839_Blacklist")]
+    partial class Blacklist
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

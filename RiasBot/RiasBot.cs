@@ -19,7 +19,7 @@ namespace RiasBot
         public static void Main(string[] args)
             =>new RiasBot().StartAsync().GetAwaiter().GetResult();
 
-        public static string version = "1.5.6.8";
+        public static string version = "1.5.7.0";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
@@ -46,7 +46,8 @@ namespace RiasBot
                 .AddSingleton(new DiscordShardedClient(new DiscordSocketConfig     // Add the discord client to the service provider
                 {
                     LogLevel = LogSeverity.Info,
-                    MessageCacheSize = 500
+                    MessageCacheSize = 500,
+                    AlwaysDownloadUsers = true
                 }))
                 .AddSingleton(new DiscordRestClient())
                 .AddSingleton(new CommandService(new CommandServiceConfig     // Add the command service to the service provider

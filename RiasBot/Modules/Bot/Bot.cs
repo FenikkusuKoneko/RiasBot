@@ -221,92 +221,6 @@ namespace RiasBot.Modules.Bot
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireOwner]
-        public async Task Delete(ulong id)
-        {
-            var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
-            var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
-            if (input != null)
-            {
-                if (input.Content == "confirm")
-                {
-                    var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
-                    using (var db = _db.GetDbContext())
-                    {
-                        var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
-                        if (userDb != null)
-                        {
-                            db.Remove(userDb);
-                        }
-                        var waifusDb = db.Waifus.Where(x => x.UserId == id);
-                        if (waifusDb != null)
-                        {
-                            db.RemoveRange(waifusDb);
-                        }
-                        var profileDb = db.Profile.Where(x => x.UserId == id).FirstOrDefault();
-                        if (profileDb != null)
-                        {
-                            db.Remove(profileDb);
-                        }
-                        if (user != null)
-                        {
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {user} has been deleted from the database").ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {id} has been deleted from the database").ConfigureAwait(false);
-                        }
-                        await db.SaveChangesAsync().ConfigureAwait(false);
-                    }
-                }
-            }
-        }
-
-        [RiasCommand][@Alias]
-        [Description][@Remarks]
-        [RequireOwner]
-        public async Task Delete([Remainder]string user)
-        {
-            var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
-            var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
-            if (input != null)
-            {
-                if (input.Content == "confirm")
-                {
-                    var userSplit = user.Split("#");
-                    var getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
-
-                    if (getUser is null)
-                    {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user couldn't be found");
-                        return;
-                    }
-                    using (var db = _db.GetDbContext())
-                    {
-                        var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
-                        if (userDb != null)
-                        {
-                            db.Remove(userDb);
-                        }
-                        var waifusDb = db.Waifus.Where(x => x.UserId == getUser.Id);
-                        if (waifusDb != null)
-                        {
-                            db.RemoveRange(waifusDb);
-                        }
-                        var profileDb = db.Profile.Where(x => x.UserId == getUser.Id).FirstOrDefault();
-                        if (profileDb != null)
-                        {
-                            db.Remove(profileDb);
-                        }
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {user} has been deleted from the database").ConfigureAwait(false);
-                        await db.SaveChangesAsync().ConfigureAwait(false);
-                    }
-                }
-            }
-        }
-
-        [RiasCommand][@Alias]
-        [Description][@Remarks]
-        [RequireOwner]
         [Priority(1)]
         public async Task FindUser(ulong id)
         {
@@ -331,37 +245,6 @@ namespace RiasBot.Modules.Bot
                 embed.WithImageUrl(user.DefaultAvatarUrl());
             }
             await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
-        }
-
-        [RiasCommand][@Alias]
-        [Description][@Remarks]
-        [RequireOwner]
-        public async Task Db(ulong id)
-        {
-            var user = await _restClient.GetUserAsync(id);
-            if (user is null)
-            {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
-                return;
-            }
-            using (var db = _db.GetDbContext())
-            {
-                var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
-                var xpDb = db.XpSystem.Where(x => x.UserId == id);
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithAuthor(user.ToString());
-                embed.AddField("ID", user.Id, true).AddField("Currency", $"{userDb?.Currency} {RiasBot.currency}", true);
-                embed.AddField("Global level", userDb?.Level, true).AddField("Global XP", userDb?.Xp, true);
-                try
-                {
-                    embed.WithImageUrl(user.RealAvatarUrl(1024));
-                }
-                catch
-                {
-                    embed.WithImageUrl(user.DefaultAvatarUrl());
-                }
-                await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
-            }
         }
     }
 }

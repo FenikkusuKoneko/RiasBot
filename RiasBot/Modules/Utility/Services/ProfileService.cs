@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Net.Http;
 using Discord;
-using RiasBot.Extensions;
 using System.Linq;
 using RiasBot.Services.Database.Models;
 using ImageMagick;
+using RiasBot.Extensions;
 
 namespace RiasBot.Modules.Utility.Services
 {
@@ -38,15 +38,7 @@ namespace RiasBot.Modules.Utility.Services
                     var profileInfo = GetProfieInfo(user.Id);
                     var profileSettings = GetProfileSettings(user.Id);
                     //Init
-                    string avatarUrl = null;
-                    try
-                    {
-                        avatarUrl = user.RealAvatarUrl();
-                    }
-                    catch
-                    {
-                        avatarUrl = user.DefaultAvatarUrl();
-                    }
+                    string avatarUrl = user.RealAvatarUrl();
                     string nickname = user.Nickname;
 
                     string arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";

@@ -145,14 +145,7 @@ namespace RiasBot.Modules.Utility
                     embed.AddField("Status", user.Status, true).AddField("Joined Server", joinedServer, true);
                     embed.AddField("Joined Discord", accountCreated, true).AddField($"Roles ({roleIndex})",
                         (roleIndex == 0) ? "-" : String.Join("\n", userRoles), true);
-                    try
-                    {
-                        embed.WithThumbnailUrl(user.RealAvatarUrl(1024));
-                    }
-                    catch
-                    {
-                        embed.WithThumbnailUrl(user.DefaultAvatarUrl());
-                    }
+                    embed.WithThumbnailUrl(user.RealAvatarUrl(1024));
 
                     await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
                 }
@@ -263,16 +256,8 @@ namespace RiasBot.Modules.Utility
 
                 var embed = new EmbedBuilder();
                 embed.WithColor(RiasBot.goodColor);
-                try
-                {
-                    embed.WithAuthor($"{user}", null, user.RealAvatarUrl(1024));
-                    embed.WithImageUrl(user.RealAvatarUrl(1024));
-                }
-                catch
-                {
-                    embed.WithAuthor($"{user}", null, user.DefaultAvatarUrl());
-                    embed.WithImageUrl(user.DefaultAvatarUrl());
-                }
+                embed.WithAuthor($"{user}", null, user.RealAvatarUrl(1024));
+                embed.WithImageUrl(user.RealAvatarUrl(1024));
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }

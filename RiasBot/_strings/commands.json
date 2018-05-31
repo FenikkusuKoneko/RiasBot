@@ -230,14 +230,6 @@
     ]
   },
 
-  "delete": {
-    "Command": "delete",
-    "Description": "Delete an user from the database. The currency, global xp, waifus and profile settings will be erased.",
-    "Remarks": [
-      "[prefix]delete"
-    ]
-  },
-
   "finduser": {
     "Command": "finduser",
     "Description": "Search an user from Discord and show it's info.",
@@ -246,11 +238,51 @@
     ]
   },
 
+  "delete": {
+    "Command": "delete",
+    "Description": "Delete an user from the database. The currency, global xp, waifus and profile settings will be erased.",
+    "Remarks": [
+      "[prefix]delete"
+    ]
+  },
+
   "db": {
     "Command": "db",
     "Description": "Show details about an user from the database",
     "Remarks": [
       "[prefix]db 327927038360944640"
+    ]
+  },
+
+  "blacklist": {
+    "Command": "blacklist",
+    "Description": "Add an user to the blacklist. It will cannot generate global xp and will cannot receive [currency].",
+    "Remarks": [
+      "[prefix]blacklist 327927038360944640"
+    ]
+  },
+
+  "removeblacklist": {
+    "Command": "removeblacklist",
+    "Description": "Remove an user from the blacklist. It will can generate global xp and will can receive [currency].",
+    "Remarks": [
+      "[prefix]removeblacklist 327927038360944640"
+    ]
+  },
+
+  "botban": {
+    "Command": "botban",
+    "Description": "Ban an user from using the commands. It will also be added to the blacklist.",
+    "Remarks": [
+      "[prefix]botban 327927038360944640"
+    ]
+  },
+
+  "removebotban": {
+    "Command": "removebotban",
+    "Description": "Unban an user from using the commands. It will also be removed from the blacklist.",
+    "Remarks": [
+      "[prefix]removebotban 327927038360944640"
     ]
   },
 

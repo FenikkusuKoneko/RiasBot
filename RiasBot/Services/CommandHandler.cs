@@ -44,33 +44,46 @@ namespace RiasBot.Services
 
             var context = new ShardedCommandContext(_discord, msg);     // Create the command context
 
-            if (!context.IsPrivate)
+            using (var db = _db.GetDbContext())
             {
-                try
+                var userDb = db.Users.Where(x => x.UserId == msg.Author.Id).FirstOrDefault();
+                if (!context.IsPrivate)
                 {
-                    var socketGuildUser = context.Guild.GetUser(_discord.CurrentUser.Id);
-                    var preconditions = socketGuildUser.GetPermissions((IGuildChannel)context.Channel);
-                    if (preconditions.SendMessages)
+                    try
                     {
-                        await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
-                        await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel, true);
+                        var socketGuildUser = context.Guild.GetUser(_discord.CurrentUser.Id);
+                        var preconditions = socketGuildUser.GetPermissions((IGuildChannel)context.Channel);
+                        if (preconditions.SendMessages)
+                        {
+                            if (userDb != null)
+                            {
+                                if (!userDb.IsBlacklisted)
+                                    await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                            }
+                            else
+                                await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                            await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel, true);
+                        }
+                        else
+                        {
+                            if (userDb != null)
+                            {
+                                if (!userDb.IsBlacklisted)
+                                    await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                            }
+                            else
+                                await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                            await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                            return;
+                        }
                     }
-                    else
+                    catch
                     {
-                        await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
-                        await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel);
-                        return;
+
                     }
                 }
-                catch
-                {
 
-                }
-            }
-
-            if (!context.IsPrivate)
-            {
-                using (var db = _db.GetDbContext())
+                if (!context.IsPrivate)
                 {
                     var guild = db.Guilds.Where(x => x.GuildId == context.Guild.Id).FirstOrDefault();
                     try
@@ -85,10 +98,13 @@ namespace RiasBot.Services
                         _prefix = _creds.Prefix;
                     }
                 }
-            }
-            else
-            {
-                _prefix = _creds.Prefix;
+                else
+                {
+                    _prefix = _creds.Prefix;
+                }
+                if (userDb != null)
+                    if (userDb.IsBanned)
+                        return;     //banned users will cannot use the commands
             }
 
             int argPos = 0;     // Check if the message has a valid command prefix

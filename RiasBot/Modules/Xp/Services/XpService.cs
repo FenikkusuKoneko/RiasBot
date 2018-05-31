@@ -169,7 +169,7 @@ namespace RiasBot.Modules.Xp.Services
                 try
                 {
                     //Init
-                    var avatarUrl = user.RealAvatarUrl() ?? user.DefaultAvatarUrl();
+                    var avatarUrl = user.RealAvatarUrl();
                     int usernameSize = (user.ToString().Length < 15) ? 25 : 25 - user.ToString().Length / 5;
                     FontCollection fonts = new FontCollection();
                     FontFamily meiryioFont = fonts.Install(Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf");

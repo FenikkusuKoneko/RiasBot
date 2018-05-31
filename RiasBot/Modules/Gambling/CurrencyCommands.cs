@@ -210,22 +210,39 @@ namespace RiasBot.Modules.Gambling
                 {
                     var firstUser = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
                     var secondUser = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
-                    try
+                    if (firstUser != null)
                     {
-                        if (firstUser.Currency > 0)
+                        if (firstUser.Currency - amount >= 0)
                         {
-                            if (firstUser.Currency - amount >= 0)
+                            firstUser.Currency -= amount;
+                            if (secondUser != null)
                             {
-                                firstUser.Currency -= amount;
-                                secondUser.Currency += amount;
-                                await db.SaveChangesAsync().ConfigureAwait(false);
-                                await Context.Channel.SendConfirmationEmbed($"{user.Mention} you received {amount} {RiasBot.currency} from {Format.Bold(Context.User.ToString())}");
+                                if (!secondUser.IsBlacklisted)
+                                {
+                                    secondUser.Currency += amount;
+                                }
+                                else
+                                {
+                                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot give {RiasBot.currency} to this user.").ConfigureAwait(false);
+                                    return;
+                                }
                             }
+                            else
+                            {
+                                var userDb = new UserConfig { UserId = user.Id, Currency = amount };
+                                await db.AddAsync(userDb).ConfigureAwait(false);
+                            }
+                            await Context.Channel.SendConfirmationEmbed($"{user.Mention} you received {amount} {RiasBot.currency} from {Format.Bold(Context.User.ToString())}");
+                            await db.SaveChangesAsync().ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.").ConfigureAwait(false);
                         }
                     }
-                    catch
+                    else
                     {
-
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.").ConfigureAwait(false);
                     }
                 }
             }

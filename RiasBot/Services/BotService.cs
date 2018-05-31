@@ -222,7 +222,8 @@ namespace RiasBot.Services
                                         var userDb = db.Users.Where(x => x.UserId == vote.user).FirstOrDefault();
                                         if (userDb != null)
                                         {
-                                            userDb.Currency += 10;
+                                            if (!userDb.IsBlacklisted)
+                                                userDb.Currency += 10;
                                         }
                                         else
                                         {
