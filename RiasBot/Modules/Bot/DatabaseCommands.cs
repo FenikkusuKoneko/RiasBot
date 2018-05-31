@@ -58,7 +58,10 @@ namespace RiasBot.Modules.Bot
                         else
                         {
                             var userSplit = user.Split("#");
-                            getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                            if (userSplit.Length == 2)
+                                getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                            else
+                                getUser = null;
                         }
                         if (getUser is null)
                         {
@@ -155,7 +158,10 @@ namespace RiasBot.Modules.Bot
                         else
                         {
                             var userSplit = user.Split("#");
-                            getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                            if (userSplit.Length == 2)
+                                getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                            else
+                                getUser = null;
                         }
                         if (getUser is null)
                         {
@@ -211,7 +217,10 @@ namespace RiasBot.Modules.Bot
                         else
                         {
                             var userSplit = user.Split("#");
-                            getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                            if (userSplit.Length == 2)
+                                getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                            else
+                                getUser = null;
                         }
                         using (var db = _db.GetDbContext())
                         {
@@ -258,7 +267,10 @@ namespace RiasBot.Modules.Bot
                         else
                         {
                             var userSplit = user.Split("#");
-                            getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                            if (userSplit.Length == 2)
+                                getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                            else
+                                getUser = null;
                         }
                         if (getUser is null)
                         {
@@ -315,7 +327,10 @@ namespace RiasBot.Modules.Bot
                         else
                         {
                             var userSplit = user.Split("#");
-                            getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                            if (userSplit.Length == 2)
+                                getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                            else
+                                getUser = null;
                         }
                         if (getUser is null)
                         {
