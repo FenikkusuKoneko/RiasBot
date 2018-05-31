@@ -141,7 +141,7 @@ namespace RiasBot.Modules.Bot
                     var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
                     var xpDb = db.XpSystem.Where(x => x.UserId == getUser.Id);
                     var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                    embed.WithAuthor(user.ToString());
+                    embed.WithAuthor(getUser.ToString());
                     embed.AddField("ID", getUser.Id, true).AddField("Currency", $"{userDb?.Currency} {RiasBot.currency}", true);
                     embed.AddField("Global level", userDb?.Level, true).AddField("Global XP", userDb?.Xp, true);
                     embed.AddField("Is blacklisted", (userDb.IsBlacklisted) ? "true" : "false", true).AddField("Is banned", (userDb.IsBanned) ? "true" : "false", true);
