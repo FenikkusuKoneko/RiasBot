@@ -44,35 +44,40 @@ namespace RiasBot.Modules.Bot
             [RequireOwner]
             public async Task Delete([Remainder]string user)
             {
+                IUser getUser;
+                if (UInt64.TryParse(user, out var id))
+                {
+                    getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
+                }
+                else
+                {
+                    var userSplit = user.Split("#");
+                    if (userSplit.Length == 2)
+                        getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                    else
+                        getUser = null;
+                }
+                if (getUser is null)
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                    return;
+                }
+                if (getUser is null)
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user couldn't be found");
+                    return;
+                }
+                if (getUser.Id == RiasBot.konekoID)
+                {
+                    await Context.Channel.SendErrorEmbed("I will not delete you from the database, Master!");
+                    return;
+                }
                 var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
                 var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                 if (input != null)
                 {
                     if (input.Content == "confirm")
                     {
-                        IUser getUser;
-                        if (UInt64.TryParse(user, out var id))
-                        {
-                            getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            var userSplit = user.Split("#");
-                            if (userSplit.Length == 2)
-                                getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
-                            else
-                                getUser = null;
-                        }
-                        if (getUser is null)
-                        {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
-                            return;
-                        }
-                        if (getUser is null)
-                        {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user couldn't be found");
-                            return;
-                        }
                         using (var db = _db.GetDbContext())
                         {
                             var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
@@ -157,30 +162,36 @@ namespace RiasBot.Modules.Bot
             [RequireOwner]
             public async Task Blacklist([Remainder]string user)
             {
+                IUser getUser;
+                if (UInt64.TryParse(user, out var id))
+                {
+                    getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
+                }
+                else
+                {
+                    var userSplit = user.Split("#");
+                    if (userSplit.Length == 2)
+                        getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                    else
+                        getUser = null;
+                }
+                if (getUser is null)
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                    return;
+                }
+                if (getUser.Id == RiasBot.konekoID)
+                {
+                    await Context.Channel.SendErrorEmbed("I will not add you on the blacklist, Master!");
+                    return;
+                }
+
                 var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to add this user to the blacklist? Type {Format.Code("confirm")}");
                 var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                 if (input != null)
                 {
                     if (input.Content == "confirm")
                     {
-                        IUser getUser;
-                        if (UInt64.TryParse(user, out var id))
-                        {
-                            getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            var userSplit = user.Split("#");
-                            if (userSplit.Length == 2)
-                                getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
-                            else
-                                getUser = null;
-                        }
-                        if (getUser is null)
-                        {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
-                            return;
-                        }
                         using (var db = _db.GetDbContext())
                         {
                             var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
@@ -216,25 +227,31 @@ namespace RiasBot.Modules.Bot
             [RequireOwner]
             public async Task RemoveBlacklist([Remainder]string user)
             {
+                IUser getUser;
+                if (UInt64.TryParse(user, out var id))
+                {
+                    getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
+                }
+                else
+                {
+                    var userSplit = user.Split("#");
+                    if (userSplit.Length == 2)
+                        getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                    else
+                        getUser = null;
+                }
+                if (getUser.Id == RiasBot.konekoID)
+                {
+                    await Context.Channel.SendErrorEmbed("You are not in the blacklist, Master!");
+                    return;
+                }
+
                 var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to remove this user from the blacklist? Type {Format.Code("confirm")}");
                 var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                 if (input != null)
                 {
                     if (input.Content == "confirm")
                     {
-                        IUser getUser;
-                        if (UInt64.TryParse(user, out var id))
-                        {
-                            getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            var userSplit = user.Split("#");
-                            if (userSplit.Length == 2)
-                                getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
-                            else
-                                getUser = null;
-                        }
                         using (var db = _db.GetDbContext())
                         {
                             var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
@@ -266,30 +283,36 @@ namespace RiasBot.Modules.Bot
             [RequireOwner]
             public async Task BotBan([Remainder]string user)
             {
+                IUser getUser;
+                if (UInt64.TryParse(user, out var id))
+                {
+                    getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
+                }
+                else
+                {
+                    var userSplit = user.Split("#");
+                    if (userSplit.Length == 2)
+                        getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                    else
+                        getUser = null;
+                }
+                if (getUser is null)
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                    return;
+                }
+                if (getUser.Id == RiasBot.konekoID)
+                {
+                    await Context.Channel.SendErrorEmbed("I will not ban you from using me, Master!");
+                    return;
+                }
+
                 var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to ban this user from using the commands? Type {Format.Code("confirm")}");
                 var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                 if (input != null)
                 {
                     if (input.Content == "confirm")
                     {
-                        IUser getUser;
-                        if (UInt64.TryParse(user, out var id))
-                        {
-                            getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            var userSplit = user.Split("#");
-                            if (userSplit.Length == 2)
-                                getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
-                            else
-                                getUser = null;
-                        }
-                        if (getUser is null)
-                        {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
-                            return;
-                        }
                         using (var db = _db.GetDbContext())
                         {
                             var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
@@ -326,30 +349,36 @@ namespace RiasBot.Modules.Bot
             [RequireOwner]
             public async Task RemoveBotBan([Remainder]string user)
             {
+                IUser getUser;
+                if (UInt64.TryParse(user, out var id))
+                {
+                    getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
+                }
+                else
+                {
+                    var userSplit = user.Split("#");
+                    if (userSplit.Length == 2)
+                        getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
+                    else
+                        getUser = null;
+                }
+                if (getUser is null)
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                    return;
+                }
+                if (getUser.Id == RiasBot.konekoID)
+                {
+                    await Context.Channel.SendErrorEmbed("You are not banned from using me, Master!");
+                    return;
+                }
+
                 var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to unban this user from using the commands? Type {Format.Code("confirm")}");
                 var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                 if (input != null)
                 {
                     if (input.Content == "confirm")
                     {
-                        IUser getUser;
-                        if (UInt64.TryParse(user, out var id))
-                        {
-                            getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            var userSplit = user.Split("#");
-                            if (userSplit.Length == 2)
-                                getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
-                            else
-                                getUser = null;
-                        }
-                        if (getUser is null)
-                        {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
-                            return;
-                        }
                         using (var db = _db.GetDbContext())
                         {
                             var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();

@@ -90,69 +90,61 @@ namespace RiasBot.Modules.Utility
             [RequireContext(ContextType.Guild)]
             public async Task UserInfo([Remainder] IGuildUser user = null)
             {
-                if (user is null) user = (IGuildUser)Context.User;
+                user = user ?? (IGuildUser)Context.User;
 
-                try
+                string activity = user.Activity?.Name;
+                var activityType = user.Activity?.Type;
+
+                switch (activityType)
                 {
-                    string activity = user.Activity?.Name;
-                    var activityType = user.Activity?.Type;
+                    case ActivityType.Playing:
+                        activity = "Playing " + activity;
+                        break;
+                    case ActivityType.Streaming:
+                        activity = "Streaming " + activity;
+                        break;
+                    case ActivityType.Listening:
+                        activity = "Listening to " + activity;
+                        break;
+                    case ActivityType.Watching:
+                        activity = "Watching " + activity;
+                        break;
+                }
 
-                    switch (activityType)
+                string joinedServer = user.JoinedAt.Value.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
+                string accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
+
+                int roleIndex = 0;
+                var getUserRoles = user.RoleIds;
+                string[] userRoles = new string[getUserRoles.Count - 1];
+                int[] userRolesPositions = new int[getUserRoles.Count - 1];
+
+                foreach (var role in getUserRoles)
+                {
+                    var r = Context.Guild.GetRole(role);
+                    if (roleIndex < 10)
                     {
-                        case ActivityType.Playing:
-                            activity = "Playing " + activity;
-                            break;
-                        case ActivityType.Streaming:
-                            activity = "Streaming " + activity;
-                            break;
-                        case ActivityType.Listening:
-                            activity = "Listening to " + activity;
-                            break;
-                        case ActivityType.Watching:
-                            activity = "Watching " + activity;
-                            break;
-                    }
-
-                    string joinedServer = user.JoinedAt.Value.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
-                    string accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
-
-                    int roleIndex = 0;
-                    var getUserRoles = user.RoleIds;
-                    string[] userRoles = new string[getUserRoles.Count - 1];
-                    int[] userRolesPositions = new int[getUserRoles.Count - 1];
-
-                    foreach (var role in getUserRoles)
-                    {
-                        var r = Context.Guild.GetRole(role);
-                        if (roleIndex < 10)
+                        if (r.Id != Context.Guild.EveryoneRole.Id)
                         {
-                            if (r.Id != Context.Guild.EveryoneRole.Id)
-                            {
-                                userRoles[roleIndex] = r.Name;
-                                userRolesPositions[roleIndex] = r.Position;
-                                roleIndex++;
-                            }
+                            userRoles[roleIndex] = r.Name;
+                            userRolesPositions[roleIndex] = r.Position;
+                            roleIndex++;
                         }
                     }
-
-                    Array.Sort(userRolesPositions, userRoles);
-                    Array.Reverse(userRoles);
-
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                    embed.AddField("Name", user, true).AddField("Nickname", user.Nickname ?? "-", true);
-                    embed.AddField("Activity", activity ?? "-", true).AddField("ID", user.Id, true);
-                    embed.AddField("Status", user.Status, true).AddField("Joined Server", joinedServer, true);
-                    embed.AddField("Joined Discord", accountCreated, true).AddField($"Roles ({roleIndex})",
-                        (roleIndex == 0) ? "-" : String.Join("\n", userRoles), true);
-                    embed.WithThumbnailUrl(user.RealAvatarUrl(1024));
-
-                    await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    await Context.Channel.SendErrorEmbed("I couldn't find the user.");
-                }
+
+                Array.Sort(userRolesPositions, userRoles);
+                Array.Reverse(userRoles);
+
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                embed.AddField("Name", user, true).AddField("Nickname", user.Nickname ?? "-", true);
+                embed.AddField("Activity", activity ?? "-", true).AddField("ID", user.Id, true);
+                embed.AddField("Status", user.Status, true).AddField("Joined Server", joinedServer, true);
+                embed.AddField("Joined Discord", accountCreated, true).AddField($"Roles ({roleIndex})",
+                    (roleIndex == 0) ? "-" : String.Join("\n", userRoles), true);
+                embed.WithThumbnailUrl(user.RealAvatarUrl(1024));
+
+                await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
 
             [RiasCommand]
@@ -191,22 +183,15 @@ namespace RiasBot.Modules.Utility
                 if (String.IsNullOrEmpty(emotes))
                     emotes = "-";
 
-                try
-                {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                    embed.WithTitle(Context.Guild.Name);
-                    embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner.Username}#{owner.Discriminator}", true).AddField("Members", guild.MemberCount, true);
-                    embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
-                    embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true).AddField("Region", Context.Guild.VoiceRegionId, true);
-                    embed.AddField($"Custom Emotes ({Context.Guild.Emotes.Count})", emotes);
-                    embed.WithImageUrl(Context.Guild.IconUrl);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                embed.WithTitle(Context.Guild.Name);
+                embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner.Username}#{owner.Discriminator}", true).AddField("Members", guild.MemberCount, true);
+                embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
+                embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true).AddField("Region", Context.Guild.VoiceRegionId, true);
+                embed.AddField($"Custom Emotes ({Context.Guild.Emotes.Count})", emotes);
+                embed.WithImageUrl(Context.Guild.IconUrl);
 
-                    await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
-                }
-                catch
-                {
-
-                }
+                await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
 
             [RiasCommand]
