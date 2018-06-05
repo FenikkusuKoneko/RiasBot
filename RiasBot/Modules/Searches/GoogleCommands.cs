@@ -94,8 +94,8 @@ namespace RiasBot.Modules.Searches
                     {
                         var search = searches[i].Split("&link=");
                         embed.AddField($"#{i + 1} {search[0]}", search[1]);
-                        await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                     }
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
                 else
                 {
