@@ -86,17 +86,41 @@ namespace RiasBot.Modules.Searches
             {
                 var searches = await _service.GoogleSearch(keywords).ConfigureAwait(false);
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithTitle("Google Search");
+                embed.WithTitle($"Google Search: {keywords}");
 
-                for (int i = 0; i < searches.Length; i++)
+                if (searches != null)
                 {
-                    var search = searches[i].Split("&link=");
-                    embed.AddField($"#{i + 1} {search[0]}", search[1]);
+                    for (int i = 0; i < searches.Length; i++)
+                    {
+                        var search = searches[i].Split("&link=");
+                        embed.AddField($"#{i + 1} {search[0]}", search[1]);
+                        await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                 }
-                if (searches.Length == 0)
-                    embed.WithDescription("I couldn't find anything");
+                else
+                {
+                    await Context.Channel.SendErrorEmbed("I couldn't find anything");
+                }
+            }
 
-                await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+            [RiasCommand][@Alias]
+            [Description][@Remarks]
+            public async Task Image([Remainder]string keywords)
+            {
+                var rand = new Random((int)DateTime.UtcNow.Ticks);
+                var searches = await _service.GoogleImageSearch(keywords).ConfigureAwait(false);
+                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                embed.WithTitle($"Google Image Search: {keywords}");
+
+                if (searches != null)
+                {
+                    embed.WithImageUrl(searches[rand.Next(0, searches.Length)]);
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
+                else
+                {
+                    await Context.Channel.SendErrorEmbed("I couldn't find anything");
+                }
             }
         }
     }

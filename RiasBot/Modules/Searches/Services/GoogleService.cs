@@ -84,7 +84,7 @@ namespace RiasBot.Modules.Searches.Services
         {
             if (String.IsNullOrEmpty(_creds.GoogleApiKey))
             {
-                return new string[0]; ;
+                return new string[0];
             }
 
             var googleService = new CustomsearchService(new BaseClientService.Initializer()
@@ -96,15 +96,53 @@ namespace RiasBot.Modules.Searches.Services
             searchListRequest.Cx = search_engine_id;
             var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
 
-            int index = 0;
-            string[] results = new string[searchListResponse.Items.Count];
-
-            foreach (var result in searchListResponse.Items)
+            if (searchListResponse.Items != null)
             {
-                results[index] = result.Title + "&link=" + result.Link;
-                index++;
+                int index = 0;
+                string[] results = new string[searchListResponse.Items.Count];
+
+                foreach (var result in searchListResponse.Items)
+                {
+                    results[index] = result.Title + "&link=" + result.Link;
+                    index++;
+                }
+                return results;
             }
-            return results;
+            else
+                return null;
+        }
+
+        public async Task<string[]> GoogleImageSearch(string keywords)
+        {
+            if (String.IsNullOrEmpty(_creds.GoogleApiKey))
+            {
+                return new string[0];
+            }
+
+            var googleService = new CustomsearchService(new BaseClientService.Initializer()
+            {
+                ApiKey = _creds.GoogleApiKey,
+                ApplicationName = "Rias Bot"
+            });
+            var searchListRequest = googleService.Cse.List(keywords);
+            searchListRequest.Cx = search_engine_id;
+            searchListRequest.SearchType = CseResource.ListRequest.SearchTypeEnum.Image;
+            var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
+
+            if (searchListResponse.Items != null)
+            {
+                int index = 0;
+                string[] results = new string[searchListResponse.Items.Count];
+
+                foreach (var result in searchListResponse.Items)
+                {
+                    results[index] = result.Link;
+                    index++;
+                }
+                return results;
+            }
+            else
+                return null;
         }
     }
 }

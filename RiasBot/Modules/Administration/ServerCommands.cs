@@ -51,7 +51,7 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you can't change the server's owner nickname.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot change the server's owner nickname.").ConfigureAwait(false);
                     }
                 }
                 else

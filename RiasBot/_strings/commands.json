@@ -1018,9 +1018,17 @@
 
   "google": {
     "Command": "google g",
-    "Description": "Show a list with results from from google.",
+    "Description": "Show a list with results from from Google.",
     "Remarks": [
       "[prefix]g anime"
+    ]
+  },
+
+  "image": {
+    "Command": "image",
+    "Description": "Search an image from Google.",
+    "Remarks": [
+      "[prefix]image neko"
     ]
   },
 
