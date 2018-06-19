@@ -208,7 +208,12 @@ namespace RiasBot.Modules.Administration
             {
                 var channel = (ITextChannel)Context.Channel;
                 if (!String.IsNullOrEmpty(channel.Topic))
-                    await Context.Channel.SendConfirmationEmbed("This channel's topic: " + Format.Bold(channel.Topic));
+                {
+                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    embed.WithTitle("This channel's topic");
+                    embed.WithDescription(channel.Topic);
+                    await Context.Channel.SendMessageAsync(embed: embed.Build());
+                }
                 else
                     await Context.Channel.SendConfirmationEmbed("No topic set on this channel.");
             }

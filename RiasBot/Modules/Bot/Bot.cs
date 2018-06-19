@@ -278,14 +278,31 @@ namespace RiasBot.Modules.Bot
                 Service = _service,
                 Database = _db
             };
+            object result = null;
+            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            embed.WithAuthor(Context.User);
             try
             {
-                var result = await CSharpScript.EvaluateAsync(expression,
-                ScriptOptions.Default.WithReferences(typeof(RiasBot).Assembly).WithImports("Discord"), globals);
+                result = await CSharpScript.EvaluateAsync(expression,
+                ScriptOptions.Default.WithReferences(typeof(RiasBot).Assembly).WithImports(new[] { "System", "System.Collections.Generic",
+                    "System.Linq", "Discord" }), globals);
+
+                embed.WithDescription("Success");
+                embed.AddField("Code", Format.Code(expression, "csharp"));
+                embed.AddField("Result", Format.Code(result.ToString(), "csharp"));
+
+                await Context.Channel.SendMessageAsync(embed: embed.Build());
             }
-            catch (CompilationErrorException e)
+            catch (Exception e)
             {
-                await Context.Channel.SendErrorEmbed(e.Message);
+                embed.WithDescription("Failed");
+                embed.AddField("CompilationErrorException", Format.Code(e.Message, "csharp"));
+                await Context.Channel.SendMessageAsync(embed: embed.Build());
+            }
+            finally
+            {
+                Console.WriteLine(GC.GetGeneration(result));
+                GC.Collect(GC.GetGeneration(result), GCCollectionMode.Optimized);
             }
         }
 
