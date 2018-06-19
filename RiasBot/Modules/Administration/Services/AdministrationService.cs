@@ -118,11 +118,18 @@ namespace RiasBot.Modules.Administration.Services
 
                         embed.WithCurrentTimestamp();
 
-                        var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
-                        if (modlog != null)
-                            await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                        if (guildDb != null)
+                        {
+                            var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
+                            if (modlog != null)
+                                await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                            else
+                                await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                        }
                         else
+                        {
                             await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                        }
                     }
                     else
                     {
@@ -149,11 +156,18 @@ namespace RiasBot.Modules.Administration.Services
                 if (!String.IsNullOrEmpty(reason))
                     embed.AddField("Reason", reason);
 
-                var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
-                if (modlog != null)
-                    await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                if (guildDb != null)
+                {
+                    var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
+                    if (modlog != null)
+                        await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    else
+                        await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
                 else
+                {
                     await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
 
                 var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
                 reasonEmbed.WithDescription($"You have been kicked from {Format.Bold(guild.Name)} server!");
@@ -180,7 +194,7 @@ namespace RiasBot.Modules.Administration.Services
                 if (reason != null)
                     embed.AddField("Reason", reason);
 
-                try
+                if (guildDb != null)
                 {
                     var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
                     if (modlog != null)
@@ -188,7 +202,7 @@ namespace RiasBot.Modules.Administration.Services
                     else
                         await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
-                catch
+                else
                 {
                     await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
@@ -218,7 +232,7 @@ namespace RiasBot.Modules.Administration.Services
                 if (reason != null)
                     embed.AddField("Reason", reason);
 
-                try
+                if (guildDb != null)
                 {
                     var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
                     if (modlog != null)
@@ -226,7 +240,7 @@ namespace RiasBot.Modules.Administration.Services
                     else
                         await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
-                catch
+                else
                 {
                     await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
@@ -257,7 +271,7 @@ namespace RiasBot.Modules.Administration.Services
                 if (reason != null)
                     embed.AddField("Reason", reason);
 
-                try
+                if (guildDb != null)
                 {
                     var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
                     if (modlog != null)
@@ -265,7 +279,7 @@ namespace RiasBot.Modules.Administration.Services
                     else
                         await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
-                catch
+                else
                 {
                     await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
