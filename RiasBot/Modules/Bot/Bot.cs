@@ -289,7 +289,10 @@ namespace RiasBot.Modules.Bot
 
                 embed.WithDescription("Success");
                 embed.AddField("Code", Format.Code(expression, "csharp"));
-                embed.AddField("Result", Format.Code(result.ToString(), "csharp"));
+                if (result != null)
+                    embed.AddField("Result", Format.Code(result.ToString(), "csharp"));
+                else
+                    embed.AddField("Result", Format.Code("No return", "csharp"));
 
                 await Context.Channel.SendMessageAsync(embed: embed.Build());
             }
@@ -301,8 +304,8 @@ namespace RiasBot.Modules.Bot
             }
             finally
             {
-                Console.WriteLine(GC.GetGeneration(result));
-                GC.Collect(GC.GetGeneration(result), GCCollectionMode.Optimized);
+                if (result != null)
+                    GC.Collect(GC.GetGeneration(result), GCCollectionMode.Optimized);
             }
         }
 
