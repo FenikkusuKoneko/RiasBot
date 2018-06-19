@@ -1319,5 +1319,13 @@
     "Remarks": [
       "[prefix]rgxp 3 100 @User"
     ]
+  },
+
+  "evaluate": {
+    "Command": "evaluate eval",
+    "Description": "Evaluate a C# block code.",
+    "Remarks": [
+      "[prefix]eval code"
+    ]
   }
 }

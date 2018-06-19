@@ -4,6 +4,8 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.Webhook;
 using Discord.WebSocket;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
 using RiasBot.Modules.Music.MusicServices;
@@ -261,6 +263,39 @@ namespace RiasBot.Modules.Bot
                 embed.WithImageUrl(getUser.DefaultAvatarUrl());
             }
             await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireOwner]
+        public async Task Evaluate([Remainder]string expression)
+        {
+            var globals = new Globals()
+            {
+                Context = Context,
+                Client = _client,
+                Handler = _ch,
+                Service = _service,
+                Database = _db
+            };
+            try
+            {
+                var result = await CSharpScript.EvaluateAsync(expression,
+                ScriptOptions.Default.WithReferences(typeof(RiasBot).Assembly).WithImports("Discord"), globals);
+            }
+            catch (CompilationErrorException e)
+            {
+                await Context.Channel.SendErrorEmbed(e.Message);
+            }
+        }
+
+        public class Globals
+        {
+            public ICommandContext Context { get; set; }
+            public DiscordShardedClient Client { get; set; }
+            public CommandHandler Handler { get; set; }
+            public CommandService Service { get; set; }
+            public DbService Database;
         }
     }
 }
