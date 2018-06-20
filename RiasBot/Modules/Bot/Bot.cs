@@ -296,7 +296,7 @@ namespace RiasBot.Modules.Bot
 
                 await Context.Channel.SendMessageAsync(embed: embed.Build());
             }
-            catch (Exception e)
+            catch (CompilationErrorException e)
             {
                 embed.WithDescription("Failed");
                 embed.AddField("CompilationErrorException", Format.Code(e.Message, "csharp"));

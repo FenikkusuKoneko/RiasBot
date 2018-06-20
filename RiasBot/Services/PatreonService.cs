@@ -98,7 +98,7 @@ namespace RiasBot.Services
                 foreach (var pledge in pledges)
                 {
                     int patronPledgeId = pledge.relationships.patron.data.id;
-                    var patronUser = patrons.Find(x => x.id == patronPledgeId);
+                    var patronUser = patrons.Where(x => x.id == patronPledgeId).FirstOrDefault();
 
                     if (patronUser != null)
                     {
