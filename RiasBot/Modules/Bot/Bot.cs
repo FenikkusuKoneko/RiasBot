@@ -290,13 +290,12 @@ namespace RiasBot.Modules.Bot
                 embed.WithDescription("Success");
                 embed.AddField("Code", Format.Code(expression, "csharp"));
                 if (result != null)
+                {
                     embed.AddField("Result", Format.Code(result.ToString(), "csharp"));
-                else
-                    embed.AddField("Result", Format.Code("No return", "csharp"));
-
-                await Context.Channel.SendMessageAsync(embed: embed.Build());
+                    await Context.Channel.SendMessageAsync(embed: embed.Build());
+                }
             }
-            catch (CompilationErrorException e)
+            catch (Exception e)
             {
                 embed.WithDescription("Failed");
                 embed.AddField("CompilationErrorException", Format.Code(e.Message, "csharp"));
