@@ -31,7 +31,7 @@ namespace RiasBot.Services
             {
                 var patreon = Task.Run(async () => await Patreon());
                 Task.WaitAll(patreon);
-                timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
+                //timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
             }
         }
         public int campaignId;
