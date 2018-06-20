@@ -31,7 +31,7 @@ namespace RiasBot.Services
             {
                 var patreon = Task.Run(async () => await Patreon());
                 Task.WaitAll(patreon);
-                //timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
+                timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
             }
         }
         public int campaignId;
@@ -102,9 +102,19 @@ namespace RiasBot.Services
 
                     if (patronUser != null)
                     {
-
+                        if (pledge.attributes.declined_since != null)
+                        {
+                            if (DateTime.Compare((DateTime)pledge.attributes.declined_since, DateTime.UtcNow) < 1)
+                            {
+                                continue;
+                            }
+                        }
                         int amountCents = pledge.attributes.amount_cents;
-                        UInt64.TryParse(patronUser.attributes.social_connections.discord.user_id, out var userId);
+                        if (!UInt64.TryParse(patronUser.attributes.social_connections?.discord?.user_id, out var userId))
+                        {
+                            continue;
+                        }
+                            
 
                         if (userId > 0)
                         {
@@ -120,17 +130,17 @@ namespace RiasBot.Services
                                 var lastTimeAwardedValid = DateTime.Compare(lastTimeAwarded, DateTime.UtcNow);
                                 if (lastTimeAwardedValid <= 0)
                                 {
-                                    try
+                                    if (userDb != null)
                                     {
                                         userDb.Currency += amountCents * 10;
                                     }
-                                    catch
+                                    else
                                     {
                                         var user = new UserConfig { UserId = userId, Currency = amountCents * 10 };
                                         await db.AddAsync(user).ConfigureAwait(false);
                                     }
                                     var nextTimeAward = lastTimeAwarded.AddMonths(1);
-                                    patronDb.NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 1, 8, 0, 0);
+                                    patronDb.NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 3);
                                     try
                                     {
                                         var user = (IUser)_client.GetUser(userId);
@@ -149,8 +159,8 @@ namespace RiasBot.Services
                             }
                             else
                             {
-                                var nextTimeAward = DateTime.UtcNow.Subtract(new TimeSpan(8, 0, 0)).AddMonths(1);
-                                var patron = new Patreon { UserId = userId, Reward = amountCents * 10, NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 1, 8, 0, 0) };
+                                var nextTimeAward = DateTime.UtcNow.AddMonths(1);
+                                var patron = new Patreon { UserId = userId, Reward = amountCents * 10, NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 3) };
                                 await db.AddAsync(patron).ConfigureAwait(false);
                             }
                         }
