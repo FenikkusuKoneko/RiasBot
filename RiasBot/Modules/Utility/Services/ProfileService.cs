@@ -10,15 +10,19 @@ using System.Linq;
 using RiasBot.Services.Database.Models;
 using ImageMagick;
 using RiasBot.Extensions;
+using System.Net;
+using RiasBot.Modules.Searches.Services;
 
 namespace RiasBot.Modules.Utility.Services
 {
     public class ProfileService : IRService
     {
+        private readonly AnimeService _animeService;
         private readonly DbService _db;
 
-        public ProfileService(DbService db)
+        public ProfileService(AnimeService animeService, DbService db)
         {
+            _animeService = animeService;
             _db = db;
         }
 
@@ -46,36 +50,39 @@ namespace RiasBot.Modules.Utility.Services
                     string meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
 
                     //Background
-                    try
+                    using (var bg = await http.GetAsync(profileSettings.BackgroundUrl))
                     {
-                        using (var bg = await http.GetStreamAsync(profileSettings.BackgroundUrl))
-                        using (var tempBg = new MagickImage(bg))
+                        if (bg.IsSuccessStatusCode)
                         {
-                            MagickGeometry size = new MagickGeometry(img.Width, img.Height)
+                            using (var tempBg = new MagickImage(await bg.Content.ReadAsStreamAsync()))
                             {
-                                IgnoreAspectRatio = false,
-                                FillArea = true
-                            };
-                            tempBg.Resize(size);
+                                MagickGeometry size = new MagickGeometry(img.Width, img.Height)
+                                {
+                                    IgnoreAspectRatio = false,
+                                    FillArea = true
+                                };
+                                tempBg.Resize(size);
 
-                            img.Draw(new DrawableComposite(0, 0, tempBg));
+                                img.Draw(new DrawableComposite(0, 0, tempBg));
+                            }
+                        }
+                        else
+                        {
+                            using (var dbg = await http.GetStreamAsync(DefaultProfileBackground))
+                            using (var tempBg = new MagickImage(dbg))
+                            {
+                                MagickGeometry size = new MagickGeometry(img.Width, img.Height)
+                                {
+                                    IgnoreAspectRatio = false,
+                                    FillArea = true
+                                };
+                                tempBg.Resize(size);
+
+                                img.Draw(new DrawableComposite(0, 0, tempBg));
+                            }
                         }
                     }
-                    catch
-                    {
-                        using (var bg = await http.GetStreamAsync(DefaultProfileBackground))
-                        using (var tempBg = new MagickImage(bg))
-                        {
-                            MagickGeometry size = new MagickGeometry(img.Width, img.Height)
-                            {
-                                IgnoreAspectRatio = false,
-                                FillArea = true
-                            };
-                            tempBg.Resize(size);
-
-                            img.Draw(new DrawableComposite(0, 0, tempBg));
-                        }
-                    }
+                    
                     float dim = ((float)profileSettings.BackgroundDim / 100) * 255;
                     img.Draw(new Drawables().FillColor(MagickColor.FromRgba(0, 0, 0, (byte)dim)).Rectangle(0, 0, 500, 300));
                     //Avatar
@@ -136,15 +143,39 @@ namespace RiasBot.Modules.Utility.Services
                         bool nextV = true; //fourth waifu
                         foreach (var waifu in profileInfo.Waifus.Take(4))
                         {
-                            using (var waifuStream = await http.GetStreamAsync(waifu.WaifuPicture))
-                            using (var tempWaifu = new MagickImage(waifuStream))
+                            using (var waifuStream = await http.GetAsync(waifu.WaifuPicture))
                             {
-                                MagickGeometry size = new MagickGeometry(46, 72)
+                                if (waifuStream.IsSuccessStatusCode)
                                 {
-                                    IgnoreAspectRatio = false,
-                                };
-                                tempWaifu.Resize(size);
-                                img.Draw(new DrawableComposite(x, y, tempWaifu));
+                                    using (var tempWaifu = new MagickImage(await waifuStream.Content.ReadAsStreamAsync()))
+                                    {
+                                        MagickGeometry size = new MagickGeometry(46, 72)
+                                        {
+                                            IgnoreAspectRatio = false,
+                                        };
+                                        tempWaifu.Resize(size);
+                                        img.Draw(new DrawableComposite(x, y, tempWaifu));
+                                    }
+                                }
+                                else
+                                {
+                                    using (var db = _db.GetDbContext())
+                                    {
+                                        var obj = await _animeService.CharacterSearch(waifu.WaifuId);
+                                        waifu.WaifuPicture = (string)obj.image.large;
+                                        using (var waifuStreamUpdate = await http.GetStreamAsync(waifu.WaifuPicture))
+                                        using (var tempWaifu = new MagickImage(waifuStreamUpdate))
+                                        {
+                                            MagickGeometry size = new MagickGeometry(46, 72)
+                                            {
+                                                IgnoreAspectRatio = false,
+                                            };
+                                            tempWaifu.Resize(size);
+                                            img.Draw(new DrawableComposite(x, y, tempWaifu));
+                                        }
+                                        await db.SaveChangesAsync();
+                                    }
+                                }
                             }
                             if (!nextH)
                             {
@@ -190,39 +221,58 @@ namespace RiasBot.Modules.Utility.Services
                         if (!String.IsNullOrEmpty(profileInfo.BelovedWaifu.BelovedWaifuPicture))
                             waifuPicture = profileInfo.BelovedWaifu.BelovedWaifuPicture;
 
-                        try
+                        using (var belovedWaifu = await http.GetAsync(waifuPicture))
                         {
-                            using (var belovedWaifu = await http.GetStreamAsync(waifuPicture))
-                            using (var tempBelovedWaifu = new MagickImage(belovedWaifu))
+                            if (belovedWaifu.IsSuccessStatusCode)
                             {
-                                MagickGeometry size = new MagickGeometry(100, 155)
-                                {
-                                    IgnoreAspectRatio = false,
-                                    FillArea = true
-                                };
-                                tempBelovedWaifu.Resize(size);
-                                tempBelovedWaifu.Crop(100, 155);
-                                img.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
-                            }
-                        }
-                        catch
-                        {
-                            try
-                            {
-                                using (var belovedWaifu = await http.GetStreamAsync(profileInfo.BelovedWaifu.WaifuPicture))
-                                using (var tempBelovedWaifu = new MagickImage(belovedWaifu))
+                                using (var tempBelovedWaifu = new MagickImage(await belovedWaifu.Content.ReadAsStreamAsync()))
                                 {
                                     MagickGeometry size = new MagickGeometry(100, 155)
                                     {
                                         IgnoreAspectRatio = false,
+                                        FillArea = true
                                     };
                                     tempBelovedWaifu.Resize(size);
+                                    tempBelovedWaifu.Crop(100, 155);
                                     img.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
                                 }
                             }
-                            catch
+                            else
                             {
-                                // the image does not exists
+                                using (var belovedWaifuDefault = await http.GetAsync(profileInfo.BelovedWaifu.WaifuPicture))
+                                {
+                                    if (belovedWaifuDefault.IsSuccessStatusCode)
+                                    {
+                                        using (var tempBelovedWaifu = new MagickImage(await belovedWaifuDefault.Content.ReadAsStreamAsync()))
+                                        {
+                                            MagickGeometry size = new MagickGeometry(100, 155)
+                                            {
+                                                IgnoreAspectRatio = false,
+                                            };
+                                            tempBelovedWaifu.Resize(size);
+                                            img.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        using (var db = _db.GetDbContext())
+                                        {
+                                            var obj = await _animeService.CharacterSearch(profileInfo.BelovedWaifu.WaifuId);
+                                            profileInfo.BelovedWaifu.WaifuPicture = (string)obj.image.large;
+                                            using (var belovedWaifuDefaultUpdate = await http.GetStreamAsync(profileInfo.BelovedWaifu.WaifuPicture))
+                                            using (var tempBelovedWaifu = new MagickImage(belovedWaifuDefaultUpdate))
+                                            {
+                                                MagickGeometry size = new MagickGeometry(100, 155)
+                                                {
+                                                    IgnoreAspectRatio = false,
+                                                };
+                                                tempBelovedWaifu.Resize(size);
+                                                img.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
+                                            }
+                                            await db.SaveChangesAsync();
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

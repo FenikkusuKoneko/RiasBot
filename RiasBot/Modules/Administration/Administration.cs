@@ -190,24 +190,27 @@ namespace RiasBot.Modules.Administration
         {
             var channel = (ITextChannel)Context.Channel;
 
-            amount++;
-
             if (amount < 1)
                 return;
-
-            if (amount > 100)
-                amount = 100;
-
-            var msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days < 14);
-            if (msgs.Count() > 0)
+            if (amount > 500)
             {
-                await Task.Delay(1000).ConfigureAwait(false);
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I can't delete more than 500 messages");
+                return;
+            }
+            do
+            {
+                IEnumerable<IMessage> msgs = null;
+                if (amount > 100)
+                {
+                    msgs = (await channel.GetMessagesAsync().FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days < 14);
+                }
+                else
+                {
+                    msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days < 14);
+                }
                 await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
-            }
-            else
-            {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete any message because they are older than 14 days.");
-            }
+                amount -= 100;
+            } while (amount > 100);
         }
 
         [RiasCommand][@Alias]
