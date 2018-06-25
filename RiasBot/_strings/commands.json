@@ -1142,7 +1142,7 @@
 
   "backgroundimage": {
     "Command": "backgroundimage bgimg",
-    "Description": "Set the profile's background image. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 500x300. NSFW images are not allowed, if someone uses, report them to the support server and they will be banned.",
+    "Description": "Set the profile's background image. Only https. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 500x300. NSFW images are not allowed, if someone uses, report them to the support server and they will be banned.",
     "Remarks": [
       "[prefix]bgimg https://i.imgur.com/pQAwZJ3.png"
     ]
@@ -1249,7 +1249,7 @@
 
   "belovedwaifuavatar": {
     "Command": "belovedwaifuavatar bwa",
-    "Description": "Set to your beloved waifu a new avatar. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 100x155.",
+    "Description": "Set to your beloved waifu a new avatar. Only https. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 100x155.",
     "Remarks": [
       "[prefix]bwa https://i.imgur.com/YDTpwMj.jpg"
     ]

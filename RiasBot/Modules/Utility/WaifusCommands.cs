@@ -235,10 +235,16 @@ namespace RiasBot.Modules.Utility
             [Description][@Remarks]
             public async Task BelovedWaifuAvatar(string url)
             {
-                if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
+                if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
                     return;
+                }
+                if (!url.Contains("https"))
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url must be https").ConfigureAwait(false);
+                    return;
+
                 }
                 if (!url.Contains(".png") && !url.Contains(".jpg") && !url.Contains(".jpeg"))
                 {

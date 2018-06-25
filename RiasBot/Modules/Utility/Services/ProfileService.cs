@@ -32,8 +32,8 @@ namespace RiasBot.Modules.Utility.Services
         public async Task<MemoryStream> GenerateProfileImage(IGuildUser user, IRole highestRole)
         {
             string heartDiamondPath = "/assets/images/heart_diamond.png";
-            var http = new HttpClient();
-
+            
+            using (var http = new HttpClient())
             using (var img = new MagickImage(MagickColors.White, 500, 300))
             {
                 try
