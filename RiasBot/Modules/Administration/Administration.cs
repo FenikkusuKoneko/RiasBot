@@ -192,25 +192,18 @@ namespace RiasBot.Modules.Administration
 
             if (amount < 1)
                 return;
-            if (amount > 500)
+            if (amount > 100)
+                amount = 100;
+
+            var msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt.ToUniversalTime()).Days < 14);
+            if (msgs.Count() > 0)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I can't delete more than 500 messages");
-                return;
-            }
-            do
-            {
-                IEnumerable<IMessage> msgs = null;
-                if (amount > 100)
-                {
-                    msgs = (await channel.GetMessagesAsync().FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days < 14);
-                }
-                else
-                {
-                    msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days < 14);
-                }
                 await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
-                amount -= 100;
-            } while (amount > 100);
+            }
+            else
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete any message because they are older than 14 days.");
+            }
         }
 
         [RiasCommand][@Alias]
@@ -231,10 +224,9 @@ namespace RiasBot.Modules.Administration
             if (amount > 100)
                 amount = 100;
 
-            var msgs = (await channel.GetMessagesAsync(100).FlattenAsync()).Where((x) => x.Author.Id == user.Id).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt).Days < 14).Take(amount);
+            var msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where((x) => x.Author.Id == user.Id).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt.ToUniversalTime()).Days < 14);
             if (msgs.Count() > 0)
             {
-                await Task.Delay(1000).ConfigureAwait(false);
                 await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
             }
             else
