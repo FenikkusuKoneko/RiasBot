@@ -1016,22 +1016,6 @@
     ]
   },
 
-  "google": {
-    "Command": "google g",
-    "Description": "Show a list with results from from Google.",
-    "Remarks": [
-      "[prefix]g anime"
-    ]
-  },
-
-  "image": {
-    "Command": "image",
-    "Description": "Search an image from Google.",
-    "Remarks": [
-      "[prefix]image neko"
-    ]
-  },
-
   "neko": {
     "Command": "neko",
     "Description": "Show a neko girl picture.",

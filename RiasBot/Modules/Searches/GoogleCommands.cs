@@ -79,49 +79,6 @@ namespace RiasBot.Modules.Searches
 
                 await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
-
-            [RiasCommand][@Alias]
-            [Description][@Remarks]
-            public async Task Google([Remainder]string keywords)
-            {
-                var searches = await _service.GoogleSearch(keywords).ConfigureAwait(false);
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithTitle($"Google Search: {keywords}");
-
-                if (searches != null)
-                {
-                    for (int i = 0; i < searches.Length; i++)
-                    {
-                        var search = searches[i].Split("&link=");
-                        embed.AddField($"#{i + 1} {search[0]}", search[1]);
-                    }
-                    await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-                }
-                else
-                {
-                    await Context.Channel.SendErrorEmbed("I couldn't find anything");
-                }
-            }
-
-            [RiasCommand][@Alias]
-            [Description][@Remarks]
-            public async Task Image([Remainder]string keywords)
-            {
-                var rand = new Random((int)DateTime.UtcNow.Ticks);
-                var searches = await _service.GoogleImageSearch(keywords).ConfigureAwait(false);
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                embed.WithTitle($"Google Image Search: {keywords}");
-
-                if (searches != null)
-                {
-                    embed.WithImageUrl(searches[rand.Next(0, searches.Length)]);
-                    await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-                }
-                else
-                {
-                    await Context.Channel.SendErrorEmbed("I couldn't find anything");
-                }
-            }
         }
     }
 }

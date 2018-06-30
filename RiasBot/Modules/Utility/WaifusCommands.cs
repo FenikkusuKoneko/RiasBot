@@ -101,7 +101,7 @@ namespace RiasBot.Modules.Utility
                     {
                         if (userDb.Currency < 5000)
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}. 5000 {RiasBot.currency} required.");
                             return;
                         }
                     }

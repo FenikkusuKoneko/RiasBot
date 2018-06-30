@@ -29,6 +29,23 @@ namespace RiasBot.Modules.Utility.Services
         private readonly string DefaultProfileBackground = "https://i.imgur.com/CeazwG7.png";
         private readonly string DefaultProfileBio = "Nothing here, just dust.";
 
+        public async Task<MemoryStream> GenerateBackgroundPreview(IGuildUser user, string url)
+        {
+            using (var http = new HttpClient())
+            using (var img = new MagickImage(MagickColors.White, 500, 300))
+            {
+                try
+                {
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    return null;
+                }
+            }
+        }
+
         public async Task<MemoryStream> GenerateProfileImage(IGuildUser user, IRole highestRole)
         {
             string heartDiamondPath = "/assets/images/heart_diamond.png";
