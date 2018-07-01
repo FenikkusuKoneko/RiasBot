@@ -1,0 +1,4 @@
+bin/
+obj/
+RiasBot.Core/Modules/Core/*
+vs/*
