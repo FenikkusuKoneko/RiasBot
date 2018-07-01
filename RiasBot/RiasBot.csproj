@@ -3,60 +3,20 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <RuntimeFrameworkVersion>2.0.0</RuntimeFrameworkVersion>
+    <OutputType>exe</OutputType>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
-    <OutputType>Exe</OutputType>
-    <ApplicationIcon />
-    <StartupObject>RiasBot.RiasBot</StartupObject>
-    </PropertyGroup>
+  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20180328104423_XpRolesSystem.cs" />
-    <Compile Remove="Migrations\20180504071936_Waifus2.cs" />
+    <ProjectReference Include="..\RiasBot.Core\RiasBot.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cleverbot.Net" Version="1.0.0" />
-    <PackageReference Include="CoreCLR-NCalc" Version="2.2.33" />
-    <PackageReference Include="Discord.Net" Version="2.0.0-beta2-00964" />
-    <PackageReference Include="DiscordBotsList.Api" Version="1.1.0" />
-    <PackageReference Include="Google.Apis.Translate.v2" Version="1.32.2.875" />
-    <PackageReference Include="Google.Apis.Urlshortener.v1" Version="1.32.2.138" />
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.32.2.1162" />
-    <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.32.2.1146" />
-    <PackageReference Include="GoogleApi" Version="3.2.21" />
-	  <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00194" />
-    <PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha9-00189" />
-    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.4.5" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.0.0-dev-61717-03" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.0.0-dev-61717-03" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.0.0-dev-61717-03" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Scripting" Version="3.0.0-dev-61717-03" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.SyndicationFeed.ReaderWriter" Version="1.0.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Unirest-API" Version="1.0.7.6" />
-    <PackageReference Include="UnitsNet" Version="3.96.0" />
-    <PackageReference Include="Urban.NET" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="2.0.0" />
   </ItemGroup>
 
 </Project>

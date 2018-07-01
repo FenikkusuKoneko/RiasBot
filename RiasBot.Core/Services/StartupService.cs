@@ -41,7 +41,7 @@ namespace RiasBot.Services
             await _restDiscord.LoginAsync(TokenType.Bot, discordToken).ConfigureAwait(false);
             await _discord.StartAsync().ConfigureAwait(false);
             
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _provider).ConfigureAwait(false);
+            await _commands.AddModulesAsync(Assembly.GetAssembly(typeof(RiasBot)), _provider).ConfigureAwait(false);
             await _commands.RemoveModuleAsync<Music>();
             RiasBot.upTime.Start();
         }
