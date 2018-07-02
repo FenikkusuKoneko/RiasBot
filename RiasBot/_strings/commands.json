@@ -173,11 +173,11 @@
     ]
   },
 
-  "die": {
-    "Command": "die",
-    "Description": "Stop the bot.",
+  "update": {
+    "Command": "update restart",
+    "Description": "Update the project.",
     "Remarks": [
-      "[prefix]die"
+      "[prefix]update"
     ]
   },
 

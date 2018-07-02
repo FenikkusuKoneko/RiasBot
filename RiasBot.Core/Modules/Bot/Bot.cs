@@ -73,7 +73,7 @@ namespace RiasBot.Modules.Bot
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireOwner]
-        public async Task Die()
+        public async Task Update()
         {
             await Context.Channel.SendConfirmationEmbed("Shutting down...").ConfigureAwait(false);
             foreach (var mp in _musicService.MPlayer)
