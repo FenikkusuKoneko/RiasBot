@@ -16,7 +16,7 @@ namespace RiasBot
 {
     public class RiasBot
     {
-        public static string version = "1.5.9.5";
+        public static string version = "1.5.9.6";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";
@@ -30,7 +30,7 @@ namespace RiasBot
         public static Stopwatch upTime = new Stopwatch();
         public static int commandsRun = 0;
 
-        public static bool isBeta = true;
+        public static bool isBeta = false;
 
         public BotCredentials Credentials { get; private set; }
 
