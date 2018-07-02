@@ -30,7 +30,7 @@ namespace RiasBot
         public static Stopwatch upTime = new Stopwatch();
         public static int commandsRun = 0;
 
-        public static bool isBeta = false;
+        public static bool isBeta = true;
 
         public BotCredentials Credentials { get; private set; }
 
