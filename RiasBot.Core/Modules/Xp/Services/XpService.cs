@@ -134,16 +134,15 @@ namespace RiasBot.Modules.Xp.Services
         {
             using (var db = _db.GetDbContext())
             {
-                try
+                var roleReward = db.XpRolesSystem.Where(x => x.GuildId == guild.Id).FirstOrDefault(y => y.Level == level);
+                if (roleReward != null)
                 {
-                    var roleReward = db.XpRolesSystem.Where(x => x.GuildId == guild.Id).FirstOrDefault(y => y.Level == level);
-                    if (roleReward != null)
+                    var role = guild.GetRole(roleReward.RoleId);
+                    if (role != null)
                     {
-                        var role = guild.GetRole(roleReward.RoleId);
                         await user.AddRoleAsync(role).ConfigureAwait(false);
                     }
                 }
-                catch { }
             }
         }
 

@@ -1289,6 +1289,14 @@
     ]
   },
 
+  "leveluprolerewards": {
+    "Command": "leveluprolerewards lurrs",
+    "Description": "Show all levelup role rewards for this server.",
+    "Remarks": [
+      "[prefix]lurrs"
+    ]
+  },
+
   "resetguildexperience": {
     "Command": "resetserverxp rsxp",
     "Description": "Reset the xp leaderboard from a server.",

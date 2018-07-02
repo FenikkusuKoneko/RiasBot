@@ -1,4 +1,6 @@
+.vs/
 bin/
 obj/
 RiasBot.Core/Modules/Core/
-.vs/
+RiasBot/data/credentials.json
+RiasBot/data/RiasBot.db

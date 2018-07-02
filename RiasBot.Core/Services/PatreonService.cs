@@ -29,8 +29,6 @@ namespace RiasBot.Services
 
             if (!RiasBot.isBeta && !String.IsNullOrEmpty(_creds.PatreonAccessToken))
             {
-                var patreon = Task.Run(async () => await Patreon());
-                Task.WaitAll(patreon);
                 timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
             }
         }
@@ -38,23 +36,18 @@ namespace RiasBot.Services
 
         public async Task Patreon()
         {
-            try
+            using (var http = new HttpClient())
             {
-                using (var http = new HttpClient())
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Bearer " + _creds.PatreonAccessToken);
+
+                var url = "https://www.patreon.com/api/oauth2/api/current_user/campaigns";
+                var data = await http.GetAsync(url);
+                if (data.IsSuccessStatusCode)
                 {
-                    http.DefaultRequestHeaders.Clear();
-                    http.DefaultRequestHeaders.Add("Authorization", "Bearer " + _creds.PatreonAccessToken);
-
-                    var url = "https://www.patreon.com/api/oauth2/api/current_user/campaigns";
-                    var data = await http.GetStringAsync(url);
-
-                    var patreonCurrentUser = JsonConvert.DeserializeObject<PatreonCurrentUser>(data);
+                    var patreonCurrentUser = JsonConvert.DeserializeObject<PatreonCurrentUser>(await data.Content.ReadAsStringAsync());
                     campaignId = patreonCurrentUser.Included.FirstOrDefault().Relationships.Campaign.Data.Id;
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
             }
         }
 
@@ -68,9 +61,15 @@ namespace RiasBot.Services
                     http.DefaultRequestHeaders.Add("Authorization", "Bearer " + _creds.PatreonAccessToken);
 
                     var url = $"https://www.patreon.com/api/oauth2/api/campaigns/{campaignId}/pledges";
-                    var data = await http.GetStringAsync(url);
-
-                    return JsonConvert.DeserializeObject<PatreonCampaign>(data);
+                    var data = await http.GetAsync(url);
+                    if (data.IsSuccessStatusCode)
+                    {
+                        return JsonConvert.DeserializeObject<PatreonCampaign>(await data.Content.ReadAsStringAsync());
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
             else
@@ -81,6 +80,10 @@ namespace RiasBot.Services
 
         public async Task RewardPatron()
         {
+            if (campaignId == 0)
+            {
+                await Patreon();
+            }
             var patreonCampaign = await Campaign();
             if (patreonCampaign == null)
                 return;
