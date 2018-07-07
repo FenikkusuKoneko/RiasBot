@@ -16,6 +16,7 @@ using System.Diagnostics;
 using UnitsNet;
 using Discord.WebSocket;
 using System.Globalization;
+using RiasBot.Core.Services.Database.Models;
 
 namespace RiasBot.Modules.Utility
 {
