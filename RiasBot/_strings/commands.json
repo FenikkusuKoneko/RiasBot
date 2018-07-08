@@ -1126,7 +1126,7 @@
 
   "backgroundimage": {
     "Command": "backgroundimage bgimg",
-    "Description": "Set the profile's background image. Only https. Direct image links, png, jpg or jpeg allowed. For better results, resize the image to 500x300. NSFW images are not allowed, if someone uses, report them to the support server and they will be banned.",
+    "Description": "Set the profile's background image. Only https. Direct image links, png, jpg or jpeg allowed. Price: 1000 [currency]. For better results, resize the image to 500x300. NSFW images are not allowed, if someone uses, report them to the support server and they will be banned.",
     "Remarks": [
       "[prefix]bgimg https://i.imgur.com/pQAwZJ3.png"
     ]
