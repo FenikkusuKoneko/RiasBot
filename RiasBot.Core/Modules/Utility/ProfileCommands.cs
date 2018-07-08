@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
@@ -17,10 +18,12 @@ namespace RiasBot.Modules.Utility
     {
         public class ProfileCommands : RiasSubmodule<ProfileService>
         {
+            private readonly InteractiveService _is;
             private readonly DbService _db;
 
-            public ProfileCommands(DbService db)
+            public ProfileCommands(InteractiveService iss, DbService db)
             {
+                _is = iss;
                 _db = db;
             }
             [RiasCommand][@Alias]
@@ -71,19 +74,53 @@ namespace RiasBot.Modules.Utility
                 }
 
                 using (var db = _db.GetDbContext())
+                using (var preview = await _service.GenerateBackgroundPreview((IGuildUser)Context.User, url))
                 {
-                    var profileDb = db.Profile.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
-                    if (profileDb != null)
-                    {
-                        profileDb.BackgroundUrl = url;
-                    }
+                    if (preview != null)
+                        await Context.Channel.SendFileAsync(preview, $"{Context.User.Id}_preview.png").ConfigureAwait(false);
                     else
                     {
-                        var image = new Profile { UserId = Context.User.Id, BackgroundUrl = url, BackgroundDim = 50 };
-                        await db.AddAsync(image).ConfigureAwait(false);
+                        await Context.Channel.SendErrorEmbed($"{Context.User} something went wrong! Check if the image is available.");
+                        return;
                     }
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} new profile's background image set.").ConfigureAwait(false);
-                    await db.SaveChangesAsync().ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationEmbed($"Do you want to set this background image? Price: 1000 {RiasBot.currency}. Type `confirm` or `cancel`").ConfigureAwait(false);
+                    var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromMinutes(1)).ConfigureAwait(false);
+                    if (input != null)
+                    {
+                        if (input.Content.ToLowerInvariant() != "confirm")
+                        {
+                            await Context.Channel.SendErrorEmbed("Canceled!").ConfigureAwait(false);
+                            return;
+                        }
+                        var userDb = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
+                        var profileDb = db.Profile.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
+                        if (userDb != null)
+                        {
+                            if (userDb.Currency >= 1000)
+                            {
+                                userDb.Currency -= 1000;
+                                if (profileDb != null)
+                                {
+                                    profileDb.BackgroundUrl = url;
+                                }
+                                else
+                                {
+                                    var image = new Profile { UserId = Context.User.Id, BackgroundUrl = url, BackgroundDim = 50 };
+                                    await db.AddAsync(image).ConfigureAwait(false);
+                                }
+                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} new background image set.").ConfigureAwait(false);
+                                await db.SaveChangesAsync().ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
+                            }
+                        }
+                        else
+                        {
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
+                        }
+                    }
                 }
             }
 

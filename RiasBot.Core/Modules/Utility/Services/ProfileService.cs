@@ -36,7 +36,131 @@ namespace RiasBot.Modules.Utility.Services
             {
                 try
                 {
-                    return null;
+                    //Init
+                    string avatarUrl = user.RealAvatarUrl();
+                    string nickname = user.Nickname;
+
+                    string arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
+                    string aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
+                    string meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
+
+                    //Background
+                    using (var bg = await http.GetAsync(url))
+                    {
+                        if (bg.IsSuccessStatusCode)
+                        {
+                            using (var tempBg = new MagickImage(await bg.Content.ReadAsStreamAsync()))
+                            {
+                                MagickGeometry size = new MagickGeometry(img.Width, img.Height)
+                                {
+                                    IgnoreAspectRatio = false,
+                                    FillArea = true
+                                };
+                                tempBg.Resize(size);
+
+                                img.Draw(new DrawableComposite(0, 0, tempBg));
+                            }
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                    img.Draw(new Drawables().FillColor(MagickColor.FromRgba(0, 0, 0, 127)).Rectangle(0, 0, 500, 300));
+                    //Avatar
+                    using (var temp = await http.GetStreamAsync(avatarUrl))
+                    using (var tempDraw = new MagickImage(temp))
+                    {
+                        MagickGeometry size = new MagickGeometry(70, 70)
+                        {
+                            IgnoreAspectRatio = false,
+                        };
+                        tempDraw.Resize(size);
+                        tempDraw.Border(2);
+                        tempDraw.BorderColor = MagickColors.White;
+                        img.Draw(new DrawableComposite(30, 20, tempDraw));
+                    }
+                    int usernameYPosition = (!String.IsNullOrEmpty(nickname)) ? 20 : 40;
+                    var usernameSettings = new MagickReadSettings()
+                    {
+                        BackgroundColor = MagickColors.Transparent,
+                        FillColor = MagickColors.White,
+                        Font = meiryoFont,
+                        Width = 150,
+                        Height = 40
+                    };
+
+                    using (var username = new MagickImage("caption:" + user.ToString(), usernameSettings))
+                    {
+                        img.Draw(new DrawableComposite(120, usernameYPosition, username));
+                    }
+                    if (!String.IsNullOrEmpty(nickname))
+                    {
+                        var nicknameSettings = new MagickReadSettings()
+                        {
+                            BackgroundColor = MagickColors.Transparent,
+                            FillColor = MagickColors.White,
+                            Font = meiryoFont,
+                            Width = 150,
+                            Height = 40
+                        };
+
+                        using (var nicknameWrap = new MagickImage("caption:" + nickname, nicknameSettings))
+                        {
+                            img.Draw(new DrawableComposite(130, 60, nicknameWrap));
+                        }
+                    }
+
+                    //Waifus
+                    img.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(15, 120, 127, 284));
+                    img.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(137, 100, 365, 285));
+                    img.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(375, 120, 485, 285));
+
+                    img.Draw(new Drawables().StrokeWidth(1).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(147, 110, 355, 130));
+
+                    // Global Level
+                    img.Draw(new Drawables().FontPointSize(18)
+                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                        .FillColor(MagickColors.White)
+                        .TextAlignment(TextAlignment.Center)
+                        .Text(170, 165, "Level"));
+
+                    // Heart Diamonds
+                    img.Draw(new Drawables().FontPointSize(13)
+                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                        .FillColor(MagickColors.White)
+                        .TextAlignment(TextAlignment.Left)
+                        .Text(210, 165, "Currency"));
+                    
+                    // Total XP
+                    img.Draw(new Drawables().FontPointSize(13)
+                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                        .FillColor(MagickColors.White)
+                        .TextAlignment(TextAlignment.Left)
+                        .Text(210, 180, "Total XP"));
+                    // Rank
+                    img.Draw(new Drawables().FontPointSize(13)
+                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                        .FillColor(MagickColors.White)
+                        .TextAlignment(TextAlignment.Left)
+                        .Text(210, 195, "Rank"));
+
+                    // Bio
+                    img.Draw(new Drawables().RoundRectangle(147, 207, 355, 275, 5, 5)
+                        .FillColor(MagickColors.White));
+                    var bioBoxsettings = new MagickReadSettings()
+                    {
+                        BackgroundColor = MagickColors.Transparent,
+                        FillColor = MagickColors.Black,
+                        Font = meiryoFont,
+                        FontPointsize = 9,
+                        Width = 198
+                    };
+
+                    var imageStream = new MemoryStream();
+                    img.Write(imageStream, MagickFormat.Png);
+                    imageStream.Position = 0;
+                    return imageStream;
                 }
                 catch (Exception ex)
                 {
