@@ -185,7 +185,7 @@ namespace RiasBot.Modules.Utility
 
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                 embed.WithTitle(Context.Guild.Name);
-                embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner.Username}#{owner.Discriminator}", true).AddField("Members", guild.MemberCount, true);
+                embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner?.Username}#{owner?.Discriminator}", true).AddField("Members", guild.MemberCount, true);
                 embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
                 embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true).AddField("Region", Context.Guild.VoiceRegionId, true);
                 embed.AddField($"Custom Emotes ({Context.Guild.Emotes.Count})", emotes);
