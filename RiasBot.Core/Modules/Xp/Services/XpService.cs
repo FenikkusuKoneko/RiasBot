@@ -1,6 +1,4 @@
 ﻿using Discord;
-using ImageSharp;
-using Image = ImageSharp.Image;
 using RiasBot.Services;
 using RiasBot.Services.Database.Models;
 using System;
@@ -9,9 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using RiasBot.Extensions;
 using System.Net.Http;
-using SixLabors.Primitives;
-using ImageSharp.Drawing;
-using SixLabors.Fonts;
+using ImageMagick;
 
 namespace RiasBot.Modules.Xp.Services
 {
@@ -148,164 +144,110 @@ namespace RiasBot.Modules.Xp.Services
 
         public async Task<MemoryStream> GenerateXpImage(IGuildUser user, (int, int) level, (int, int) currentXp, (int, int) requiredXp, int globalRank, int guildRank, IRole highestRole)
         {
-            string riasPath = "/assets/images/xp/xp_model.png";
             string xpWhitePattern = "/assets/images/xp/xp_white_pattern.png";
             string xpBlackPattern = "/assets/images/xp/xp_black_pattern.png";
             string globalXpBarBgPath = "/assets/images/xp/global_xp_bar_bg.png";
             string guildXpBarBgPath = "/assets/images/xp/guild_xp_bar_bg.png";
-            var http = new HttpClient();
 
             (int globalLevel, int guildLevel) = level;
             (int globalCurrentXp, int guildCurrentXp) = currentXp;
             (int globalRequiredXp, int guildRequiredXp) = requiredXp;
 
-            using (var img = Image.Load(Environment.CurrentDirectory + riasPath))
-            using (var whitePattern = Image.Load(Environment.CurrentDirectory + xpWhitePattern))
-            using (var blackPattern = Image.Load(Environment.CurrentDirectory + xpBlackPattern))
-            using (var globalXpBarBg = Image.Load(Environment.CurrentDirectory + globalXpBarBgPath))
-            using (var guildXpBarBg = Image.Load(Environment.CurrentDirectory + guildXpBarBgPath))
+            var roleColor = GetUserHighRoleColor(highestRole);
+
+            using (var http = new HttpClient())
+            using (var img = new MagickImage(roleColor, 500, 300))
+            using (var whitePattern = new MagickImage(Environment.CurrentDirectory + xpWhitePattern))
+            using (var blackPattern = new MagickImage(Environment.CurrentDirectory + xpBlackPattern))
+            using (var globalXpBarBg = new MagickImage(Environment.CurrentDirectory + globalXpBarBgPath))
+            using (var guildXpBarBg = new MagickImage(Environment.CurrentDirectory + guildXpBarBgPath))
             {
                 try
                 {
                     //Init
                     var avatarUrl = user.RealAvatarUrl();
-                    int usernameSize = (user.ToString().Length < 15) ? 25 : 25 - user.ToString().Length / 5;
-                    FontCollection fonts = new FontCollection();
-                    FontFamily meiryioFont = fonts.Install(Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf");
-                    FontFamily whitneyBold = fonts.Install(Environment.CurrentDirectory + "/assets/fonts/WhitneyBold.ttf");
-                    FontFamily arialFont = fonts.Install(Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf");
-                    var roleColor = GetUserHighRoleColor(highestRole);
+                    string arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
+                    string aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
+                    string meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
 
-                    var foreColor = (ImageExtension.PerceivedBrightness(roleColor) > 130 ? Rgba32.Black : Rgba32.White);
+                    var foreColor = (ImageExtension.PerceivedBrightness(roleColor) > 130) ? MagickColors.Black : MagickColors.White;
 
                     //Pattern
-                    img.FillPolygon(roleColor, new PointF[]
-                        {
-                            new PointF(0, 0),
-                            new PointF(img.Width, 0),
-                            new PointF(img.Width, img.Height),
-                            new PointF(0, img.Height)
-                        });
-                    if (foreColor == Rgba32.White)
+                    if (foreColor == MagickColors.White)
                     {
-                        img.DrawImage(whitePattern, 1, new Size(img.Width, img.Height), new Point(0, 0));
+                        img.Draw(new DrawableComposite(0, 0, whitePattern));
                     }
                     else
                     {
-                        img.DrawImage(blackPattern, 1, new Size(img.Width, img.Height), new Point(0, 0));
+                        img.Draw(new DrawableComposite(0, 0, blackPattern));
                     }
                     //Avatar
-                    img.Fill(foreColor, ImageExtension.AvatarStroke(250, 45, 35));
+                    img.Draw(new Drawables().StrokeWidth(3).StrokeColor(foreColor).FillColor(MagickColors.Transparent).RoundRectangle(213, 8, 286, 81, 45, 45));
 
-                    using (var temp = await http.GetStreamAsync(avatarUrl))
-                    using (var tempDraw = Image.Load(temp).Resize(70, 70))
+                    using (var avatar = await http.GetStreamAsync(avatarUrl))
+                    using (var tempBg = new MagickImage(avatar))
                     {
-                        tempDraw.Round(35);
-                        img.DrawImage(tempDraw,
-                            1,
-                            new Size(70, 70),
-                            new Point(215, 10)
-                    );
+                        MagickGeometry size = new MagickGeometry(70, 70)
+                        {
+                            IgnoreAspectRatio = false,
+                            FillArea = true
+                        };
+                        tempBg.Resize(size);
+                        tempBg.Roundify();
+                        img.Draw(new DrawableComposite(215, 10, tempBg));
                     }
-                    img.DrawPolygon(foreColor, 2, new PointF[]
-                        {
-                            new PointF(10, 130),
-                            new PointF(115, 130),
-                            new PointF(115, 205),
-                            new PointF(10, 205)
-                        });
-                    img.DrawPolygon(foreColor, 2, new PointF[]
-                        {
-                            new PointF(10, 215),
-                            new PointF(115, 215),
-                            new PointF(115, 290),
-                            new PointF(10, 290)
-                        });
 
-                    img.DrawImage(globalXpBarBg, 1, new Size(globalXpBarBg.Width, globalXpBarBg.Height), new Point(125, 130));
-                    img.DrawImage(guildXpBarBg, 1, new Size(guildXpBarBg.Width, guildXpBarBg.Height), new Point(125, 215));
+                    img.Draw(new Drawables().StrokeWidth(2).StrokeColor(foreColor).FillColor(MagickColors.Transparent).Rectangle(10, 130, 115, 205));
+                    img.Draw(new Drawables().StrokeWidth(2).StrokeColor(foreColor).FillColor(MagickColors.Transparent).Rectangle(10, 215, 115, 290));
 
-                    var xpBgColor = new Rgba32(roleColor.R, roleColor.G, roleColor.B, 150);
+                    img.Draw(new DrawableComposite(125, 130, globalXpBarBg));
+                    img.Draw(new DrawableComposite(125, 215, guildXpBarBg));
 
                     //Username, GlobalLevel
-                    img.DrawText(user.ToString(), new Font(meiryioFont, usernameSize), foreColor, new PointF(250, 100), new TextGraphicsOptions()
+                    var usernameSettings = new MagickReadSettings()
                     {
-                        VerticalAlignment = VerticalAlignment.Center,
-                        HorizontalAlignment = HorizontalAlignment.Center
-                    });
-                    img.DrawText($"GLOBAL", new Font(whitneyBold, 17), foreColor, new PointF(60, 140), new TextGraphicsOptions()
+                        BackgroundColor = MagickColors.Transparent,
+                        FillColor = foreColor,
+                        Font = meiryoFont,
+                        Width = 400,
+                        Height = 35,
+                        TextGravity = Gravity.Center
+                    };
+
+                    using (var username = new MagickImage("caption:" + user.ToString(), usernameSettings))
                     {
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-                    img.DrawText($"SERVER", new Font(whitneyBold, 17), foreColor, new PointF(60, 223), new TextGraphicsOptions()
-                    {
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-                    img.DrawText($"LVL. {globalLevel}", new Font(arialFont, 15), foreColor, new PointF(60, 160), new TextGraphicsOptions()
-                    {
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-                    img.DrawText($"LVL. {guildLevel}", new Font(arialFont, 15), foreColor, new PointF(60, 243), new TextGraphicsOptions()
-                    {
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-                    img.DrawText($"#{globalRank}", new Font(arialFont, 15), foreColor, new PointF(60, 180), new TextGraphicsOptions()
-                    {
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-                    img.DrawText($"#{guildRank}", new Font(arialFont, 15), foreColor, new PointF(60, 265), new TextGraphicsOptions()
-                    {
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
+                        img.Draw(new DrawableComposite(50, 90, username));
+                    }
+
+                    img.Draw(new Drawables().FillColor(foreColor).Text(60, 150, "GLOBAL").TextAlignment(TextAlignment.Center).Font(aweryFont).FontPointSize(17));
+                    img.Draw(new Drawables().FillColor(foreColor).Text(60, 234, "SERVER").TextAlignment(TextAlignment.Center).Font(aweryFont).FontPointSize(17));
+                    img.Draw(new Drawables().FillColor(foreColor).Text(60, 170, $"LVL. {globalLevel}").TextAlignment(TextAlignment.Center).Font(aweryFont).FontPointSize(15));
+                    img.Draw(new Drawables().FillColor(foreColor).Text(60, 254, $"LVL. {guildLevel}").TextAlignment(TextAlignment.Center).Font(aweryFont).FontPointSize(15));
+                    img.Draw(new Drawables().FillColor(foreColor).Text(60, 190, $"#{globalRank}").TextAlignment(TextAlignment.Center).Font(aweryFont).FontPointSize(15));
+                    img.Draw(new Drawables().FillColor(foreColor).Text(60, 276, $"#{guildRank}").TextAlignment(TextAlignment.Center).Font(aweryFont).FontPointSize(15));
+
                     //GlobalLevel
-                    img.FillPolygon(xpBgColor, new[]
-                    {
-                        new PointF(125, 130),
-                        new PointF(125 + (350 * (globalCurrentXp / (float)globalRequiredXp)), 130),
-                        new PointF(125 + (350 * (globalCurrentXp / (float)globalRequiredXp)), 205),
-                        new PointF(125, 205),
-                    });
-                    //GuildLevel
-                    img.FillPolygon(xpBgColor, new[]
-                    {
-                        new PointF(125, 215),
-                        new PointF(125 + (350 * (guildCurrentXp / (float)guildRequiredXp)), 215),
-                        new PointF(125 + (350 * (guildCurrentXp / (float)guildRequiredXp)), 290),
-                        new PointF(125, 290),
-                    });
+                    var xpBgColor = MagickColor.FromRgba((byte)roleColor.R, (byte)roleColor.G, (byte)roleColor.B, 127);
 
-                    img.DrawText($"{globalCurrentXp}/{globalRequiredXp}", new Font(whitneyBold, 17), Rgba32.Black, new PointF(300, 165), new TextGraphicsOptions(true)
-                    {
-                        BlenderMode = ImageSharp.PixelFormats.PixelBlenderMode.Src,
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-                    img.DrawText($"{guildCurrentXp}/{guildRequiredXp}", new Font(whitneyBold, 17), Rgba32.Black, new PointF(300, 245), new TextGraphicsOptions(true)
-                    {
-                        BlenderMode = ImageSharp.PixelFormats.PixelBlenderMode.Src,
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-
+                    img.Draw(new Drawables().FillColor(xpBgColor).Rectangle(125, 130, 125 + (350 * (globalCurrentXp / (float)globalRequiredXp)), 205));
+                    img.Draw(new Drawables().FillColor(xpBgColor).Rectangle(125, 215, 125 + (350 * (guildCurrentXp / (float)guildRequiredXp)), 290));
+                    img.Draw(new Drawables().FillColor(MagickColors.Black).Text(300, 175, $"{globalCurrentXp}/{globalRequiredXp}").TextAlignment(TextAlignment.Center).Font(arialFont).FontPointSize(17));
+                    img.Draw(new Drawables().FillColor(MagickColors.Black).Text(300, 255, $"{guildCurrentXp}/{guildRequiredXp}").TextAlignment(TextAlignment.Center).Font(arialFont).FontPointSize(17));
+                    
                     var imageStream = new MemoryStream();
-                    img.SaveAsPng(imageStream);
+                    img.Write(imageStream, MagickFormat.Png);
                     imageStream.Position = 0;
                     return imageStream;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex);
                     return null;
                 }
             }
         }
 
-        private Rgba32 GetUserHighRoleColor(IRole role)
+        private MagickColor GetUserHighRoleColor(IRole role)
         {
             if (role.Name != "@everyone")
             {
@@ -315,16 +257,16 @@ namespace RiasBot.Modules.Xp.Services
                     var g = role.Color.G;
                     var b = role.Color.B;
 
-                    return new Rgba32(r, g, b);
+                    return MagickColor.FromRgb(r, g, b);
                 }
                 else
                 {
-                    return Rgba32.White;
+                    return MagickColors.White;
                 }
             }
             else
             {
-                return Rgba32.White;
+                return MagickColors.White;
             }
         }
     }

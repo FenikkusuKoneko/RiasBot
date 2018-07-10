@@ -23,8 +23,6 @@
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.34.0.1226" />
     <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.34.0.1216" />
     <PackageReference Include="GoogleApi" Version="3.5.0" />
-	<PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00194" />
-    <PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha9-00189" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.5.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.0.0-dev-61717-03" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.0.0-dev-61717-03" />

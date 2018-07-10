@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using ImageSharp;
 using Newtonsoft.Json;
 using RiasBot.Commons;
 using System;
