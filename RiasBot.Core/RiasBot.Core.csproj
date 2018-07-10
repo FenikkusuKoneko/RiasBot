@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RuntimeFrameworkVersion>2.1.1</RuntimeFrameworkVersion>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -14,40 +15,36 @@
 
   <ItemGroup>
     <PackageReference Include="Cleverbot.Net" Version="1.0.0" />
-    <PackageReference Include="CoreCLR-NCalc" Version="2.2.33" />
+    <PackageReference Include="CoreCLR-NCalc" Version="2.2.34" />
     <PackageReference Include="Discord.Net" Version="2.0.0-beta2-00964" />
     <PackageReference Include="DiscordBotsList.Api" Version="1.1.0" />
-    <PackageReference Include="Google.Apis.Translate.v2" Version="1.32.2.875" />
-    <PackageReference Include="Google.Apis.Urlshortener.v1" Version="1.32.2.138" />
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.32.2.1162" />
-    <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.32.2.1146" />
-    <PackageReference Include="GoogleApi" Version="3.2.21" />
+    <PackageReference Include="Google.Apis.Translate.v2" Version="1.34.0.875" />
+    <PackageReference Include="Google.Apis.Urlshortener.v1" Version="1.34.0.138" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.34.0.1226" />
+    <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.34.0.1216" />
+    <PackageReference Include="GoogleApi" Version="3.5.0" />
 	<PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00194" />
     <PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha9-00189" />
-    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.4.5" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.5.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.0.0-dev-61717-03" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.0.0-dev-61717-03" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.0.0-dev-61717-03" />
     <PackageReference Include="Microsoft.CodeAnalysis.Scripting" Version="3.0.0-dev-61717-03" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.SyndicationFeed.ReaderWriter" Version="1.0.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Unirest-API" Version="1.0.7.6" />
-    <PackageReference Include="UnitsNet" Version="3.96.0" />
+    <PackageReference Include="UnitsNet" Version="3.102.0" />
     <PackageReference Include="Urban.NET" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
   </ItemGroup>
 
 </Project>
