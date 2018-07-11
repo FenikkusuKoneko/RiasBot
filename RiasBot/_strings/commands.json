@@ -561,9 +561,18 @@
 
   "setchanneltopic": {
     "Command": "setchanneltopic sct",
-    "Description": "Set this channel's topic",
+    "Description": "Set this channel's topic.",
     "Remarks": [
       "[prefix]sct topic"
+    ]
+  },
+
+  "setnsfwchannel": {
+    "Command": "setnsfwchannel snsfwch",
+    "Description": "Toggle this channel or another channel as NSFW.",
+    "Remarks": [
+      "[prefix]snsfwch",
+      "[prefix]snsfwch nsfw"
     ]
   },
 

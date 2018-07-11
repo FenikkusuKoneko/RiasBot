@@ -234,6 +234,47 @@ namespace RiasBot.Modules.Administration
                     await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} channel's topic set to {Format.Bold(topic)}");
                 }
             }
+
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
+            [RequireUserPermission(GuildPermission.ManageChannels)]
+            [RequireBotPermission(GuildPermission.ManageChannels)]
+            [RequireContext(ContextType.Guild)]
+            public async Task SetNSFWChannel(ITextChannel channel = null)
+            {
+                bool thisChannel = false;
+                if (channel is null)
+                {
+                    channel = (ITextChannel)Context.Channel;
+                    thisChannel = true;
+                }
+                var permissions = (await Context.Guild.GetCurrentUserAsync()).GetPermissions(channel);
+                if (permissions.ViewChannel)
+                {
+                    if (channel.IsNsfw)
+                    {
+                        await channel.ModifyAsync(x => x.IsNsfw = false).ConfigureAwait(false);
+                        if (thisChannel)
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} this channel is not NSFW anymore.");
+                        else
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {Format.Bold(channel.Name)} is not NSFW anymore.");
+                    }
+                    else
+                    {
+                        await channel.ModifyAsync(x => x.IsNsfw = true).ConfigureAwait(false);
+                        if (thisChannel)
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} this channel is now NSFW.");
+                        else
+                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {Format.Bold(channel.Name)} is now NSFW.");
+                    }
+                }
+                else
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I don't have the permission to view the channel.");
+                }
+            }
         }
     }
 }
