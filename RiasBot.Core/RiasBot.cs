@@ -16,7 +16,7 @@ namespace RiasBot
 {
     public class RiasBot
     {
-        public static string version = "1.6.1";
+        public static string version = "1.6.2";
         public static uint goodColor = 0x009688;
         public static uint badColor = 0xff0000;
         public static string currency = "<:heart_diamond:416513090549448724>";

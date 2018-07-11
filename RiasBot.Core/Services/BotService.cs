@@ -133,6 +133,26 @@ namespace RiasBot.Services
             }
         }
 
+        public async Task AddAssignableRole(IGuild guild, IGuildUser user)
+        {
+            using (var db = _db.GetDbContext())
+            {
+                var guildDb = db.Guilds.Where(g => g.GuildId == guild.Id).FirstOrDefault();
+                if (guildDb != null)
+                {
+                    if (guildDb.AutoAssignableRole > 0)
+                    {
+                        var aar = guild.GetRole(guildDb.AutoAssignableRole);
+                        if (aar != null)
+                        {
+                            if (user.RoleIds.All(x => x != aar.Id))
+                                await user.AddRoleAsync(aar).ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
+        }
+
         public async Task Disconnected(Exception ex, DiscordSocketClient client)
         {
             foreach (var guild in client.Guilds)
