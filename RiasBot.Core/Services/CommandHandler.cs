@@ -39,8 +39,7 @@ namespace RiasBot.Services
 
         private async Task OnMessageReceivedAsync(SocketMessage s)
         {
-            var msg = s as SocketUserMessage;     // Ensure the message is from a user/bot
-            if (msg == null) return;
+            if (!(s is SocketUserMessage msg)) return;      // Ensure the message is from a user/bot
             if (msg.Author.Id == _discord.CurrentUser.Id) return;     // Ignore self when checking commands
             if (msg.Author.IsBot) return;       // Ignore other bots
 
@@ -50,6 +49,7 @@ namespace RiasBot.Services
             await GiveXp(context, msg);
             using (var db = _db.GetDbContext())
             {
+                var guildDb = db.Guilds.Where(x => x.GuildId == context.Guild.Id).FirstOrDefault();
                 var userDb = db.Users.Where(x => x.UserId == msg.Author.Id).FirstOrDefault();
                 if (!context.IsPrivate)
                 {
@@ -73,21 +73,25 @@ namespace RiasBot.Services
                 if (userDb != null)
                     if (userDb.IsBanned)
                         return;     //banned users will cannot use the commands
-            }
 
-            int argPos = 0;     // Check if the message has a valid command prefix
+                int argPos = 0;     // Check if the message has a valid command prefix
 
-            if (msg.HasStringPrefix(_prefix, ref argPos) || msg.HasStringPrefix("rias ", ref argPos)
-                || msg.HasStringPrefix("Rias ", ref argPos)
-                || (msg.HasMentionPrefix(context.Client.CurrentUser, ref argPos)))
-            {
-                var result = await _commands.ExecuteAsync(context, argPos, _provider).ConfigureAwait(false);
-
-                if (result.IsSuccess)
-                    RiasBot.commandsRun++;
-                else if (result.Error == CommandError.UnmetPrecondition)
+                if (msg.HasStringPrefix(_prefix, ref argPos) || msg.HasStringPrefix("rias ", ref argPos)
+                    || msg.HasStringPrefix("Rias ", ref argPos)
+                    || (msg.HasMentionPrefix(context.Client.CurrentUser, ref argPos)))
                 {
-                    await Task.Factory.StartNew(() => SendErrorResult(msg, result)).ConfigureAwait(false);
+                    var result = await _commands.ExecuteAsync(context, argPos, _provider).ConfigureAwait(false);
+
+                    if (guildDb != null)
+                        if (guildDb.DeleteCommandMessage)
+                            await msg.DeleteAsync().ConfigureAwait(false);
+
+                    if (result.IsSuccess)
+                        RiasBot.commandsRun++;
+                    else if (result.Error == CommandError.UnmetPrecondition)
+                    {
+                        await Task.Factory.StartNew(() => SendErrorResult(msg, result)).ConfigureAwait(false);
+                    }
                 }
             }
         }

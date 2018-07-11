@@ -163,7 +163,10 @@ namespace RiasBot.Modules.Help
 
                         return $"{_ch._prefix + x.Aliases.First()} {nextAlias}";
                     });
-                    embed.AddField(command.Name.Replace("Commands", ""), String.Join("\n", transformedSb), true);
+                    if (command.Name == "CommandsCommands") // I just want the Commands submodule
+                        embed.AddField("Commands", String.Join("\n", transformedSb), true);
+                    else
+                        embed.AddField(command.Name.Replace("Commands", ""), String.Join("\n", transformedSb), true);
                     index++;
                 }
                 embed.WithFooter($"For a specific command info type {_ch._prefix + "h <command>"}");

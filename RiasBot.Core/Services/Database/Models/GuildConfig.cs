@@ -19,5 +19,6 @@ namespace RiasBot.Services.Database.Models
         public int WarnsPunishment { get; set; }
         public string PunishmentMethod { get; set; }
         public ulong ModLogChannel { get; set; }
+        public bool DeleteCommandMessage { get; set; }
     }
 }

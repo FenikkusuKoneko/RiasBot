@@ -190,22 +190,6 @@
     ]
   },
 
-  "name": {
-    "Command": "name",
-    "Description": "Set the bot's name.",
-    "Remarks": [
-      "[prefix]name Rias"
-    ]
-  },
-
-  "avatar": {
-    "Command": "avatar",
-    "Description": "Set the bot's avatar.",
-    "Remarks": [
-      "[prefix]avatar https://i.imgur.com/ZW96TT6.jpg"
-    ]
-  },
-
   "edit": {
     "Command": "edit",
     "Description": "Edit a message in a guild.",
@@ -300,6 +284,30 @@
     "Description": "Stop any event that is running",
     "Remarks": [
       "[prefix]stopevent"
+    ]
+  },
+
+  "setname": {
+    "Command": "setname",
+    "Description": "Set the bot's name.",
+    "Remarks": [
+      "[prefix]name Rias"
+    ]
+  },
+
+  "setavatar": {
+    "Command": "setavatar",
+    "Description": "Set the bot's avatar.",
+    "Remarks": [
+      "[prefix]avatar https://i.imgur.com/ZW96TT6.jpg"
+    ]
+  },
+
+  "deletecommandmessage": {
+    "Command": "deletecommandmessage delcmdmsg",
+    "Description": "Toggle deletion of the user's message that triggered a command.",
+    "Remarks": [
+      "[prefix]delcmdmsg"
     ]
   },
 
