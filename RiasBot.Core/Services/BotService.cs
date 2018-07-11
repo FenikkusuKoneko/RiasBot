@@ -58,6 +58,7 @@ namespace RiasBot.Services
             using (var db = _db.GetDbContext())
             {
                 var guildDb = db.Guilds.Where(g => g.GuildId == user.Guild.Id).FirstOrDefault();
+                var userGuildDb = db.UserGuilds.Where(x => x.GuildId == user.Guild.Id).FirstOrDefault(x => x.UserId == user.Id);
                 if (guildDb != null)
                 {
                     if (guildDb.Greet)
@@ -93,6 +94,19 @@ namespace RiasBot.Services
                             await user.AddRoleAsync(aar).ConfigureAwait(false);
                         }
                         catch { }
+                    }
+
+                    if (userGuildDb != null)
+                    {
+                        if (userGuildDb.IsMuted)
+                        {
+                            var role = user.Guild.GetRole(guildDb.MuteRole);
+                            if (role != null)
+                            {
+                                await user.AddRoleAsync(role).ConfigureAwait(false);
+                                await user.ModifyAsync(x => x.Mute = true).ConfigureAwait(false);
+                            }
+                        }
                     }
                 }
             }

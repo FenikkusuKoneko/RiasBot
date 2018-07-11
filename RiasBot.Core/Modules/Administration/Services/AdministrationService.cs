@@ -27,6 +27,7 @@ namespace RiasBot.Modules.Administration.Services
             using (var db = _db.GetDbContext())
             {
                 var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
+                var userGuildDb = db.UserGuilds.Where(x => x.GuildId == guild.Id);
                 try
                 {
                     IRole role = null;
@@ -45,7 +46,6 @@ namespace RiasBot.Modules.Administration.Services
                         var newRole = new GuildConfig { GuildId = guild.Id, MuteRole = role.Id };
                         await db.AddAsync(newRole).ConfigureAwait(false);
                     }
-                    await db.SaveChangesAsync().ConfigureAwait(false);
                     if (user.RoleIds.Any(r => r == role.Id))
                     {
                         await channel.SendErrorEmbed($"{moderator.Mention} {Format.Bold(user.ToString())} is already muted from text and voice channels!");
@@ -54,6 +54,18 @@ namespace RiasBot.Modules.Administration.Services
                     {
                         await user.AddRoleAsync(role).ConfigureAwait(false);
                         await user.ModifyAsync(x => x.Mute = true).ConfigureAwait(false);
+
+                        var muteUser = userGuildDb.Where(x => x.UserId == user.Id).FirstOrDefault();
+                        if (muteUser != null)
+                        {
+                            muteUser.IsMuted = true;
+                        }
+                        else
+                        {
+                            var muteUserGuild = new UserGuildConfig { GuildId = guild.Id, UserId = user.Id, IsMuted = true };
+                            await db.AddAsync(muteUserGuild).ConfigureAwait(false);
+                        }
+                        await db.SaveChangesAsync().ConfigureAwait(false);
                         await Task.Factory.StartNew(() => MuteService(role, guild));
 
                         var embed = new EmbedBuilder().WithColor(0xffff00);
@@ -85,6 +97,7 @@ namespace RiasBot.Modules.Administration.Services
             using (var db = _db.GetDbContext())
             {
                 var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
+                var userGuildDb = db.UserGuilds.Where(x => x.GuildId == guild.Id);
                 try
                 {
                     IRole role = null;
@@ -102,12 +115,23 @@ namespace RiasBot.Modules.Administration.Services
                         role = await guild.CreateRoleAsync("rias-mute").ConfigureAwait(false);
                         var newRole = new GuildConfig { GuildId = guild.Id, MuteRole = role.Id };
                         await db.AddAsync(newRole).ConfigureAwait(false);
-                        await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                     if (user.RoleIds.Any(r => r == role.Id))
                     {
                         await user.RemoveRoleAsync(role).ConfigureAwait(false);
                         await user.ModifyAsync(x => x.Mute = false).ConfigureAwait(false);
+
+                        var muteUser = userGuildDb.Where(x => x.UserId == user.Id).FirstOrDefault();
+                        if (muteUser != null)
+                        {
+                            muteUser.IsMuted = false;
+                        }
+                        else
+                        {
+                            var muteUserGuild = new UserGuildConfig { GuildId = guild.Id, UserId = user.Id, IsMuted = false };
+                            await db.AddAsync(muteUserGuild).ConfigureAwait(false);
+                        }
+                        await db.SaveChangesAsync().ConfigureAwait(false);
 
                         var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
                         embed.WithDescription("Unmute");

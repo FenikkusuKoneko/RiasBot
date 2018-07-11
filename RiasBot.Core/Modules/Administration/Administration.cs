@@ -245,22 +245,23 @@ namespace RiasBot.Modules.Administration
             using (var db = _db.GetDbContext())
             {
                 var guildDb = db.Guilds.Where(x => x.GuildId == Context.Guild.Id).FirstOrDefault();
-                try
+                var role = Context.Guild.Roles.Where(x => x.Name == name).FirstOrDefault();
+                if (role is null)
                 {
-                    var role = Context.Guild.Roles.Where(x => x.Name == name).FirstOrDefault();
-                    if (role is null)
-                    {
-                        role = await Context.Guild.CreateRoleAsync(name).ConfigureAwait(false);
-                    }
+                    role = await Context.Guild.CreateRoleAsync(name).ConfigureAwait(false);
+                }
+                if (guildDb != null)
+                {
                     guildDb.MuteRole = role.Id;
-
-                    await db.SaveChangesAsync().ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed("New mute role set.");
                 }
-                catch
+                else
                 {
-
+                    var muteRole = new GuildConfig { GuildId = Context.Guild.Id, MuteRole = role.Id };
+                    await db.AddAsync(muteRole).ConfigureAwait(false);
                 }
+                await db.SaveChangesAsync().ConfigureAwait(false);
+                await Context.Channel.SendConfirmationEmbed("New mute role set.");
+                await Task.Factory.StartNew(() => _service.MuteService(role, Context.Guild));
             }
         }
 

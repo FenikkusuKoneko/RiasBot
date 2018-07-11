@@ -23,6 +23,7 @@ namespace RiasBot.Services.Database
     {
         public DbSet<GuildConfig> Guilds { get; set; }
         public DbSet<UserConfig> Users { get; set; }
+        public DbSet<UserGuildConfig> UserGuilds { get; set; }
         public DbSet<Warnings> Warnings { get; set; }
         public DbSet<XpSystem> XpSystem { get; set; }
         public DbSet<Waifus> Waifus { get; set; }
@@ -54,6 +55,12 @@ namespace RiasBot.Services.Database
             userEntity
                 .HasIndex(c => c.UserId)
                 .IsUnique();
+
+            #endregion
+
+            #region UserGuildConfig
+
+            var userGuildEntity = modelBuilder.Entity<UserGuildConfig>();
 
             #endregion
 
