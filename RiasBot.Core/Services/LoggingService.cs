@@ -53,7 +53,7 @@ namespace RiasBot.Services
         {
             var log = new List<string>()
             {
-                $"{DateTime.UtcNow.ToString("hh:mm:ss")} [Command] \"{commandInfo.Name}\"",
+                $"{DateTime.UtcNow.ToString("MMM dd hh:mm:ss")} [Command] \"{commandInfo.Name}\"",
                 $"\t[User] \"{context.User}\" ({context.User.Id})",
                 $"\t[Channel] \"{context.Channel.Name}\" ({context.Channel.Id})",
                 $"\t[Guild] \"{context.Guild?.Name ?? "DM"}\" ({context.Guild?.Id ?? 0})"
