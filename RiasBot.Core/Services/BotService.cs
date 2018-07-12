@@ -159,7 +159,7 @@ namespace RiasBot.Services
                         var aar = guild.GetRole(guildDb.AutoAssignableRole);
                         if (aar != null)
                         {
-                            if (user.RoleIds.All(x => x != aar.Id))
+                            if (user.RoleIds.All(x => x != aar.Id) && user.RoleIds.All(x => x == user.Guild.EveryoneRole.Id))
                                 await user.AddRoleAsync(aar).ConfigureAwait(false);
                         }
                     }
