@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using RiasBot.Modules.Music;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Reflection;
@@ -42,7 +41,6 @@ namespace RiasBot.Services
             await _discord.StartAsync().ConfigureAwait(false);
             
             await _commands.AddModulesAsync(Assembly.GetAssembly(typeof(RiasBot)), _provider).ConfigureAwait(false);
-            await _commands.RemoveModuleAsync<Music>();
             RiasBot.upTime.Start();
         }
     }

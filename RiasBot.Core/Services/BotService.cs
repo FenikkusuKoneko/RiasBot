@@ -2,7 +2,6 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using Newtonsoft.Json;
-using RiasBot.Modules.Music.MusicServices;
 using RiasBot.Services.Database.Models;
 using System;
 using System.Collections.Generic;
@@ -22,8 +21,6 @@ namespace RiasBot.Services
         private readonly DbService _db;
         private readonly IBotCredentials _creds;
 
-        private readonly MusicService _musicService;
-
         private Timer dblTimer;
         private Timer dblVotesTimer;
         public Timer status;
@@ -34,17 +31,14 @@ namespace RiasBot.Services
         public string[] statuses;
         private int statusCount = 0;
 
-        public BotService(DiscordShardedClient discord, DbService db, IBotCredentials creds, MusicService musicService)
+        public BotService(DiscordShardedClient discord, DbService db, IBotCredentials creds)
         {
             _discord = discord;
             _db = db;
             _creds = creds;
-            _musicService = musicService;
 
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
-            _discord.ShardDisconnected += Disconnected;
-            _discord.UserVoiceStateUpdated += _musicService.CheckIfAlone;
 
             if(!RiasBot.isBeta && !String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
             {
@@ -164,15 +158,6 @@ namespace RiasBot.Services
                         }
                     }
                 }
-            }
-        }
-
-        public async Task Disconnected(Exception ex, DiscordSocketClient client)
-        {
-            foreach (var guild in client.Guilds)
-            {
-                var mp = _musicService.GetMusicPlayer(guild);
-                await mp.Destroy("", true).ConfigureAwait(false);
             }
         }
 

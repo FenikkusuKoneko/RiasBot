@@ -45,7 +45,7 @@ namespace RiasBot.Modules.Configuration
                     else
                     {
                         var deleteCmdMsgDb = new GuildConfig { GuildId = Context.Guild.Id, DeleteCommandMessage = true };
-                        await db.AddAsync(deleteCmdMsg).ConfigureAwait(false);
+                        await db.AddAsync(deleteCmdMsgDb).ConfigureAwait(false);
                         deleteCmdMsg = true;
                     }
                     await db.SaveChangesAsync().ConfigureAwait(false);

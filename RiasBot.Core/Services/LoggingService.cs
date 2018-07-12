@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using RiasBot.Modules.Music.MusicServices;
 using System;
 using System.Collections.Generic;
 using System.IO;

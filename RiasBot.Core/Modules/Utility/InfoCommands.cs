@@ -12,7 +12,6 @@ using RiasBot.Services;
 using Discord.WebSocket;
 using System.Globalization;
 using System.Diagnostics;
-using RiasBot.Modules.Music.MusicServices;
 using Discord.Addons.Interactive;
 
 namespace RiasBot.Modules.Utility
@@ -25,15 +24,13 @@ namespace RiasBot.Modules.Utility
             private readonly CommandHandler _ch;
             private readonly CommandService _service;
             private readonly InteractiveService _is;
-            private readonly MusicService _musicService;
 
-            public InfoCommands(DiscordShardedClient client, CommandHandler ch, CommandService service, InteractiveService interactiveService, MusicService musicService)
+            public InfoCommands(DiscordShardedClient client, CommandHandler ch, CommandService service, InteractiveService interactiveService)
             {
                 _client = client;
                 _ch = ch;
                 _service = service;
                 _is = interactiveService;
-                _musicService = musicService;
             }
 
             [RiasCommand]
@@ -50,8 +47,6 @@ namespace RiasBot.Modules.Utility
 
                 int textChannels = 0;
                 int voiceChannels = 0;
-                int musicRunning = 0;
-                int musicAfk = 0;
                 int users = 0;
 
                 foreach (SocketGuild guild in guilds)
@@ -59,14 +54,6 @@ namespace RiasBot.Modules.Utility
                     textChannels += guild.TextChannels.Count;
                     voiceChannels += guild.VoiceChannels.Count;
                     users += guild.MemberCount;
-                }
-
-                foreach (var musicPlayer in _musicService.MPlayer)
-                {
-                    if (musicPlayer.Value.isRunning)
-                        musicRunning++;
-                    else
-                        musicAfk++;
                 }
 
                 var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);

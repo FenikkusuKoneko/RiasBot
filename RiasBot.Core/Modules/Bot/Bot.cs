@@ -8,7 +8,6 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
-using RiasBot.Modules.Music.MusicServices;
 using RiasBot.Modules.Reactions.Services;
 using RiasBot.Modules.Searches.Services;
 using RiasBot.Services;
@@ -30,12 +29,10 @@ namespace RiasBot.Modules.Bot
         private readonly BotService _botService;
         private readonly InteractiveService _is;
         private readonly IBotCredentials _creds;
-
-        private readonly MusicService _musicService;
         private readonly ReactionsService _reactionsService;
 
         public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordShardedClient client, DiscordRestClient restClient,
-            BotService botService, InteractiveService interactiveService, IBotCredentials creds, MusicService musicService, ReactionsService reactionsService)
+            BotService botService, InteractiveService interactiveService, IBotCredentials creds, ReactionsService reactionsService)
         {
             _ch = ch;
             _service = service;
@@ -46,8 +43,6 @@ namespace RiasBot.Modules.Bot
             _botService = botService;
             _is = interactiveService;
             _creds = creds;
-
-            _musicService = musicService;
             _reactionsService = reactionsService;
         }
 
@@ -76,17 +71,6 @@ namespace RiasBot.Modules.Bot
         public async Task Update()
         {
             await Context.Channel.SendConfirmationEmbed("Shutting down...").ConfigureAwait(false);
-            foreach (var mp in _musicService.MPlayer)
-            {
-                try
-                {
-                    await mp.Value.Destroy("", true).ConfigureAwait(false);
-                }
-                catch
-                {
-
-                }
-            }
             await Context.Client.StopAsync().ConfigureAwait(false);
             Environment.Exit(0);
         }
