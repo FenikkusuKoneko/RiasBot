@@ -80,7 +80,7 @@ namespace RiasBot.Modules.Utility
                         await Context.Channel.SendFileAsync(preview, $"{Context.User.Id}_preview.png").ConfigureAwait(false);
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User} something went wrong! Check if the image is available.");
+                        await Context.Channel.SendErrorEmbed($"{Context.User} something went wrong! Check if the image is available or the url is a direct link.");
                         return;
                     }
                     await Context.Channel.SendConfirmationEmbed($"Do you want to set this background image? Price: 1000 {RiasBot.currency}. Type `confirm` or `cancel`").ConfigureAwait(false);

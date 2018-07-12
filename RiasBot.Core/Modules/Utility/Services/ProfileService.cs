@@ -49,16 +49,23 @@ namespace RiasBot.Modules.Utility.Services
                     {
                         if (bg.IsSuccessStatusCode)
                         {
-                            using (var tempBg = new MagickImage(await bg.Content.ReadAsStreamAsync()))
+                            try
                             {
-                                MagickGeometry size = new MagickGeometry(img.Width, img.Height)
+                                using (var tempBg = new MagickImage(await bg.Content.ReadAsStreamAsync()))
                                 {
-                                    IgnoreAspectRatio = false,
-                                    FillArea = true
-                                };
-                                tempBg.Resize(size);
+                                    MagickGeometry size = new MagickGeometry(img.Width, img.Height)
+                                    {
+                                        IgnoreAspectRatio = false,
+                                        FillArea = true
+                                    };
+                                    tempBg.Resize(size);
 
-                                img.Draw(new DrawableComposite(0, 0, tempBg));
+                                    img.Draw(new DrawableComposite(0, 0, tempBg));
+                                }
+                            }
+                            catch
+                            {
+                                return null;
                             }
                         }
                         else
