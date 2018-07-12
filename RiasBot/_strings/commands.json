@@ -511,7 +511,7 @@
 
   "deletechannel": {
     "Command": "deletechannel dch",
-    "Description": "Delete a text or a voice channel. The name is case-sensitive. The type of the channel must be specified: `text` or `voice`.",
+    "Description": "Delete a text or a voice channel. The type of the channel must be specified: `text` or `voice`.",
     "Remarks": [
       "[prefix]dch text music",
       "[prefix]dch voice Music"
@@ -520,7 +520,7 @@
 
   "createcategory": {
     "Command": "createcategory ccat",
-    "Description": "Create a category.",
+    "Description": "Create a category channel.",
     "Remarks": [
       "[prefix]ccat MEDIA"
     ]
@@ -528,7 +528,7 @@
 
   "deletecategory": {
     "Command": "deletecategory dcat",
-    "Description": "Delete a category. Be careful, it will delete all channels from it.",
+    "Description": "Delete a category channel.",
     "Remarks": [
       "[prefix]dcat MEDIA"
     ]
@@ -536,7 +536,7 @@
 
   "renamechannel": {
     "Command": "renamechannel rnch",
-    "Description": "Rename a channel. You need to separate the old name by the new name with '->'. The name is case-sensitive. The type of the channel must be specified: `text` or `voice`.",
+    "Description": "Rename a channel. You need to separate the old name by the new name with '->'. The type of the channel must be specified: `text` or `voice`.",
     "Remarks": [
       "[prefix]rnch text media -> music",
       "[prefix]rnch voice Media -> Music"
