@@ -859,25 +859,27 @@
 
   "hentai": {
     "Command": "hentai",
-    "Description": "Show a hentai image.",
+    "Description": "Show a hentai image. Multiple tags allowed, separate them by space. A full tag may contains underscores.",
     "Remarks": [
       "[prefix]hentai",
-      "[prefix]hentai yuri"
+      "[prefix]hentai yuri uncensored",
+      "[prefix]hentai Rias_Gremory"
     ]
   },
 
   "hentaiplus": {
     "Command": "hentai+ hentaiplus",
-    "Description": "Show multiple hentai images from Danbooru, Konachan and Yandere",
+    "Description": "Show multiple hentai images from Danbooru, Konachan and Yandere. Multiple tags allowed, separate them by space. A full tag may contains underscores.",
     "Remarks": [
       "[prefix]hentai+",
-      "[prefix]hentai+ yuri"
+      "[prefix]hentai+ yuri uncensored",
+      "[prefix]hentai Highschool_Dxd"
     ]
   },
 
   "danbooru": {
     "Command": "danbooru",
-    "Description": "Show a hentai image from Danbooru.",
+    "Description": "Show a hentai image from Danbooru. Multiple tags allowed, separate them by space. A full tag may contains underscores.",
     "Remarks": [
       "[prefix]danbooru",
       "[prefix]danbooru yuri"
@@ -886,7 +888,7 @@
 
   "konachan": {
     "Command": "konachan",
-    "Description": "Show a hentai image from Konachan.",
+    "Description": "Show a hentai image from Konachan. Multiple tags allowed, separate them by space. A full tag may contains underscores.",
     "Remarks": [
       "[prefix]konachan",
       "[prefix]konachan yuri"
@@ -895,7 +897,7 @@
 
   "rule34": {
     "Command": "rule34",
-    "Description": "Show a hentai image from Rule34.",
+    "Description": "Show a hentai image from Rule34. Multiple tags allowed, separate them by space. A full tag may contains underscores.",
     "Remarks": [
       "[prefix]rule34",
       "[prefix]rule34 yuri"

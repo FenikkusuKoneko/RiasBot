@@ -1,22 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RuntimeFrameworkVersion>2.1.1</RuntimeFrameworkVersion>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Migrations\20180711113532_UserGuilds.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Cleverbot.Net" Version="1.0.0" />
     <PackageReference Include="CoreCLR-NCalc" Version="2.2.34" />
@@ -48,5 +44,4 @@
     <PackageReference Include="UnitsNet" Version="3.102.0" />
     <PackageReference Include="Urban.NET" Version="1.0.0" />
   </ItemGroup>
-
 </Project>
