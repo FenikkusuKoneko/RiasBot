@@ -31,7 +31,7 @@ namespace RiasBot.Modules.NSFW
                 await channel.SendErrorEmbed($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
                 return;
             }
-            tag = tag?.Replace(" ", "_");
+            tag = tag?.Replace(" ", "%20");
 
             string image = await _service.GetImage(tag);
 
@@ -83,7 +83,7 @@ namespace RiasBot.Modules.NSFW
                 await channel.SendErrorEmbed($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
                 return;
             }
-            tag = tag?.Replace(" ", "_");
+            tag = tag?.Replace(" ", "%20");
 
             string image = await _service.DownloadImages(NSFWService.NSFWSite.Danbooru, tag);
 
@@ -122,7 +122,7 @@ namespace RiasBot.Modules.NSFW
                 await channel.SendErrorEmbed($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
                 return;
             }
-            tag = tag?.Replace(" ", "_");
+            tag = tag?.Replace(" ", "%20");
 
             string image = await _service.DownloadImages(NSFWService.NSFWSite.Konachan, tag);
 
@@ -161,7 +161,7 @@ namespace RiasBot.Modules.NSFW
                 await channel.SendErrorEmbed($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
                 return;
             }
-            tag = tag?.Replace(" ", "_");
+            tag = tag?.Replace(" ", "%20");
 
             string image = await _service.DownloadImages(NSFWService.NSFWSite.Yandere, tag);
 
@@ -201,7 +201,7 @@ namespace RiasBot.Modules.NSFW
                 return;
             }
             await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
-            tag = tag?.Replace(" ", "_");
+            tag = tag?.Replace(" ", "%20");
 
             string[] images =
             {

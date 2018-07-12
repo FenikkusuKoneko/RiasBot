@@ -37,8 +37,6 @@ namespace RiasBot.Modules.NSFW.Services
 
         public async Task<string> DownloadImages(NSFWSite site, string tag = null)
         {
-            //if (tag == "loli")
-                //return null;
             string api = null;
             string images = null;
 
