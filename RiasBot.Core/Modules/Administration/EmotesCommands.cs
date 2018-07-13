@@ -15,11 +15,6 @@ namespace RiasBot.Modules.Administration
     {
         public class EmotesCommands : RiasSubmodule
         {
-            public EmotesCommands()
-            {
-
-            }
-
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireUserPermission(GuildPermission.ManageEmojis)]
@@ -27,34 +22,37 @@ namespace RiasBot.Modules.Administration
             [RequireContext(ContextType.Guild)]
             public async Task AddEmote(string url, [Remainder]string name)
             {
-                name = name.Replace(" ", "_");
-
-                try
+                bool isAnimated = false;
+                if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
                 {
-                    using (var http = new HttpClient())
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
+                    return;
+                }
+                if (!url.Contains("https"))
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url must be https").ConfigureAwait(false);
+                    return;
+
+                }
+                if (!url.Contains(".png") && !url.Contains(".jpg") && !url.Contains(".jpeg"))
+                {
+                    if (!url.Contains(".gif"))
                     {
-                        var res = await http.GetStreamAsync(new Uri(url)).ConfigureAwait(false);
-
-                        var ms = new MemoryStream();
-                        await res.CopyToAsync(ms);
-                        ms.Position = 0;
-
-                        if (ms.Length / 1024 <= 256) //in KB
-                        {
-                            var emoteImage = new Image(ms);
-                            await Context.Guild.CreateEmoteAsync(name, emoteImage).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} emote {Format.Bold(name)} was created successfully.").ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the image is bigger than 256 KB.").ConfigureAwait(false);
-                        }
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direct link for a png, jpg, jpeg or gif image.").ConfigureAwait(false);
+                        return;
+                    }
+                    else
+                    {
+                        isAnimated = true;
                     }
                 }
-                catch
+                
+                name = name.Replace(" ", "_");
+                using (var http = new HttpClient())
                 {
                     var staticEmotes = new List<IEmote>();
                     var animatedEmotes = new List<IEmote>();
+                
                     var emotes = Context.Guild.Emotes;
                     foreach (var emote in emotes)
                     {
@@ -63,12 +61,52 @@ namespace RiasBot.Modules.Administration
                         else
                             staticEmotes.Add(emote);
                     }
-                    if (staticEmotes.Count == 50)
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the server already has the limit of 50 non-animated emotes.");
-                    else if (animatedEmotes.Count == 50)
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the server already has the limit of 50 animated emotes.");
+
+                    if (isAnimated)
+                    {
+                        if (animatedEmotes.Count == 50)
+                        {
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the server already has the limit of 50 animated emotes.");
+                            return;
+                        }
+                    }
                     else
+                    {
+                        if (staticEmotes.Count == 50)
+                        {
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the server already has the limit of 50 non-animated emotes.");
+                            return;
+                        }
+                    }
+
+                    try
+                    {
+                        var res = await http.GetAsync(new Uri(url)).ConfigureAwait(false);
+                        if (res.IsSuccessStatusCode)
+                        {
+                            using (var emote = await res.Content.ReadAsStreamAsync())
+                            {
+                                var ms = new MemoryStream();
+                                await emote.CopyToAsync(ms);
+                                ms.Position = 0;
+                                
+                                if (ms.Length / 1024 <= 256) //in KB
+                                {
+                                    var emoteImage = new Image(ms);
+                                    await Context.Guild.CreateEmoteAsync(name, emoteImage).ConfigureAwait(false);
+                                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} emote {Format.Bold(name)} was created successfully.").ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the image is bigger than 256 KB.").ConfigureAwait(false);
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
                         await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the image or the URL are not good.").ConfigureAwait(false);
+                    }
                 }
             }
 
@@ -81,7 +119,7 @@ namespace RiasBot.Modules.Administration
             {
                 try
                 {
-                    var emote = Context.Guild.Emotes.Where(x => x.Name.ToLowerInvariant() == name.ToLowerInvariant()).FirstOrDefault();
+                    var emote = Context.Guild.Emotes.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.InvariantCultureIgnoreCase));
                     if (emote is null)
                     {
                         await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the emote.").ConfigureAwait(false);
@@ -110,7 +148,7 @@ namespace RiasBot.Modules.Administration
                 string newName = emotes[1].TrimStart().Replace(" ", "_");
                 try
                 {
-                    var emote = Context.Guild.Emotes.Where(x => x.Name.ToLowerInvariant() == oldName.ToLowerInvariant()).FirstOrDefault();
+                    var emote = Context.Guild.Emotes.FirstOrDefault(x => string.Equals(x.Name, oldName, StringComparison.InvariantCultureIgnoreCase));
                     if (emote is null)
                     {
                         await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the emote.").ConfigureAwait(false);
