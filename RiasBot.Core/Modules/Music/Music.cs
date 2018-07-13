@@ -13,15 +13,18 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using RiasBot.Services;
 
 namespace RiasBot.Modules.Music
 {
     public class Music : RiasModule<MusicService>
     {
+        private readonly IBotCredentials _creds;
         private readonly InteractiveService _is;
 
-        public Music(InteractiveService interactiveService)
+        public Music(IBotCredentials creds, InteractiveService interactiveService)
         {
+            _creds = creds;
             _is = interactiveService;
         }
 
@@ -62,7 +65,7 @@ namespace RiasBot.Modules.Music
 
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer()
                 {
-                    ApiKey = "AIzaSyAAP9EKqIBIB9FmCUKOHFALG1nieRScAXg",
+                    ApiKey = _creds.GoogleApiKey,
                     ApplicationName = "Rias Bot"
                 });
 
