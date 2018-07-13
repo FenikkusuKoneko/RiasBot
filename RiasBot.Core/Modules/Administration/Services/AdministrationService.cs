@@ -133,7 +133,7 @@ namespace RiasBot.Modules.Administration.Services
                         }
                         await db.SaveChangesAsync().ConfigureAwait(false);
 
-                        var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                        var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                         embed.WithDescription("Unmute");
                         embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                         embed.AddField("Moderator", moderator, true);
@@ -173,7 +173,7 @@ namespace RiasBot.Modules.Administration.Services
             {
                 var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 embed.WithDescription("Kick");
                 embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Moderator", moderator, true);
@@ -193,7 +193,7 @@ namespace RiasBot.Modules.Administration.Services
                     await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
 
-                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 reasonEmbed.WithDescription($"You have been kicked from {Format.Bold(guild.Name)} server!");
                 if (reason != null)
                     reasonEmbed.AddField("Reason", reason);
@@ -211,7 +211,7 @@ namespace RiasBot.Modules.Administration.Services
             {
                 var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 embed.WithDescription("Ban");
                 embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Moderator", moderator, true);
@@ -231,7 +231,7 @@ namespace RiasBot.Modules.Administration.Services
                     await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
 
-                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 reasonEmbed.WithDescription($"You have been banned from {Format.Bold(guild.Name)} server!");
                 if (reason != null)
                     reasonEmbed.AddField("Reason", reason);
@@ -249,7 +249,7 @@ namespace RiasBot.Modules.Administration.Services
             {
                 var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 embed.WithDescription("SoftBan");
                 embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Moderator", moderator, true);
@@ -269,7 +269,7 @@ namespace RiasBot.Modules.Administration.Services
                     await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
 
-                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 reasonEmbed.WithDescription($"You have been kicked from {Format.Bold(guild.Name)} server!");
                 if (reason != null)
                     reasonEmbed.AddField("Reason", reason);
@@ -288,7 +288,7 @@ namespace RiasBot.Modules.Administration.Services
             {
                 var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 embed.WithDescription("PruneBan");
                 embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Moderator", moderator, true);
@@ -308,7 +308,7 @@ namespace RiasBot.Modules.Administration.Services
                     await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
 
-                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                var reasonEmbed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 reasonEmbed.WithDescription($"You have been banned from {Format.Bold(guild.Name)} server!");
                 if (reason != null)
                     reasonEmbed.AddField("Reason", reason);

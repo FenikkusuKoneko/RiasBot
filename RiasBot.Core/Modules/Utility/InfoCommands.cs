@@ -39,7 +39,7 @@ namespace RiasBot.Modules.Utility
             [Description]
             public async Task Stats()
             {
-                var author = _client.GetUser(RiasBot.konekoID);
+                var author = _client.GetUser(RiasBot.KonekoId);
                 var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
                 int shard = 0;
                 if (Context.Guild != null)
@@ -56,13 +56,13 @@ namespace RiasBot.Modules.Utility
                     users += guild.MemberCount;
                 }
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
 
-                embed.WithAuthor("Rias Bot " + RiasBot.version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
-                embed.AddField("Author", author?.ToString() ?? RiasBot.author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
-                embed.AddField("Master ID", RiasBot.konekoID, true).AddField("Shard", $"#{shard}/{_client.Shards.Count()}", true);
-                embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.commandsRun, true);
-                embed.AddField("Uptime", GetTimeString(RiasBot.upTime.Elapsed), true).AddField("Presence", $"{guilds.Count} Servers\n{textChannels} " +
+                embed.WithAuthor("Rias Bot " + RiasBot.Version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
+                embed.AddField("Author", author?.ToString() ?? RiasBot.Author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
+                embed.AddField("Master ID", RiasBot.KonekoId, true).AddField("Shard", $"#{shard}/{_client.Shards.Count()}", true);
+                embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.CommandsRun, true);
+                embed.AddField("Uptime", GetTimeString(RiasBot.UpTime.Elapsed), true).AddField("Presence", $"{guilds.Count} Servers\n{textChannels} " +
                     $"Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
                 //embed.AddField("Playing Music", $"Running {musicRunning} Channels\nAFK {musicAfk} Channels", true);
                 embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
@@ -123,7 +123,7 @@ namespace RiasBot.Modules.Utility
                 Array.Sort(userRolesPositions, userRoles);
                 Array.Reverse(userRoles);
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.AddField("Name", user, true).AddField("Nickname", user.Nickname ?? "-", true);
                 embed.AddField("Activity", activity ?? "-", true).AddField("ID", user.Id, true);
                 embed.AddField("Status", user.Status, true).AddField("Joined Server", joinedServer, true);
@@ -170,7 +170,7 @@ namespace RiasBot.Modules.Utility
                 if (String.IsNullOrEmpty(emotes))
                     emotes = "-";
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle(Context.Guild.Name);
                 embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner?.Username}#{owner?.Discriminator}", true).AddField("Members", guild.MemberCount, true);
                 embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
@@ -226,7 +226,7 @@ namespace RiasBot.Modules.Utility
                     user = (IGuildUser)Context.User;
 
                 var embed = new EmbedBuilder();
-                embed.WithColor(RiasBot.goodColor);
+                embed.WithColor(RiasBot.GoodColor);
                 embed.WithAuthor($"{user}", null, user.RealAvatarUrl(1024));
                 embed.WithImageUrl(user.RealAvatarUrl(1024));
 
@@ -241,7 +241,7 @@ namespace RiasBot.Modules.Utility
             public async Task ServerIcon()
             {
                 var embed = new EmbedBuilder();
-                embed.WithColor(RiasBot.goodColor);
+                embed.WithColor(RiasBot.GoodColor);
                 embed.WithImageUrl(Context.Guild.IconUrl + "?size=1024");
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
@@ -285,7 +285,7 @@ namespace RiasBot.Modules.Utility
                     var pager = new PaginatedMessage
                     {
                         Title = $"Users who play {game}",
-                        Color = new Color(RiasBot.goodColor),
+                        Color = new Color(RiasBot.GoodColor),
                         Pages = playingUsersList,
                         Options = new PaginatedAppearanceOptions
                         {

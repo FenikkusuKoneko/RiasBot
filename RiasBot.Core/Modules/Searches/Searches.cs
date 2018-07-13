@@ -50,7 +50,7 @@ namespace RiasBot.Modules.Searches
                 var def = item["definition"].ToString();
                 var link = item["permalink"].ToString();
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithUrl(link);
                 embed.WithAuthor(word, "https://i.imgur.com/G3VoNuJ.jpg");
                 embed.WithDescription(def);

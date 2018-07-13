@@ -124,7 +124,7 @@ namespace RiasBot.Modules.Xp
             page--;
             using (var db = _db.GetDbContext())
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Global XP Leaderboard");
 
                 var xpUser = new List<string>();
@@ -159,7 +159,7 @@ namespace RiasBot.Modules.Xp
             page--;
             using (var db = _db.GetDbContext())
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Server XP Leaderboard");
 
                 var xpUser = new List<string>();
@@ -301,7 +301,7 @@ namespace RiasBot.Modules.Xp
                     var pager = new PaginatedMessage
                     {
                         Title = $"All levelup role rewards on this server",
-                        Color = new Color(RiasBot.goodColor),
+                        Color = new Color(RiasBot.GoodColor),
                         Pages = lurrs,
                         Options = new PaginatedAppearanceOptions
                         {

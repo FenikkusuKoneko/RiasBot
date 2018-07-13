@@ -32,7 +32,7 @@ namespace RiasBot.Modules.Searches
             public async Task Neko()
             {
                 var neko = await _service.GetNekoImage();
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Neko <3");
                 embed.WithImageUrl(neko);
 
@@ -46,7 +46,7 @@ namespace RiasBot.Modules.Searches
             public async Task Kitsune()
             {
                 var kitsune = await _service.GetKitsuneImage();
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Kitsune <3");
                 embed.WithImageUrl(kitsune);
 

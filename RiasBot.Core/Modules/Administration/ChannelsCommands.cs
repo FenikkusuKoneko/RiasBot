@@ -225,7 +225,7 @@ namespace RiasBot.Modules.Administration
                 var channel = (ITextChannel)Context.Channel;
                 if (!String.IsNullOrEmpty(channel.Topic))
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                     embed.WithTitle("This channel's topic");
                     embed.WithDescription(channel.Topic);
                     await Context.Channel.SendMessageAsync(embed: embed.Build());

@@ -16,7 +16,7 @@
   <ItemGroup>
     <PackageReference Include="Cleverbot.Net" Version="1.0.0" />
     <PackageReference Include="CoreCLR-NCalc" Version="2.2.34" />
-    <PackageReference Include="Discord.Net" Version="2.0.0-beta2-00964" />
+    <PackageReference Include="Discord.Net" Version="2.0.0-beta2-00975" />
     <PackageReference Include="DiscordBotsList.Api" Version="1.1.0" />
     <PackageReference Include="Google.Apis.Translate.v2" Version="1.34.0.875" />
     <PackageReference Include="Google.Apis.Urlshortener.v1" Version="1.34.0.138" />

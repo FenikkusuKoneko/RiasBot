@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using RiasBot.Modules.Music.Services;
 
 namespace RiasBot.Services
 {
@@ -19,6 +20,7 @@ namespace RiasBot.Services
     {
         private readonly DiscordShardedClient _discord;
         private readonly DbService _db;
+        private readonly MusicService _musicService;
         private readonly IBotCredentials _creds;
 
         private Timer dblTimer;
@@ -31,16 +33,18 @@ namespace RiasBot.Services
         public string[] statuses;
         private int statusCount = 0;
 
-        public BotService(DiscordShardedClient discord, DbService db, IBotCredentials creds)
+        public BotService(DiscordShardedClient discord, DbService db, MusicService musicService, IBotCredentials creds)
         {
             _discord = discord;
             _db = db;
+            _musicService = musicService;
             _creds = creds;
 
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
+            _discord.UserVoiceStateUpdated += _musicService.CheckIfAlone;
 
-            if(!RiasBot.isBeta && !String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
+            if(!RiasBot.IsBeta && !String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
             {
                 dblTimer = new Timer(new TimerCallback(async _ => await DblStats()), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
                 dblVotesTimer = new Timer(new TimerCallback(async _ => await DblVotes()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
@@ -51,7 +55,7 @@ namespace RiasBot.Services
         {
             using (var db = _db.GetDbContext())
             {
-                var guildDb = db.Guilds.Where(g => g.GuildId == user.Guild.Id).FirstOrDefault();
+                var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == user.Guild.Id);
                 var userGuildDb = db.UserGuilds.Where(x => x.GuildId == user.Guild.Id).FirstOrDefault(x => x.UserId == user.Id);
                 if (guildDb != null)
                 {
@@ -87,7 +91,10 @@ namespace RiasBot.Services
                             var aar = _discord.GetGuild(user.Guild.Id).GetRole(guildDb.AutoAssignableRole);
                             await user.AddRoleAsync(aar).ConfigureAwait(false);
                         }
-                        catch { }
+                        catch
+                        {
+                            //ignored
+                        }
                     }
 
                     if (userGuildDb != null)
@@ -221,7 +228,7 @@ namespace RiasBot.Services
                 using (var db = _db.GetDbContext())
                 using (var http = new HttpClient())
                 {
-                    string votesApi = await http.GetStringAsync(RiasBot.website + "api/votes.json");
+                    string votesApi = await http.GetStringAsync(RiasBot.Website + "api/votes.json");
                     var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
                     var votes = dblVotes.data.votes.Where(x => x.type == "upvote");
                     votesList = new List<Votes>();
@@ -235,7 +242,7 @@ namespace RiasBot.Services
                                 votesList.Add(vote);
                                 if (!populateVotesList)
                                 {
-                                    var getGuildUser = _discord.GetGuild(RiasBot.supportServer).GetUser(vote.user);
+                                    var getGuildUser = _discord.GetGuild(RiasBot.SupportServer).GetUser(vote.user);
                                     if (getGuildUser != null)
                                     {
                                         var userDb = db.Users.Where(x => x.UserId == vote.user).FirstOrDefault();

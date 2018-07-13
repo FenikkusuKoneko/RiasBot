@@ -23,7 +23,7 @@ namespace RiasBot.Modules.Searches.Services
             {
                 using (var http = new HttpClient())
                 {
-                    string nekoUrl = await http.GetStringAsync(RiasBot.website + "neko").ConfigureAwait(false);
+                    string nekoUrl = await http.GetStringAsync(RiasBot.Website + "neko").ConfigureAwait(false);
                     var nekoImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(nekoUrl);
                     return nekoImage["neko"];
                 }
@@ -40,7 +40,7 @@ namespace RiasBot.Modules.Searches.Services
             {
                 using (var http = new HttpClient())
                 {
-                    string nekoUrl = await http.GetStringAsync(RiasBot.website + "kitsune").ConfigureAwait(false);
+                    string nekoUrl = await http.GetStringAsync(RiasBot.Website + "kitsune").ConfigureAwait(false);
                     var nekoImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(nekoUrl);
                     return nekoImage["kitsune"];
                 }

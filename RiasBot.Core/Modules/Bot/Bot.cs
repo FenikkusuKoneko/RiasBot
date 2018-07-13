@@ -55,7 +55,7 @@ namespace RiasBot.Modules.Bot
             if (guild != null)
             {
                 var usersGuild = await guild.GetUsersAsync();
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithDescription($"Leaving {Format.Bold(guild.Name)}");
                 embed.AddField("Id", guild.Id, true).AddField("Users", usersGuild.Count, true);
 
@@ -160,7 +160,7 @@ namespace RiasBot.Modules.Bot
         [RequireOwner]
         public async Task Dbl()
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             var votes = new List<string>();
             int index = 0;
             foreach (var vote in _botService.votesList)
@@ -172,7 +172,7 @@ namespace RiasBot.Modules.Bot
             var pager = new PaginatedMessage
             {
                 Title = "List of voters today",
-                Color = new Color(RiasBot.goodColor),
+                Color = new Color(RiasBot.GoodColor),
                 Pages = votes,
                 Options = new PaginatedAppearanceOptions
                 {
@@ -235,7 +235,7 @@ namespace RiasBot.Modules.Bot
 
             string accountCreated = getUser.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 
-            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             embed.AddField("Name", getUser, true).AddField("ID", getUser.Id, true);
             embed.AddField("Joined Discord", accountCreated, true).AddField("Mutual servers (probable)", (mutualServers) ? "true" : "false", true);
             try
@@ -263,7 +263,7 @@ namespace RiasBot.Modules.Bot
                 Database = _db
             };
             object result = null;
-            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             embed.WithAuthor(Context.User);
             try
             {

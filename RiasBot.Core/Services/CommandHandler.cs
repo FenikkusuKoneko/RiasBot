@@ -22,7 +22,7 @@ namespace RiasBot.Services
         private readonly XpService _xpService;
         private readonly BotService _botService;
 
-        public string _prefix;
+        public string Prefix;
 
         public CommandHandler(DiscordShardedClient discord, CommandService commands, IBotCredentials creds, IServiceProvider provider, DbService db, XpService xpService, BotService botService)
         {
@@ -49,26 +49,23 @@ namespace RiasBot.Services
             await GiveXp(context, msg);
             using (var db = _db.GetDbContext())
             {
-                var guildDb = db.Guilds.Where(x => x.GuildId == context.Guild.Id).FirstOrDefault();
-                var userDb = db.Users.Where(x => x.UserId == msg.Author.Id).FirstOrDefault();
+                var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == context.Guild.Id);
+                var userDb = db.Users.FirstOrDefault(x => x.UserId == msg.Author.Id);
                 if (!context.IsPrivate)
                 {
-                    var guild = db.Guilds.Where(x => x.GuildId == context.Guild.Id).FirstOrDefault();
-                    try
+                    var guild = db.Guilds.FirstOrDefault(x => x.GuildId == context.Guild.Id);
+                    if (guild != null)
                     {
-                        if (!String.IsNullOrEmpty(guild.Prefix))
-                            _prefix = guild.Prefix;
-                        else
-                            _prefix = _creds.Prefix;
+                        Prefix = !string.IsNullOrEmpty(guild.Prefix) ? guild.Prefix : _creds.Prefix;
                     }
-                    catch
+                    else
                     {
-                        _prefix = _creds.Prefix;
+                        Prefix = _creds.Prefix;
                     }
                 }
                 else
                 {
-                    _prefix = _creds.Prefix;
+                    Prefix = _creds.Prefix;
                 }
                 if (userDb != null)
                     if (userDb.IsBanned)
@@ -76,7 +73,7 @@ namespace RiasBot.Services
 
                 int argPos = 0;     // Check if the message has a valid command prefix
 
-                if (msg.HasStringPrefix(_prefix, ref argPos) || msg.HasStringPrefix("rias ", ref argPos)
+                if (msg.HasStringPrefix(Prefix, ref argPos) || msg.HasStringPrefix("rias ", ref argPos)
                     || msg.HasStringPrefix("Rias ", ref argPos)
                     || (msg.HasMentionPrefix(context.Client.CurrentUser, ref argPos)))
                 {
@@ -87,7 +84,7 @@ namespace RiasBot.Services
                             await msg.DeleteAsync().ConfigureAwait(false);
 
                     if (result.IsSuccess)
-                        RiasBot.commandsRun++;
+                        RiasBot.CommandsRun++;
                     else if (result.Error == CommandError.UnmetPrecondition)
                     {
                         await Task.Factory.StartNew(() => SendErrorResult(msg, result)).ConfigureAwait(false);
@@ -100,7 +97,7 @@ namespace RiasBot.Services
         {
             using (var db = _db.GetDbContext())
             {
-                var userDb = db.Users.Where(x => x.UserId == msg.Author.Id).FirstOrDefault();
+                var userDb = db.Users.FirstOrDefault(x => x.UserId == msg.Author.Id);
                 if (!context.IsPrivate)
                 {
                     try
@@ -133,7 +130,7 @@ namespace RiasBot.Services
                     }
                     catch
                     {
-
+                        // ignored
                     }
                 }
             }

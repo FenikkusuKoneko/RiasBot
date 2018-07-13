@@ -15,7 +15,7 @@ namespace RiasBot.Extensions
         ///</summary>
         public static async Task<IUserMessage> SendConfirmationEmbed(this IMessageChannel channel, string description)
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             embed.WithDescription(description);
             return await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
         }
@@ -25,7 +25,7 @@ namespace RiasBot.Extensions
         ///</summary>
         public static async Task<IUserMessage> SendErrorEmbed(this IMessageChannel channel, string description)
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+            var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
             embed.WithDescription(description);
             return await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
         }

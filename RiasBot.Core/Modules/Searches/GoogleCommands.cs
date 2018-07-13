@@ -64,7 +64,7 @@ namespace RiasBot.Modules.Searches
             public async Task YouTubeList([Remainder]string keywords)
             {
                 var searches = await _service.YouTubeSearch("videolist", keywords).ConfigureAwait(false);
-                var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("YouTube Search");
 
                 for (int i = 0; i < searches.Length; i++)

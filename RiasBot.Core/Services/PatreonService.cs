@@ -27,7 +27,7 @@ namespace RiasBot.Services
             _db = db;
             _creds = creds;
 
-            if (!RiasBot.isBeta && !String.IsNullOrEmpty(_creds.PatreonAccessToken))
+            if (!RiasBot.IsBeta && !String.IsNullOrEmpty(_creds.PatreonAccessToken))
             {
                 timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
             }
@@ -148,10 +148,10 @@ namespace RiasBot.Services
                                     {
                                         var user = (IUser)_client.GetUser(userId);
 
-                                        var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                                        var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                                         embed.WithTitle("Patreon Support!");
                                         embed.WithDescription($"Thank you so much for supporting the project :heart:.");
-                                        embed.AddField("Pledge", amountCents / 100 + "$", true).AddField("Reward", amountCents * 10 + RiasBot.currency);
+                                        embed.AddField("Pledge", amountCents / 100 + "$", true).AddField("Reward", amountCents * 10 + RiasBot.Currency);
                                         await user.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                                     }
                                     catch

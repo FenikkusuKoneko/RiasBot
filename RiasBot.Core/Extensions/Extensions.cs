@@ -29,13 +29,13 @@ namespace RiasBot.Extensions
             {
                 var embed = new EmbedBuilder();
                 var embedDeserialized = JsonConvert.DeserializeObject<JsonEmbed>(json);
-                var color = (embedDeserialized.color == true) ? RiasBot.goodColor : RiasBot.badColor;
+                var color = (embedDeserialized.color == true) ? RiasBot.GoodColor : RiasBot.BadColor;
                 embed.WithColor(color);
                 embed.WithTitle(embedDeserialized.title);
 
                 string description = embedDeserialized.description;
-                description = description.Replace("[currency]", RiasBot.currency);
-                description = description.Replace("%currency%", RiasBot.currency);
+                description = description.Replace("[currency]", RiasBot.Currency);
+                description = description.Replace("%currency%", RiasBot.Currency);
                 embed.WithDescription(description);
                 embed.WithThumbnailUrl(embedDeserialized.thumbnail);
                 embed.WithImageUrl(embedDeserialized.image);

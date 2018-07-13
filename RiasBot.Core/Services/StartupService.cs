@@ -41,7 +41,7 @@ namespace RiasBot.Services
             await _discord.StartAsync().ConfigureAwait(false);
             
             await _commands.AddModulesAsync(Assembly.GetAssembly(typeof(RiasBot)), _provider).ConfigureAwait(false);
-            RiasBot.upTime.Start();
+            RiasBot.UpTime.Start();
         }
     }
 }

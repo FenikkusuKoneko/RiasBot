@@ -74,7 +74,7 @@ namespace RiasBot.Modules.Utility
                         var pager = new PaginatedMessage
                         {
                             Title = $"I've found {characters.Count()} characters for {character}. Claim a waifu by id",
-                            Color = new Color(RiasBot.goodColor),
+                            Color = new Color(RiasBot.GoodColor),
                             Pages = listCharacters,
                             Options = new PaginatedAppearanceOptions
                             {
@@ -101,7 +101,7 @@ namespace RiasBot.Modules.Utility
                     {
                         if (userDb.Currency < 5000)
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}. 5000 {RiasBot.currency} required.");
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.Currency}. 5000 {RiasBot.Currency} required.");
                             return;
                         }
                     }
@@ -158,9 +158,9 @@ namespace RiasBot.Modules.Utility
                             db.Remove(waifu);
                             await db.SaveChangesAsync().ConfigureAwait(false);
 
-                            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                             embed.WithTitle("Divorce!");
-                            embed.WithDescription($"You successfully divorced from {waifu.WaifuName}. You received {waifuCashback} {RiasBot.currency} back.");
+                            embed.WithDescription($"You successfully divorced from {waifu.WaifuName}. You received {waifuCashback} {RiasBot.Currency} back.");
                             if (!String.IsNullOrEmpty(waifu.BelovedWaifuPicture))
                                 embed.WithThumbnailUrl(waifu.BelovedWaifuPicture);
                             else
@@ -196,9 +196,9 @@ namespace RiasBot.Modules.Utility
                         for (int i = 0; i < waifusDb.Count(); i++)
                         {
                             if (waifusDb[i].IsPrimary)
-                                waifus.Add($"#{i+1} ❤️ [{waifusDb[i].WaifuName}]({waifusDb[i].WaifuUrl})\tId: {waifusDb[i].WaifuId}\tPrice: {waifusDb[i].WaifuPrice} {RiasBot.currency}");
+                                waifus.Add($"#{i+1} ❤️ [{waifusDb[i].WaifuName}]({waifusDb[i].WaifuUrl})\tId: {waifusDb[i].WaifuId}\tPrice: {waifusDb[i].WaifuPrice} {RiasBot.Currency}");
                             else
-                                waifus.Add($"#{i+1}[{waifusDb[i].WaifuName}]({waifusDb[i].WaifuUrl})\tId: {waifusDb[i].WaifuId}\tPrice: {waifusDb[i].WaifuPrice} {RiasBot.currency}");
+                                waifus.Add($"#{i+1}[{waifusDb[i].WaifuName}]({waifusDb[i].WaifuUrl})\tId: {waifusDb[i].WaifuId}\tPrice: {waifusDb[i].WaifuPrice} {RiasBot.Currency}");
                         }
 
                         if (waifusDb.Count() > 0)
@@ -206,7 +206,7 @@ namespace RiasBot.Modules.Utility
                             var pager = new PaginatedMessage
                             {
                                 Title = $"All waifus for {user}",
-                                Color = new Color(RiasBot.goodColor),
+                                Color = new Color(RiasBot.GoodColor),
                                 Pages = waifus,
                                 Options = new PaginatedAppearanceOptions
                                 {
@@ -310,7 +310,7 @@ namespace RiasBot.Modules.Utility
                             await db.AddAsync(waifu).ConfigureAwait(false);
                             userDb.Currency -= 10000;
 
-                            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                             embed.WithDescription($"Congratulations!\nYou successfully created {Format.Bold(name)}.");
                             embed.WithThumbnailUrl(url);
                             await Context.Channel.SendMessageAsync("", embed: embed.Build());
@@ -319,12 +319,12 @@ namespace RiasBot.Modules.Utility
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.");
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.currency}.");
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.");
                     }
                 }
             }

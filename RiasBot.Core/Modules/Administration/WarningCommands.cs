@@ -100,7 +100,7 @@ namespace RiasBot.Modules.Administration
                             var pager = new PaginatedMessage
                             {
                                 Title = "All warned users",
-                                Color = new Color(RiasBot.goodColor),
+                                Color = new Color(RiasBot.GoodColor),
                                 Pages = warnUsers,
                                 Options = new PaginatedAppearanceOptions
                                 {
@@ -150,7 +150,7 @@ namespace RiasBot.Modules.Administration
                         var pager = new PaginatedMessage
                         {
                             Title = $"All warnings for {user}",
-                            Color = new Color(RiasBot.goodColor),
+                            Color = new Color(RiasBot.GoodColor),
                             Pages = reasons,
                             Options = new PaginatedAppearanceOptions
                             {

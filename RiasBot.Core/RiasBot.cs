@@ -16,27 +16,27 @@ namespace RiasBot
 {
     public class RiasBot
     {
-        public static string version = "1.6.4";
-        public static uint goodColor = 0x009688;
-        public static uint badColor = 0xff0000;
-        public static string currency = "<:heart_diamond:416513090549448724>";
-        public static string invite = "https://discordapp.com/oauth2/authorize?client_id=381387277764395008&scope=bot&permissions=1609952503";
-        public static string author = "Koneko#0001";
-        public static ulong konekoID = 327927038360944640;
-        public static string creatorServer = "https://discord.gg/VPfBvBt";
-        public static ulong supportServer = 416492045859946507;
-        public static string patreon = "https://www.patreon.com/riasbot";
-        public static string website = "https://loveneko.me/";
-        public static Stopwatch upTime = new Stopwatch();
-        public static int commandsRun = 0;
+        public const string Version = "1.6.5";
+        public const uint GoodColor = 0x009688;
+        public const uint BadColor = 0xff0000;
+        public const string Currency = "<:heart_diamond:416513090549448724>";
+        public const string Invite = "https://discordapp.com/oauth2/authorize?client_id=381387277764395008&scope=bot&permissions=1609952503";
+        public const string Author = "Koneko#0001";
+        public const ulong KonekoId = 327927038360944640;
+        public const string CreatorServer = "https://discord.gg/VPfBvBt";
+        public const ulong SupportServer = 416492045859946507;
+        public const string Patreon = "https://www.patreon.com/riasbot";
+        public const string Website = "https://loveneko.me/";
+        public static readonly Stopwatch UpTime = new Stopwatch();
+        public static int CommandsRun = 0;
 
-        public static bool isBeta = false;
+        public const bool IsBeta = false;
 
-        public BotCredentials Credentials { get; private set; }
+        private BotCredentials Credentials { get; set; }
 
         public async Task StartAsync()
         {
-            SetEnvironmentCurrentDirectory(); //Set Environment#CurrentDirectory with the project's path. Call it for the first time.
+            //SetEnvironmentCurrentDirectory(); //Set Environment#CurrentDirectory with the project's path. Call it for the first time.
             Credentials = new BotCredentials();
 
             var services = new ServiceCollection()      // Begin building the service provider
@@ -54,13 +54,12 @@ namespace RiasBot
                 .AddSingleton<IBotCredentials>(Credentials); 
             var assembly = Assembly.GetAssembly(typeof(RiasBot));
 
-            var IKServices = assembly.GetTypes()
+            var iRServices = assembly.GetTypes()
                     .Where(x => x.GetInterfaces().Contains(typeof(IRService))
                         && !x.GetTypeInfo().IsInterface && !x.GetTypeInfo().IsAbstract).ToArray();
 
-            for (int i = 0; i < IKServices.Length; i++)
+            foreach (var type in iRServices)
             {
-                Type type = IKServices[i];
                 services.AddSingleton(type);
             }
 

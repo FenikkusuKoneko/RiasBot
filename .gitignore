@@ -5,3 +5,7 @@ obj/
 RiasBot.Core/Modules/Core/
 RiasBot/data/credentials.json
 RiasBot/data/RiasBot.db
+libsodium.dll
+opus.dll
+ffmpeg.exe
+youtube-dl.exe

@@ -97,12 +97,12 @@ namespace RiasBot.Modules.Bot.Services
                             var newPlayer = new PlayerNumbers { User = user, Number = number };
                             playerNumbers.Add(newPlayer);
 
-                            await message.AddReactionAsync(Emote.Parse(RiasBot.currency)).ConfigureAwait(false);
+                            await message.AddReactionAsync(Emote.Parse(RiasBot.Currency)).ConfigureAwait(false);
 
                             if (number == maximum)
                             {
                                 gameStarted = false;
-                                await channel.SendConfirmationEmbed($"Congratulations you earned {reward}{RiasBot.currency}!");
+                                await channel.SendConfirmationEmbed($"Congratulations you earned {reward}{RiasBot.Currency}!");
                                 await AwardUsersCounter().ConfigureAwait(false);
                             }
                         }
@@ -129,7 +129,7 @@ namespace RiasBot.Modules.Bot.Services
                     var newPlayer = new PlayerNumbers { User = user, Number = number };
                     playerNumbers.Add(newPlayer);
 
-                    await message.AddReactionAsync(Emote.Parse(RiasBot.currency)).ConfigureAwait(false);
+                    await message.AddReactionAsync(Emote.Parse(RiasBot.Currency)).ConfigureAwait(false);
 
                     if (number == maximum)
                     {
@@ -139,7 +139,7 @@ namespace RiasBot.Modules.Bot.Services
                         {
                             players[i] = playerNumbers[i].User.ToString();
                         }
-                        await channel.SendConfirmationEmbed($"Congratulations {String.Join(" ", players)} you earned {reward}{RiasBot.currency}!");
+                        await channel.SendConfirmationEmbed($"Congratulations {String.Join(" ", players)} you earned {reward}{RiasBot.Currency}!");
                         await AwardUsersCounter().ConfigureAwait(false);
                     }
                 }
@@ -178,7 +178,7 @@ namespace RiasBot.Modules.Bot.Services
             this.reward = reward;
             gameStarted = true;
             heartUsers = new Queue<IUser>();
-            heart = Emote.Parse(RiasBot.currency);
+            heart = Emote.Parse(RiasBot.Currency);
             await this.message.AddReactionAsync(heart).ConfigureAwait(false);
 
             await Task.Delay(timeout * 1000).ConfigureAwait(false);

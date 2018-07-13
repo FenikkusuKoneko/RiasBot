@@ -185,7 +185,7 @@ namespace RiasBot.Modules.Administration
                         var pager = new PaginatedMessage
                         {
                             Title = "Self assignable roles on this server",
-                            Color = new Color(RiasBot.goodColor),
+                            Color = new Color(RiasBot.GoodColor),
                             Pages = lsar,
                             Options = new PaginatedAppearanceOptions
                             {

@@ -52,14 +52,14 @@ namespace RiasBot.Modules.NSFW
             {
                 if (!String.IsNullOrEmpty(image))
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                     embed.WithImageUrl(image);
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
                 else
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                     embed.WithDescription("I couldn't find anything.");
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());
@@ -91,14 +91,14 @@ namespace RiasBot.Modules.NSFW
             {
                 if (!String.IsNullOrEmpty(image))
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                     embed.WithImageUrl(image);
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
                 else
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                     embed.WithDescription("I couldn't find anything.");
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());
@@ -130,14 +130,14 @@ namespace RiasBot.Modules.NSFW
             {
                 if (!String.IsNullOrEmpty(image))
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                     embed.WithImageUrl(image);
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
                 else
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                     embed.WithDescription("I couldn't find anything.");
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());
@@ -169,14 +169,14 @@ namespace RiasBot.Modules.NSFW
             {
                 if (!String.IsNullOrEmpty(image))
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                     embed.WithImageUrl(image);
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
                 else
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.badColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                     embed.WithDescription("I couldn't find anything.");
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());
@@ -223,8 +223,8 @@ namespace RiasBot.Modules.NSFW
                 }
                 if (count == 0)
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                    embed.WithColor(RiasBot.badColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+                    embed.WithColor(RiasBot.BadColor);
                     embed.WithDescription("I couldn't find anything.");
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());

@@ -83,7 +83,7 @@ namespace RiasBot.Modules.Searches
                     if (description.Length > 1024)
                         description = $"{description.Substring(0, 950)}... [More]({(string)obj.siteUrl})";
 
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
 
                     embed.WithAuthor(title, null, (string)obj.siteUrl);
                     embed.AddField("Romaji", titleRomaji, true).AddField("English", titleEnglish, true).AddField("Native", titleNative, true);
@@ -132,7 +132,7 @@ namespace RiasBot.Modules.Searches
                         description = "-";
                     }
 
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
 
                     embed.WithAuthor(name, null, (string)obj.siteUrl);
                     embed.AddField("First Name", firstName, true).AddField("Last Name", lastName, true).AddField("Native", nativeName, true);
@@ -180,7 +180,7 @@ namespace RiasBot.Modules.Searches
                             description = "-";
                         }
 
-                        var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                        var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
 
                         embed.WithAuthor(name, null, (string)obj.characters[0].siteUrl);
                         embed.AddField("First Name", firstName, true).AddField("Last Name", lastName, true).AddField("Native", nativeName, true);
@@ -200,7 +200,7 @@ namespace RiasBot.Modules.Searches
                         var pager = new PaginatedMessage
                         {
                             Title = $"I've found {characters.Count()} characters for {character}. Search the character by id",
-                            Color = new Color(RiasBot.goodColor),
+                            Color = new Color(RiasBot.GoodColor),
                             Pages = listCharacters,
                             Options = new PaginatedAppearanceOptions
                             {
@@ -238,7 +238,7 @@ namespace RiasBot.Modules.Searches
                             break;
                         }
                     }
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                     embed.WithDescription(description);
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());

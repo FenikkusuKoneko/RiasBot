@@ -54,7 +54,7 @@ namespace RiasBot.Modules.Utility.Services
                     if (waifuPrice > 10000)
                         waifuPrice = 10000;
 
-                    var waifuEmbed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    var waifuEmbed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                     waifuEmbed.WithTitle(waifuName);
                     waifuEmbed.WithDescription("Do you want to claim this waifu? Type `confirm` or `cancel`");
                     waifuEmbed.AddField("Claimed by", $"{waifus?.Count() ?? 0} users", true).AddField("Price", waifuPrice, true);
@@ -77,7 +77,7 @@ namespace RiasBot.Modules.Utility.Services
 
                     if (userDb.Currency < waifuPrice)
                     {
-                        await channel.SendErrorEmbed($"{user.Mention} you don't have enough {RiasBot.currency}.");
+                        await channel.SendErrorEmbed($"{user.Mention} you don't have enough {RiasBot.Currency}.");
                         return;
                     }
                     if (waifuDb.Any(x => x.WaifuId == waifuId))
@@ -100,8 +100,8 @@ namespace RiasBot.Modules.Utility.Services
                     await db.AddAsync(waifu).ConfigureAwait(false);
                     await db.SaveChangesAsync().ConfigureAwait(false);
 
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-                    embed.WithDescription($"Congratulations!\nYou successfully claimed {Format.Bold(waifuName)} for {Format.Bold(waifuPrice.ToString())} {RiasBot.currency}");
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+                    embed.WithDescription($"Congratulations!\nYou successfully claimed {Format.Bold(waifuName)} for {Format.Bold(waifuPrice.ToString())} {RiasBot.Currency}");
                     embed.WithThumbnailUrl(waifuPicture);
                     await channel.SendMessageAsync("", embed: embed.Build());
                 }

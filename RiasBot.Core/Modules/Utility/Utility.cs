@@ -38,11 +38,11 @@ namespace RiasBot.Modules.Utility
             var user = (IGuildUser)Context.User;
             if (newPrefix is null)
             {
-                await Context.Channel.SendConfirmationEmbed($"{user.Mention} the prefix on this server is {Format.Bold(_ch._prefix)}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationEmbed($"{user.Mention} the prefix on this server is {Format.Bold(_ch.Prefix)}").ConfigureAwait(false);
             }
             else if (user.GuildPermissions.Administrator)
             {
-                string oldPrefix = _ch._prefix;
+                string oldPrefix = _ch.Prefix;
 
                 using (var db = _db.GetDbContext())
                 {
@@ -72,7 +72,7 @@ namespace RiasBot.Modules.Utility
         [Description][@Remarks]
         public async Task Invite()
         {
-            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} invite me on your server: [invite]({(RiasBot.invite)})");
+            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} invite me on your server: [invite]({(RiasBot.Invite)})");
         }
 
         [RiasCommand][@Alias]
@@ -80,7 +80,7 @@ namespace RiasBot.Modules.Utility
         public async Task Donate()
         {
             await Context.Channel.SendConfirmationEmbed($"Support me! Support this project on [Patreon](https://www.patreon.com/riasbot).\n" +
-                $"For every dollar donated you will receive 1000 {RiasBot.currency}.");
+                $"For every dollar donated you will receive 1000 {RiasBot.Currency}.");
         }
 
         [RiasCommand][@Alias]
@@ -110,8 +110,8 @@ namespace RiasBot.Modules.Utility
         [Description][@Remarks]
         public async Task ConvertList()
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
-            embed.WithTitle($"All categories for converter. Type {_ch._prefix}convertlist <category> to get the units from a category");
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+            embed.WithTitle($"All categories for converter. Type {_ch.Prefix}convertlist <category> to get the units from a category");
             string unitCategories = "";
             var quantityTypes = Enum.GetValues(typeof(QuantityType)).Cast<QuantityType>().Skip(1).ToArray();
 
@@ -149,7 +149,7 @@ namespace RiasBot.Modules.Utility
             var method = type.GetMethod("get_Units");
             var unitsEnum = (Array)method.Invoke(null, null);
 
-            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             embed.WithTitle($"All units for {type.Name}");
 
             string[] units = new string[unitsEnum.Length];
@@ -170,7 +170,7 @@ namespace RiasBot.Modules.Utility
         [Description][@Remarks]
         public async Task Converter(string category, string from, string to, double value)
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             if (!UnitConverter.TryConvertByName(value, ToTitleCase(category), ToTitleCase(from), ToTitleCase(to), out double result))
             {
                 if (UnitConverter.TryConvertByAbbreviation(value, ToTitleCase(category), from.ToLower(), to.ToLower(), out result))

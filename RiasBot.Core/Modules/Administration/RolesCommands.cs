@@ -42,7 +42,7 @@ namespace RiasBot.Modules.Administration
                     var pager = new PaginatedMessage
                     {
                         Title = "List of roles on this server",
-                        Color = new Color(RiasBot.goodColor),
+                        Color = new Color(RiasBot.GoodColor),
                         Pages = roles,
                         Options = new PaginatedAppearanceOptions
                         {

@@ -67,7 +67,7 @@ namespace RiasBot.Modules.Bot
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user couldn't be found");
                     return;
                 }
-                if (getUser.Id == RiasBot.konekoID)
+                if (getUser.Id == RiasBot.KonekoId)
                 {
                     await Context.Channel.SendErrorEmbed("I will not delete you from the database, Master!");
                     return;
@@ -145,9 +145,9 @@ namespace RiasBot.Modules.Bot
                 {
                     var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
                     var xpDb = db.XpSystem.Where(x => x.UserId == getUser.Id);
-                    var embed = new EmbedBuilder().WithColor(RiasBot.goodColor);
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                     embed.WithAuthor(getUser.ToString());
-                    embed.AddField("ID", getUser.Id, true).AddField("Currency", $"{userDb?.Currency} {RiasBot.currency}", true);
+                    embed.AddField("ID", getUser.Id, true).AddField("Currency", $"{userDb?.Currency} {RiasBot.Currency}", true);
                     embed.AddField("Global level", userDb?.Level, true).AddField("Global XP", userDb?.Xp, true);
                     embed.AddField("Is blacklisted", (userDb.IsBlacklisted) ? "true" : "false", true).AddField("Is banned", (userDb.IsBanned) ? "true" : "false", true);
                     embed.AddField("Mutual servers (probable)", (mutualServers) ? "true" : "false", true);
@@ -180,7 +180,7 @@ namespace RiasBot.Modules.Bot
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                     return;
                 }
-                if (getUser.Id == RiasBot.konekoID)
+                if (getUser.Id == RiasBot.KonekoId)
                 {
                     await Context.Channel.SendErrorEmbed("I will not add you on the blacklist, Master!");
                     return;
@@ -240,7 +240,7 @@ namespace RiasBot.Modules.Bot
                     else
                         getUser = null;
                 }
-                if (getUser.Id == RiasBot.konekoID)
+                if (getUser.Id == RiasBot.KonekoId)
                 {
                     await Context.Channel.SendErrorEmbed("You are not in the blacklist, Master!");
                     return;
@@ -301,7 +301,7 @@ namespace RiasBot.Modules.Bot
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                     return;
                 }
-                if (getUser.Id == RiasBot.konekoID)
+                if (getUser.Id == RiasBot.KonekoId)
                 {
                     await Context.Channel.SendErrorEmbed("I will not ban you from using me, Master!");
                     return;
@@ -367,7 +367,7 @@ namespace RiasBot.Modules.Bot
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                     return;
                 }
-                if (getUser.Id == RiasBot.konekoID)
+                if (getUser.Id == RiasBot.KonekoId)
                 {
                     await Context.Channel.SendErrorEmbed("You are not banned from using me, Master!");
                     return;
