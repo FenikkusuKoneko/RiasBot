@@ -232,6 +232,8 @@ namespace RiasBot.Modules.Help
 
             foreach (var getModule in _service.Modules.GroupBy(m => m.GetModule()).Select(m => m.Key).OrderBy(m => m.Name))
             {
+                if (getModule.Name == "Music") //don't show the Music module, is for tests
+                    continue;
                 var moduleCommands = getModule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
 
                 var transformed = moduleCommands.Select(x =>
@@ -256,7 +258,10 @@ namespace RiasBot.Modules.Help
 
                         return $"{_ch.Prefix + x.Aliases.First()} {nextAlias}";
                     });
-                    embed.AddField(command.Name.Replace("Commands", ""), String.Join("\n", transformedSb), true);
+                    if (command.Name == "CommandsCommands") // I just want the Commands submodule
+                        embed.AddField("Commands", String.Join("\n", transformedSb), true);
+                    else
+                        embed.AddField(command.Name.Replace("Commands", ""), String.Join("\n", transformedSb), true);
                     index++;
                 }
                 if (embed.Fields.Count > 20)
