@@ -11,13 +11,8 @@ using System.Threading.Tasks;
 
 namespace RiasBot.Modules.NSFW
 {
-    public partial class NSFW : RiasModule<NSFWService>
+    public class NSFW : RiasModule<NSFWService>
     {
-        public NSFW()
-        {
-
-        }
-
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]

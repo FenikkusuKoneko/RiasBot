@@ -5,9 +5,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using RiasBot.Services;
 using RiasBot.Services.Implementation;
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -30,13 +28,12 @@ namespace RiasBot
         public static readonly Stopwatch UpTime = new Stopwatch();
         public static int CommandsRun = 0;
 
-        public const bool IsBeta = false;
+        public const bool IsBeta = true;
 
         private BotCredentials Credentials { get; set; }
 
         public async Task StartAsync()
         {
-            //SetEnvironmentCurrentDirectory(); //Set Environment#CurrentDirectory with the project's path. Call it for the first time.
             Credentials = new BotCredentials();
 
             var services = new ServiceCollection()      // Begin building the service provider
@@ -75,14 +72,14 @@ namespace RiasBot
             await Task.Delay(-1).ConfigureAwait(false);     // Prevent the application from closing
         }
 
-        public void SetEnvironmentCurrentDirectory()
-        {
-            //If your Visual Studio has some issues with the Environment#CurrentDirectory, call this function
-            //Usually the path should be the project's path. But there is the "bin" folder
-            //This is happening just in Visual Studio, works if you build using a command line and dotnet
-            var path = Environment.CurrentDirectory;
-            if (path.Contains("bin"))
-                Environment.CurrentDirectory = Directory.GetParent(path).Parent.Parent.FullName;
-        }
+        //public void SetEnvironmentCurrentDirectory()
+        //{
+        //    //If your Visual Studio has some issues with the Environment#CurrentDirectory, call this function
+        //    //Usually the path should be the project's path. But there is the "bin" folder
+        //    //This is happening just in Visual Studio, works if you build using a command line and dotnet
+        //    var path = Environment.CurrentDirectory;
+        //    if (path.Contains("bin"))
+        //        Environment.CurrentDirectory = Directory.GetParent(path).Parent.Parent.FullName;
+        //}
     }
 }

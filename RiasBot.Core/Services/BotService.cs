@@ -172,8 +172,19 @@ namespace RiasBot.Services
         {
             var sts = statuses[statusCount];
             sts = sts.Trim();
-            var type = sts.Substring(0, sts.IndexOf(" "));
-            var statusName = sts.Remove(0, sts.IndexOf(" ") + 1);
+            var type = sts.Substring(0, sts.IndexOf(" ", StringComparison.Ordinal)).Trim().ToLowerInvariant();
+            var statusName = sts.Remove(0, sts.IndexOf(" ", StringComparison.Ordinal)).Trim();
+            statusName = statusName.Replace("%guilds%", _discord.Guilds.Count.ToString());
+
+            if (statusName.Contains("%users%"))
+            {
+                var users = 0;
+                foreach (var guild in _discord.Guilds)
+                {
+                    users += guild.MemberCount;
+                }
+                statusName = statusName.Replace("%users%", users.ToString());
+            }
             switch (type)
             {
                 case "playing":
@@ -186,6 +197,7 @@ namespace RiasBot.Services
                     await _discord.SetActivityAsync(new Game(statusName, ActivityType.Watching)).ConfigureAwait(false);
                     break;
             }
+
             if (statusCount > statuses.Length - 2)
                 statusCount = 0;
             else

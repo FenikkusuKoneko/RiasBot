@@ -126,21 +126,8 @@ namespace RiasBot.Modules.Bot
             [RequireOwner]
             public async Task Streaming(string url = null, [Remainder]string name = null)
             {
-                try
-                {
-                    _botService.status.Dispose();
-                }
-                catch
-                {
-
-                }
-
-                name = name ?? "";
-                url = url ?? "";
-
-                var game = new Game(name, ActivityType.Streaming);
-                game = new StreamingGame(name, url);
-
+                _botService.status?.Dispose();
+                var game = new StreamingGame(name, url);
                 await _client.SetActivityAsync(game).ConfigureAwait(false);
                 await Context.Channel.SendConfirmationEmbed($"Activity status set to {Format.Bold($"Streaming {name}")}");
             }

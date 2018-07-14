@@ -153,7 +153,7 @@
     "Command": "activityrotate",
     "Description": "Sets the bot's activity status rotation.",
     "Remarks": [
-      "[prefix]activityrotate 30 playing r!h for help | watching anime"
+      "[prefix]activityrotate 30 playing r!h for help \\n watching anime"
     ]
   },
 
@@ -167,9 +167,9 @@
 
   "streaming": {
     "Command": "stream streaming",
-    "Description": "Sets the bot's activity status to streaming. Separate the title by url with '=>'",
+    "Description": "Sets the bot's activity status to streaming.",
     "Remarks": [
-      "[prefix]stream https://www.twitch.tv/"
+      "[prefix]stream twitch https://www.twitch.tv/"
     ]
   },
 
