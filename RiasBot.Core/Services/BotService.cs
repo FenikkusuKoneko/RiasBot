@@ -1,15 +1,12 @@
 ﻿using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 using RiasBot.Services.Database.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using RiasBot.Modules.Music.Services;
@@ -23,15 +20,15 @@ namespace RiasBot.Services
         private readonly MusicService _musicService;
         private readonly IBotCredentials _creds;
 
-        private Timer dblTimer;
-        private Timer dblVotesTimer;
-        public Timer status;
+        private Timer _dblTimer;
+        private Timer _dblVotesTimer;
+        public Timer Status;
 
-        public List<Votes> votesList = new List<Votes>();
-        private bool populateVotesList = true;
+        public List<Votes> VotesList = new List<Votes>();
+        private bool _populateVotesList = true;
 
-        public string[] statuses;
-        private int statusCount = 0;
+        public string[] Statuses;
+        private int _statusCount = 0;
 
         public BotService(DiscordShardedClient discord, DbService db, MusicService musicService, IBotCredentials creds)
         {
@@ -44,10 +41,13 @@ namespace RiasBot.Services
             _discord.UserLeft += UserLeft;
             _discord.UserVoiceStateUpdated += _musicService.CheckIfAlone;
 
-            if(!RiasBot.IsBeta && !String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
+            if (!String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
             {
-                dblTimer = new Timer(new TimerCallback(async _ => await DblStats()), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
-                dblVotesTimer = new Timer(new TimerCallback(async _ => await DblVotes()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
+                if(!RiasBot.IsBeta)
+                {
+                    _dblTimer = new Timer(new TimerCallback(async _ => await DblStats()), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
+                    _dblVotesTimer = new Timer(new TimerCallback(async _ => await DblVotes()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
+                }
             }
         }
 
@@ -117,7 +117,7 @@ namespace RiasBot.Services
         {
             using (var db = _db.GetDbContext())
             {
-                var guildDb = db.Guilds.Where(g => g.GuildId == user.Guild.Id).FirstOrDefault();
+                var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == user.Guild.Id);
                 if (guildDb != null)
                 {
                     if (guildDb.Bye)
@@ -152,7 +152,7 @@ namespace RiasBot.Services
         {
             using (var db = _db.GetDbContext())
             {
-                var guildDb = db.Guilds.Where(g => g.GuildId == guild.Id).FirstOrDefault();
+                var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == guild.Id);
                 if (guildDb != null)
                 {
                     if (guildDb.AutoAssignableRole > 0)
@@ -170,7 +170,7 @@ namespace RiasBot.Services
 
         public async Task StatusRotate()
         {
-            var sts = statuses[statusCount];
+            var sts = Statuses[_statusCount];
             sts = sts.Trim();
             var type = sts.Substring(0, sts.IndexOf(" ", StringComparison.Ordinal)).Trim().ToLowerInvariant();
             var statusName = sts.Remove(0, sts.IndexOf(" ", StringComparison.Ordinal)).Trim();
@@ -178,11 +178,7 @@ namespace RiasBot.Services
 
             if (statusName.Contains("%users%"))
             {
-                var users = 0;
-                foreach (var guild in _discord.Guilds)
-                {
-                    users += guild.MemberCount;
-                }
+                var users = _discord.Guilds.Sum(guild => guild.MemberCount);
                 statusName = statusName.Replace("%users%", users.ToString());
             }
             switch (type)
@@ -198,10 +194,10 @@ namespace RiasBot.Services
                     break;
             }
 
-            if (statusCount > statuses.Length - 2)
-                statusCount = 0;
+            if (_statusCount > Statuses.Length - 2)
+                _statusCount = 0;
             else
-                statusCount++;
+                _statusCount++;
         }
 
         public async Task DblStats()
@@ -243,7 +239,7 @@ namespace RiasBot.Services
                     var votesApi = await http.GetStringAsync(RiasBot.Website + "api/votes.json");
                     var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
                     var votes = dblVotes.data.votes.Where(x => x.type == "upvote");
-                    votesList = new List<Votes>();
+                    VotesList = new List<Votes>();
                     foreach (var vote in votes)
                     {
                         if (DateTime.TryParseExact(vote.date, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.CurrentCulture, DateTimeStyles.None, out var date))
@@ -251,8 +247,8 @@ namespace RiasBot.Services
                             date = date.AddDays(1);
                             if (DateTime.Compare(date.ToUniversalTime(), DateTime.UtcNow) >= 1)
                             {
-                                votesList.Add(vote);
-                                if (!populateVotesList)
+                                VotesList.Add(vote);
+                                if (!_populateVotesList)
                                 {
                                     var getGuildUser = _discord.GetGuild(RiasBot.SupportServer).GetUser(vote.user);
                                     if (getGuildUser != null)
@@ -274,10 +270,14 @@ namespace RiasBot.Services
                                         //User not in the support server!
                                     }
                                 }
+                                else
+                                {
+                                    await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();    //download all users from the support server at start up
+                                }
                             }
                         }
                     }
-                    populateVotesList = false;
+                    _populateVotesList = false;
                 }
             }
             catch (Exception ex)

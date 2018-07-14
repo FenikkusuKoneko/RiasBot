@@ -38,7 +38,7 @@ namespace RiasBot.Modules.Bot
             {
                 try
                 {
-                    _botService.status.Dispose();
+                    _botService.Status.Dispose();
                 }
                 catch
                 {
@@ -76,8 +76,8 @@ namespace RiasBot.Modules.Bot
             {
                 var statuses = status.Split('\n');
 
-                _botService.statuses = statuses;
-                _botService.status = new Timer(async _ => await _botService.StatusRotate(), null, 0, time * 1000);
+                _botService.Statuses = statuses;
+                _botService.Status = new Timer(async _ => await _botService.StatusRotate(), null, 0, time * 1000);
 
                 await Context.Channel.SendConfirmationEmbed($"Activity status rotation set: {time} seconds\n{String.Join("\n", statuses)}");
             }
@@ -126,7 +126,7 @@ namespace RiasBot.Modules.Bot
             [RequireOwner]
             public async Task Streaming(string url = null, [Remainder]string name = null)
             {
-                _botService.status?.Dispose();
+                _botService.Status?.Dispose();
                 var game = new StreamingGame(name, url);
                 await _client.SetActivityAsync(game).ConfigureAwait(false);
                 await Context.Channel.SendConfirmationEmbed($"Activity status set to {Format.Bold($"Streaming {name}")}");

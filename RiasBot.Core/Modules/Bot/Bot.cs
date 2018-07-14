@@ -163,7 +163,7 @@ namespace RiasBot.Modules.Bot
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             var votes = new List<string>();
             var index = 0;
-            foreach (var vote in _botService.votesList)
+            foreach (var vote in _botService.VotesList)
             {
                 var user = await Context.Client.GetUserAsync(vote.user);
                 votes.Add($"#{index+1} {user?.ToString()} ({vote.user})");
