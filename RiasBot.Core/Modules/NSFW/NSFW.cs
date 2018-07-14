@@ -24,7 +24,7 @@ namespace RiasBot.Modules.NSFW
         [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Hentai([Remainder]string tag = null)
         {
-            int retry = 5;
+            var retry = 5;
             var channel = (ITextChannel)Context.Channel;
             if (!channel.IsNsfw)
             {
@@ -33,7 +33,7 @@ namespace RiasBot.Modules.NSFW
             }
             tag = tag?.Replace(" ", "%20");
 
-            string image = await _service.GetImage(tag);
+            var image = await _service.GetImage(tag);
 
             while (retry > 0)
             {
@@ -85,7 +85,7 @@ namespace RiasBot.Modules.NSFW
             }
             tag = tag?.Replace(" ", "%20");
 
-            string image = await _service.DownloadImages(NSFWService.NSFWSite.Danbooru, tag);
+            var image = await _service.DownloadImages(NSFWService.NSFWSite.Danbooru, tag);
 
             try
             {
@@ -124,7 +124,7 @@ namespace RiasBot.Modules.NSFW
             }
             tag = tag?.Replace(" ", "%20");
 
-            string image = await _service.DownloadImages(NSFWService.NSFWSite.Konachan, tag);
+            var image = await _service.DownloadImages(NSFWService.NSFWSite.Konachan, tag);
 
             try
             {
@@ -163,7 +163,7 @@ namespace RiasBot.Modules.NSFW
             }
             tag = tag?.Replace(" ", "%20");
 
-            string image = await _service.DownloadImages(NSFWService.NSFWSite.Yandere, tag);
+            var image = await _service.DownloadImages(NSFWService.NSFWSite.Yandere, tag);
 
             try
             {
@@ -212,7 +212,7 @@ namespace RiasBot.Modules.NSFW
 
             try
             {
-                int count = 0;
+                var count = 0;
                 foreach (var image in images)
                 {
                     if (!String.IsNullOrEmpty(image))

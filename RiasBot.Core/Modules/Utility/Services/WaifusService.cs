@@ -26,7 +26,7 @@ namespace RiasBot.Modules.Utility.Services
 
         public async Task ClaimWaifu(ShardedCommandContext context, IGuildUser user, IMessageChannel channel, dynamic obj)
         {
-            int waifuId = (int)obj.id;
+            var waifuId = (int)obj.id;
             string waifuName = null;
 
             if (String.IsNullOrEmpty((string)obj.name.first))
@@ -36,8 +36,8 @@ namespace RiasBot.Modules.Utility.Services
             else
                 waifuName = $"{(string)obj.name.first} {(string)obj.name.last}";
 
-            string waifuUrl = (string)obj.siteUrl;
-            string waifuPicture = (string)obj.image.large;
+            var waifuUrl = (string)obj.siteUrl;
+            var waifuPicture = (string)obj.image.large;
 
             using (var db = _db.GetDbContext())
             {
@@ -46,7 +46,7 @@ namespace RiasBot.Modules.Utility.Services
                 var waifus = db.Waifus.Where(x => x.WaifuId == waifuId);
                 try
                 {
-                    int waifuPrice = 1000;
+                    var waifuPrice = 1000;
                     if (waifus != null)
                     {
                         waifuPrice += waifus.Count() * 10;

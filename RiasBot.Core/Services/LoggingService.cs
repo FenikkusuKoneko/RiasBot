@@ -34,14 +34,14 @@ namespace RiasBot.Services
             {
                 if (msg.Severity != LogSeverity.Verbose && msg.Severity != LogSeverity.Warning)
                 {
-                    string log = $"{DateTime.UtcNow.ToString("MMM dd hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
+                    var log = $"{DateTime.UtcNow.ToString("MMM dd hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
                     
                     return Console.Out.WriteLineAsync(log);
                 }
             }
             else
             {
-                string log = $"{DateTime.UtcNow.ToString("MMM dd hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
+                var log = $"{DateTime.UtcNow.ToString("MMM dd hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
                 
                 return Console.Out.WriteLineAsync(log);
             }

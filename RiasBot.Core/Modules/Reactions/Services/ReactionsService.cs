@@ -41,7 +41,7 @@ namespace RiasBot.Modules.Reactions.Services
             try
             {
                 var rnd = new Random((int)DateTime.UtcNow.Ticks);
-                int index = rnd.Next(0, listImages.Count);
+                var index = rnd.Next(0, listImages.Count);
                 return listImages[index];
             }
             catch

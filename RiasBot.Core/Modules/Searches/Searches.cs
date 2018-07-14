@@ -39,7 +39,7 @@ namespace RiasBot.Modules.Searches
 
                 await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
 
-                HttpResponse<String> response = Unirest.get("https://mashape-community-urban-dictionary.p.mashape.com/define?term=" + Uri.EscapeUriString(keyword))
+                var response = Unirest.get("https://mashape-community-urban-dictionary.p.mashape.com/define?term=" + Uri.EscapeUriString(keyword))
                 .header("X-Mashape-Key", _creds.UrbanDictionaryApiKey)
                 .header("Accept", "text/plain")
                 .asString();

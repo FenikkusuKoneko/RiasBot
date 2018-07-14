@@ -39,8 +39,8 @@ namespace RiasBot.Modules.Searches
 
                 }
 
-                Random r = new Random();
-                int random = r.Next(0, searches?.Length ?? 0);
+                var r = new Random();
+                var random = r.Next(0, searches?.Length ?? 0);
 
                 switch (type)
                 {
@@ -67,7 +67,7 @@ namespace RiasBot.Modules.Searches
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("YouTube Search");
 
-                for (int i = 0; i < searches.Length; i++)
+                for (var i = 0; i < searches.Length; i++)
                 {
                     if (i >= 10)
                         break;

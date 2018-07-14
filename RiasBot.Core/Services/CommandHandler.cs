@@ -71,7 +71,7 @@ namespace RiasBot.Services
                     if (userDb.IsBanned)
                         return;     //banned users will cannot use the commands
 
-                int argPos = 0;     // Check if the message has a valid command prefix
+                var argPos = 0;     // Check if the message has a valid command prefix
 
                 if (msg.HasStringPrefix(Prefix, ref argPos) || msg.HasStringPrefix("rias ", ref argPos)
                     || msg.HasStringPrefix("Rias ", ref argPos)

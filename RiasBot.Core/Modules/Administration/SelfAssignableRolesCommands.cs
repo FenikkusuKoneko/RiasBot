@@ -176,7 +176,7 @@ namespace RiasBot.Modules.Administration
                     if (sar.Count > 0)
                     {
                         var lsar = new List<string>();
-                        int index = 0;
+                        var index = 0;
                         foreach (var role in sar)
                         {
                             lsar.Add($"#{index + 1} {role.RoleName}");

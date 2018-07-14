@@ -100,7 +100,7 @@ namespace RiasBot.Services
                 }
                 foreach (var pledge in pledges)
                 {
-                    int patronPledgeId = pledge.relationships.patron.data.id;
+                    var patronPledgeId = pledge.relationships.patron.data.id;
                     var patronUser = patrons.Where(x => x.id == patronPledgeId).FirstOrDefault();
 
                     if (patronUser != null)
@@ -112,7 +112,7 @@ namespace RiasBot.Services
                                 continue;
                             }
                         }
-                        int amountCents = pledge.attributes.amount_cents;
+                        var amountCents = pledge.attributes.amount_cents;
                         if (!UInt64.TryParse(patronUser.attributes.social_connections?.discord?.user_id, out var userId))
                         {
                             continue;

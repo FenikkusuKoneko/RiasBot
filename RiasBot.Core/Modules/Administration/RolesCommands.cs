@@ -115,9 +115,9 @@ namespace RiasBot.Modules.Administration
                 var role = Context.Guild.Roles.Where(r => r.Name.ToLower() == name.ToLower()).FirstOrDefault();
                 if (role != null)
                 {
-                    if (Int32.TryParse(color.Substring(0, 2), NumberStyles.HexNumber, null, out int redColor) &&
-                        Int32.TryParse(color.Substring(2, 2), NumberStyles.HexNumber, null, out int greenColor) &&
-                        Int32.TryParse(color.Substring(4, 2), NumberStyles.HexNumber, null, out int blueColor))
+                    if (Int32.TryParse(color.Substring(0, 2), NumberStyles.HexNumber, null, out var redColor) &&
+                        Int32.TryParse(color.Substring(2, 2), NumberStyles.HexNumber, null, out var greenColor) &&
+                        Int32.TryParse(color.Substring(4, 2), NumberStyles.HexNumber, null, out var blueColor))
                     {
                         var red = Convert.ToByte(redColor);
                         var green = Convert.ToByte(greenColor);
@@ -144,8 +144,8 @@ namespace RiasBot.Modules.Administration
             public async Task RenameRole([Remainder]string role)
             {
                 var roles = role.Split("->");
-                string oldName = roles[0].TrimEnd();
-                string newName = roles[1].TrimStart();
+                var oldName = roles[0].TrimEnd();
+                var newName = roles[1].TrimStart();
 
                 var oldRole = Context.Guild.Roles.Where(r => r.Name.ToLower() == oldName.ToLower()).First();
                 if (oldRole != null)

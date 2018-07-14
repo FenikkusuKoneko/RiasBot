@@ -35,7 +35,7 @@ namespace RiasBot.Services
                 return;
             }
 
-            string discordToken = _creds.Token;
+            var discordToken = _creds.Token;
             await _discord.LoginAsync(TokenType.Bot, discordToken).ConfigureAwait(false);
             await _restDiscord.LoginAsync(TokenType.Bot, discordToken).ConfigureAwait(false);
             await _discord.StartAsync().ConfigureAwait(false);

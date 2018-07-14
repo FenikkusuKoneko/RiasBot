@@ -24,7 +24,7 @@ namespace RiasBot.Modules.Administration.Services
         {
             using (var db = _db.GetDbContext())
             {
-                int nrWarnings = 0;
+                var nrWarnings = 0;
                 var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
                 var warnings = db.Warnings.Where(x => x.GuildId == guild.Id).Where(y => y.UserId == user.Id).ToList();
 

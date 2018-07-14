@@ -256,7 +256,7 @@ namespace RiasBot.Modules.Gambling
 
                 using (var db = _db.GetDbContext())
                 {
-                    int currencyAmount = 0;
+                    var currencyAmount = 0;
                     var userDb = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
                     try
                     {
@@ -295,7 +295,7 @@ namespace RiasBot.Modules.Gambling
 
                     var userDb = db.Users.OrderByDescending(x => x.Currency).Skip(page * 9).Take(9).ToList();
 
-                    for (int i = 0; i < userDb.Count; i++)
+                    for (var i = 0; i < userDb.Count; i++)
                     {
                         var user = await Context.Client.GetUserAsync(userDb[i].UserId);
                         embed.AddField($"#{i+1 + (page * 9)} {user?.ToString() ?? userDb[i].UserId.ToString()}", $"{userDb[i].Currency} {heartDiamond}", true);

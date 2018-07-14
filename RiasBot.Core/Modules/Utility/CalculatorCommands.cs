@@ -84,16 +84,16 @@ namespace RiasBot.Modules.Utility
             [Description][@Remarks]
             public async Task Det(int n, [Remainder] string rows_collumns)
             {
-                string[] rc = new string[n * n];
+                var rc = new string[n * n];
                 rc = rows_collumns.Split(",").ToArray();
 
-                double[,] matrix = new double[n, n];
+                var matrix = new double[n, n];
 
-                int pos = 0;
+                var pos = 0;
 
-                for (int i = 0; i < n; i++)
+                for (var i = 0; i < n; i++)
                 {
-                    for (int j = 0; j < n; j++)
+                    for (var j = 0; j < n; j++)
                     {
                         matrix[i, j] = Convert.ToDouble(rc[pos]);
                         pos++;
@@ -105,7 +105,7 @@ namespace RiasBot.Modules.Utility
                 double l = 1;
                 double u = 1;
 
-                for (int lu = 0; lu < n; lu++)
+                for (var lu = 0; lu < n; lu++)
                 {
                     l *= LUMatrix.l[lu, lu];
                     u *= LUMatrix.u[lu, lu];

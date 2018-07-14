@@ -273,7 +273,7 @@ namespace RiasBot.Modules.Administration
         {
             using (var db = _db.GetDbContext())
             {
-                bool greet = false;
+                var greet = false;
                 var guildDb = db.Guilds.Where(g => g.GuildId == Context.Guild.Id).FirstOrDefault();
                 try
                 {
@@ -328,7 +328,7 @@ namespace RiasBot.Modules.Administration
         {
             using (var db = _db.GetDbContext())
             {
-                bool bye = false;
+                var bye = false;
                 var guildDb = db.Guilds.Where(g => g.GuildId == Context.Guild.Id).FirstOrDefault();
                 try
                 {

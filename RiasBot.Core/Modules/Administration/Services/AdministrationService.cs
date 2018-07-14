@@ -322,7 +322,7 @@ namespace RiasBot.Modules.Administration.Services
 
         public async Task MuteService(IRole role, IGuild guild)
         {
-            OverwritePermissions permissions = new OverwritePermissions().Modify(sendMessages: PermValue.Deny);
+            var permissions = new OverwritePermissions().Modify(sendMessages: PermValue.Deny);
 
             var channels = await guild.GetTextChannelsAsync();
             foreach (var c in channels)

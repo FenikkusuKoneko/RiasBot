@@ -66,9 +66,9 @@ namespace RiasBot.Modules.Utility
                     else
                     {
                         var listCharacters = new List<string>();
-                        for (int i = 0; i < characters.Count(); i++)
+                        for (var i = 0; i < characters.Count(); i++)
                         {
-                            string waifuName1 = $"{(string)obj.characters[i].name.first} { (string)obj.characters[i].name.last}";
+                            var waifuName1 = $"{(string)obj.characters[i].name.first} { (string)obj.characters[i].name.last}";
                             listCharacters.Add($"{waifuName1}\tId: {obj.characters[i].id}\n");
                         }
                         var pager = new PaginatedMessage
@@ -152,7 +152,7 @@ namespace RiasBot.Modules.Utility
                         var waifu = waifusDb.Where(x => x.WaifuName.ToLowerInvariant() == character.ToLowerInvariant()).FirstOrDefault();
                         if (waifu != null)
                         {
-                            int waifuCashback = waifu.WaifuPrice * 90 / 100;
+                            var waifuCashback = waifu.WaifuPrice * 90 / 100;
                             userDb.Currency += waifuCashback;
 
                             db.Remove(waifu);
@@ -193,7 +193,7 @@ namespace RiasBot.Modules.Utility
                     try
                     {
                         var waifus = new List<string>();
-                        for (int i = 0; i < waifusDb.Count(); i++)
+                        for (var i = 0; i < waifusDb.Count(); i++)
                         {
                             if (waifusDb[i].IsPrimary)
                                 waifus.Add($"#{i+1} ❤️ [{waifusDb[i].WaifuName}]({waifusDb[i].WaifuUrl})\tId: {waifusDb[i].WaifuId}\tPrice: {waifusDb[i].WaifuPrice} {RiasBot.Currency}");

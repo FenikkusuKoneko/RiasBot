@@ -113,7 +113,7 @@ namespace RiasBot.Modules.Music.Common
                     return;
 
                 waited = true;
-                Song song = new Song
+                var song = new Song
                 {
                     title = title,
                     url = url,
@@ -140,7 +140,7 @@ namespace RiasBot.Modules.Music.Common
                             var eta = Queue[position].duration;
                             eta = eta.Subtract(timer.Elapsed);
 
-                            for (int i = position + 1; i < Queue.Count; i++)
+                            for (var i = position + 1; i < Queue.Count; i++)
                             {
                                 var songQueue = Queue[i];
                                 eta = eta.Add(songQueue.duration);
@@ -175,7 +175,7 @@ namespace RiasBot.Modules.Music.Common
             }
             catch
             {
-
+                //ignored
             }
         }
 
@@ -193,16 +193,16 @@ namespace RiasBot.Modules.Music.Common
                 videoListRequestSnippet.Id = playlistItem.Snippet.ResourceId.VideoId;
                 var videoListResponseSnippet = await videoListRequestSnippet.ExecuteAsync().ConfigureAwait(false);
 
-                string title = playlistItem.Snippet.Title;
-                string url = "https://youtu.be/" + playlistItem.Snippet.ResourceId.VideoId;
+                var title = playlistItem.Snippet.Title;
+                var url = "https://youtu.be/" + playlistItem.Snippet.ResourceId.VideoId;
                 var channel = videoListResponseSnippet.Items.FirstOrDefault().Snippet.ChannelTitle;
-                TimeSpan duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items.FirstOrDefault().ContentDetails.Duration);
-                string thumbnail = playlistItem.Snippet.Thumbnails.High.Url;
+                var duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items.FirstOrDefault().ContentDetails.Duration);
+                var thumbnail = playlistItem.Snippet.Thumbnails.High.Url;
 
                 if (title is null || url is null || duration == new TimeSpan(0, 0, 0) || thumbnail is null)
                     return;
 
-                Song song = new Song()
+                var song = new Song()
                 {
                     title = title,
                     url = url,
@@ -331,8 +331,8 @@ namespace RiasBot.Modules.Music.Common
                     timer = new Stopwatch();
                     timer.Start();
                 }
-                byte[] buffer = new byte[3840];
-                int bytesRead = 0;
+                var buffer = new byte[3840];
+                var bytesRead = 0;
 
                 if (!String.IsNullOrEmpty(path))
                 {
@@ -398,8 +398,8 @@ namespace RiasBot.Modules.Music.Common
                 {
                     var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                     string timerBar = null;
-                    double timerPos = (timer.ElapsedMilliseconds / Queue[position].duration.TotalMilliseconds) * 30;
-                    for (int i = 0; i < 30; i++)
+                    var timerPos = (timer.ElapsedMilliseconds / Queue[position].duration.TotalMilliseconds) * 30;
+                    for (var i = 0; i < 30; i++)
                     {
                         if (i == (int)timerPos)
                             timerBar += "⚫";
@@ -471,7 +471,7 @@ namespace RiasBot.Modules.Music.Common
         public async Task Playlist(ShardedCommandContext context, InteractiveService _is)
         {
             var playlist = new List<string>();
-            for (int i = 0; i < Queue.Count; i++)
+            for (var i = 0; i < Queue.Count; i++)
             {
                 if (position == i)
                     playlist.Add($"➡ #{i + 1} {Queue[i].title} {Format.Code($"({Queue[i].duration})")}");
@@ -505,7 +505,7 @@ namespace RiasBot.Modules.Music.Common
             await semaphoreSlim.WaitAsync();
             try
             {
-                Song song = Queue[position];
+                var song = Queue[position];
                 Queue.Shuffle();
                 var pos = Queue.IndexOf(song);
                 position = pos;
@@ -517,7 +517,7 @@ namespace RiasBot.Modules.Music.Common
             }
             catch
             {
-
+                //ignored
             }
             semaphoreSlim.Release();
         }
@@ -532,17 +532,17 @@ namespace RiasBot.Modules.Music.Common
             await semaphoreSlim.WaitAsync();
             try
             {
-                await TogglePause(false, false).ConfigureAwait(false);
+                //await TogglePause(false, false).ConfigureAwait(false);
                 Queue.Clear();
                 registeringPlaylist = false;
                 position = 0;
 
-                tokenSource.Cancel();
-                tokenSource.Dispose();
-                tokenSource = new CancellationTokenSource();
-                token = tokenSource.Token;
-                
-                Dispose();
+                //tokenSource.Cancel();
+                //tokenSource.Dispose();
+                //tokenSource = new CancellationTokenSource();
+                //token = tokenSource.Token;
+                //
+                //Dispose();
 
                 await _channel.SendConfirmationEmbed("Current playlist cleared!").ConfigureAwait(false);
             }
@@ -550,14 +550,14 @@ namespace RiasBot.Modules.Music.Common
             {
                 // Playlist already cleared or is not created yet
             }
-            isRunning = false;
+            //isRunning = false;
             semaphoreSlim.Release();
         }
 
         public async Task Remove(int index)
         {
             await semaphoreSlim.WaitAsync();
-            bool current = false;
+            var current = false;
             try
             {
                 var song = Queue[index];
@@ -593,7 +593,7 @@ namespace RiasBot.Modules.Music.Common
         public async Task Remove(string title)
         {
             await semaphoreSlim.WaitAsync();
-            bool current = false;
+            var current = false;
             try
             {
                 var msg = await _channel.SendConfirmationEmbed("Searching the song... Please wait!").ConfigureAwait(false);
@@ -683,20 +683,20 @@ namespace RiasBot.Modules.Music.Common
             }
         }
 
-        private unsafe static byte[] AdjustVolume(byte[] audioSamples, float volume)
+        private static unsafe byte[] AdjustVolume(byte[] audioSamples, float volume)
         {
             if (Math.Abs(volume - 1f) < 0.0001f) return audioSamples;
 
             // 16-bit precision for the multiplication
-            int volumeFixed = (int)Math.Round(volume * 65536d);
+            var volumeFixed = (int)Math.Round(volume * 65536d);
 
-            int count = audioSamples.Length >> 1;
+            var count = audioSamples.Length >> 1;
 
             fixed (byte* srcBytes = audioSamples)
             {
-                short* src = (short*)srcBytes;
+                var src = (short*)srcBytes;
 
-                for (int i = count; i != 0; i--, src++)
+                for (var i = count; i != 0; i--, src++)
                     *src = (short)(((*src) * volumeFixed) >> 16);
             }
 
@@ -755,7 +755,7 @@ namespace RiasBot.Modules.Music.Common
             }
             catch
             {
-
+                //ignored
             }
             try
             {
@@ -764,6 +764,7 @@ namespace RiasBot.Modules.Music.Common
             }
             catch
             {
+                //ignored
             }
             if (_outStream != null)
                 _outStream.Dispose();
@@ -775,9 +776,9 @@ namespace RiasBot.Modules.Music.Common
             var minutesInt = timeSpan.Minutes;
             var secondsInt = timeSpan.Seconds;
 
-            string hours = hoursInt.ToString();
-            string minutes = minutesInt.ToString();
-            string seconds = secondsInt.ToString();
+            var hours = hoursInt.ToString();
+            var minutes = minutesInt.ToString();
+            var seconds = secondsInt.ToString();
 
             if (hoursInt < 10)
                 hours = "0" + hours;

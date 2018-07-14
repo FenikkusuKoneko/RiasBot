@@ -12,7 +12,7 @@ namespace Discord.Addons.Interactive
 
         public Task<bool> JudgeAsync(ShardedCommandContext sourceContext, IMessage parameter)
         {
-            bool ok = _channelId == parameter.Channel.Id;
+            var ok = _channelId == parameter.Channel.Id;
             return Task.FromResult(ok);
         }
     }

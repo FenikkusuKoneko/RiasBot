@@ -42,10 +42,10 @@ namespace RiasBot.Modules.Searches
                     await Context.Channel.SendErrorEmbed("I couldn't find the anime.");
                 else
                 {
-                    string title = $"{(string)obj.title.romaji ?? (string)obj.title.english} (AniList URL)";
-                    string titleRomaji = (string)obj.title.romaji;
-                    string titleEnglish = (string)obj.title.english;
-                    string titleNative = (string)obj.title.native;
+                    var title = $"{(string)obj.title.romaji ?? (string)obj.title.english} (AniList URL)";
+                    var titleRomaji = (string)obj.title.romaji;
+                    var titleEnglish = (string)obj.title.english;
+                    var titleNative = (string)obj.title.native;
 
                     if (String.IsNullOrEmpty(titleRomaji))
                         titleRomaji = "-";
@@ -54,16 +54,16 @@ namespace RiasBot.Modules.Searches
                     if (String.IsNullOrEmpty(titleNative))
                         titleNative = "-";
 
-                    string startDate = $"{(string)obj.startDate.day}.{(string)obj.startDate.month}.{(string)obj.startDate.year}";
-                    string endDate = $"{(string)obj.endDate.day}.{(string)obj.endDate.month}.{(string)obj.endDate.year}";
+                    var startDate = $"{(string)obj.startDate.day}.{(string)obj.startDate.month}.{(string)obj.startDate.year}";
+                    var endDate = $"{(string)obj.endDate.day}.{(string)obj.endDate.month}.{(string)obj.endDate.year}";
                     if (startDate == "..")
                         startDate = "-";
                     if (endDate == "..")
                         endDate = "-";
-                    string episodes = "-";
-                    string averageScore = "-";
-                    string meanScore = "-";
-                    string duration = "-";
+                    var episodes = "-";
+                    var averageScore = "-";
+                    var meanScore = "-";
+                    var duration = "-";
                     var genres = String.Join("\n", (JArray)obj.genres);
                     if (String.IsNullOrEmpty(genres))
                         genres = "-";
@@ -78,7 +78,7 @@ namespace RiasBot.Modules.Searches
                     {
                         
                     }
-                    string description = (string)obj.description;
+                    var description = (string)obj.description;
                     description = description.Replace("<br>", "");
                     if (description.Length > 1024)
                         description = $"{description.Substring(0, 950)}... [More]({(string)obj.siteUrl})";
@@ -108,10 +108,10 @@ namespace RiasBot.Modules.Searches
                     await Context.Channel.SendErrorEmbed("I couldn't find the character.");
                 else
                 {
-                    string name = $"{(string)obj.name.first} {(string)obj.name.last} (AniList URL)";
-                    string firstName = (string)obj.name.first;
-                    string lastName = (string)obj.name.last;
-                    string nativeName = (string)obj.name.native;
+                    var name = $"{(string)obj.name.first} {(string)obj.name.last} (AniList URL)";
+                    var firstName = (string)obj.name.first;
+                    var lastName = (string)obj.name.last;
+                    var nativeName = (string)obj.name.native;
 
                     if (String.IsNullOrEmpty(firstName))
                         firstName = "-";
@@ -120,8 +120,8 @@ namespace RiasBot.Modules.Searches
                     if (String.IsNullOrEmpty(nativeName))
                         nativeName = "-";
 
-                    string alternative = String.Join(",\n", (JArray)obj.name.alternative);
-                    string description = (string)obj.description;
+                    var alternative = String.Join(",\n", (JArray)obj.name.alternative);
+                    var description = (string)obj.description;
                     if (!String.IsNullOrEmpty(description))
                     {
                         if (description.Length > 1024)
@@ -157,10 +157,10 @@ namespace RiasBot.Modules.Searches
                 {
                     if (characters.Count <= 1)
                     {
-                        string name = $"{(string)obj.characters[0].name.first} {(string)obj.characters[0].name.last} (AniList URL)";
-                        string firstName = (string)obj.characters[0].name.first;
-                        string lastName = (string)obj.characters[0].name.last;
-                        string nativeName = (string)obj.characters[0].name.native;
+                        var name = $"{(string)obj.characters[0].name.first} {(string)obj.characters[0].name.last} (AniList URL)";
+                        var firstName = (string)obj.characters[0].name.first;
+                        var lastName = (string)obj.characters[0].name.last;
+                        var nativeName = (string)obj.characters[0].name.native;
 
                         if (String.IsNullOrEmpty(firstName))
                             firstName = "-";
@@ -168,8 +168,8 @@ namespace RiasBot.Modules.Searches
                             lastName = "-";
                         if (String.IsNullOrEmpty(nativeName))
                             nativeName = "-";
-                        string alternative = String.Join(", ", (JArray)obj.characters[0].name.alternative);
-                        string description = (string)obj.characters[0].description;
+                        var alternative = String.Join(", ", (JArray)obj.characters[0].name.alternative);
+                        var description = (string)obj.characters[0].description;
                         if (!String.IsNullOrEmpty(description))
                         {
                             if (description.Length > 1024)
@@ -192,9 +192,9 @@ namespace RiasBot.Modules.Searches
                     else
                     {
                         var listCharacters = new List<string>();
-                        for (int i = 0; i < characters.Count(); i++)
+                        for (var i = 0; i < characters.Count(); i++)
                         {
-                            string waifuName1 = $"{(string)obj.characters[i].name.first} { (string)obj.characters[i].name.last}";
+                            var waifuName1 = $"{(string)obj.characters[i].name.first} { (string)obj.characters[i].name.last}";
                             listCharacters.Add($"{waifuName1}\tId: {obj.characters[i].id}\n");
                         }
                         var pager = new PaginatedMessage
@@ -227,7 +227,7 @@ namespace RiasBot.Modules.Searches
                 else
                 {
                     string description = null;
-                    for (int i = 0; i < 10; i++)
+                    for (var i = 0; i < 10; i++)
                     {
                         try
                         {

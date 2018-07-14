@@ -43,7 +43,7 @@ namespace RiasBot.Modules.Music.Services
                     return;
                 if (stateOld.VoiceChannel == (stateNew.VoiceChannel ?? null))
                     return;
-                int users = 0;
+                var users = 0;
                 foreach (var u in stateOld.VoiceChannel.Users)
                 {
                     if (!u.IsBot)
@@ -72,7 +72,7 @@ namespace RiasBot.Modules.Music.Services
 
         public async Task<MusicPlayer> GetOrAddMusicPlayer(IGuild guild)
         {
-            MusicPlayer mp = new MusicPlayer(_client, this);
+            var mp = new MusicPlayer(_client, this);
             if (MPlayer.ContainsKey(guild.Id))
             {
                 MPlayer.TryGetValue(guild.Id, out mp);

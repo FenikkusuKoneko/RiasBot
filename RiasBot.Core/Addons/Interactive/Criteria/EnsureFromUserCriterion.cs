@@ -17,7 +17,7 @@ namespace Discord.Addons.Interactive
 
         public Task<bool> JudgeAsync(ShardedCommandContext sourceContext, IMessage parameter)
         {
-            bool ok = _id == parameter.Author.Id;
+            var ok = _id == parameter.Author.Id;
             return Task.FromResult(ok);
         }
     }

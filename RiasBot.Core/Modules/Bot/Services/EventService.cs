@@ -70,7 +70,7 @@ namespace RiasBot.Modules.Bot.Services
 
                 if (msg.Channel == channel)
                 {
-                    if (Int32.TryParse(msg.Content, out int number))
+                    if (Int32.TryParse(msg.Content, out var number))
                     {
                         await NumbersGame((IGuildUser)msg.Author, msg, number).ConfigureAwait(false);
                     }
@@ -133,9 +133,9 @@ namespace RiasBot.Modules.Bot.Services
 
                     if (number == maximum)
                     {
-                        string[] players = new string[playerNumbers.Count];
+                        var players = new string[playerNumbers.Count];
                         playerNumbers = playerNumbers.OrderBy(x => x.Number).ToList();
-                        for (int i = 0; i < playerNumbers.Count; i++)
+                        for (var i = 0; i < playerNumbers.Count; i++)
                         {
                             players[i] = playerNumbers[i].User.ToString();
                         }

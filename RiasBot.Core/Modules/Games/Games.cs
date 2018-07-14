@@ -23,7 +23,7 @@ namespace RiasBot.Modules.Games
         {
             rps = rps?.ToLowerInvariant();
             string[] types = { "rock", "paper", "scissors" };
-            int playerChoice = 0;
+            var playerChoice = 0;
 
             switch(rps)
             {
@@ -49,7 +49,7 @@ namespace RiasBot.Modules.Games
             if (playerChoice > 0)
             {
                 var rnd = new Random((int)DateTime.UtcNow.Ticks);
-                int botChoice = rnd.Next(1, 4);
+                var botChoice = rnd.Next(1, 4);
 
                 if (botChoice % 3 + 1 == playerChoice)
                     await Context.Channel.SendConfirmationEmbed($"I chose {Format.Bold(types[botChoice - 1])}, you won!").ConfigureAwait(false);

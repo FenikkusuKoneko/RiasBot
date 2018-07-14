@@ -79,30 +79,30 @@ namespace RiasBot.Extensions
                 query = query,
                 variables = variables,
             };
-            string jsonContent = JsonConvert.SerializeObject(fullQuery);
+            var jsonContent = JsonConvert.SerializeObject(fullQuery);
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
 
-            UTF8Encoding encoding = new UTF8Encoding();
-            Byte[] byteArray = encoding.GetBytes(jsonContent.Trim());
+            var encoding = new UTF8Encoding();
+            var byteArray = encoding.GetBytes(jsonContent.Trim());
 
             request.ContentLength = byteArray.Length;
             request.ContentType = @"application/json";
 
-            using (Stream dataStream = await request.GetRequestStreamAsync())
+            using (var dataStream = await request.GetRequestStreamAsync())
             {
                 await dataStream.WriteAsync(byteArray, 0, byteArray.Length);
             }
             long length = 0;
             try
             {
-                using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
+                using (var response = (HttpWebResponse)await request.GetResponseAsync())
                 {
                     length = response.ContentLength;
-                    using (Stream responseStream = response.GetResponseStream())
+                    using (var responseStream = response.GetResponseStream())
                     {
-                        StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                        var reader = new StreamReader(responseStream, Encoding.UTF8);
                         var json = await reader.ReadToEndAsync();
                         return new GraphQLQueryResult(json);
                     }

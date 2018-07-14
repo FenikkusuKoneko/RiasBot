@@ -41,13 +41,13 @@ namespace RiasBot.Modules.Utility
             {
                 var author = _client.GetUser(RiasBot.KonekoId);
                 var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
-                int shard = 0;
+                var shard = 0;
                 if (Context.Guild != null)
                     shard = _client.GetShardIdFor(Context.Guild) + 1;
 
-                int textChannels = 0;
-                int voiceChannels = 0;
-                int users = 0;
+                var textChannels = 0;
+                var voiceChannels = 0;
+                var users = 0;
 
                 foreach (SocketGuild guild in guilds)
                 {
@@ -79,7 +79,7 @@ namespace RiasBot.Modules.Utility
             {
                 user = user ?? (IGuildUser)Context.User;
 
-                string activity = user.Activity?.Name;
+                var activity = user.Activity?.Name;
                 var activityType = user.Activity?.Type;
 
                 switch (activityType)
@@ -98,13 +98,13 @@ namespace RiasBot.Modules.Utility
                         break;
                 }
 
-                string joinedServer = user.JoinedAt.Value.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
-                string accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
+                var joinedServer = user.JoinedAt.Value.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
+                var accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 
-                int roleIndex = 0;
+                var roleIndex = 0;
                 var getUserRoles = user.RoleIds;
-                string[] userRoles = new string[getUserRoles.Count - 1];
-                int[] userRolesPositions = new int[getUserRoles.Count - 1];
+                var userRoles = new string[getUserRoles.Count - 1];
+                var userRolesPositions = new int[getUserRoles.Count - 1];
 
                 foreach (var role in getUserRoles)
                 {
@@ -146,8 +146,8 @@ namespace RiasBot.Modules.Utility
                 var owner = await Context.Guild.GetOwnerAsync().ConfigureAwait(false);
                 var textChannels = await Context.Guild.GetTextChannelsAsync().ConfigureAwait(false);
                 var voiceChannels = await Context.Guild.GetVoiceChannelsAsync().ConfigureAwait(false);
-                int onlineUsers = 0;
-                int bots = 0;
+                var onlineUsers = 0;
+                var bots = 0;
 
                 foreach (var getUser in users)
                 {
@@ -155,7 +155,7 @@ namespace RiasBot.Modules.Utility
                     if (getUser.Status.ToString() == "Online" || getUser.Status.ToString() == "Idle" || getUser.Status.ToString() == "DoNotDisturb")
                         onlineUsers++;
                 }
-                string serverCreated = Context.Guild.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
+                var serverCreated = Context.Guild.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 
                 var guildEmotes = Context.Guild.Emotes;
                 string emotes = null;
@@ -312,9 +312,9 @@ namespace RiasBot.Modules.Utility
             var minutesInt = timeSpan.Minutes;
             var secondsInt = timeSpan.Seconds;
 
-            string hours = hoursInt.ToString();
-            string minutes = minutesInt.ToString();
-            string seconds = secondsInt.ToString();
+            var hours = hoursInt.ToString();
+            var minutes = minutesInt.ToString();
+            var seconds = secondsInt.ToString();
 
             if (hoursInt < 10)
                 hours = "0" + hours;

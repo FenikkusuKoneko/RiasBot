@@ -33,7 +33,7 @@ namespace RiasBot.Extensions
                 embed.WithColor(color);
                 embed.WithTitle(embedDeserialized.title);
 
-                string description = embedDeserialized.description;
+                var description = embedDeserialized.description;
                 description = description.Replace("[currency]", RiasBot.Currency);
                 description = description.Replace("%currency%", RiasBot.Currency);
                 embed.WithDescription(description);

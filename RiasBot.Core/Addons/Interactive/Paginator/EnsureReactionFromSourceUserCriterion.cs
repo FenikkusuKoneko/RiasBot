@@ -8,7 +8,7 @@ namespace Discord.Addons.Interactive
     {
         public Task<bool> JudgeAsync(ShardedCommandContext sourceContext, SocketReaction parameter)
         {
-            bool ok = parameter.UserId == sourceContext.User.Id;
+            var ok = parameter.UserId == sourceContext.User.Id;
             return Task.FromResult(ok);
         }
     }

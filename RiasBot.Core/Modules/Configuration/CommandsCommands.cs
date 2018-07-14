@@ -29,7 +29,7 @@ namespace RiasBot.Modules.Configuration
             {
                 using (var db = _db.GetDbContext())
                 {
-                    bool deleteCmdMsg = false;
+                    var deleteCmdMsg = false;
                     var guildDb = db.Guilds.Where(x => x.GuildId == Context.Guild.Id).FirstOrDefault();
                     if (guildDb != null)
                     {

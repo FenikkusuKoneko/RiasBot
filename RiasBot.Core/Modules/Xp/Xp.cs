@@ -52,15 +52,15 @@ namespace RiasBot.Modules.Xp
                 var globalRanks = db.Users.OrderByDescending(x => x.Xp).Select(y => y.Xp).ToList();
                 var guildRanks = guildXpList.OrderByDescending(x => x.Xp).Select(y => y.Xp).ToList();
 
-                int globalRank = globalRanks.IndexOf(userDb?.Xp ?? -1) + 1;
-                int guildRank = guildRanks.IndexOf(xpDb?.Xp ?? -1) + 1;
+                var globalRank = globalRanks.IndexOf(userDb?.Xp ?? -1) + 1;
+                var guildRank = guildRanks.IndexOf(xpDb?.Xp ?? -1) + 1;
 
-                int globalCurrentXp = 0;
-                int globalCurrentLevel = 0;
-                int globalRequiredXp = 0;
-                int guildCurrentXp = 0;
-                int guildCurrentLevel = 0;
-                int guildRequiredXp = 0;
+                var globalCurrentXp = 0;
+                var globalCurrentLevel = 0;
+                var globalRequiredXp = 0;
+                var guildCurrentXp = 0;
+                var guildCurrentLevel = 0;
+                var guildRequiredXp = 0;
 
                 try
                 {
@@ -134,7 +134,7 @@ namespace RiasBot.Modules.Xp
                     .OrderByDescending(y => y.Key.Xp)
                     .Skip(page * 10).Take(10).ToList();
 
-                for (int i = 0; i < xps.Count; i++)
+                for (var i = 0; i < xps.Count; i++)
                 {
                     var user = await Context.Client.GetUserAsync(xps[i].Key.UserId);
                     if (user != null)
@@ -178,7 +178,7 @@ namespace RiasBot.Modules.Xp
                     .OrderByDescending(y => y.Key.Xp)
                     .Skip(page * 10).Take(10).ToList();
 
-                for (int i = 0; i < xps.Count; i++)
+                for (var i = 0; i < xps.Count; i++)
                 {
                     var user = await Context.Client.GetUserAsync(xps[i].Key.UserId);
                     if (user != null)
@@ -204,7 +204,7 @@ namespace RiasBot.Modules.Xp
             using (var db = _db.GetDbContext())
             {
                 var guildDb = db.Guilds.Where(x => x.GuildId == Context.Guild.Id).FirstOrDefault();
-                bool xpNotify = false;
+                var xpNotify = false;
                 try
                 {
                     xpNotify = guildDb.XpGuildNotification;

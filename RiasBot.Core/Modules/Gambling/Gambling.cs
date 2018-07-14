@@ -38,7 +38,7 @@ namespace RiasBot.Modules.Gambling
             }
 
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
-            int roll = rnd.Next(100) + 1; //heads or tails
+            var roll = rnd.Next(100) + 1; //heads or tails
 
             using (var db = _db.GetDbContext())
             {
@@ -47,7 +47,7 @@ namespace RiasBot.Modules.Gambling
                 {
                     if (bet <= userDb.Currency)
                     {
-                        int win = 0;
+                        var win = 0;
                         float multiplier = 0;
                         if (roll >= 99)
                         {
@@ -104,7 +104,7 @@ namespace RiasBot.Modules.Gambling
             string[] arrow = { "⬆", "↗", "➡", "↘", "⬇", "↙", "⬅", "↖" };
             float[] wheelMultiple = { 1.7f, 2.0f, 1.2f, 0.5f, 0.3f, 0.0f, 0.2f, 1.5f };
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
-            int wheel = rnd.Next(8);
+            var wheel = rnd.Next(8);
 
             using (var db = _db.GetDbContext())
             {
@@ -113,7 +113,7 @@ namespace RiasBot.Modules.Gambling
                 {
                     if (bet <= userDb.Currency)
                     {
-                        int win = (int)(bet * wheelMultiple[wheel]);
+                        var win = (int)(bet * wheelMultiple[wheel]);
                         userDb.Currency += win - bet;
                         await db.SaveChangesAsync().ConfigureAwait(false);
 

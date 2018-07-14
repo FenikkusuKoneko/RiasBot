@@ -58,7 +58,7 @@ namespace RiasBot.Modules.Help
 
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
 
-            bool single = true;
+            var single = true;
 
             foreach (var match in result.Commands)
             {
@@ -67,18 +67,18 @@ namespace RiasBot.Modules.Help
                     single = false;
 
                     var cmd = match.Command;
-                    string summary = cmd.Summary;
+                    var summary = cmd.Summary;
 
-                    int index = 0;
-                    string[] aliases = new String[cmd.Aliases.Count];
+                    var index = 0;
+                    var aliases = new String[cmd.Aliases.Count];
 
-                    foreach (string alias in cmd.Aliases)
+                    foreach (var alias in cmd.Aliases)
                     {
                         aliases[index] = _ch.Prefix + alias;
                         index++;
                     }
 
-                    string require = "";
+                    var require = "";
                     if (GetCommandRequirements(cmd) != require)
                     {
                         require = $" Requires {GetCommandRequirements(cmd)}";
@@ -110,8 +110,8 @@ namespace RiasBot.Modules.Help
 
             var modules = _service.Modules.GroupBy(m => m.GetModule()).Select(m => m.Key).OrderBy(m => m.Name);
 
-            string[] modulesDescription = new string[modules.Count()];
-            int index = 0;
+            var modulesDescription = new string[modules.Count()];
+            var index = 0;
             foreach (var module in modules)
             {
                 if (module.Name == "Music") //don't show the Music module, is for tests
@@ -140,7 +140,7 @@ namespace RiasBot.Modules.Help
             var getModule = _service.Modules.Where(m => m.GetModule().Name.ToUpperInvariant().StartsWith(module)).FirstOrDefault();
 
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            int index = 0;
+            var index = 0;
 
             if (getModule != null)
             {
@@ -185,7 +185,7 @@ namespace RiasBot.Modules.Help
                     ModuleInfo submodule = null;
                     foreach (var mod in _service.Modules)
                     {
-                        bool sbFound = false;
+                        var sbFound = false;
                         foreach (var submod in mod.Submodules)
                         {
                             if (submod.Name.ToUpperInvariant().StartsWith(module))
@@ -228,7 +228,7 @@ namespace RiasBot.Modules.Help
         public async Task AllCommands()
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            int index = 0;
+            var index = 0;
 
             foreach (var getModule in _service.Modules.GroupBy(m => m.GetModule()).Select(m => m.Key).OrderBy(m => m.Name))
             {

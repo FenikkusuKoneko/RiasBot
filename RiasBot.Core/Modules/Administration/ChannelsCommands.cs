@@ -124,7 +124,7 @@ namespace RiasBot.Modules.Administration
             [RequireContext(ContextType.Guild)]
             public async Task DeleteCategory([Remainder]string name)
             {
-                ICategoryChannel category = (await Context.Guild.GetCategoriesAsync().ConfigureAwait(false)).Where(x => x.Name.ToLowerInvariant() == name.ToLowerInvariant()).FirstOrDefault();
+                var category = (await Context.Guild.GetCategoriesAsync().ConfigureAwait(false)).Where(x => x.Name.ToLowerInvariant() == name.ToLowerInvariant()).FirstOrDefault();
                 if (category != null)
                 {
                     var permissions = (await Context.Guild.GetCurrentUserAsync()).GetPermissions(category);
@@ -153,8 +153,8 @@ namespace RiasBot.Modules.Administration
             {
                 IGuildChannel channel = null;
                 var chns = channels.Split("->");
-                string oldName = chns[0].TrimEnd();
-                string newName = chns[1].TrimStart();
+                var oldName = chns[0].TrimEnd();
+                var newName = chns[1].TrimStart();
                 switch (type)
                 {
                     case "text":
@@ -195,8 +195,8 @@ namespace RiasBot.Modules.Administration
             public async Task RenameCategory([Remainder]string categories)
             {
                 var cats = categories.Split("->");
-                string oldName = cats[0].TrimEnd();
-                string newName = cats[1].TrimStart();
+                var oldName = cats[0].TrimEnd();
+                var newName = cats[1].TrimStart();
                 var category = (await Context.Guild.GetCategoriesAsync().ConfigureAwait(false)).Where(x => x.Name.ToLowerInvariant() == oldName.ToLowerInvariant()).FirstOrDefault();
                 if (category != null)
                 {

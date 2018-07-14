@@ -91,8 +91,8 @@ namespace RiasBot.Modules.Bot
                 try
                 {
                     var ids = id.Split('|');
-                    string guildId = ids[0];
-                    string channelId = ids[1];
+                    var guildId = ids[0];
+                    var channelId = ids[1];
 
                     guild = await Context.Client.GetGuildAsync(Convert.ToUInt64(guildId)).ConfigureAwait(false);
                     channel = await guild.GetTextChannelAsync(Convert.ToUInt64(channelId)).ConfigureAwait(false);
@@ -136,8 +136,8 @@ namespace RiasBot.Modules.Bot
             {
                 var embed = Extensions.Extensions.EmbedFromJson(message);
                 var ids = channelMessage.Split("|");
-                UInt64.TryParse(ids[0], out ulong channelId);
-                UInt64.TryParse(ids[1], out ulong messageId);
+                UInt64.TryParse(ids[0], out var channelId);
+                UInt64.TryParse(ids[1], out var messageId);
 
 
                 var channel = await Context.Client.GetChannelAsync(channelId).ConfigureAwait(false);
@@ -162,7 +162,7 @@ namespace RiasBot.Modules.Bot
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             var votes = new List<string>();
-            int index = 0;
+            var index = 0;
             foreach (var vote in _botService.votesList)
             {
                 var user = await Context.Client.GetUserAsync(vote.user);
@@ -211,7 +211,7 @@ namespace RiasBot.Modules.Bot
         public async Task FindUser([Remainder]string user)
         {
             IUser getUser;
-            bool mutualServers = false;
+            var mutualServers = false;
             if (UInt64.TryParse(user, out var id))
             {
                 getUser = await _restClient.GetUserAsync(id).ConfigureAwait(false);
@@ -233,7 +233,7 @@ namespace RiasBot.Modules.Bot
             var guilds = await Context.Client.GetGuildsAsync().ConfigureAwait(false);
             mutualServers = guilds.Any(x => x.GetUserAsync(getUser.Id).GetAwaiter().GetResult() != null);
 
-            string accountCreated = getUser.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
+            var accountCreated = getUser.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             embed.AddField("Name", getUser, true).AddField("ID", getUser.Id, true);
@@ -269,7 +269,7 @@ namespace RiasBot.Modules.Bot
             {
                 result = await CSharpScript.EvaluateAsync(expression,
                 ScriptOptions.Default.WithReferences(typeof(RiasBot).Assembly).WithImports(new[] { "System", "System.Collections.Generic",
-                    "System.Linq", "Discord" }), globals);
+                    "System.Linq", "Discord", "System.Threading.Tasks" }), globals);
 
                 embed.WithDescription("Success");
                 embed.AddField("Code", Format.Code(expression, "csharp"));

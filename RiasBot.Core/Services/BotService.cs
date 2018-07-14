@@ -170,7 +170,7 @@ namespace RiasBot.Services
 
         public async Task StatusRotate()
         {
-            string sts = statuses[statusCount];
+            var sts = statuses[statusCount];
             sts = sts.Trim();
             var type = sts.Substring(0, sts.IndexOf(" "));
             var statusName = sts.Remove(0, sts.IndexOf(" ") + 1);
@@ -228,7 +228,7 @@ namespace RiasBot.Services
                 using (var db = _db.GetDbContext())
                 using (var http = new HttpClient())
                 {
-                    string votesApi = await http.GetStringAsync(RiasBot.Website + "api/votes.json");
+                    var votesApi = await http.GetStringAsync(RiasBot.Website + "api/votes.json");
                     var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
                     var votes = dblVotes.data.votes.Where(x => x.type == "upvote");
                     votesList = new List<Votes>();

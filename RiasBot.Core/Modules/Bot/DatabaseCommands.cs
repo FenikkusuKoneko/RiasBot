@@ -119,7 +119,7 @@ namespace RiasBot.Modules.Bot
             public async Task Db([Remainder]string user)
             {
                 IUser getUser;
-                bool mutualServers = false;
+                var mutualServers = false;
                 if (UInt64.TryParse(user, out var id))
                 {
                     getUser = await Context.Client.GetUserAsync(id).ConfigureAwait(false);

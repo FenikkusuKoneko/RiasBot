@@ -29,8 +29,8 @@ namespace RiasBot.Modules.Music.Common
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                 });
-                string result = await p.StandardOutput.ReadToEndAsync();
-                string error = await p.StandardError.ReadToEndAsync();
+                var result = await p.StandardOutput.ReadToEndAsync();
+                var error = await p.StandardError.ReadToEndAsync();
                 if (!String.IsNullOrEmpty(error))
                     await _mp._channel.SendErrorEmbed(error.Substring(error.IndexOf("YouTube said:")).TrimStart());
 
@@ -74,7 +74,7 @@ namespace RiasBot.Modules.Music.Common
         {
             try
             {
-                int index = _mp.position + 1;
+                var index = _mp.position + 1;
                 var song = _mp.Queue[index];
                 if (String.IsNullOrEmpty(song.dlUrl))
                 {

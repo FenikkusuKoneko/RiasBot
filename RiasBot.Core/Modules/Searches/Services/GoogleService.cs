@@ -44,10 +44,10 @@ namespace RiasBot.Modules.Searches.Services
             // Call the search.list method to retrieve results matching the specified query term.
             var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
 
-            int index = 0;
-            int indexC = 0;
-            string[] videos = new string[searchListResponse.Items.Count];
-            string[] channels = new string[searchListResponse.Items.Count];
+            var index = 0;
+            var indexC = 0;
+            var videos = new string[searchListResponse.Items.Count];
+            var channels = new string[searchListResponse.Items.Count];
 
             // Add each result to the appropriate list, and then display the lists of
             // matching videos, channels, and playlists.
@@ -98,8 +98,8 @@ namespace RiasBot.Modules.Searches.Services
 
             if (searchListResponse.Items != null)
             {
-                int index = 0;
-                string[] results = new string[searchListResponse.Items.Count];
+                var index = 0;
+                var results = new string[searchListResponse.Items.Count];
 
                 foreach (var result in searchListResponse.Items)
                 {
@@ -131,8 +131,8 @@ namespace RiasBot.Modules.Searches.Services
 
             if (searchListResponse.Items != null)
             {
-                int index = 0;
-                string[] results = new string[searchListResponse.Items.Count];
+                var index = 0;
+                var results = new string[searchListResponse.Items.Count];
 
                 foreach (var result in searchListResponse.Items)
                 {

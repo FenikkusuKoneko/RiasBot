@@ -22,7 +22,7 @@ namespace RiasBot.Modules.Administration
             [RequireContext(ContextType.Guild)]
             public async Task AddEmote(string url, [Remainder]string name)
             {
-                bool isAnimated = false;
+                var isAnimated = false;
                 if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
                 {
                     await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
@@ -144,8 +144,8 @@ namespace RiasBot.Modules.Administration
             public async Task RenameEmote([Remainder]string name)
             {
                 var emotes = name.Split("->");
-                string oldName = emotes[0].TrimEnd().Replace(" ", "_");
-                string newName = emotes[1].TrimStart().Replace(" ", "_");
+                var oldName = emotes[0].TrimEnd().Replace(" ", "_");
+                var newName = emotes[1].TrimStart().Replace(" ", "_");
                 try
                 {
                     var emote = Context.Guild.Emotes.FirstOrDefault(x => string.Equals(x.Name, oldName, StringComparison.InvariantCultureIgnoreCase));

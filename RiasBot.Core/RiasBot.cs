@@ -80,7 +80,7 @@ namespace RiasBot
             //If your Visual Studio has some issues with the Environment#CurrentDirectory, call this function
             //Usually the path should be the project's path. But there is the "bin" folder
             //This is happening just in Visual Studio, works if you build using a command line and dotnet
-            string path = Environment.CurrentDirectory;
+            var path = Environment.CurrentDirectory;
             if (path.Contains("bin"))
                 Environment.CurrentDirectory = Directory.GetParent(path).Parent.Parent.FullName;
         }

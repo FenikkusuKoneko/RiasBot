@@ -8,7 +8,7 @@ namespace Discord.Addons.Interactive
     {
         public Task<bool> JudgeAsync(ShardedCommandContext sourceContext, SocketMessage parameter)
         {
-            bool ok = int.TryParse(parameter.Content, out _);
+            var ok = int.TryParse(parameter.Content, out _);
             return Task.FromResult(ok);
         }
     }

@@ -15,13 +15,13 @@ namespace RiasBot.Modules.NSFW.Services
     {
         public NSFWService()
         {
-
+            
         }
 
         public async Task<string> GetImage(string tag)
         {
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
-            int site = rnd.Next(3);
+            var site = rnd.Next(3);
 
             switch(site)
             {
@@ -66,9 +66,9 @@ namespace RiasBot.Modules.NSFW.Services
 
                 if (data.Count > 0)
                 {
-                    int random = rnd.Next(data.Count);
+                    var random = rnd.Next(data.Count);
                     var hentai = data[random];
-                    int retry = 0; // don't get in an infinity loop
+                    var retry = 0; // don't get in an infinity loop
                     while (retry < 5)
                     {
                         if (!String.IsNullOrEmpty(hentai.Tags))
@@ -92,7 +92,7 @@ namespace RiasBot.Modules.NSFW.Services
                     if (retry == 5)
                         return null;
 
-                    string imageUrl = hentai.File_Url;
+                    var imageUrl = hentai.File_Url;
                     if (site == NSFWSite.Danbooru)
                     {
                         if (!String.IsNullOrEmpty(imageUrl))

@@ -24,10 +24,10 @@ namespace RiasBot.Modules.Xp.Services
             using (var db = _db.GetDbContext())
             {
                 var userDb = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
-                int currentXp = 0;
-                int currentLevel = 0;
-                int levelXp = 0;
-                int nextLevel = 0;
+                var currentXp = 0;
+                var currentLevel = 0;
+                var levelXp = 0;
+                var nextLevel = 0;
                 try
                 {
                     currentXp = userDb.Xp;
@@ -71,10 +71,10 @@ namespace RiasBot.Modules.Xp.Services
                 var guildXp = db.XpSystem.Where(x => x.GuildId == guild.Id);
                 var xpDb = guildXp.Where(x => x.UserId == user.Id).FirstOrDefault();
 
-                int currentXp = 0;
-                int currentLevel = 0;
-                int levelXp = 0;
-                int nextLevel = 0;
+                var currentXp = 0;
+                var currentLevel = 0;
+                var levelXp = 0;
+                var nextLevel = 0;
                 try
                 {
                     currentXp = xpDb.Xp;
@@ -109,7 +109,7 @@ namespace RiasBot.Modules.Xp.Services
                     await db.SaveChangesAsync().ConfigureAwait(false);
 
                     var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
-                    bool xpNotify = false;
+                    var xpNotify = false;
                     try
                     {
                         xpNotify = guildDb.XpGuildNotification;
@@ -144,14 +144,14 @@ namespace RiasBot.Modules.Xp.Services
 
         public async Task<MemoryStream> GenerateXpImage(IGuildUser user, (int, int) level, (int, int) currentXp, (int, int) requiredXp, int globalRank, int guildRank, IRole highestRole)
         {
-            string xpWhitePattern = "/assets/images/xp/xp_white_pattern.png";
-            string xpBlackPattern = "/assets/images/xp/xp_black_pattern.png";
-            string globalXpBarBgPath = "/assets/images/xp/global_xp_bar_bg.png";
-            string guildXpBarBgPath = "/assets/images/xp/guild_xp_bar_bg.png";
+            var xpWhitePattern = "/assets/images/xp/xp_white_pattern.png";
+            var xpBlackPattern = "/assets/images/xp/xp_black_pattern.png";
+            var globalXpBarBgPath = "/assets/images/xp/global_xp_bar_bg.png";
+            var guildXpBarBgPath = "/assets/images/xp/guild_xp_bar_bg.png";
 
-            (int globalLevel, int guildLevel) = level;
-            (int globalCurrentXp, int guildCurrentXp) = currentXp;
-            (int globalRequiredXp, int guildRequiredXp) = requiredXp;
+            (var globalLevel, var guildLevel) = level;
+            (var globalCurrentXp, var guildCurrentXp) = currentXp;
+            (var globalRequiredXp, var guildRequiredXp) = requiredXp;
 
             var roleColor = GetUserHighRoleColor(highestRole);
 
@@ -166,9 +166,9 @@ namespace RiasBot.Modules.Xp.Services
                 {
                     //Init
                     var avatarUrl = user.RealAvatarUrl();
-                    string arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
-                    string aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
-                    string meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
+                    var arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
+                    var aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
+                    var meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
 
                     var foreColor = (ImageExtension.PerceivedBrightness(roleColor) > 130) ? MagickColors.Black : MagickColors.White;
 
@@ -187,7 +187,7 @@ namespace RiasBot.Modules.Xp.Services
                     using (var avatar = await http.GetStreamAsync(avatarUrl))
                     using (var tempBg = new MagickImage(avatar))
                     {
-                        MagickGeometry size = new MagickGeometry(70, 70)
+                        var size = new MagickGeometry(70, 70)
                         {
                             IgnoreAspectRatio = false,
                             FillArea = true

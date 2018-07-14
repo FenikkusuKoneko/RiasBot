@@ -79,7 +79,7 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        int index = 0;
+                        var index = 0;
                         var warnUsers = new List<string>();
                         foreach (var warn in warnings)
                         {
@@ -136,7 +136,7 @@ namespace RiasBot.Modules.Administration
                     var warningsUser = warnings.Where(x => x.UserId == user.Id).ToList();
 
                     var reasons = new List<string>();
-                    for (int i = 0; i < warningsUser.Count; i++)
+                    for (var i = 0; i < warningsUser.Count; i++)
                     {
                         var moderator = await Context.Guild.GetUserAsync(warningsUser[i].Moderator).ConfigureAwait(false);
                         reasons.Add($"#{i+1} {warningsUser[i].Reason ?? "-"}\n{Format.Bold("Moderator:")} {moderator.Username}#{moderator.Discriminator}\n");
@@ -320,8 +320,8 @@ namespace RiasBot.Modules.Administration
                 using (var db = _db.GetDbContext())
                 {
                     var warnings = db.Guilds.Where(x => x.GuildId == Context.Guild.Id).FirstOrDefault();
-                    int warns = warnings?.WarnsPunishment ?? 0;
-                    string punish = warnings?.PunishmentMethod;
+                    var warns = warnings?.WarnsPunishment ?? 0;
+                    var punish = warnings?.PunishmentMethod;
 
                     if (warns > 0)
                     {

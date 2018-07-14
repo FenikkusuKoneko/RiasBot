@@ -73,8 +73,8 @@ namespace RiasBot.Modules.Music
                 {
                     var regex = new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]*)(?:.*list=|(?:.*/)?)([a-zA-Z0-9-_]*)");
                     var matches = regex.Match(keywords);
-                    string videoId = matches.Groups[1].Value;
-                    string listId = matches.Groups[2].Value;
+                    var videoId = matches.Groups[1].Value;
+                    var listId = matches.Groups[2].Value;
 
                     if (!String.IsNullOrEmpty(listId))
                     {
@@ -552,13 +552,13 @@ namespace RiasBot.Modules.Music
             string title = null;
             string url = null;
             string thumbnail = null;
-            TimeSpan duration = new TimeSpan();
+            var duration = new TimeSpan();
             var user = (IGuildUser)Context.User;
 
             await mp.Clear().ConfigureAwait(false);
 
             await Context.Channel.SendConfirmationEmbed("Adding songs to the playlist, please wait!").ConfigureAwait(false);
-            int items = 0;
+            var items = 0;
             var nextPageToken = "";
             while (nextPageToken != null)
             {
@@ -578,7 +578,7 @@ namespace RiasBot.Modules.Music
                         {
                             try
                             {
-                                string id = playlistItem.Snippet.ResourceId.VideoId;
+                                var id = playlistItem.Snippet.ResourceId.VideoId;
                                 if (id == videoId)
                                     index = (int?)playlistItem.Snippet.Position ?? -1;
 
@@ -630,7 +630,7 @@ namespace RiasBot.Modules.Music
             string url = null;
             string channel = null;
             string thumbnail = null;
-            TimeSpan duration = new TimeSpan();
+            var duration = new TimeSpan();
             var user = (IGuildUser)Context.User;
 
             var videoListRequestSnippet = youtubeService.Videos.List("snippet");
@@ -687,7 +687,7 @@ namespace RiasBot.Modules.Music
 
             var videosList = new List<VideoDetails>();
             string description = null;
-            int index = 0;
+            var index = 0;
             foreach (var searchResult in searchListResponse.Items)
             {
                 if (searchResult.Id.VideoId != null && index < 5)
@@ -719,7 +719,7 @@ namespace RiasBot.Modules.Music
             var getUserInput = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromMinutes(1)).ConfigureAwait(false);
             if (getUserInput != null)
                 userInput = getUserInput.Content.Replace("#", "");
-            if (Int32.TryParse(userInput, out int input))
+            if (Int32.TryParse(userInput, out var input))
             {
                 input--;
                 if (input >= 0 && input < 5)

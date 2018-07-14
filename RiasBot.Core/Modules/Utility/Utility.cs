@@ -42,7 +42,7 @@ namespace RiasBot.Modules.Utility
             }
             else if (user.GuildPermissions.Administrator)
             {
-                string oldPrefix = _ch.Prefix;
+                var oldPrefix = _ch.Prefix;
 
                 using (var db = _db.GetDbContext())
                 {
@@ -102,7 +102,7 @@ namespace RiasBot.Modules.Utility
             var choices = list.Split(new Char[] { ',', '|', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
-            int choice = rnd.Next(choices.Length);
+            var choice = rnd.Next(choices.Length);
             await Context.Channel.SendConfirmationEmbed($"I chose: {Format.Bold(choices[choice].Trim())}");
         }
 
@@ -112,13 +112,13 @@ namespace RiasBot.Modules.Utility
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             embed.WithTitle($"All categories for converter. Type {_ch.Prefix}convertlist <category> to get the units from a category");
-            string unitCategories = "";
+            var unitCategories = "";
             var quantityTypes = Enum.GetValues(typeof(QuantityType)).Cast<QuantityType>().Skip(1).ToArray();
 
-            int index = 0;
+            var index = 0;
             foreach (var quantity in quantityTypes)
             {
-                Type type = Assembly.Load("UnitsNet").GetTypes().First(t => t.Name == quantity.ToString());
+                var type = Assembly.Load("UnitsNet").GetTypes().First(t => t.Name == quantity.ToString());
                 
                 if (unitCategories.Length <= 1024)
                 {
@@ -145,15 +145,15 @@ namespace RiasBot.Modules.Utility
             {
                 return;
             }
-            Type type = Assembly.Load("UnitsNet").GetTypes().First(t => t.Name == quantityType.ToString());
+            var type = Assembly.Load("UnitsNet").GetTypes().First(t => t.Name == quantityType.ToString());
             var method = type.GetMethod("get_Units");
             var unitsEnum = (Array)method.Invoke(null, null);
 
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             embed.WithTitle($"All units for {type.Name}");
 
-            string[] units = new string[unitsEnum.Length];
-            int index = 0;
+            var units = new string[unitsEnum.Length];
+            var index = 0;
             foreach (var unit in unitsEnum)
             {
                 if (unit.ToString() != "Undefined")
@@ -171,7 +171,7 @@ namespace RiasBot.Modules.Utility
         public async Task Converter(string category, string from, string to, double value)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            if (!UnitConverter.TryConvertByName(value, ToTitleCase(category), ToTitleCase(from), ToTitleCase(to), out double result))
+            if (!UnitConverter.TryConvertByName(value, ToTitleCase(category), ToTitleCase(from), ToTitleCase(to), out var result))
             {
                 if (UnitConverter.TryConvertByAbbreviation(value, ToTitleCase(category), from.ToLower(), to.ToLower(), out result))
                 {

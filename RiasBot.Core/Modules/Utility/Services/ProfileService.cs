@@ -37,12 +37,12 @@ namespace RiasBot.Modules.Utility.Services
                 try
                 {
                     //Init
-                    string avatarUrl = user.RealAvatarUrl();
-                    string nickname = user.Nickname;
+                    var avatarUrl = user.RealAvatarUrl();
+                    var nickname = user.Nickname;
 
-                    string arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
-                    string aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
-                    string meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
+                    var arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
+                    var aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
+                    var meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
 
                     //Background
                     using (var bg = await http.GetAsync(url))
@@ -53,7 +53,7 @@ namespace RiasBot.Modules.Utility.Services
                             {
                                 using (var tempBg = new MagickImage(await bg.Content.ReadAsStreamAsync()))
                                 {
-                                    MagickGeometry size = new MagickGeometry(img.Width, img.Height)
+                                    var size = new MagickGeometry(img.Width, img.Height)
                                     {
                                         IgnoreAspectRatio = false,
                                         FillArea = true
@@ -78,7 +78,7 @@ namespace RiasBot.Modules.Utility.Services
                     using (var temp = await http.GetStreamAsync(avatarUrl))
                     using (var tempDraw = new MagickImage(temp))
                     {
-                        MagickGeometry size = new MagickGeometry(70, 70)
+                        var size = new MagickGeometry(70, 70)
                         {
                             IgnoreAspectRatio = false,
                         };
@@ -87,7 +87,7 @@ namespace RiasBot.Modules.Utility.Services
                         tempDraw.BorderColor = MagickColors.White;
                         img.Draw(new DrawableComposite(30, 20, tempDraw));
                     }
-                    int usernameYPosition = (!String.IsNullOrEmpty(nickname)) ? 20 : 40;
+                    var usernameYPosition = (!String.IsNullOrEmpty(nickname)) ? 20 : 40;
                     var usernameSettings = new MagickReadSettings()
                     {
                         BackgroundColor = MagickColors.Transparent,
@@ -179,7 +179,7 @@ namespace RiasBot.Modules.Utility.Services
 
         public async Task<MemoryStream> GenerateProfileImage(IGuildUser user, IRole highestRole)
         {
-            string heartDiamondPath = "/assets/images/heart_diamond.png";
+            var heartDiamondPath = "/assets/images/heart_diamond.png";
             
             using (var http = new HttpClient())
             using (var img = new MagickImage(MagickColors.White, 500, 300))
@@ -190,12 +190,12 @@ namespace RiasBot.Modules.Utility.Services
                     var profileInfo = GetProfieInfo(user.Id);
                     var profileSettings = GetProfileSettings(user.Id);
                     //Init
-                    string avatarUrl = user.RealAvatarUrl();
-                    string nickname = user.Nickname;
+                    var avatarUrl = user.RealAvatarUrl();
+                    var nickname = user.Nickname;
 
-                    string arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
-                    string aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
-                    string meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
+                    var arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
+                    var aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
+                    var meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
 
                     //Background
                     using (var bg = await http.GetAsync(profileSettings.BackgroundUrl))
@@ -204,7 +204,7 @@ namespace RiasBot.Modules.Utility.Services
                         {
                             using (var tempBg = new MagickImage(await bg.Content.ReadAsStreamAsync()))
                             {
-                                MagickGeometry size = new MagickGeometry(img.Width, img.Height)
+                                var size = new MagickGeometry(img.Width, img.Height)
                                 {
                                     IgnoreAspectRatio = false,
                                     FillArea = true
@@ -219,7 +219,7 @@ namespace RiasBot.Modules.Utility.Services
                             using (var dbg = await http.GetStreamAsync(DefaultProfileBackground))
                             using (var tempBg = new MagickImage(dbg))
                             {
-                                MagickGeometry size = new MagickGeometry(img.Width, img.Height)
+                                var size = new MagickGeometry(img.Width, img.Height)
                                 {
                                     IgnoreAspectRatio = false,
                                     FillArea = true
@@ -231,13 +231,13 @@ namespace RiasBot.Modules.Utility.Services
                         }
                     }
                     
-                    float dim = ((float)profileSettings.BackgroundDim / 100) * 255;
+                    var dim = ((float)profileSettings.BackgroundDim / 100) * 255;
                     img.Draw(new Drawables().FillColor(MagickColor.FromRgba(0, 0, 0, (byte)dim)).Rectangle(0, 0, 500, 300));
                     //Avatar
                     using (var temp = await http.GetStreamAsync(avatarUrl))
                     using (var tempDraw = new MagickImage(temp))
                     {
-                        MagickGeometry size = new MagickGeometry(70, 70)
+                        var size = new MagickGeometry(70, 70)
                         {
                             IgnoreAspectRatio = false,
                         };
@@ -246,7 +246,7 @@ namespace RiasBot.Modules.Utility.Services
                         tempDraw.BorderColor = MagickColors.White;
                         img.Draw(new DrawableComposite(30, 20, tempDraw));
                     }
-                    int usernameYPosition = (!String.IsNullOrEmpty(nickname)) ? 20 : 40;
+                    var usernameYPosition = (!String.IsNullOrEmpty(nickname)) ? 20 : 40;
                     var usernameSettings = new MagickReadSettings()
                     {
                         BackgroundColor = MagickColors.Transparent,
@@ -285,10 +285,10 @@ namespace RiasBot.Modules.Utility.Services
                         .TextAlignment(TextAlignment.Center)
                         .Text(70, 115, "Top Waifus"));
 
-                        int x = 20;
-                        bool nextH = false; //second waifu
-                        int y = 125;
-                        bool nextV = true; //fourth waifu
+                        var x = 20;
+                        var nextH = false; //second waifu
+                        var y = 125;
+                        var nextV = true; //fourth waifu
                         foreach (var waifu in profileInfo.Waifus.Take(4))
                         {
                             using (var waifuStream = await http.GetAsync(waifu.WaifuPicture))
@@ -297,7 +297,7 @@ namespace RiasBot.Modules.Utility.Services
                                 {
                                     using (var tempWaifu = new MagickImage(await waifuStream.Content.ReadAsStreamAsync()))
                                     {
-                                        MagickGeometry size = new MagickGeometry(46, 72)
+                                        var size = new MagickGeometry(46, 72)
                                         {
                                             IgnoreAspectRatio = false,
                                         };
@@ -314,7 +314,7 @@ namespace RiasBot.Modules.Utility.Services
                                         using (var waifuStreamUpdate = await http.GetStreamAsync(waifu.WaifuPicture))
                                         using (var tempWaifu = new MagickImage(waifuStreamUpdate))
                                         {
-                                            MagickGeometry size = new MagickGeometry(46, 72)
+                                            var size = new MagickGeometry(46, 72)
                                             {
                                                 IgnoreAspectRatio = false,
                                             };
@@ -365,7 +365,7 @@ namespace RiasBot.Modules.Utility.Services
                             img.Draw(new DrawableComposite(375, 100, belovedWaifu));
                         }
 
-                        string waifuPicture = profileInfo.BelovedWaifu.WaifuPicture;
+                        var waifuPicture = profileInfo.BelovedWaifu.WaifuPicture;
                         if (!String.IsNullOrEmpty(profileInfo.BelovedWaifu.BelovedWaifuPicture))
                             waifuPicture = profileInfo.BelovedWaifu.BelovedWaifuPicture;
 
@@ -375,7 +375,7 @@ namespace RiasBot.Modules.Utility.Services
                             {
                                 using (var tempBelovedWaifu = new MagickImage(await belovedWaifu.Content.ReadAsStreamAsync()))
                                 {
-                                    MagickGeometry size = new MagickGeometry(100, 155)
+                                    var size = new MagickGeometry(100, 155)
                                     {
                                         IgnoreAspectRatio = false,
                                         FillArea = true
@@ -393,7 +393,7 @@ namespace RiasBot.Modules.Utility.Services
                                     {
                                         using (var tempBelovedWaifu = new MagickImage(await belovedWaifuDefault.Content.ReadAsStreamAsync()))
                                         {
-                                            MagickGeometry size = new MagickGeometry(100, 155)
+                                            var size = new MagickGeometry(100, 155)
                                             {
                                                 IgnoreAspectRatio = false,
                                             };
@@ -410,7 +410,7 @@ namespace RiasBot.Modules.Utility.Services
                                             using (var belovedWaifuDefaultUpdate = await http.GetStreamAsync(profileInfo.BelovedWaifu.WaifuPicture))
                                             using (var tempBelovedWaifu = new MagickImage(belovedWaifuDefaultUpdate))
                                             {
-                                                MagickGeometry size = new MagickGeometry(100, 155)
+                                                var size = new MagickGeometry(100, 155)
                                                 {
                                                     IgnoreAspectRatio = false,
                                                 };
@@ -437,8 +437,8 @@ namespace RiasBot.Modules.Utility.Services
                     // XP bar
                     img.Draw(new Drawables().StrokeWidth(1).StrokeColor(accentColor).FillColor(MagickColors.Transparent).Rectangle(147, 110, 355, 130));
 
-                    int globalCurrentXp = profileInfo.GlobalXp;
-                    int globalRequiredXp = 0;
+                    var globalCurrentXp = profileInfo.GlobalXp;
+                    var globalRequiredXp = 0;
                     while (globalCurrentXp >= 0)
                     {
                         globalRequiredXp += 30;
@@ -476,7 +476,7 @@ namespace RiasBot.Modules.Utility.Services
                         .Text(210, 165, "Currency"));
                     using (var tempHeartDiamond = new MagickImage(Environment.CurrentDirectory + heartDiamondPath))
                     {
-                        MagickGeometry size = new MagickGeometry(20, 20)
+                        var size = new MagickGeometry(20, 20)
                         {
                             IgnoreAspectRatio = false,
                         };
@@ -523,7 +523,7 @@ namespace RiasBot.Modules.Utility.Services
                         Width = 198
                     };
 
-                    string caption = $"caption:{profileInfo.Bio}";
+                    var caption = $"caption:{profileInfo.Bio}";
 
                     using (var image = new MagickImage(caption, bioBoxsettings))
                     {
@@ -564,7 +564,7 @@ namespace RiasBot.Modules.Utility.Services
                 if (userDb != null)
                 {
                     var globalRanks = db.Users.OrderByDescending(x => x.Xp).Select(y => y.Xp).ToList();
-                    int globalRank = globalRanks.IndexOf(userDb?.Xp ?? -1) + 1;
+                    var globalRank = globalRanks.IndexOf(userDb?.Xp ?? -1) + 1;
 
                     profileInfo.Currency = userDb.Currency;
                     profileInfo.GlobalXp = userDb.Xp;

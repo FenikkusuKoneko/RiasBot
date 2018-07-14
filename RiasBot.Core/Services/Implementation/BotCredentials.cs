@@ -26,7 +26,7 @@ namespace RiasBot.Services.Implementation
 
             var _config = configBuilder.Build();
 
-            UInt64.TryParse(_config[nameof(ClientId)], out ulong clientId);
+            UInt64.TryParse(_config[nameof(ClientId)], out var clientId);
             ClientId = clientId;
             Prefix = _config[nameof(Prefix)];
             Token = _config[nameof(Token)];
