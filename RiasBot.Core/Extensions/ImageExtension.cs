@@ -1,5 +1,6 @@
 ﻿using ImageMagick;
 using System;
+using Remotion.Linq.Clauses;
 
 namespace RiasBot.Extensions
 {
@@ -7,6 +8,7 @@ namespace RiasBot.Extensions
     {
         public static void Roundify(this MagickImage image)
         {
+            image.Alpha(AlphaOption.Set);
             using (var copy = image.Clone())
             {
                 copy.Distort(DistortMethod.DePolar, 0);
@@ -14,8 +16,9 @@ namespace RiasBot.Extensions
                 copy.BackgroundColor = MagickColors.None;
                 copy.Distort(DistortMethod.Polar, 0);
 
-                image.Compose = CompositeOperator.DstIn;
-                image.Composite(copy, CompositeOperator.CopyAlpha);
+                image.Composite(copy, CompositeOperator.DstIn);
+                image.Trim();
+                image.RePage();
             }
         }
 

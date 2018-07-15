@@ -182,8 +182,6 @@ namespace RiasBot.Modules.Xp.Services
                         img.Draw(new DrawableComposite(0, 0, blackPattern));
                     }
                     //Avatar
-                    img.Draw(new Drawables().StrokeWidth(3).StrokeColor(foreColor).FillColor(MagickColors.Transparent).RoundRectangle(213, 8, 286, 81, 45, 45));
-
                     using (var avatar = await http.GetStreamAsync(avatarUrl))
                     using (var tempBg = new MagickImage(avatar))
                     {
@@ -196,7 +194,7 @@ namespace RiasBot.Modules.Xp.Services
                         tempBg.Roundify();
                         img.Draw(new DrawableComposite(215, 10, tempBg));
                     }
-
+                    img.Draw(new Drawables().StrokeWidth(3).StrokeColor(foreColor).FillColor(MagickColors.Transparent).RoundRectangle(213, 8, 286, 81, 45, 45));
                     img.Draw(new Drawables().StrokeWidth(2).StrokeColor(foreColor).FillColor(MagickColors.Transparent).Rectangle(10, 130, 115, 205));
                     img.Draw(new Drawables().StrokeWidth(2).StrokeColor(foreColor).FillColor(MagickColors.Transparent).Rectangle(10, 215, 115, 290));
 
