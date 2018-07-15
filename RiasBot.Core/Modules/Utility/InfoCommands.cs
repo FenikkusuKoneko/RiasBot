@@ -148,6 +148,8 @@ namespace RiasBot.Modules.Utility
                 var voiceChannels = await Context.Guild.GetVoiceChannelsAsync().ConfigureAwait(false);
                 var onlineUsers = 0;
                 var bots = 0;
+                var emotes = "";
+                var features = string.Join(", ", guild.Features);
 
                 foreach (var getUser in users)
                 {
@@ -156,10 +158,7 @@ namespace RiasBot.Modules.Utility
                         onlineUsers++;
                 }
                 var serverCreated = Context.Guild.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
-
                 var guildEmotes = Context.Guild.Emotes;
-                string emotes = null;
-
                 foreach (var emote in guildEmotes)
                 {
                     if ((emotes + guildEmotes).Length <= 1024)
@@ -167,16 +166,24 @@ namespace RiasBot.Modules.Utility
                         emotes += emote.ToString();
                     }
                 }
-                if (String.IsNullOrEmpty(emotes))
+                if (string.IsNullOrEmpty(emotes))
                     emotes = "-";
-
+                if (string.IsNullOrEmpty(features))
+                    features = "-";
+                
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle(Context.Guild.Name);
-                embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner?.Username}#{owner?.Discriminator}", true).AddField("Members", guild.MemberCount, true);
-                embed.AddField("Currently online", onlineUsers, true).AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
-                embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true).AddField("Region", Context.Guild.VoiceRegionId, true);
+                embed.AddField("ID", Context.Guild.Id.ToString(), true).AddField("Owner", $"{owner?.Username}#{owner?.Discriminator}", true);
+                embed.AddField("Members", guild.MemberCount, true).AddField("Currently online", onlineUsers, true);
+                embed.AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
+                embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true);
+                embed.AddField("Default channel", guild.DefaultChannel?.Name ?? "-", true).AddField("AFK channel", guild.AFKChannel?.Name ?? "-", true);
+                embed.AddField("Region", Context.Guild.VoiceRegionId, true).AddField("Verification level", guild.VerificationLevel.ToString(), true);
+                embed.AddField($"Features ({guild.Features.Count})", features, true);
                 embed.AddField($"Custom Emotes ({Context.Guild.Emotes.Count})", emotes);
-                embed.WithImageUrl(Context.Guild.IconUrl);
+                embed.WithThumbnailUrl(Context.Guild.IconUrl);
+                if (!string.IsNullOrEmpty(guild.SplashUrl))
+                    embed.WithImageUrl(guild.SplashUrl);
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
