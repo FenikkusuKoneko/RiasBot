@@ -222,6 +222,23 @@
     ]
   },
 
+  "evaluate": {
+    "Command": "evaluate eval",
+    "Description": "Evaluate a C# block code.",
+    "Remarks": [
+      "[prefix]eval code"
+    ]
+  },
+
+  "downloadusers": {
+    "Command": "downloadusers",
+    "Description": "Download all users from a guild",
+    "Remarks": [
+      "[prefix]downloadusers",
+      "[prefix]downloadusers 416492045859946507"
+    ]
+  },
+
   "delete": {
     "Command": "delete",
     "Description": "Delete an user from the database. The currency, global xp, waifus and profile settings will be erased.",
@@ -1329,14 +1346,6 @@
     "Description": "Remove global xp from an user.",
     "Remarks": [
       "[prefix]rgxp 3 100 @User"
-    ]
-  },
-
-  "evaluate": {
-    "Command": "evaluate eval",
-    "Description": "Evaluate a C# block code.",
-    "Remarks": [
-      "[prefix]eval code"
     ]
   }
 }

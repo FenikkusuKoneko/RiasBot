@@ -41,7 +41,6 @@ namespace RiasBot.Services
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
             _discord.UserVoiceStateUpdated += _musicService.CheckIfAlone;
-            _discord.GuildMembersDownloaded += GuildAvailAble;
             _discord.ShardReady += ShardReady;
 
             if (!String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
@@ -289,14 +288,9 @@ namespace RiasBot.Services
             }
         }
 
-        private async Task GuildAvailAble(SocketGuild guild)
-        {
-            Console.WriteLine($"Members downloaded {guild.Name}");
-        }
-
         private async Task ShardReady(DiscordSocketClient client)
         {
-            await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();
+            await client.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();
         }
     }
 

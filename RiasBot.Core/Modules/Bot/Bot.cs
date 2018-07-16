@@ -291,6 +291,25 @@ namespace RiasBot.Modules.Bot
                     GC.Collect(GC.GetGeneration(result), GCCollectionMode.Optimized);
             }
         }
+        
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireOwner]
+        public async Task DownloadUsers()
+        {
+            await Context.Guild.DownloadUsersAsync();
+            await Context.Channel.SendConfirmationEmbed($"All users downloaded from {Context.Guild.Name}");
+        }
+
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireOwner]
+        public async Task DownloadUsers(ulong guildId)
+        {
+            var guild = await Context.Client.GetGuildAsync(guildId).ConfigureAwait(false);
+            await guild.DownloadUsersAsync();
+            await Context.Channel.SendConfirmationEmbed($"All users downloaded from {guild.Name}");
+        }
 
         public class Globals
         {
