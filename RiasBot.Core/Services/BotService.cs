@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using RiasBot.Migrations;
 using RiasBot.Modules.Music.Services;
 
 namespace RiasBot.Services
@@ -40,6 +41,8 @@ namespace RiasBot.Services
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
             _discord.UserVoiceStateUpdated += _musicService.CheckIfAlone;
+            _discord.GuildMembersDownloaded += GuildAvailAble;
+            _discord.ShardReady += ShardReady;
 
             if (!String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
             {
@@ -272,7 +275,7 @@ namespace RiasBot.Services
                                 }
                                 else
                                 {
-                                    await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();    //download all users from the support server at start up
+                                    
                                 }
                             }
                         }
@@ -284,6 +287,16 @@ namespace RiasBot.Services
             {
                 Console.WriteLine(ex);
             }
+        }
+
+        private async Task GuildAvailAble(SocketGuild guild)
+        {
+            Console.WriteLine($"Members downloaded {guild.Name}");
+        }
+
+        private async Task ShardReady(DiscordSocketClient client)
+        {
+            await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();
         }
     }
 

@@ -61,7 +61,7 @@ namespace RiasBot.Services
             return Console.Out.WriteLineAsync(String.Join("\n", log));
         }
 
-        private Task Ready(DiscordSocketClient _client)
+        private Task Ready(DiscordSocketClient client)
         {
             ready = true;
             return null;
