@@ -290,7 +290,7 @@ namespace RiasBot.Services
 
         private async Task ShardReady(DiscordSocketClient client)
         {
-            await client.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();
+            await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();
         }
     }
 

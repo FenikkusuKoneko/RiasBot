@@ -60,7 +60,7 @@ namespace RiasBot.Modules.Music
             }
             try
             {
-                var mp = await _service.GetOrAddMusicPlayer(Context.Guild);
+                var mp = _service.GetOrAddMusicPlayer(Context.Guild);
                 await mp.JoinAudio(Context.Guild, Context.Channel, voiceChannel).ConfigureAwait(false);
 
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer()

@@ -70,7 +70,7 @@ namespace RiasBot.Modules.Music.Services
 
         }
 
-        public async Task<MusicPlayer> GetOrAddMusicPlayer(IGuild guild)
+        public MusicPlayer GetOrAddMusicPlayer(IGuild guild)
         {
             var mp = new MusicPlayer(_client, this);
             if (MPlayer.ContainsKey(guild.Id))
