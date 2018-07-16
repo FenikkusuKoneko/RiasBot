@@ -34,7 +34,7 @@ namespace RiasBot.Services.Database
 
         public RiasContext(DbContextOptions<RiasContext> options) : base(options)
         {
-
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -13,6 +13,7 @@ using Discord.WebSocket;
 using System.Globalization;
 using System.Diagnostics;
 using Discord.Addons.Interactive;
+using Microsoft.EntityFrameworkCore;
 
 namespace RiasBot.Modules.Utility
 {
@@ -24,13 +25,15 @@ namespace RiasBot.Modules.Utility
             private readonly CommandHandler _ch;
             private readonly CommandService _service;
             private readonly InteractiveService _is;
+            private readonly DbService _db;
 
-            public InfoCommands(DiscordShardedClient client, CommandHandler ch, CommandService service, InteractiveService interactiveService)
+            public InfoCommands(DiscordShardedClient client, CommandHandler ch, CommandService service, InteractiveService interactiveService, DbService db)
             {
                 _client = client;
                 _ch = ch;
                 _service = service;
                 _is = interactiveService;
+                _db = db;
             }
 
             [RiasCommand]
@@ -97,8 +100,7 @@ namespace RiasBot.Modules.Utility
                         activity = "Watching " + activity;
                         break;
                 }
-
-                var joinedServer = user.JoinedAt.Value.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
+                var joinedServer = user.JoinedAt?.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
                 var accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
 
                 var roleIndex = 0;
@@ -119,7 +121,6 @@ namespace RiasBot.Modules.Utility
                         }
                     }
                 }
-
                 Array.Sort(userRolesPositions, userRoles);
                 Array.Reverse(userRoles);
 

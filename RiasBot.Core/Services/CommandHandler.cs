@@ -8,7 +8,9 @@ using Cleverbot.Net;
 using Discord;
 using RiasBot.Modules.Xp.Services;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using RiasBot.Extensions;
+using RiasBot.Services.Database.Models;
 
 namespace RiasBot.Services
 {
@@ -46,27 +48,14 @@ namespace RiasBot.Services
             var context = new ShardedCommandContext(_discord, msg);     // Create the command context
 
             await _botService.AddAssignableRole(context.Guild, (IGuildUser)context.User);
-            await GiveXp(context, msg);
             using (var db = _db.GetDbContext())
             {
                 var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == context.Guild.Id);
                 var userDb = db.Users.FirstOrDefault(x => x.UserId == msg.Author.Id);
-                if (!context.IsPrivate)
-                {
-                    var guild = db.Guilds.FirstOrDefault(x => x.GuildId == context.Guild.Id);
-                    if (guild != null)
-                    {
-                        Prefix = !string.IsNullOrEmpty(guild.Prefix) ? guild.Prefix : _creds.Prefix;
-                    }
-                    else
-                    {
-                        Prefix = _creds.Prefix;
-                    }
-                }
-                else
-                {
-                    Prefix = _creds.Prefix;
-                }
+
+                Prefix = GetPrefix(context, guildDb);
+                await GiveXp(context, msg, userDb);
+                
                 if (userDb != null)
                     if (userDb.IsBanned)
                         return;     //banned users will cannot use the commands
@@ -90,48 +79,64 @@ namespace RiasBot.Services
                         await Task.Factory.StartNew(() => SendErrorResult(msg, result)).ConfigureAwait(false);
                     }
                 }
+                await db.SaveChangesAsync();
             }
         }
 
-        private async Task GiveXp(ShardedCommandContext context, SocketUserMessage msg)
+        private string GetPrefix(SocketCommandContext context, GuildConfig guildDb)
         {
-            using (var db = _db.GetDbContext())
+            if (!context.IsPrivate)
             {
-                var userDb = db.Users.FirstOrDefault(x => x.UserId == msg.Author.Id);
-                if (!context.IsPrivate)
+                if (guildDb != null)
                 {
-                    try
+                    return !string.IsNullOrEmpty(guildDb.Prefix) ? guildDb.Prefix : _creds.Prefix;
+                }
+                else
+                {
+                    return _creds.Prefix;
+                }
+            }
+            else
+            {
+                return _creds.Prefix;
+            }
+        }
+
+        private async Task GiveXp(ShardedCommandContext context, SocketUserMessage msg, UserConfig userDb)
+        {
+            if (!context.IsPrivate)
+            {
+                try
+                {
+                    var socketGuildUser = context.Guild.GetUser(_discord.CurrentUser.Id);
+                    var preconditions = socketGuildUser.GetPermissions((IGuildChannel)context.Channel);
+                    if (preconditions.SendMessages)
                     {
-                        var socketGuildUser = context.Guild.GetUser(_discord.CurrentUser.Id);
-                        var preconditions = socketGuildUser.GetPermissions((IGuildChannel)context.Channel);
-                        if (preconditions.SendMessages)
+                        if (userDb != null)
                         {
-                            if (userDb != null)
-                            {
-                                if (!userDb.IsBlacklisted)
-                                    await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
-                            }
-                            else
+                            if (!userDb.IsBlacklisted)
                                 await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
-                            await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel, true);
                         }
                         else
-                        {
-                            if (userDb != null)
-                            {
-                                if (!userDb.IsBlacklisted)
-                                    await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
-                            }
-                            else
-                                await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
-                            await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel);
-                            return;
-                        }
+                            await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                        await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel, true);
                     }
-                    catch
+                    else
                     {
-                        // ignored
+                        if (userDb != null)
+                        {
+                            if (!userDb.IsBlacklisted)
+                                await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                        }
+                        else
+                            await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                        await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel);
+                        return;
                     }
+                }
+                catch
+                {
+                    // ignored
                 }
             }
         }
