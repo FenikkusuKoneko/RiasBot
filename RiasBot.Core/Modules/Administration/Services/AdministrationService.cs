@@ -88,6 +88,7 @@ namespace RiasBot.Modules.Administration.Services
                 }
                 catch
                 {
+                    //ignored
                 }
             }
         }
