@@ -235,7 +235,6 @@ namespace RiasBot.Services
         {
             try
             {
-                var isWeekend = await DblIsWeekend();
                 using (var db = _db.GetDbContext())
                 using (var http = new HttpClient())
                 {
@@ -260,7 +259,7 @@ namespace RiasBot.Services
                                         if (userDb != null)
                                         {
                                             if (!userDb.IsBlacklisted)
-                                                userDb.Currency += isWeekend ? 20 : 10;
+                                                userDb.Currency += vote.isWeekend ? 20 : 10;
                                         }
                                         else
                                         {
@@ -289,24 +288,6 @@ namespace RiasBot.Services
             }
         }
 
-        public async Task<bool> DblIsWeekend()
-        {
-            try
-            {
-                using (var http = new HttpClient())
-                {
-                    var weekend = await http.GetStringAsync("https://discordbots.org/api/weekend").ConfigureAwait(false);
-                    var isWeekend = JsonConvert.DeserializeObject<DblIsWeekend>(weekend);
-                    return isWeekend.IsWeekend;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return false;
-            }
-        }
-
         private async Task ShardReady(DiscordSocketClient client)
         {
             await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();
@@ -327,6 +308,7 @@ namespace RiasBot.Services
         public ulong bot { get; set; }
         public ulong user { get; set; }
         public string type { get; set; }
+        public bool isWeekend { get; set; }
         public string query { get; set; }
         public string date { get; set; }
     }
