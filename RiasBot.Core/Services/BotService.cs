@@ -246,7 +246,7 @@ namespace RiasBot.Services
                     {
                         if (DateTime.TryParseExact(vote.date, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.CurrentCulture, DateTimeStyles.None, out var date))
                         {
-                            date = date.AddDays(1);
+                            date = date.AddHours(12);
                             if (DateTime.Compare(date.ToUniversalTime(), DateTime.UtcNow) >= 1)
                             {
                                 VotesList.Add(vote);
