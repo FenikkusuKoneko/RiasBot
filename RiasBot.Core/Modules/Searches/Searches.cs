@@ -52,7 +52,7 @@ namespace RiasBot.Modules.Searches
 
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithUrl(link);
-                embed.WithAuthor(word, "https://i.imgur.com/G3VoNuJ.jpg");
+                embed.WithAuthor(word, "https://i.imgur.com/re5jokL.jpg");
                 embed.WithDescription(def);
 
                 await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
