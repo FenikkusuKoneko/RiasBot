@@ -23,6 +23,20 @@ namespace RiasBot.Extensions
             return module;
         }
 
+        public static string StringTimeSpan(this TimeSpan timeSpan)
+        {
+            var format = "";
+            if (timeSpan.Days > 0)
+                format += $"{timeSpan.Days}d";
+            if (timeSpan.Hours > 0)
+                format += $" {timeSpan.Hours}h";
+            if (timeSpan.Minutes > 0)
+                format += $" {timeSpan.Minutes}m";
+            if (timeSpan.Hours > 0)
+                format += $" {timeSpan.Seconds}s";
+            return format;
+        }
+
         public static EmbedBuilder EmbedFromJson(string json)
         {
             try

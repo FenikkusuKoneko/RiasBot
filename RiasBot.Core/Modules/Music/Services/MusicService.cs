@@ -23,8 +23,6 @@ namespace RiasBot.Modules.Music.Services
 
         public readonly ConcurrentDictionary<ulong, MusicPlayer> MPlayer = new ConcurrentDictionary<ulong, MusicPlayer>();
 
-        /*public bool Paused => pauseTaskSource != null;
-        private TaskCompletionSource<bool> pauseTaskSource { get; set; } = null;*/
         public MusicService(DiscordShardedClient client, DbService db)
         {
             _client = client;
@@ -43,14 +41,7 @@ namespace RiasBot.Modules.Music.Services
                     return;
                 if (stateOld.VoiceChannel == (stateNew.VoiceChannel ?? null))
                     return;
-                var users = 0;
-                foreach (var u in stateOld.VoiceChannel.Users)
-                {
-                    if (!u.IsBot)
-                    {
-                        users++;
-                    }
-                }
+                var users = stateOld.VoiceChannel.Users.Count(u => !u.IsBot);
                 if (users < 1)
                 {
                     var userG = (SocketGuildUser)user;
@@ -65,7 +56,7 @@ namespace RiasBot.Modules.Music.Services
             }
             catch
             {
-
+                //ignored
             }
 
         }
@@ -88,22 +79,12 @@ namespace RiasBot.Modules.Music.Services
 
         public MusicPlayer GetMusicPlayer(IGuild guild)
         {
-            if (MPlayer.TryGetValue(guild.Id, out var mp))
-            {
-                return mp;
-            }
-            else
-            {
-                return null;
-            }
+            return MPlayer.TryGetValue(guild.Id, out var mp) ? mp : null;
         }
 
         public MusicPlayer RemoveMusicPlayer(IGuild guild)
         {
-            if (MPlayer.TryRemove(guild.Id, out var musicPlayer))
-                return musicPlayer;
-            else
-                return null;
+            return MPlayer.TryRemove(guild.Id, out var musicPlayer) ? musicPlayer : null;
         }
 
         public void UnlockFeatures(MusicPlayer mp, int pledgeAmount)

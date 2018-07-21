@@ -13,10 +13,12 @@ namespace RiasBot.Modules.Administration.Services
     public class WarningService : IRService
     {
         private readonly AdministrationService _adminService;
+        private readonly MuteService _muteService;
         private readonly DbService _db;
-        public WarningService(AdministrationService adminService, DbService db)
+        public WarningService(AdministrationService adminService, MuteService muteSevice, DbService db)
         {
             _adminService = adminService;
+            _muteService = muteSevice;
             _db = db;
         }
 
@@ -51,7 +53,7 @@ namespace RiasBot.Modules.Administration.Services
                         switch (guildDb.PunishmentMethod)
                         {
                             case "mute":
-                                await _adminService.MuteUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! Mute punishment applied!").ConfigureAwait(false);
+                                await _muteService.MuteUser(guild, moderator, user, channel, TimeSpan.Zero, $"You got {guildDb.WarnsPunishment} warnings! Mute punishment applied!").ConfigureAwait(false);
                                 break;
                             case "kick":
                                 await _adminService.KickUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! Kick punishment applied!").ConfigureAwait(false);
