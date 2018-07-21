@@ -40,7 +40,6 @@ namespace RiasBot.Modules.Utility.Services
                     var avatarUrl = user.RealAvatarUrl();
                     var nickname = user.Nickname;
 
-                    var arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
                     var aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
                     var meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
 

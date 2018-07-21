@@ -166,7 +166,6 @@ namespace RiasBot.Modules.Xp.Services
                 {
                     //Init
                     var avatarUrl = user.RealAvatarUrl();
-                    var arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
                     var aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
                     var meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
 
@@ -229,8 +228,8 @@ namespace RiasBot.Modules.Xp.Services
 
                     img.Draw(new Drawables().FillColor(xpBgColor).Rectangle(125, 130, 125 + (350 * (globalCurrentXp / (float)globalRequiredXp)), 205));
                     img.Draw(new Drawables().FillColor(xpBgColor).Rectangle(125, 215, 125 + (350 * (guildCurrentXp / (float)guildRequiredXp)), 290));
-                    img.Draw(new Drawables().FillColor(MagickColors.Black).Text(300, 175, $"{globalCurrentXp}/{globalRequiredXp}").TextAlignment(TextAlignment.Center).Font(arialFont).FontPointSize(17));
-                    img.Draw(new Drawables().FillColor(MagickColors.Black).Text(300, 255, $"{guildCurrentXp}/{guildRequiredXp}").TextAlignment(TextAlignment.Center).Font(arialFont).FontPointSize(17));
+                    img.Draw(new Drawables().FillColor(MagickColors.Black).Text(300, 175, $"{globalCurrentXp}/{globalRequiredXp}").TextAlignment(TextAlignment.Center).Font(aweryFont).FontPointSize(17));
+                    img.Draw(new Drawables().FillColor(MagickColors.Black).Text(300, 255, $"{guildCurrentXp}/{guildRequiredXp}").TextAlignment(TextAlignment.Center).Font(aweryFont).FontPointSize(17));
                     
                     var imageStream = new MemoryStream();
                     img.Write(imageStream, MagickFormat.Png);
