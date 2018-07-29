@@ -1234,6 +1234,14 @@
     ]
   },
 
+  "color": {
+    "Command": "color",
+    "Description": "Generates a preview image of a hex color.",
+    "Remarks": [
+      "[prefix]color #dc143c"
+    ]
+  },
+
   "claimwaifu": {
     "Command": "claimwaifu",
     "Description": "Claim your waifu from anime. The price for every waifu starts from 1000 [currency] and is rising with each claim with 10 [currency], also will decrease for each divorce. The character must be on AniList database.",

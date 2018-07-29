@@ -14,7 +14,7 @@ namespace RiasBot
 {
     public class RiasBot
     {
-        public const string Version = "1.6.10";
+        public const string Version = "1.6.11";
         public const uint GoodColor = 0x009688;
         public const uint BadColor = 0xff0000;
         public const string Currency = "<:heart_diamond:416513090549448724>";
@@ -54,7 +54,7 @@ namespace RiasBot
 
             var iRServices = assembly.GetTypes()
                     .Where(x => x.GetInterfaces().Contains(typeof(IRService))
-                        && !x.GetTypeInfo().IsInterface && !x.GetTypeInfo().IsAbstract).ToArray();
+                        && !x.GetTypeInfo().IsInterface && !x.GetTypeInfo().IsAbstract);
 
             foreach (var type in iRServices)
             {

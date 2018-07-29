@@ -13,6 +13,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using ImageMagick;
 using UnitsNet;
 
 namespace RiasBot.Modules.Utility
@@ -192,7 +195,50 @@ namespace RiasBot.Modules.Utility
             }
         }
 
-        public static string ToTitleCase(string input)
+        [RiasCommand]
+        [@Alias]
+        [Description]
+        [@Remarks]
+        public async Task Color([Remainder]string color)
+        {
+            color = color.Replace("#", "");
+            if (int.TryParse(color.Substring(0, 2), NumberStyles.HexNumber, null, out var redColor) &&
+                int.TryParse(color.Substring(2, 2), NumberStyles.HexNumber, null, out var greenColor) &&
+                int.TryParse(color.Substring(4, 2), NumberStyles.HexNumber, null, out var blueColor))
+            {
+                var red = Convert.ToByte(redColor);
+                var green = Convert.ToByte(greenColor);
+                var blue = Convert.ToByte(blueColor);
+
+                using (var img = new MagickImage(MagickColor.FromRgb(red, green, blue), 50, 50))
+                {
+                    var imageStream = new MemoryStream();
+                    img.Write(imageStream, MagickFormat.Png);
+                    imageStream.Position = 0;
+                    await Context.Channel.SendFileAsync(imageStream, $"#{color}.png");
+                }
+            }
+            else
+            {
+                try
+                {
+                    var magickColor = new MagickColor(color.Replace(" ", ""));
+                    using (var img = new MagickImage(magickColor, 50, 50))
+                    {
+                        var imageStream = new MemoryStream();
+                        img.Write(imageStream, MagickFormat.Png);
+                        imageStream.Position = 0;
+                        await Context.Channel.SendFileAsync(imageStream, $"#{color}.png");
+                    }
+                }
+                catch
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the color is not a valid hex color.").ConfigureAwait(false);
+                }
+            }
+        }
+
+        private static string ToTitleCase(string input)
         {
             switch (input)
             {
