@@ -5,7 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using RiasBot.Commons.Attributes;
-using RiasBot.Core.Modules.Administration.Commons;
+using RiasBot.Commons.Timers;
 using RiasBot.Extensions;
 using RiasBot.Services;
 using RiasBot.Services.Database.Models;
@@ -39,7 +39,7 @@ namespace RiasBot.Modules.Administration.Services
                 {
                     if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                     {
-                        await _service.MuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, TimeSpan.Zero, reason).ConfigureAwait(false);
+                        await _service.MuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);
                     }
                     else
                     {
@@ -57,25 +57,16 @@ namespace RiasBot.Modules.Administration.Services
             [RequireUserPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireBotPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireContext(ContextType.Guild)]
-            public async Task Mute(string time, IGuildUser user, [Remainder]string reason = null)
+            public async Task Mute(UntilTime muteTime, IGuildUser user, [Remainder]string reason = null)
             {
+                Console.WriteLine("Stupid Time");
                 if (user.Id == Context.User.Id)
                     return;
                 if (user.Id != Context.Guild.OwnerId)
                 {
                     if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                     {
-                        TimeSpan muteTime;
-                        try
-                        {
-                            muteTime = MuteTime.GetMuteTime(time);
-                        }
-                        catch (ArgumentException ae)
-                        {
-                            await Context.Channel.SendErrorEmbed(ae.Message);
-                            return;
-                        }
-                        await _service.MuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, muteTime, reason).ConfigureAwait(false);
+                        await _service.MuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);
                     }
                     else
                     {

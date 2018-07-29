@@ -16,7 +16,7 @@ namespace RiasBot.Modules.Administration.Services
             _db = db;
         }
         
-        public async Task MuteUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, TimeSpan time, string reason)
+        public async Task MuteUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, string reason)
         {
             using (var db = _db.GetDbContext())
             {

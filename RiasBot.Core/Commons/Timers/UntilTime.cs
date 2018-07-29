@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using RiasBot.Commons.TypeReaders;
 
-namespace RiasBot.Core.Modules.Administration.Commons
+namespace RiasBot.Commons.Timers
 {
-    public class MuteTime
+    public class UntilTime
     {
-        private MuteTime () {}
+        private UntilTime() {}
         
+        public TimeSpan Timer;
         private static readonly Regex Regex = new Regex(@"^(?:(?<months>\d)mo)?(?:(?<weeks>\d{1,2})w)?(?:(?<days>\d{1,2})d)?(?:(?<hours>\d{1,4})h)?(?:(?<minutes>\d{1,5})m)?$",
             RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
         
-        public static TimeSpan GetMuteTime(string input)
+        public static UntilTime FromInput(string input)
         {
             var match = Regex.Match(input);
 
@@ -50,7 +52,10 @@ namespace RiasBot.Core.Modules.Administration.Commons
                 throw new ArgumentException("The time is too long.");
             }
 
-            return timeSpan;
+            return new UntilTime()
+            {
+                Timer = timeSpan
+            };
         }
     }
 }

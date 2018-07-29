@@ -53,7 +53,7 @@ namespace RiasBot.Modules.Administration.Services
                         switch (guildDb.PunishmentMethod)
                         {
                             case "mute":
-                                await _muteService.MuteUser(guild, moderator, user, channel, TimeSpan.Zero, $"You got {guildDb.WarnsPunishment} warnings! Mute punishment applied!").ConfigureAwait(false);
+                                await _muteService.MuteUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! Mute punishment applied!").ConfigureAwait(false);
                                 break;
                             case "kick":
                                 await _adminService.KickUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! Kick punishment applied!").ConfigureAwait(false);
