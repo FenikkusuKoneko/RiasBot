@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using RiasBot.Migrations;
+using RiasBot.Modules.Administration.Services;
 using RiasBot.Modules.Music.Services;
 
 namespace RiasBot.Services
@@ -19,6 +20,7 @@ namespace RiasBot.Services
         private readonly DiscordShardedClient _discord;
         private readonly DbService _db;
         private readonly MusicService _musicService;
+        private readonly MuteService _muteService;
         private readonly IBotCredentials _creds;
 
         private Timer _dblTimer;
@@ -31,11 +33,12 @@ namespace RiasBot.Services
         public string[] Statuses;
         private int _statusCount = 0;
 
-        public BotService(DiscordShardedClient discord, DbService db, MusicService musicService, IBotCredentials creds)
+        public BotService(DiscordShardedClient discord, DbService db, MusicService musicService, MuteService muteService, IBotCredentials creds)
         {
             _discord = discord;
             _db = db;
             _musicService = musicService;
+            _muteService = muteService;
             _creds = creds;
 
             _discord.UserJoined += UserJoined;
@@ -98,16 +101,20 @@ namespace RiasBot.Services
                             //ignored
                         }
                     }
-
                     if (userGuildDb != null)
                     {
                         if (userGuildDb.IsMuted)
                         {
-                            var role = user.Guild.GetRole(guildDb.MuteRole);
+                            var role = user.Guild.GetRole(guildDb.MuteRole) ?? (user.Guild.Roles.FirstOrDefault(x => x.Name == "rias-mute"));
                             if (role != null)
                             {
                                 await user.AddRoleAsync(role).ConfigureAwait(false);
                                 await user.ModifyAsync(x => x.Mute = true).ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                userGuildDb.IsMuted = false;
+                                await db.SaveChangesAsync().ConfigureAwait(false);
                             }
                         }
                     }
@@ -120,6 +127,7 @@ namespace RiasBot.Services
             using (var db = _db.GetDbContext())
             {
                 var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == user.Guild.Id);
+                var userGuildDb = db.UserGuilds.Where(x => x.GuildId == user.Guild.Id).FirstOrDefault(x => x.UserId == user.Id);
                 if (guildDb != null)
                 {
                     if (guildDb.Bye)
@@ -144,6 +152,27 @@ namespace RiasBot.Services
                         catch
                         {
                             //channel deleted
+                        }
+                    }
+                    if (userGuildDb != null)
+                    {
+                        if (userGuildDb.IsMuted)
+                        {
+                            var role = user.Guild.GetRole(guildDb.MuteRole) ?? (user.Guild.Roles.FirstOrDefault(x => x.Name == "rias-mute"));
+                            if (role != null)
+                            {
+                                if (user.Roles.All(r => r.Id != role.Id))
+                                {
+                                    userGuildDb.IsMuted = false;
+                                    await _muteService.RemoveMuteTimer(user.Guild, user);
+                                }
+                            }
+                            else
+                            {
+                                userGuildDb.IsMuted = false;
+                                await _muteService.RemoveMuteTimer(user.Guild, user);
+                            }
+                            await db.SaveChangesAsync().ConfigureAwait(false);
                         }
                     }
                 }
@@ -311,10 +340,5 @@ namespace RiasBot.Services
         public bool isWeekend { get; set; }
         public string query { get; set; }
         public string date { get; set; }
-    }
-
-    public class DblIsWeekend
-    {
-        public bool IsWeekend { get; set; }
     }
 }

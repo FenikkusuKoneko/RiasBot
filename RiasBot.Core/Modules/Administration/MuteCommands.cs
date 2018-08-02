@@ -31,6 +31,7 @@ namespace RiasBot.Modules.Administration.Services
             [RequireUserPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireBotPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireContext(ContextType.Guild)]
+            [Priority(0)]
             public async Task Mute(IGuildUser user, [Remainder]string reason = null)
             {
                 if (user.Id == Context.User.Id)
@@ -39,7 +40,7 @@ namespace RiasBot.Modules.Administration.Services
                 {
                     if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                     {
-                        await _service.MuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);
+                        await _service.MuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, TimeSpan.Zero, reason).ConfigureAwait(false);
                     }
                     else
                     {
@@ -57,16 +58,20 @@ namespace RiasBot.Modules.Administration.Services
             [RequireUserPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireBotPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireContext(ContextType.Guild)]
-            public async Task Mute(UntilTime muteTime, IGuildUser user, [Remainder]string reason = null)
+            [Priority(1)]
+            public async Task Mute(UntilTime untilTime, IGuildUser user, [Remainder]string reason = null)
             {
-                Console.WriteLine("Stupid Time");
                 if (user.Id == Context.User.Id)
                     return;
                 if (user.Id != Context.Guild.OwnerId)
                 {
                     if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                     {
-                        await _service.MuteUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);
+                        if (untilTime.Timer.CompareTo(TimeSpan.Zero) != 0)
+                            await _service.MuteUser(Context.Guild, (IGuildUser) Context.User, user, Context.Channel,
+                                untilTime.Timer, reason).ConfigureAwait(false);
+                        else
+                            await Context.Channel.SendErrorEmbed($"The timer cannot be 0!").ConfigureAwait(false);
                     }
                     else
                     {

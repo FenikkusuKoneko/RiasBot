@@ -31,6 +31,7 @@ namespace RiasBot.Services.Database
         public DbSet<SelfAssignableRoles> SelfAssignableRoles { get; set; }
         public DbSet<XpRolesSystem> XpRolesSystem { get; set; }
         public DbSet<Profile> Profile { get; set; }
+        public DbSet<MuteTimers> MuteTimers { get; set; }
 
         public RiasContext(DbContextOptions<RiasContext> options) : base(options)
         {
@@ -109,6 +110,12 @@ namespace RiasBot.Services.Database
             profile
                 .HasIndex(c => c.UserId)
                 .IsUnique();
+
+            #endregion
+            
+            #region MuteTimers
+
+            var muteTimers = modelBuilder.Entity<MuteTimers>();
 
             #endregion
         }

@@ -71,9 +71,10 @@
 
   "mute": {
     "Command": "mute",
-    "Description": "Mute an user from text and voice channels.",
+    "Description": "Mute an user from text and voice channels. You can mute temporaly: months(mo), weeks(w), days(d), hours(h), minutes(m).",
     "Remarks": [
-      "[prefix]mute @User"
+      "[prefix]mute @User",
+      "[prefix]mute 1d3h10m @User"
     ]
   },
 
@@ -1118,7 +1119,7 @@
 
   "prefix": {
     "Command": "prefix",
-    "Description": "Set the prefix on this server (Require **Administrator**). Provide no parameters to show the current server prefix.",
+    "Description": "Set the prefix on this server (Requires **Administrator**). Provide no parameters to show the current server prefix.",
     "Remarks": [
       "[prefix]prefix",
       "[prefix]prefix r!"

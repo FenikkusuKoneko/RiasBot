@@ -9,5 +9,6 @@ namespace RiasBot.Services.Database.Models
         public ulong GuildId { get; set; }
         public ulong UserId { get; set; }
         public bool IsMuted { get; set; }
+        public DateTime MuteUntil { get; set; }
     }
 }
