@@ -32,7 +32,7 @@ namespace RiasBot.Services
                 timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
             }
         }
-        public int campaignId;
+        private int campaignId;
 
         public async Task Patreon()
         {
@@ -45,8 +45,15 @@ namespace RiasBot.Services
                 var data = await http.GetAsync(url);
                 if (data.IsSuccessStatusCode)
                 {
-                    var patreonCurrentUser = JsonConvert.DeserializeObject<PatreonCurrentUser>(await data.Content.ReadAsStringAsync());
-                    campaignId = patreonCurrentUser.Included.FirstOrDefault().Relationships.Campaign.Data.Id;
+                    try
+                    {
+                        var patreonCurrentUser = JsonConvert.DeserializeObject<PatreonCurrentUser>(await data.Content.ReadAsStringAsync());
+                        campaignId = patreonCurrentUser.Included.FirstOrDefault().Relationships.Campaign.Data.Id;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
                 }
             }
         }
