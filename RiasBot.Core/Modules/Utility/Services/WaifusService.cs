@@ -27,21 +27,24 @@ namespace RiasBot.Modules.Utility.Services
         public async Task ClaimWaifu(ShardedCommandContext context, IGuildUser user, IMessageChannel channel, dynamic obj)
         {
             var waifuId = (int)obj.id;
-            string waifuName = null;
 
-            if (String.IsNullOrEmpty((string)obj.name.first))
-                waifuName = (string)obj.name.last;
-            else if (String.IsNullOrEmpty((string)obj.name.last))
-                waifuName = (string)obj.name.first;
+            var firstName = (string) obj.name.first;
+            var lastName = (string) obj.name.last;
+            var waifuName = "";
+
+            if (string.IsNullOrEmpty(firstName))
+                waifuName = lastName.Trim();
+            else if (string.IsNullOrEmpty(lastName))
+                waifuName = firstName.Trim();
             else
-                waifuName = $"{(string)obj.name.first} {(string)obj.name.last}";
+                waifuName = $"{firstName.Trim()} {lastName.Trim()}";
 
             var waifuUrl = (string)obj.siteUrl;
             var waifuPicture = (string)obj.image.large;
 
             using (var db = _db.GetDbContext())
             {
-                var userDb = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
+                var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
                 var waifuDb = db.Waifus.Where(x => x.UserId == user.Id);
                 var waifus = db.Waifus.Where(x => x.WaifuId == waifuId);
                 try
@@ -107,7 +110,7 @@ namespace RiasBot.Modules.Utility.Services
                 }
                 catch
                 {
-
+                    //ignored
                 }
             }
         }

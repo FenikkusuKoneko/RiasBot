@@ -96,7 +96,7 @@ namespace RiasBot.Modules.Utility
             {
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == Context.User.Id);
                     if (userDb != null)
                     {
                         if (userDb.Currency < 5000)
@@ -108,10 +108,16 @@ namespace RiasBot.Modules.Utility
                     var waifuDb = db.Waifus.Where(x => x.UserId == Context.User.Id).ToList();
                     if (waifuDb.Count != 0)
                     {
-                        var getWaifu = waifuDb.Where(x => x.WaifuName.ToLowerInvariant() == waifu.ToLowerInvariant()).FirstOrDefault();
+                        var getWaifu = waifuDb.FirstOrDefault(x => x.WaifuName.Equals(waifu, StringComparison.InvariantCultureIgnoreCase));
+                        if (getWaifu is null)
+                        {
+                            waifu = string.Join(" ", waifu.Split(" ", StringSplitOptions.RemoveEmptyEntries).Reverse());
+                            getWaifu = waifuDb.FirstOrDefault(x => x.WaifuName.Equals(waifu, StringComparison.InvariantCultureIgnoreCase));
+                        }
+                        
                         if (getWaifu != null)
                         {
-                            var lastPrimaryWaifu = waifuDb.Where(x => x.IsPrimary == true).FirstOrDefault();
+                            var lastPrimaryWaifu = waifuDb.FirstOrDefault(x => x.IsPrimary == true);
                             if (lastPrimaryWaifu != null)
                             {
                                 lastPrimaryWaifu.IsPrimary = false;
@@ -128,7 +134,7 @@ namespace RiasBot.Modules.Utility
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the waifu.").ConfigureAwait(false);
                         }
                     }
                     else
@@ -144,12 +150,17 @@ namespace RiasBot.Modules.Utility
             {
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == Context.User.Id);
                     var waifusDb = db.Waifus.Where(x => x.UserId == Context.User.Id).ToList();
 
-                    if (waifusDb.Count() > 0)
+                    if (waifusDb.Any())
                     {
-                        var waifu = waifusDb.Where(x => x.WaifuName.ToLowerInvariant() == character.ToLowerInvariant()).FirstOrDefault();
+                        var waifu = waifusDb.FirstOrDefault(x => string.Equals(x.WaifuName, character, StringComparison.InvariantCultureIgnoreCase));
+                        if (waifu is null)
+                        {
+                            character = string.Join(" ", character.Split(" ", StringSplitOptions.RemoveEmptyEntries).Reverse());
+                            waifu = waifusDb.FirstOrDefault(x => x.WaifuName.Equals(character, StringComparison.InvariantCultureIgnoreCase));
+                        }
                         if (waifu != null)
                         {
                             var waifuCashback = waifu.WaifuPrice * 90 / 100;
@@ -161,10 +172,7 @@ namespace RiasBot.Modules.Utility
                             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                             embed.WithTitle("Divorce!");
                             embed.WithDescription($"You successfully divorced from {waifu.WaifuName}. You received {waifuCashback} {RiasBot.Currency} back.");
-                            if (!String.IsNullOrEmpty(waifu.BelovedWaifuPicture))
-                                embed.WithThumbnailUrl(waifu.BelovedWaifuPicture);
-                            else
-                                embed.WithThumbnailUrl(waifu.WaifuPicture);
+                            embed.WithThumbnailUrl(!string.IsNullOrEmpty(waifu.BelovedWaifuPicture) ? waifu.BelovedWaifuPicture : waifu.WaifuPicture);
 
                             await Context.Channel.SendMessageAsync("", embed: embed.Build());
                         }
