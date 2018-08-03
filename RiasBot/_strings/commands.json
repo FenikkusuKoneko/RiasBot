@@ -71,7 +71,7 @@
 
   "mute": {
     "Command": "mute",
-    "Description": "Mute an user from text and voice channels. You can mute temporaly: months(mo), weeks(w), days(d), hours(h), minutes(m).",
+    "Description": "Mute an user from text and voice channels. You can mute temporally: months(mo), weeks(w), days(d), hours(h), minutes(m).",
     "Remarks": [
       "[prefix]mute @User",
       "[prefix]mute 1d3h10m @User"
