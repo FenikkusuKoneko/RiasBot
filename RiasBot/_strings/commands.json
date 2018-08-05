@@ -518,21 +518,35 @@
     ]
   },
 
-  "createchannel": {
-    "Command": "createchannel cch",
-    "Description": "Create a text or a voice channel. The type of the channel must be specified: `text` or `voice`.",
+  "createtextchannel": {
+    "Command": "createtextchannel ctch",
+    "Description": "Create a text channel.",
     "Remarks": [
-      "[prefix]cch text music",
-      "[prefix]cch voice Music"
+      "[prefix]ctch music"
     ]
   },
 
-  "deletechannel": {
-    "Command": "deletechannel dch",
-    "Description": "Delete a text or a voice channel. The type of the channel must be specified: `text` or `voice`.",
+  "createvoicechannel": {
+    "Command": "createvoicechannel cvch",
+    "Description": "Create a voice channel.",
     "Remarks": [
-      "[prefix]dch text music",
-      "[prefix]dch voice Music"
+      "[prefix]cvch Music"
+    ]
+  },
+
+  "deletetextchannel": {
+    "Command": "deletetextchannel dtch",
+    "Description": "Delete a text channel.",
+    "Remarks": [
+      "[prefix]dtch music"
+    ]
+  },
+
+  "deletevoicechannel": {
+    "Command": "deletevoicechannel dvch",
+    "Description": "Delete a voice channel.",
+    "Remarks": [
+      "[prefix]dvch Music"
     ]
   },
 
@@ -552,12 +566,19 @@
     ]
   },
 
-  "renamechannel": {
-    "Command": "renamechannel rnch",
-    "Description": "Rename a channel. You need to separate the old name by the new name with '->'. The type of the channel must be specified: `text` or `voice`.",
+  "renametextchannel": {
+    "Command": "renametextchannel rntch",
+    "Description": "Rename a text channel. Separate the old name from the new one with '->'.",
     "Remarks": [
-      "[prefix]rnch text media -> music",
-      "[prefix]rnch voice Media -> Music"
+      "[prefix]rntch media -> music"
+    ]
+  },
+
+  "renamevoicechannel": {
+    "Command": "renamevoicechannel rnvch",
+    "Description": "Rename a voice channel. Separate the old name from the new one with '->'.",
+    "Remarks": [
+      "[prefix]rnvch Media -> Music"
     ]
   },
 
