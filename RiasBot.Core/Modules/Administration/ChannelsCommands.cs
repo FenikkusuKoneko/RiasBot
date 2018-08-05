@@ -4,6 +4,7 @@ using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
 using System;
 using System.Linq;
+using System.Security.Authentication.ExtendedProtection;
 using System.Threading.Tasks;
 
 namespace RiasBot.Modules.Administration
@@ -315,6 +316,70 @@ namespace RiasBot.Modules.Administration
                 else
                 {
                     await Context.Channel.SendErrorEmbed("I don't have the permission to view that channel");
+                }
+            }
+
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
+            [RequireUserPermission(GuildPermission.ManageChannels)]
+            [RequireBotPermission(GuildPermission.ManageChannels)]
+            [RequireContext(ContextType.Guild)]
+            public async Task AddTextChannelToCategory([Remainder] string names)
+            {
+                var namesSplit = names.Split("->");
+                var channelName = namesSplit[0].TrimEnd();
+                var categoryName = namesSplit[1].TrimStart();
+                var channel = (await Context.Guild.GetTextChannelsAsync()).FirstOrDefault(x => x.Name.Equals(channelName, StringComparison.InvariantCultureIgnoreCase));
+                if (channel != null)
+                {
+                    var category = (await Context.Guild.GetCategoriesAsync()).FirstOrDefault(x => x.Name.Equals(categoryName, StringComparison.InvariantCultureIgnoreCase));
+                    if (category != null)
+                    {
+                        await channel.ModifyAsync(x => x.CategoryId = category.Id).ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"Text channel {Format.Bold(channel.Name)} was added to category {Format.Bold(category.Name)} successfully").ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorEmbed("I couldn't find the category").ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    await Context.Channel.SendErrorEmbed("I couldn't find the channel").ConfigureAwait(false);
+                }
+            }
+            
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
+            [RequireUserPermission(GuildPermission.ManageChannels)]
+            [RequireBotPermission(GuildPermission.ManageChannels)]
+            [RequireContext(ContextType.Guild)]
+            public async Task AddVoiceChannelToCategory([Remainder] string names)
+            {
+                var namesSplit = names.Split("->");
+                var channelName = namesSplit[0].TrimEnd();
+                var categoryName = namesSplit[1].TrimStart();
+                var channel = (await Context.Guild.GetVoiceChannelsAsync()).FirstOrDefault(x => x.Name.Equals(channelName, StringComparison.InvariantCultureIgnoreCase));
+                if (channel != null)
+                {
+                    var category = (await Context.Guild.GetCategoriesAsync()).FirstOrDefault(x => x.Name.Equals(categoryName, StringComparison.InvariantCultureIgnoreCase));
+                    if (category != null)
+                    {
+                        await channel.ModifyAsync(x => x.CategoryId = category.Id).ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationEmbed($"Voice channel {Format.Bold(channel.Name)} was added to category {Format.Bold(category.Name)} successfully").ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorEmbed("I couldn't find the category").ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    await Context.Channel.SendErrorEmbed("I couldn't find the channel").ConfigureAwait(false);
                 }
             }
         }
