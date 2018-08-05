@@ -584,7 +584,7 @@
 
   "renamecategory": {
     "Command": "renamecategory rncat",
-    "Description": "Rename a category. You need to separate the old name by the new name with '->'.",
+    "Description": "Rename a category. Separate the old name from the new name with '->'.",
     "Remarks": [
       "[prefix]rncat MEDIA -> MUSIC"
     ]
@@ -612,6 +612,22 @@
     "Remarks": [
       "[prefix]snsfwch",
       "[prefix]snsfwch nsfw"
+    ]
+  },
+
+  "addtextchanneltocategory": {
+    "Command": "addtextchanneltocategory atchtocat",
+    "Description": "Add a text channel to a category. Separate the channel name from the category name with '->'",
+    "Remarks": [
+      "[prefix]atchtocat music -> MEDIA"
+    ]
+  },
+
+  "addvoicechanneltocategory": {
+    "Command": "addvoicechanneltocategory avchtocat",
+    "Description": "Add a voice channel to a category. Separate the channel name from the category name with '->'",
+    "Remarks": [
+      "[prefix]avchtocat Music -> MEDIA"
     ]
   },
 
