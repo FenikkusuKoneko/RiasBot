@@ -74,9 +74,8 @@ namespace RiasBot.Modules.Music.Services
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex);
                 //ignored
             }
 
