@@ -151,8 +151,7 @@ namespace RiasBot.Modules.Music.Common
                 }
                 else
                 {
-                    await Channel.SendErrorEmbed($"I can't play songs longer than {DurationLimit.Hours} hours. " +
-                        "The owner of this server can support on Patreon to raise the limit. More details [here].");
+                    await Channel.SendErrorEmbed($"I can't play songs longer than {DurationLimit.Hours} hours.");
                     Wait = false;
                 }
             }
@@ -272,8 +271,7 @@ namespace RiasBot.Modules.Music.Common
                 
                 while (song.Duration > DurationLimit)
                 {
-                    await Channel.SendErrorEmbed($"I can't play songs longer than {DurationLimit} hours. Playing next song. " +
-                                                  "The owner of this server can support on Patreon to raise the limit. More details [here].").ConfigureAwait(false);
+                    await Channel.SendErrorEmbed($"I can't play songs longer than {DurationLimit} hours. Playing next song.").ConfigureAwait(false);
                     song = Queue[++index];
                 }
                 
