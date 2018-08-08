@@ -3,25 +3,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 using RiasBot.Commons.Attributes;
 using RiasBot.Commons.Timers;
 using RiasBot.Extensions;
+using RiasBot.Modules.Administration.Services;
 using RiasBot.Services;
 using RiasBot.Services.Database.Models;
 
-namespace RiasBot.Modules.Administration.Services
+namespace RiasBot.Modules.Administration
 {
     public partial class Administration
     {
         public class MuteCommands : RiasSubmodule<MuteService>
         {
-            private readonly DiscordShardedClient _client;
             private readonly AdministrationService _adminService;
             private readonly DbService _db;
-            public MuteCommands(DiscordShardedClient client, AdministrationService adminService, DbService db)
+            public MuteCommands(AdministrationService adminService, DbService db)
             {
-                _client = client;
                 _adminService = adminService;
                 _db = db;
             }
@@ -71,7 +69,7 @@ namespace RiasBot.Modules.Administration.Services
                             await _service.MuteUser(Context.Guild, (IGuildUser) Context.User, user, Context.Channel,
                                 untilTime.Timer, reason).ConfigureAwait(false);
                         else
-                            await Context.Channel.SendErrorEmbed($"The timer cannot be 0!").ConfigureAwait(false);
+                            await Context.Channel.SendErrorEmbed("The timer cannot be 0!").ConfigureAwait(false);
                     }
                     else
                     {
