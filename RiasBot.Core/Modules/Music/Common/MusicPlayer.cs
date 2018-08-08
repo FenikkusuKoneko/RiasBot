@@ -1,10 +1,6 @@
 ﻿using Discord;
-using Discord.Addons.Interactive;
 using Discord.Audio;
-using Discord.Commands;
-using Discord.WebSocket;
 using Google.Apis.YouTube.v3;
-using Google.Apis.YouTube.v3.Data;
 using RiasBot.Extensions;
 using RiasBot.Modules.Music.Services;
 using System;
@@ -12,7 +8,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,157 +15,145 @@ namespace RiasBot.Modules.Music.Common
 {
     public class MusicPlayer
     {
-        public DiscordShardedClient _client;
-        public SongProcessing _sp;
-        public MusicService _ms;
-        public MusicPlayer(DiscordShardedClient client, MusicService ms)
+        private readonly SongProcessing _sp;
+        private readonly MusicService _ms;
+        public MusicPlayer(MusicService ms)
         {
-            _client = client;
             _sp = new SongProcessing(this);
             _ms = ms;
         }
 
-        public IAudioClient audioClient;
-        public bool Paused => pauseTaskSource != null;
-        public TaskCompletionSource<bool> pauseTaskSource { get; set; } = null;
-        public event Action<MusicPlayer, bool> OnPauseChanged;
+        private IAudioClient _audioClient;
+        public bool Paused => PauseTaskSource != null;
+        private TaskCompletionSource<bool> PauseTaskSource { get; set; }
+        //private event Action<MusicPlayer, bool> OnPauseChanged;
 
-        public SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        private Process _p;
+        private Stream _outStream;
+        private AudioOutStream _audioStream;
+        private CancellationTokenSource _tokenSource;
+        private CancellationToken _token;
+        public IMessageChannel Channel;
+        private IGuild _guild;
 
-        public Process p;
-        public Stream _outStream;
-        public AudioOutStream audioStream;
-        public CancellationTokenSource tokenSource;
-        public CancellationToken token;
-        public IMessageChannel _channel;
-        public IGuild _guild;
+        public readonly List<Song> Queue = new List<Song>();
+        
+        private float _volume = 1.0f;
+        private bool _isRunning;
+        private bool _repeat;     //repeat the current song
+        private bool _isPaused;
+        private bool _isConnected;
+        public bool Wait;     //for not spamming
+        public bool IsDownloading; //downloading the next song
+        public bool RegisteringPlaylist;
+        public bool Destroyed;
+        
+        private Stopwatch _timer;
+        public Timer Timeout;
+        public YouTubeService YouTubeService;
 
-        public List<Song> Queue = new List<Song>();
-
-        public int position;
-        public float volume = 1.0f;
-        public bool isRunning;
-        public bool waited;     //for not spamming
-        public bool isDownloading; //downloading the next song
-        public bool repeat;     //repeat the current song
-        public bool isPaused;
-        public bool registeringPlaylist;
-        public bool destroyed;
-        public Stopwatch timer;
-
-        //Patreon features
-        public bool volumeFeature;
-        public int queueLimit = 50; //default
-        public TimeSpan durationLimit = new TimeSpan(2, 5, 0); // I'll make a little exception of 5 minutes
+        public TimeSpan DurationLimit = new TimeSpan(2, 5, 0); // I'll make a little exception of 5 minutes
 
         public class Song
         {
-            public string title { get; set; }
-            public string url { get; set; }
-            public string channel { get; set; }
-            public TimeSpan duration { get; set; }
-            public string thumbnail { get; set; }
-            public IGuildUser user { get; set; }
-            public string dlUrl { get; set; }
+            public string Title { get; set; }
+            public string Id { get; set; }
+            public string Url { get; set; }
+            public string Channel { get; set; }
+            public TimeSpan Duration { get; set; }
+            public string Thumbnail { get; set; }
+            public IGuildUser User { get; set; }
+            public string DlUrl { get; set; }
         }
 
         public async Task JoinAudio(IGuild guild, IMessageChannel channel, IVoiceChannel target)
         {
-            try
+            if (_audioClient != null)
             {
-                await semaphoreSlim.WaitAsync();
-                if (audioClient != null)
-                {
-                    return;
-                }
-
-                if (target.Guild.Id != guild.Id)
-                {
-                    return;
-                }
-
-                audioClient = await target.ConnectAsync().ConfigureAwait(false);
-                _channel = channel;
-                _guild = guild;
-                await _channel.SendConfirmationEmbed($"Joining to {Format.Bold(target.Name)}!");
+                return;
             }
-            finally
+
+            if (target.Guild.Id != guild.Id)
             {
-                semaphoreSlim.Release();
+                return;
+            }
+
+            if (!_isConnected)
+            {
+                _audioClient = await target.ConnectAsync().ConfigureAwait(false);
+                Channel = channel;
+                _guild = guild;
+                await Channel.SendConfirmationEmbed($"Joining to {Format.Bold(target.Name)}!");
+                _isConnected = true;
             }
         }
 
-        public async Task Play(string title, string url, string channel, TimeSpan duration, string thumbnail, IGuildUser user)
+        public async Task Play(string title, string id, string url, string channel, TimeSpan duration, string thumbnail, IGuildUser user)
         {
             try
             {
-                if (registeringPlaylist)
+                if (RegisteringPlaylist)
                 {
-                    await _channel.SendErrorEmbed("I still adding the songs to the playlist. Please wait!");
+                    await Channel.SendErrorEmbed("I still add the songs to the playlist. Please wait!");
                     return;
                 }
-                if (waited)
+                if (Wait)
                     return;
 
-                waited = true;
+                Wait = true;
                 var song = new Song
                 {
-                    title = title,
-                    url = url,
-                    channel = channel,
-                    duration = duration,
-                    thumbnail = thumbnail,
-                    user = user
+                    Title = title,
+                    Id = id,
+                    Url = url,
+                    Channel = channel,
+                    Duration = duration,
+                    Thumbnail = thumbnail,
+                    User = user
                 };
 
-                if (duration <= durationLimit)
+                if (duration <= DurationLimit)
                 {
-                    if (!isRunning)
+                    if (!_isRunning)
                     {
-                        isRunning = true;
                         await TogglePause(false, false).ConfigureAwait(false);
                         Queue.Add(song);
-                        await UpdateQueue(position).ConfigureAwait(false);
+                        if (_repeat)
+                            await UpdateQueue(1).ConfigureAwait(false);
+                        else
+                            await UpdateQueue(0).ConfigureAwait(false);
                     }
                     else
                     {
-                        if (Queue.Count < queueLimit)
+                        var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+                        var eta = Queue[0].Duration;
+                        eta = eta.Subtract(_timer.Elapsed);
+
+                        for (var i = 1; i < Queue.Count; i++)
                         {
-                            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-                            var eta = Queue[position].duration;
-                            eta = eta.Subtract(timer.Elapsed);
-
-                            for (var i = position + 1; i < Queue.Count; i++)
-                            {
-                                var songQueue = Queue[i];
-                                eta = eta.Add(songQueue.duration);
-                            }
-                            var timeETA = GetTimeString(eta);
-
-                            Queue.Add(song);
-                            embed.WithAuthor("Added to queue", song.user.GetAvatarUrl() ?? song.user.DefaultAvatarUrl());
-                            embed.WithDescription($"[{song.title}]({song.url})");
-                            embed.AddField("Channel", song.channel, true).AddField("Length", song.duration, true);
-                            embed.AddField("ETA", timeETA, true).AddField("Position", Queue.Count, true);
-                            embed.WithThumbnailUrl(song.thumbnail);
-
-                            await _channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-                            isDownloading = true;
-                            await Task.Factory.StartNew(() => _sp.DownloadNextSong());
+                            eta = eta.Add(Queue[i].Duration);
                         }
-                        else
-                        {
-                            await _channel.SendErrorEmbed($"The current playlist has {queueLimit} songs. Clear the playlist if you want to add more. " +
-                                $"The owner of this server can support on Patreon to raise the limit. More details [here].").ConfigureAwait(false);
-                        }
-                        waited = false;
+                        var timeEta = GetTimeString(eta);
+
+                        Queue.Add(song);
+                        embed.WithAuthor("Added to queue", song.User.GetAvatarUrl() ?? song.User.DefaultAvatarUrl());
+                        embed.WithDescription($"[{song.Title}]({song.Url})");
+                        embed.AddField("Channel", song.Channel, true).AddField("Length", song.Duration, true);
+                        embed.AddField("ETA", timeEta, true).AddField("Position", Queue.Count, true);
+                        embed.WithThumbnailUrl(song.Thumbnail);
+
+                        await Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                        IsDownloading = true;
+                        await Task.Factory.StartNew(() => _sp.DownloadNextSong());
+                        
+                        Wait = false;
                     }
                 }
                 else
                 {
-                    await _channel.SendErrorEmbed($"I can't play songs longer than {durationLimit.Hours} hours. " +
-                        $"The owner of this server can support on Patreon to raise the limit. More details [here].");
-                    waited = false;
+                    await Channel.SendErrorEmbed($"I can't play songs longer than {DurationLimit.Hours} hours. " +
+                        "The owner of this server can support on Patreon to raise the limit. More details [here].");
+                    Wait = false;
                 }
             }
             catch
@@ -179,399 +162,367 @@ namespace RiasBot.Modules.Music.Common
             }
         }
 
-        public async Task Playlist(IGuildUser user, YouTubeService youtubeService, VideosResource.ListRequest videoListRequest, PlaylistItem playlistItem, int index)
+        public async Task Playlist(string title, string id, string url, string channel, string thumbnail, IGuildUser user, int index)
         {
-            try
+            var song = new Song()
             {
-                await semaphoreSlim.WaitAsync();
-                position = index;
-
-                videoListRequest.Id = playlistItem.Snippet.ResourceId.VideoId;
-                var videoListResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
-
-                var videoListRequestSnippet = youtubeService.Videos.List("snippet");
-                videoListRequestSnippet.Id = playlistItem.Snippet.ResourceId.VideoId;
-                var videoListResponseSnippet = await videoListRequestSnippet.ExecuteAsync().ConfigureAwait(false);
-
-                var title = playlistItem.Snippet.Title;
-                var url = "https://youtu.be/" + playlistItem.Snippet.ResourceId.VideoId;
-                var channel = videoListResponseSnippet.Items.FirstOrDefault().Snippet.ChannelTitle;
-                var duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items.FirstOrDefault().ContentDetails.Duration);
-                var thumbnail = playlistItem.Snippet.Thumbnails.High.Url;
-
-                if (title is null || url is null || duration == new TimeSpan(0, 0, 0) || thumbnail is null)
-                    return;
-
-                var song = new Song()
+                Title = title,
+                Id = id,
+                Url = url,
+                Channel = channel,
+                Duration = TimeSpan.Zero,
+                Thumbnail = thumbnail,
+                User = user,
+                DlUrl = null
+            };
+            if (!RegisteringPlaylist)
+            {
+                if (index > -1 && (index - 1) < Queue.Count)
                 {
-                    title = title,
-                    url = url,
-                    channel = channel,
-                    duration = duration,
-                    thumbnail = thumbnail,
-                    user = user,
-                    dlUrl = null
-                };
-                isRunning = true;
-                Queue.Add(song);
-                if (!registeringPlaylist)
-                {
-                    if (index > -1 && index < Queue.Count)
+                    if (!_isRunning)
                     {
-                        await Task.Factory.StartNew(() => UpdateQueue(index));
-                        registeringPlaylist = true;
+                        Queue.Insert(0, song);
+                        await Task.Factory.StartNew(() => UpdateQueue(0));
+                        RegisteringPlaylist = true;
+                    }
+                    else
+                    {
+                        Queue.Add(song);
                     }
                 }
+                else
+                {
+                    Queue.Add(song);
+                }
             }
-            finally
+            else
             {
-                semaphoreSlim.Release();
+                Queue.Add(song);
             }
         }
 
-        public async Task PlayByIndex(int index)
+        public async Task LoadSongsLength(string ids, int startPosition, int endPosition)
         {
-            if (registeringPlaylist)
+            ids = ids.Remove(ids.Length - 1);
+            var videoListRequest = YouTubeService.Videos.List("contentDetails");
+            videoListRequest.Id = ids;
+            var videoListResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
+            
+            var index = 0;
+            for (var i = startPosition; i < endPosition; i++)
             {
-                await _channel.SendErrorEmbed("I still adding the songs to the playlist. Please wait!");
-                return;
+                Queue[i].Duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items[index].ContentDetails.Duration);
+                index++;
             }
-            if (!waited && !isDownloading)
+        }
+
+        public async Task SkipTo(int index)
+        {
+            if (!Wait && !IsDownloading)
             {
-                if (index < Queue.Count)
+                if (index > 0 && index < Queue.Count)
                 {
-                    await TogglePause(false, false).ConfigureAwait(false);
-                    Dispose();
-                    waited = true;
-                    isRunning = true;
+                    await Channel.SendConfirmationEmbed("Searching the song... Please wait!").ConfigureAwait(false);
+                    Wait = true;
+                    
                     await UpdateQueue(index).ConfigureAwait(false);
-                    position = index;
                     await Task.Factory.StartNew(() => _sp.DownloadNextSong());
                 }
                 else
                 {
-                    await _channel.SendErrorEmbed("The song couldn't be found!").ConfigureAwait(false);
+                    await Channel.SendErrorEmbed("I couldn't find the song").ConfigureAwait(false);
+                }
+            }
+        }
+        
+        public async Task SkipTo(string title)
+        {
+            if (!Wait && !IsDownloading)
+            {
+                await Channel.SendConfirmationEmbed("Searching the song... Please wait!").ConfigureAwait(false);
+                var titles = Queue.Where(x => x.Title.Contains(title, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                if (!titles.Any())
+                {
+                    await Channel.SendErrorEmbed("I couldn't find the song");
+                }
+                else
+                {
+                    var index = Queue.FindIndex(x => x.Title.Equals(titles.FirstOrDefault()?.Title));
+                    if (index > 0 && index < Queue.Count)
+                    {
+                        Wait = true;
+                        await UpdateQueue(index).ConfigureAwait(false);
+                        await Task.Factory.StartNew(() => _sp.DownloadNextSong());
+                    }
+                    else
+                    {
+                        await Channel.SendErrorEmbed("I couldn't find the song").ConfigureAwait(false);
+                    }
                 }
             }
         }
 
-        public async Task UpdateQueue(int index)
+        private async Task UpdateQueue(int index)
         {
-            try
+            if (index < Queue.Count)
             {
-                await semaphoreSlim.WaitAsync();
                 var song = Queue[index];
-
-                while (song.duration > durationLimit)
+                if (index > 0)
+                    Queue.RemoveRange(0, index);
+                
+                while (song.Duration > DurationLimit)
                 {
-                    await _channel.SendErrorEmbed($"I can't play songs longer than {durationLimit} hours. Playing next song. " +
-                        $"The owner of this server can support on Patreon to raise the limit. More details [here].").ConfigureAwait(false);
+                    await Channel.SendErrorEmbed($"I can't play songs longer than {DurationLimit} hours. Playing next song. " +
+                                                  "The owner of this server can support on Patreon to raise the limit. More details [here].").ConfigureAwait(false);
                     song = Queue[++index];
                 }
-
+                
+                await TogglePause(false, false).ConfigureAwait(false);
+                Dispose();
+                _isRunning = false;
+                
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Now Playing");
-                embed.WithDescription($"[{song.title}]({song.url})");
-                embed.AddField("Channel", song.channel, true).AddField("Length", song.duration, true);
-                embed.AddField("Requested by", $"{song.user}");
-                embed.WithThumbnailUrl(song.thumbnail);
+                embed.WithDescription($"[{song.Title}]({song.Url})");
+                embed.AddField("Channel", song.Channel, true).AddField("Length", song.Duration, true);
+                embed.AddField("Requested by", $"{song.User}", true);
+                if (_repeat)
+                    embed.AddField("Repeat", "Enabled", true);
+                embed.WithThumbnailUrl(song.Thumbnail);
 
-                if (!String.IsNullOrEmpty(song.dlUrl))
-                    await Task.Factory.StartNew(() => PlayMusic(song.dlUrl, index, embed.Build())).ConfigureAwait(false);
+                if (!string.IsNullOrEmpty(song.DlUrl))
+                    await Task.Factory.StartNew(() => PlayMusic(song.DlUrl, embed.Build())).ConfigureAwait(false);
                 else
                 {
-                    var audioURL = await _sp.GetAudioURL(song.url).ConfigureAwait(false);
-                    await Task.Factory.StartNew(() => PlayMusic(audioURL, index, embed.Build())).ConfigureAwait(false);
-                    song.dlUrl = audioURL;
-                    Queue[index] = song;
+                    var audioUrl = await _sp.GetAudioUrl(song.Url).ConfigureAwait(false);
+                    await Task.Factory.StartNew(() => PlayMusic(audioUrl, embed.Build())).ConfigureAwait(false);
+                    Queue[0].DlUrl = audioUrl;
                 }
                 await Task.Factory.StartNew(() => _sp.DownloadNextSong());
-            }
-            catch
-            {
-                waited = false;
-            }
-            finally
-            {
-                semaphoreSlim.Release();
+                Wait = false;
             }
         }
 
-        public async Task PlayMusic(string path, int index, Embed embed)
+        private async Task PlayMusic(string path, Embed embed)
         {
-            if (p != null)
+            if (_isRunning) return;
+            _isRunning = true;
+            if (_audioStream != null)
             {
-                if (!p.HasExited)
-                {
-                    waited = false;
-                    return;
-                }
+                _tokenSource.Cancel();
+                _tokenSource.Dispose();
+                _tokenSource = new CancellationTokenSource();
+                _token = _tokenSource.Token;
             }
-                
-            try
+            else
             {
-                if (audioStream != null)
-                {
-                    tokenSource.Cancel();
-                    tokenSource.Dispose();
-                    tokenSource = new CancellationTokenSource();
-                    token = tokenSource.Token;
-                }
-                else
-                {
-                    tokenSource = new CancellationTokenSource();
-                    token = tokenSource.Token;
-                    audioStream = audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
-                }
-
-                if (timer != null)
-                    timer.Restart();
-                else
-                {
-                    timer = new Stopwatch();
-                    timer.Start();
-                }
-                var buffer = new byte[3840];
-                var bytesRead = 0;
-
-                if (!String.IsNullOrEmpty(path))
-                {
-                    p = _sp.CreateStream(path);
-                    _outStream = p.StandardOutput.BaseStream;
-
-                    await _channel.SendMessageAsync("", embed: embed).ConfigureAwait(false);
-                    if (!registeringPlaylist)
-                        waited = false;
-
-                    try
-                    {
-                        while ((bytesRead = await _outStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                        {
-                            try
-                            {
-                                AdjustVolume(buffer, volume);
-                                await audioStream.WriteAsync(buffer, 0, bytesRead, token).ConfigureAwait(false);
-                                await (pauseTaskSource?.Task ?? Task.CompletedTask);
-                            }
-                            catch
-                            {
-
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        try
-                        {
-                            await audioStream.FlushAsync().ConfigureAwait(false);
-                        }
-                        catch
-                        { }
-                        Dispose();
-                    }
-                }
-                else
-                {
-                    waited = false;
-                }
-                timer.Stop();
-                index += (repeat) ? 0 : 1;
-                position = index;
-
-                if (position < Queue.Count)
-                    await UpdateQueue(index).ConfigureAwait(false);
-                else
-                    isRunning = false;
+                _tokenSource = new CancellationTokenSource();
+                _token = _tokenSource.Token;
+                _audioStream = _audioClient.CreatePCMStream(AudioApplication.Music, bufferMillis: 1920);
             }
-            catch
+
+            if (_timer != null)
+                _timer.Restart();
+            else
             {
+                _timer = new Stopwatch();
+                _timer.Start();
+            }
+            var buffer = new byte[3840];
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                _p = _sp.CreateStream(path);
+                _outStream = _p.StandardOutput.BaseStream;
+
+                await Channel.SendMessageAsync(embed: embed).ConfigureAwait(false);
+                if (!RegisteringPlaylist)
+                    Wait = false;
+
+                int bytesRead;
+                while ((bytesRead = await _outStream.ReadAsync(buffer, 0, buffer.Length, _token)) > 0)
+                {
+                    AdjustVolume(buffer, _volume);
+                    await _audioStream.WriteAsync(buffer, 0, bytesRead, _token).ConfigureAwait(false);
+                    await (PauseTaskSource?.Task ?? Task.CompletedTask);
+                }
+                await _audioStream.FlushAsync(_token).ConfigureAwait(false);
                 Dispose();
             }
+
+            _timer.Stop();
+            _isRunning = false;
+            if (Queue.Count > 0)
+                await UpdateQueue((_repeat) ? 0 : 1).ConfigureAwait(false);
+                
         }
 
         public async Task NowPlaying()
         {
-            try
+            if (_isRunning)
             {
-                await semaphoreSlim.WaitAsync();
-                if (isRunning)
+                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+                string timerBar = null;
+                var timerPos = (_timer.ElapsedMilliseconds / Queue[0].Duration.TotalMilliseconds) * 30;
+                for (var i = 0; i < 30; i++)
                 {
-                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-                    string timerBar = null;
-                    var timerPos = (timer.ElapsedMilliseconds / Queue[position].duration.TotalMilliseconds) * 30;
-                    for (var i = 0; i < 30; i++)
+                    if (i == (int)timerPos)
+                        timerBar += "⚫";
+                    else
                     {
-                        if (i == (int)timerPos)
-                            timerBar += "⚫";
-                        else
-                        {
-                            timerBar += "▬";
-                        }
+                        timerBar += "▬";
                     }
-
-                    var song = Queue[position];
-
-                    embed.WithTitle("Now Playing");
-                    embed.WithDescription($"[{song.title}]({song.url})\n\n{Format.Code(timerBar)}\n" +
-                        $"{Format.Code($"{GetTimeString(timer.Elapsed)}/{GetTimeString(song.duration)}")}\n\n" +
-                        $"{Format.Bold("Requested by:")} {song.user}");
-                    embed.WithThumbnailUrl(song.thumbnail);
-
-                    await _channel.SendMessageAsync("", embed: embed.Build());
                 }
-                else
-                {
-                    await _channel.SendErrorEmbed("No song is running!");
-                }
+
+                var song = Queue[0];
+
+                string description = $"[{song.Title}]({song.Url})\n\n{Format.Code(timerBar)}\n" +
+                                     $"{Format.Code($"{GetTimeString(_timer.Elapsed)}/{GetTimeString(song.Duration)}")}\n\n";
+                if (_repeat)
+                    description += $"{Format.Bold("Repeat:")} Enabled\n";
+                description += $"{Format.Bold("Requested by:")} {song.User}";
+                embed.WithTitle("Now Playing");
+                embed.WithDescription(description);
+                                     
+                embed.WithThumbnailUrl(song.Thumbnail);
+
+                await Channel.SendMessageAsync("", embed: embed.Build());
             }
-            finally
+            else
             {
-                semaphoreSlim.Release();
+                await Channel.SendErrorEmbed("No song is running!");
             }
         }
 
         public async Task Skip()
         {
-            if (registeringPlaylist)
+            if (!IsDownloading)
             {
-                await _channel.SendErrorEmbed("I still adding the songs to the playlist. Please wait!");
-                return;
-            }
-            if (!waited && !isDownloading)
-            {
-                if (position + 1 < Queue.Count)
+                if (Queue.Count > 1)
                 {
-                    await TogglePause(false, false).ConfigureAwait(false);
-                    Dispose();
-                    waited = true;
+                    Wait = true;
 
-                    await _channel.SendConfirmationEmbed("Skipping current song!");
-                    await UpdateQueue(++position).ConfigureAwait(false);
+                    await UpdateQueue(1).ConfigureAwait(false);
                 }
                 else
                 {
-                    await _channel.SendErrorEmbed("No next song in the playlist!");
+                    await Channel.SendErrorEmbed("No next song in the playlist!");
                 }
             }
         }
 
         public async Task Replay()
         {
-            if (!waited)
+            if (!Wait)
             {
-                await TogglePause(false, false).ConfigureAwait(false);
-                Dispose();
-                waited = true;
+                Wait = true;
 
-                await _channel.SendConfirmationEmbed("Replay current song!");
-                await UpdateQueue(position).ConfigureAwait(false);
+                await Channel.SendConfirmationEmbed("Replay current song!");
+                await UpdateQueue(0).ConfigureAwait(false);
             }
         }
 
-        public async Task Playlist(ShardedCommandContext context, InteractiveService _is)
+        public async Task Playlist(int index)
         {
             var playlist = new List<string>();
             for (var i = 0; i < Queue.Count; i++)
             {
-                if (position == i)
-                    playlist.Add($"➡ #{i + 1} {Queue[i].title} {Format.Code($"({Queue[i].duration})")}");
-                else
-                    playlist.Add($"#{i + 1} {Queue[i].title} {Format.Code($"({ Queue[i].duration})")}");
-            }
-            var pager = new PaginatedMessage
-            {
-                Title = "Current playlist",
-                Color = new Color(RiasBot.GoodColor),
-                Pages = playlist,
-                Options = new PaginatedAppearanceOptions
+                if (!_isRunning)
                 {
-                    ItemsPerPage = 10,
-                    Timeout = TimeSpan.FromMinutes(1),
-                    DisplayInformationIcon = false,
-                    JumpDisplayOptions = JumpDisplayOptions.Never
+                    playlist.Add(i == 0 ? $"⏹ {Queue[i].Title} {Format.Code($"({Queue[i].Duration})")}\n" +
+                                          "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬" :
+                        $"#{i} {Queue[i].Title} {Format.Code($"({Queue[i].Duration})")}");
                 }
+                else if (_isPaused)
+                {
+                    playlist.Add(i == 0 ? $"⏸ {Queue[i].Title} {Format.Code($"({Queue[i].Duration})")}\n" +
+                                          "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬" :
+                        $"#{i} {Queue[i].Title} {Format.Code($"({Queue[i].Duration})")}");
+                }
+                else
+                {
+                    playlist.Add(i == 0 ? $"▶ {Queue[i].Title} {Format.Code($"({Queue[i].Duration})")}\n" +
+                                          "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬" :
+                        $"#{i} {Queue[i].Title} {Format.Code($"({Queue[i].Duration})")}");
+                }
+            }
+            
+            var eta = Queue[0].Duration;
+            eta = eta.Subtract(_timer.Elapsed);
 
-            };
-            await _is.SendPaginatedMessageAsync(context, pager);
+            for (var i = 1; i < Queue.Count; i++)
+            {
+                eta = eta.Add(Queue[i].Duration);
+            }
+            var timeEta = GetTimeString(eta);
+
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+            embed.WithTitle("Current playlist");
+            embed.WithDescription(string.Join("\n", playlist.Skip(index * 16).Take(16)));
+
+            var totalPages = (playlist.Count % 16 == 0) ? playlist.Count / 16 : playlist.Count / 16 + 1;
+            
+            embed.WithFooter($"Page {index + 1}/{totalPages} | Total length: {timeEta}");
+            
+            await Channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
         }
 
         public async Task Shuffle()
         {
-            if (registeringPlaylist)
+            if (RegisteringPlaylist)
             {
-                await _channel.SendErrorEmbed("I still adding the songs to the playlist. Please wait!");
+                await Channel.SendErrorEmbed("I still add the songs to the playlist. Please wait!");
                 return;
             }
-            await semaphoreSlim.WaitAsync();
             try
             {
-                var song = Queue[position];
+                var song = Queue[0];
                 Queue.Shuffle();
                 var pos = Queue.IndexOf(song);
-                position = pos;
+                var firstSong = Queue[0];
+                Queue[0] = song;
+                Queue[pos] = firstSong;
 
                 if (Queue.Count == 1)
-                    await _channel.SendErrorEmbed("The playlist has only one song!");
+                    await Channel.SendErrorEmbed("The playlist has only one song!");
                 else
-                    await _channel.SendConfirmationEmbed($"{Queue.Count} songs have been shuffled!");
+                    await Channel.SendConfirmationEmbed($"{Queue.Count - 1} songs have been shuffled!");
             }
             catch
             {
                 //ignored
             }
-            semaphoreSlim.Release();
         }
 
         public async Task Clear()
         {
-            if (registeringPlaylist)
+            if (RegisteringPlaylist)
             {
-                await _channel.SendErrorEmbed("I still adding the songs to the playlist. Please wait!");
+                await Channel.SendErrorEmbed("I still add the songs to the playlist. Please wait!");
                 return;
             }
-            await semaphoreSlim.WaitAsync();
             try
             {
-                //await TogglePause(false, false).ConfigureAwait(false);
-                Queue.Clear();
-                registeringPlaylist = false;
-                position = 0;
+                Queue.RemoveRange(1, Queue.Count - 1);
+                RegisteringPlaylist = false;
 
-                //tokenSource.Cancel();
-                //tokenSource.Dispose();
-                //tokenSource = new CancellationTokenSource();
-                //token = tokenSource.Token;
-                //
-                //Dispose();
-
-                await _channel.SendConfirmationEmbed("Current playlist cleared!").ConfigureAwait(false);
+                await Channel.SendConfirmationEmbed("Playlist cleared");
             }
             catch
             {
                 // Playlist already cleared or is not created yet
             }
-            //isRunning = false;
-            semaphoreSlim.Release();
         }
 
         public async Task Remove(int index)
         {
-            await semaphoreSlim.WaitAsync();
             var current = false;
             try
             {
                 var song = Queue[index];
-                if (index != position)
+                if (index > 0)
                 {
-                    if (index < position)
-                    {
-                        Queue.Remove(song);
-                        position--;
-                    }
-                    else
-                    {
-                        Queue.Remove(song);
-                    }
+                    Queue.RemoveAt(index);
                 }
                 else
                 {
@@ -579,46 +530,34 @@ namespace RiasBot.Modules.Music.Common
                 }
 
                 if (!current)
-                    await _channel.SendConfirmationEmbed($"{Format.Bold(song.title)} was removed from the playlist!").ConfigureAwait(false);
+                    await Channel.SendConfirmationEmbed($"{Format.Bold(song.Title)} was removed from the playlist!").ConfigureAwait(false);
                 else
-                    await _channel.SendErrorEmbed($"{Format.Bold(song.title)} couldn't be removed from the playlist because is running!");
+                    await Channel.SendErrorEmbed($"{Format.Bold(song.Title)} couldn't be removed from the playlist because is running!");
             }
             catch
             {
                 // Playlist already cleared or is not created yet
             }
-            semaphoreSlim.Release();
         }
 
         public async Task Remove(string title)
         {
-            await semaphoreSlim.WaitAsync();
             var current = false;
             try
             {
-                var msg = await _channel.SendConfirmationEmbed("Searching the song... Please wait!").ConfigureAwait(false);
-                var titles = Queue.Where(x => x.title.ToLowerInvariant().Contains(title.ToLowerInvariant()));
+                var msg = await Channel.SendConfirmationEmbed("Searching the song... Please wait!").ConfigureAwait(false);
+                var titles = Queue.Where(x => x.Title.ToLowerInvariant().Contains(title.ToLowerInvariant())).ToList();
                 await msg.DeleteAsync().ConfigureAwait(false);
-                if (titles.Count() <= 0)
+                if (!titles.Any())
                 {
-                    await _channel.SendErrorEmbed($"I couldn't find the song!");
-                    semaphoreSlim.Release();
+                    await Channel.SendErrorEmbed("I couldn't find the song!");
                     return;
                 }
 
-                var song = Queue.Find(x => x.title == titles.FirstOrDefault().title);
-                var index = Queue.IndexOf(song);
-                if (song.title != Queue[position].title)
+                var song = Queue.Find(x => x.Title == titles.FirstOrDefault()?.Title);
+                if (song.Title != Queue[0].Title)
                 {
-                    if (index < position)
-                    {
-                        Queue.Remove(song);
-                        position--;
-                    }
-                    else
-                    {
-                        Queue.Remove(song);
-                    }
+                    Queue.Remove(song);
                 }
                 else
                 {
@@ -626,66 +565,66 @@ namespace RiasBot.Modules.Music.Common
                 }
 
                 if (!current)
-                    await _channel.SendConfirmationEmbed($"{Format.Bold(song.title)} was removed from the playlist!").ConfigureAwait(false);
+                    await Channel.SendConfirmationEmbed($"{Format.Bold(song.Title)} was removed from the playlist!").ConfigureAwait(false);
                 else
-                    await _channel.SendErrorEmbed($"{Format.Bold(song.title)} couldn't be removed from the playlist because is running!");
+                    await Channel.SendErrorEmbed($"{Format.Bold(song.Title)} couldn't be removed from the playlist because is running!");
             }
             catch
             {
                 // Playlist already cleared or is not created yet
             }
-            semaphoreSlim.Release();
         }
 
         public async Task Destroy(string message, bool forced = false, bool noUsers = false)
         {
-            if (!waited || forced)
+            if (!Wait || forced)
             {
                 try
                 {
-                    tokenSource.Cancel();
-                    tokenSource.Dispose();
-                    tokenSource = new CancellationTokenSource();
-                    token = tokenSource.Token;
+                    _tokenSource.Cancel();
+                    _tokenSource.Dispose();
+                    _tokenSource = new CancellationTokenSource();
+                    _token = _tokenSource.Token;
                 }
-                catch { }
+                catch
+                {
+                    //ignored
+                }
                 Dispose();
-                if (audioClient != null)
-                    if (audioClient.ConnectionState == ConnectionState.Connected)
-                        await audioClient.StopAsync().ConfigureAwait(false);
+                if (_audioClient != null)
+                    if (_audioClient.ConnectionState == ConnectionState.Connected)
+                    {
+                        await _audioClient.StopAsync().ConfigureAwait(false);
+                        _isConnected = false;
+                    }
                 try
                 {
                     if (!forced)
-                        await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                        await Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
                     if (noUsers)
-                        await _channel.SendConfirmationEmbed(message).ConfigureAwait(false);
-                    destroyed = true;
+                        await Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                    Destroyed = true;
                 }
                 catch
-                { }
+                {
+                    //ignored
+                }
                 _ms.RemoveMusicPlayer(_guild);
             }
         }
 
         public async Task SetVolume(int volume)
         {
-            if (volumeFeature)
+            if (volume >= 0 && volume <= 100)
             {
-                if (volume >= 0 && volume <= 100)
-                {
-                    this.volume = ((float)volume) / 100;
-                    await _channel.SendConfirmationEmbed($"Volume set to {volume}%");
-                }
-            }
-            else
-            {
-                await _channel.SendErrorEmbed($"This feature is not available. The owner of this server can support on Patreon to unlock it. More details [here].");
+                _volume = ((float)volume) / 100;
+                await Channel.SendConfirmationEmbed($"Volume set to {volume}%");
             }
         }
 
-        private static unsafe byte[] AdjustVolume(byte[] audioSamples, float volume)
+        private unsafe void AdjustVolume(byte[] audioSamples, float volume)
         {
-            if (Math.Abs(volume - 1f) < 0.0001f) return audioSamples;
+            if (Math.Abs(volume - 1f) < 0.0001f) return;
 
             // 16-bit precision for the multiplication
             var volumeFixed = (int)Math.Round(volume * 65536d);
@@ -699,59 +638,57 @@ namespace RiasBot.Modules.Music.Common
                 for (var i = count; i != 0; i--, src++)
                     *src = (short)(((*src) * volumeFixed) >> 16);
             }
-
-            return audioSamples;
         }
 
         public async Task TogglePause(bool pause, bool message)
         {
-            if (waited)
+            if (Wait)
                 return;
 
-            if (pause != isPaused && isRunning)
+            if (pause != _isPaused && _isRunning)
             {
-                if (pauseTaskSource == null)
+                if (PauseTaskSource == null)
                 {
-                    pauseTaskSource = new TaskCompletionSource<bool>();
-                    timer.Stop();
-                    isPaused = pause;
+                    PauseTaskSource = new TaskCompletionSource<bool>();
+                    _timer.Stop();
+                    _isPaused = pause;
                 }
                 else
                 {
-                    pauseTaskSource.TrySetResult(true);
-                    pauseTaskSource = null;
-                    timer.Start();
-                    isPaused = pause;
+                    PauseTaskSource.TrySetResult(true);
+                    PauseTaskSource = null;
+                    _timer.Start();
+                    _isPaused = pause;
                 }
 
-                if (isPaused && message)
-                    await _channel.SendConfirmationEmbed("Music playback paused!");
+                if (_isPaused && message)
+                    await Channel.SendConfirmationEmbed("Music playback paused!");
                 else if (message)
-                    await _channel.SendConfirmationEmbed("Music playback resumed!");
+                    await Channel.SendConfirmationEmbed("Music playback resumed!");
 
-                OnPauseChanged?.Invoke(this, pauseTaskSource != null);
+                //OnPauseChanged?.Invoke(this, PauseTaskSource != null);
             }
         }
 
         public async Task ToggleRepeat()
         {
-            if (repeat)
+            if (_repeat)
             {
-                repeat = false;
-                await _channel.SendConfirmationEmbed("Repeating the current song disabled!");
+                _repeat = false;
+                await Channel.SendConfirmationEmbed("Repeating the current song disabled!");
             }
             else
             {
-                repeat = true;
-                await _channel.SendConfirmationEmbed("Repeating the current song enabled!");
+                _repeat = true;
+                await Channel.SendConfirmationEmbed("Repeating the current song enabled!");
             }
         }
 
-        public void Dispose()
+        private void Dispose()
         {
             try
             {
-                p.StandardOutput.Dispose();
+                _p.StandardOutput.Dispose();
             }
             catch
             {
@@ -759,18 +696,17 @@ namespace RiasBot.Modules.Music.Common
             }
             try
             {
-                if (!p.HasExited)
-                    p.Kill();
+                if (!_p.HasExited)
+                    _p.Kill();
             }
             catch
             {
                 //ignored
             }
-            if (_outStream != null)
-                _outStream.Dispose();
+            _outStream?.Dispose();
         }
 
-        public static string GetTimeString(TimeSpan timeSpan)
+        private static string GetTimeString(TimeSpan timeSpan)
         {
             var hoursInt = timeSpan.Hours;
             var minutesInt = timeSpan.Minutes;

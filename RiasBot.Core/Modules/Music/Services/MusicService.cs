@@ -1,33 +1,28 @@
 ﻿using Discord;
-using Discord.Audio;
 using Discord.WebSocket;
-using Google.Apis.YouTube.v3;
-using Google.Apis.YouTube.v3.Data;
 using RiasBot.Modules.Music.Common;
 using RiasBot.Services;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using RiasBot.Extensions;
 
 namespace RiasBot.Modules.Music.Services
 {
     public class MusicService : IRService
     {
-        private readonly DiscordShardedClient _client;
         private readonly DbService _db;
+        private readonly IBotCredentials _creds;
 
-        public readonly ConcurrentDictionary<ulong, MusicPlayer> MPlayer = new ConcurrentDictionary<ulong, MusicPlayer>();
-
-        public MusicService(DiscordShardedClient client, DbService db)
+        public MusicService(DbService db, IBotCredentials creds)
         {
-            _client = client;
             _db = db;
+            _creds = creds;
         }
+        
+        public readonly ConcurrentDictionary<ulong, MusicPlayer> MPlayer = new ConcurrentDictionary<ulong, MusicPlayer>();
 
         public async Task CheckIfAlone(SocketUser user, SocketVoiceState stateOld, SocketVoiceState stateNew)
         {
@@ -35,23 +30,35 @@ namespace RiasBot.Modules.Music.Services
             {
                 if (user.IsBot)
                     return;
+                
+                var userG = (SocketGuildUser)user;
+                var mp = GetMusicPlayer(userG.Guild);
+
+                if (mp?.Timeout != null)
+                {
+                    await mp.TogglePause(false, true);
+                    mp.Timeout?.Dispose();
+                    mp.Timeout = null;
+                }
+
                 if (stateOld.VoiceChannel == null)
                     return;
                 if (!stateOld.VoiceChannel.Users.Contains(((SocketGuildUser)user).Guild.CurrentUser))
                     return;
-                if (stateOld.VoiceChannel == (stateNew.VoiceChannel ?? null))
+                if (stateOld.VoiceChannel == (stateNew.VoiceChannel))
                     return;
                 var users = stateOld.VoiceChannel.Users.Count(u => !u.IsBot);
+                
                 if (users < 1)
                 {
-                    var userG = (SocketGuildUser)user;
-                    var mp = GetMusicPlayer(userG.Guild);
-                    if (mp == null)
+                    if (mp != null)
                     {
-                        return;
+                        await mp.Channel.SendConfirmationEmbed("All users left the voice channel! The music player has been paused and I will leave in two minutes " +
+                                                               "if you don't join back!");
+                        await mp.TogglePause(true, false);
+                        mp.Timeout = new Timer(async _ => await mp.Destroy("I left the voice channel due to inactivity!", true, true), null,
+                            TimeSpan.FromMinutes(2), TimeSpan.Zero);
                     }
-                    MPlayer.TryGetValue(userG.Guild.Id, out var musicPlayer);
-                    await musicPlayer.Destroy("I left because everybody left the voice channel!", true, true);
                 }
             }
             catch
@@ -63,18 +70,9 @@ namespace RiasBot.Modules.Music.Services
 
         public MusicPlayer GetOrAddMusicPlayer(IGuild guild)
         {
-            var mp = new MusicPlayer(_client, this);
-            if (MPlayer.ContainsKey(guild.Id))
-            {
-                MPlayer.TryGetValue(guild.Id, out mp);
-                return mp;
-            }
-            else
-            {
-                MPlayer.TryAdd(guild.Id, mp);
-                UnlockFeatures(mp, -1);
-                return mp;
-            }
+            var mp = MPlayer.GetOrAdd(guild.Id, new MusicPlayer(this));
+            UnlockFeatures(mp, guild.OwnerId);
+            return mp;
         }
 
         public MusicPlayer GetMusicPlayer(IGuild guild)
@@ -87,35 +85,36 @@ namespace RiasBot.Modules.Music.Services
             return MPlayer.TryRemove(guild.Id, out var musicPlayer) ? musicPlayer : null;
         }
 
-        public void UnlockFeatures(MusicPlayer mp, int pledgeAmount)
+        public bool UnlockMusic(ulong guildOwnerId)
         {
-            if (pledgeAmount >= 5000)
-            {
-                mp.volumeFeature = true;
-            }
+            if (string.IsNullOrEmpty(_creds.PatreonAccessToken)) return true;    //self hosters can use the music module if they don't have a Patreon
 
-            if (pledgeAmount >= 10000)
+            if (guildOwnerId == RiasBot.KonekoId) return true;
+            
+            using (var db = _db.GetDbContext())
             {
-                mp.queueLimit = 100;
+                var patron = db.Patreon.FirstOrDefault(x => x.UserId == guildOwnerId);
+                if (patron != null)
+                {
+                    return patron.Reward >= 5000;
+                }
+                else
+                    return false;
             }
+        }
 
-            if (pledgeAmount >= 25000)
+        private void UnlockFeatures(MusicPlayer mp, ulong guildOwnerId)
+        {
+            if (guildOwnerId == RiasBot.KonekoId)
+                mp.DurationLimit = new TimeSpan(5, 5, 0);
+            using (var db = _db.GetDbContext())
             {
-                mp.queueLimit = 250;
-                mp.durationLimit = new TimeSpan(3, 5, 0); // I'll make a little exception of 5 minutes
-            }
-
-            if (pledgeAmount >= 50000)
-            {
-                mp.queueLimit = 500;
-                mp.durationLimit = new TimeSpan(4, 5, 0); // I'll make a little exception of 5 minutes
-            }
-
-            if (pledgeAmount == -1)
-            {
-                mp.volumeFeature = true;
-                mp.queueLimit = 500;
-                mp.durationLimit = new TimeSpan(4, 5, 0);
+                var pledgeAmount = 0;
+                var patron = db.Patreon.FirstOrDefault(x => x.UserId == guildOwnerId);
+                if (patron != null)
+                {
+                    pledgeAmount = patron.Reward;
+                }
             }
         }
     }

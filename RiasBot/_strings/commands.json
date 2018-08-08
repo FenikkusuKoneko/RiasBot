@@ -808,10 +808,9 @@
 
   "play": {
     "Command": "play",
-    "Description": "1. Play a song. Automatically search from YouTube using keywords or provide a link.\n2. Provide a youtube playlist link to create a playlist, it will add maximum 50 songs\n3. Play a song from the playlist by index.\nThe bot will auto-join to the voice channel.",
+    "Description": "1. Play a song. Automatically search from YouTube using keywords or provide a link.\n2. Provide a youtube playlist link to create a playlist.\nI will auto-join to the voice channel.",
     "Remarks": [
-      "[prefix]play EDM",
-      "[prefix]play 1"
+      "[prefix]play EDM"
     ]
   },
 
@@ -833,7 +832,7 @@
 
   "nowplaying": {
     "Command": "nowplaying np",
-    "Description": "Show the current played song",
+    "Description": "Show the current played song.",
     "Remarks": [
       "[prefix]np"
     ]
@@ -852,6 +851,14 @@
     "Description": "Skip the current song.",
     "Remarks": [
       "[prefix]skip"
+    ]
+  },
+
+  "skipto": {
+    "Command": "skipto",
+    "Description": "Skip to a song in the playlist.",
+    "Remarks": [
+      "[prefix]skipto 10"
     ]
   },
 

@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 using RiasBot.Services;
 
 namespace RiasBot.Modules.Music
@@ -31,23 +30,26 @@ namespace RiasBot.Modules.Music
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        [Priority(0)]
         public async Task Play([Remainder] string keywords)
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorEmbed("You are not in a voice channel");
                 return;
             }
 
             var botVoiceChannel = (await Context.Guild.GetCurrentUserAsync()).VoiceChannel;
             if (botVoiceChannel != null)
-                if (voiceChannel != botVoiceChannel)
+                if (voiceChannel.Id != botVoiceChannel.Id)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorEmbed("You are not in the same voice channel with me").ConfigureAwait(false);
                     return;
                 }
 
@@ -55,92 +57,66 @@ namespace RiasBot.Modules.Music
             var preconditions = socketGuildUser.GetPermissions(voiceChannel);
             if (!preconditions.Connect)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I don't have permission to connect in the channel {Format.Bold(voiceChannel.Name)}!");
+                await Context.Channel.SendErrorEmbed($"I don't have permission to connect in the channel {Format.Bold(voiceChannel.Name)}");
                 return;
             }
+            var mp = _service.GetOrAddMusicPlayer(Context.Guild);
             try
             {
-                var mp = _service.GetOrAddMusicPlayer(Context.Guild);
                 await mp.JoinAudio(Context.Guild, Context.Channel, voiceChannel).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return;
+            }
 
-                var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+            {
+                ApiKey = _creds.GoogleApiKey,
+                ApplicationName = "Rias Bot"
+            });
+            mp.YouTubeService = youtubeService;
+            if (Uri.IsWellFormedUriString(keywords, UriKind.Absolute))
+            {
+                var regex = new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]*)(?:.*list=|(?:.*/)?)([a-zA-Z0-9-_]*)");
+                var matches = regex.Match(keywords);
+                var videoId = matches.Groups[1].Value;
+                var listId = matches.Groups[2].Value;
+
+                if (!string.IsNullOrEmpty(listId))
                 {
-                    ApiKey = _creds.GoogleApiKey,
-                    ApplicationName = "Rias Bot"
-                });
-
-                if (Uri.IsWellFormedUriString(keywords, UriKind.Absolute))
-                {
-                    var regex = new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]*)(?:.*list=|(?:.*/)?)([a-zA-Z0-9-_]*)");
-                    var matches = regex.Match(keywords);
-                    var videoId = matches.Groups[1].Value;
-                    var listId = matches.Groups[2].Value;
-
-                    if (!String.IsNullOrEmpty(listId))
+                    if (videoId == "playlist")
                     {
-                        if (videoId == "playlist")
-                        {
-                            await PlayList(mp, youtubeService, listId, index: 0);
-                        }
-                        else
-                        {
-                            await PlayList(mp, youtubeService, listId, videoId);
-                        }
+                        await PlayList(mp, youtubeService, listId);
                     }
                     else
                     {
-                        await PlayVideoURL(mp, youtubeService, videoId);
+                        await PlayList(mp, youtubeService, listId, videoId);
                     }
                 }
                 else
                 {
-                    await PlayVideo(mp, youtubeService, keywords);
+                    await PlayVideoUrl(mp, youtubeService, videoId);
                 }
             }
-            catch
-            {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} something went wrong. I can't connect to the voice channel, speak or to see the voice channel.").ConfigureAwait(false);
-            }
-        }
-
-        [RiasCommand][@Alias]
-        [Description][@Remarks]
-        [RequireContext(ContextType.Guild)]
-        [Priority(1)]
-        public async Task Play(int index)
-        {
-            if (Context.Guild.Id != RiasBot.SupportServer)
-                return;
-            var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
-            if (voiceChannel is null)
-            {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
-                return;
-            }
-
-            var botVoiceChannel = (await Context.Guild.GetCurrentUserAsync()).VoiceChannel;
-            if (botVoiceChannel != null)
-                if (voiceChannel != botVoiceChannel)
-                {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
-                    return;
-                }
-
-            var mp = _service.GetMusicPlayer(Context.Guild);
-            if (mp != null)
-                await mp.PlayByIndex(index - 1);
             else
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
+            {
+                await PlayVideo(mp, youtubeService, keywords);
+            }
         }
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        [Priority(2)]
         public async Task Play()
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -168,8 +144,12 @@ namespace RiasBot.Modules.Music
         [RequireContext(ContextType.Guild)]
         public async Task Pause()
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -197,8 +177,12 @@ namespace RiasBot.Modules.Music
         [RequireContext(ContextType.Guild)]
         public async Task Resume()
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -226,8 +210,12 @@ namespace RiasBot.Modules.Music
         [RequireContext(ContextType.Guild)]
         public async Task NowPlaying()
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -255,8 +243,12 @@ namespace RiasBot.Modules.Music
         [RequireContext(ContextType.Guild)]
         public async Task Destroy()
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -284,8 +276,12 @@ namespace RiasBot.Modules.Music
         [RequireContext(ContextType.Guild)]
         public async Task Skip()
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -307,14 +303,86 @@ namespace RiasBot.Modules.Music
             else
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
+        
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireContext(ContextType.Guild)]
+        [Priority(1)]
+        public async Task SkipTo(int index)
+        {
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
+                return;
+            }
+            var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
+            if (voiceChannel is null)
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                return;
+            }
+
+            var botVoiceChannel = (await Context.Guild.GetCurrentUserAsync()).VoiceChannel;
+            if (botVoiceChannel != null)
+                if (voiceChannel != botVoiceChannel)
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    return;
+                }
+
+            var mp = _service.GetMusicPlayer(Context.Guild);
+            if (mp != null)
+                await mp.SkipTo(index);
+            else
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
+        }
+        
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireContext(ContextType.Guild)]
+        [Priority(0)]
+        public async Task SkipTo(string title)
+        {
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
+                return;
+            }
+            var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
+            if (voiceChannel is null)
+            {
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                return;
+            }
+
+            var botVoiceChannel = (await Context.Guild.GetCurrentUserAsync()).VoiceChannel;
+            if (botVoiceChannel != null)
+                if (voiceChannel != botVoiceChannel)
+                {
+                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    return;
+                }
+
+            var mp = _service.GetMusicPlayer(Context.Guild);
+            if (mp != null)
+                await mp.SkipTo(title);
+            else
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
+        }
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         public async Task Replay()
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -340,10 +408,14 @@ namespace RiasBot.Modules.Music
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Playlist(int currentPage = 1)
+        public async Task Playlist(int index = 1)
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -361,7 +433,7 @@ namespace RiasBot.Modules.Music
 
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Playlist((ShardedCommandContext)Context, _is).ConfigureAwait(false);
+                await mp.Playlist(index - 1).ConfigureAwait(false);
             else
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
@@ -371,8 +443,12 @@ namespace RiasBot.Modules.Music
         [RequireContext(ContextType.Guild)]
         public async Task Volume(int volume)
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -400,8 +476,12 @@ namespace RiasBot.Modules.Music
         [RequireContext(ContextType.Guild)]
         public async Task Shuffle()
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -429,8 +509,12 @@ namespace RiasBot.Modules.Music
         [RequireContext(ContextType.Guild)]
         public async Task Clear()
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -459,8 +543,12 @@ namespace RiasBot.Modules.Music
         [Priority(1)]
         public async Task Remove(int index)
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -489,8 +577,12 @@ namespace RiasBot.Modules.Music
         [Priority(0)]
         public async Task Remove([Remainder]string title)
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -518,8 +610,12 @@ namespace RiasBot.Modules.Music
         [RequireContext(ContextType.Guild)]
         public async Task Repeat()
         {
-            if (Context.Guild.Id != RiasBot.SupportServer)
+            if (!_service.UnlockMusic(Context.Guild.OwnerId))
+            {
+                await Context.Channel.SendErrorEmbed($"The Music module is for Patreon supporters only. You can support [here]({RiasBot.Patreon}) " +
+                                                     "to unlock this feature.");
                 return;
+            }
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
@@ -542,135 +638,106 @@ namespace RiasBot.Modules.Music
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
 
-        private async Task PlayList(MusicPlayer mp, YouTubeService youtubeService, string playlist, string videoId = null, int index = -1)
+        private async Task PlayList(MusicPlayer mp, YouTubeService youtubeService, string playlist, string videoId = null, int index = - 1)
         {
-            if (mp.waited)
+            if (mp.Wait)
                 return;
 
-            mp.waited = true;
-
-            string title = null;
-            string url = null;
-            string thumbnail = null;
-            var duration = new TimeSpan();
-            var user = (IGuildUser)Context.User;
-
-            await mp.Clear().ConfigureAwait(false);
+            mp.Wait = true;
 
             await Context.Channel.SendConfirmationEmbed("Adding songs to the playlist, please wait!").ConfigureAwait(false);
             var items = 0;
             var nextPageToken = "";
+            
             while (nextPageToken != null)
             {
                 var playlistItemsListRequest = youtubeService.PlaylistItems.List("snippet");
-                var videoListRequest = youtubeService.Videos.List("contentDetails");
                 playlistItemsListRequest.PlaylistId = playlist;
                 playlistItemsListRequest.MaxResults = 50;
                 playlistItemsListRequest.PageToken = nextPageToken;
 
+                var startPosition = mp.Queue.Count;
+                var ids = "";
                 try
                 {
                     var playlistItemsListResponse = await playlistItemsListRequest.ExecuteAsync().ConfigureAwait(false);
 
                     foreach (var playlistItem in playlistItemsListResponse.Items)
                     {
-                        if (items < mp.queueLimit)
+                        if (!string.IsNullOrEmpty(videoId))
                         {
-                            try
-                            {
-                                var id = playlistItem.Snippet.ResourceId.VideoId;
-                                if (id == videoId)
-                                    index = (int?)playlistItem.Snippet.Position ?? -1;
-
-                                videoListRequest.Id = playlistItem.Snippet.ResourceId.VideoId;
-                                var videoListResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
-                                title = playlistItem.Snippet.Title;
-                                url = "https://youtu.be/" + playlistItem.Snippet.ResourceId.VideoId;
-                                duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items.FirstOrDefault().ContentDetails.Duration);
-                                thumbnail = playlistItem.Snippet.Thumbnails.High.Url;
-
-                                if (title != null && url != null && duration != new TimeSpan(0, 0, 0))
-                                {
-                                    await mp.Playlist((IGuildUser)Context.User, youtubeService, videoListRequest, playlistItem, index);
-                                    if (mp.destroyed)
-                                        return;
-                                    items++;
-                                }
-                            }
-                            catch
-                            {
-
-                            }
+                            var id = playlistItem.Snippet.ResourceId.VideoId;
+                            if (id.Equals(videoId))
+                                if (playlistItem.Snippet.Position != null)
+                                    index = (int) playlistItem.Snippet.Position;
                         }
                         else
                         {
-                            break;
+                            index = 0;
+                        }
+                            
+                        var title = playlistItem.Snippet.Title;
+                        var itemVideoId = playlistItem.Snippet.ResourceId.VideoId;
+                        var url = "https://youtu.be/" + itemVideoId;
+                        var channel = playlistItem.Snippet.ChannelTitle;
+                        var thumbnail = playlistItem.Snippet.Thumbnails.High.Url;
+
+                        if (title != null)
+                        {
+                            await mp.Playlist(title, itemVideoId, url, channel, thumbnail, (IGuildUser)Context.User, index);
+                            ids += itemVideoId + ",";
+                            if (mp.Destroyed)
+                                return;
+                            items++;
                         }
                     }
+
+                    await mp.LoadSongsLength(ids, startPosition, mp.Queue.Count);
                     nextPageToken = playlistItemsListResponse.NextPageToken;
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed("Please provide a direct and unlisted or public YouTube playlist URL!");
-                    mp.waited = false;
+                    await Context.Channel.SendErrorEmbed("Something went wrong! Please check if the link is available or if the playlist is unlisted or public!");
+                    mp.RegisteringPlaylist = false;
+                    mp.Wait = false;
                     return;
                 }
             }
             await Context.Channel.SendConfirmationEmbed($"Added to playlist {items} songs").ConfigureAwait(false);
-            mp.registeringPlaylist = false;
-            if (index > -1)
-                mp.waited = false;
-            else
-                await Task.Factory.StartNew(() => mp.UpdateQueue(0));
+            mp.RegisteringPlaylist = false;
+            mp.Wait = false;
         }
 
-        private async Task PlayVideoURL(MusicPlayer mp, YouTubeService youtubeService, string videoId)
+        private async Task PlayVideoUrl(MusicPlayer mp, YouTubeService youtubeService, string videoId)
         {
-            string title = null;
-            string url = null;
-            string channel = null;
-            string thumbnail = null;
-            var duration = new TimeSpan();
             var user = (IGuildUser)Context.User;
 
-            var videoListRequestSnippet = youtubeService.Videos.List("snippet");
-            var videoListRequestContentDetails = youtubeService.Videos.List("contentDetails");
-            videoListRequestSnippet.Id = videoId;
-            videoListRequestContentDetails.Id = videoId;
+            var videoListRequest = youtubeService.Videos.List("snippet,contentDetails");
+            videoListRequest.Id = videoId;
 
-            try
+            var videoListResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
+
+            var url = "https://youtu.be/" + videoId;
+            var title = videoListResponse.Items.FirstOrDefault()?.Snippet.Title;
+            var channel = videoListResponse.Items.FirstOrDefault()?.Snippet.ChannelTitle;
+            var thumbnail = videoListResponse.Items.FirstOrDefault()?.Snippet.Thumbnails.High.Url;
+
+            var duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items.FirstOrDefault()?.ContentDetails.Duration);
+
+            if (title != null && thumbnail != null)
             {
-                var videoListResponseSnippet = await videoListRequestSnippet.ExecuteAsync().ConfigureAwait(false);
-                var videoListResponseContentDetails = await videoListRequestContentDetails.ExecuteAsync().ConfigureAwait(false);
-
-                url = "https://youtu.be/" + videoId;
-                title = videoListResponseSnippet.Items.FirstOrDefault().Snippet.Title;
-                channel = videoListResponseSnippet.Items.FirstOrDefault().Snippet.ChannelTitle;
-                thumbnail = videoListResponseSnippet.Items.FirstOrDefault().Snippet.Thumbnails.High.Url;
-
-                duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponseContentDetails.Items.FirstOrDefault().ContentDetails.Duration);
-
-                if (title != null && url != null && thumbnail != null)
+                if (duration == new TimeSpan(0, 0, 0))
                 {
-                    if (duration == new TimeSpan(0, 0, 0))
-                    {
-                        await Context.Channel.SendErrorEmbed("I can't play live YouTube videos");
-                        return;
-                    }
-                    else
-                    {
-                        await mp.Play(title, url, channel, duration, thumbnail, user).ConfigureAwait(false);
-                    }
+                    await Context.Channel.SendErrorEmbed("I can't play live YouTube videos");
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("Please provide a direct YouTube video URL!");
-                    return;
+                    await mp.Play(title, videoId, url, channel, duration, thumbnail, user).ConfigureAwait(false);
                 }
             }
-            catch
+            else
             {
-
+                await Context.Channel.SendErrorEmbed("Please provide a direct YouTube video URL!");
             }
         }
 
@@ -686,32 +753,49 @@ namespace RiasBot.Modules.Music
             var videoListRequest = youtubeService.Videos.List("contentDetails");
 
             var videosList = new List<VideoDetails>();
-            string description = null;
+            var videosIds = "";
+            var description = "";
             var index = 0;
             foreach (var searchResult in searchListResponse.Items)
             {
                 if (searchResult.Id.VideoId != null && index < 5)
                 {
-                    var videoDetails = new VideoDetails();
-                    videoDetails.url = "https://youtu.be/" + searchResult.Id.VideoId;
-                    videoDetails.title = searchResult.Snippet.Title;
-                    videoDetails.channel = searchResult.Snippet.ChannelTitle;
-                    videoDetails.thumbnail = searchResult.Snippet.Thumbnails.High.Url;
-
-                    videoListRequest.Id = searchResult.Id.VideoId;
-                    var videoResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
-                    videoDetails.duration = System.Xml.XmlConvert.ToTimeSpan(videoResponse.Items.FirstOrDefault().ContentDetails.Duration);
-
-                    if (videoDetails.duration != new TimeSpan(0, 0, 0))
+                    var videoDetails = new VideoDetails
                     {
-                        description += $"#{index+1} {videoDetails.title} {Format.Code($"({videoDetails.duration})")}\n";
-                        videosList.Add(videoDetails);
-                        index++;
-                    }
+                        Id = searchResult.Id.VideoId,
+                        Url = "https://youtu.be/" + searchResult.Id.VideoId,
+                        Title = searchResult.Snippet.Title,
+                        Channel = searchResult.Snippet.ChannelTitle,
+                        Thumbnail = searchResult.Snippet.Thumbnails.High.Url
+                    };
+
+                    videosIds += searchResult.Id.VideoId + ",";
+                    videosList.Add(videoDetails);
+                    index++;
+                }
+                else
+                {
+                    break;
                 }
             }
+
+            if (string.IsNullOrEmpty(videosIds))
+            {
+                await Context.Channel.SendErrorEmbed("I couldn't find anything!").ConfigureAwait(false);
+                return;
+            }
+            videosIds = videosIds.Remove(videosIds.Length - 1);
+            videoListRequest.Id = videosIds;
+            var videoResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
+            
+            for (var i = 0; i < videosList.Count; i++)
+            {
+                videosList[i].Duration = System.Xml.XmlConvert.ToTimeSpan(videoResponse.Items[i].ContentDetails.Duration);
+                description += $"#{i+1} {videosList[i].Title} {Format.Code($"({videosList[i].Duration})")}\n";
+            }
+            
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithTitle("Choose a song by typing the index. You have 30 seconds");
+            embed.WithTitle("Choose a song by typing the index. You have 1 minute");
             embed.WithDescription(description);
             var choose = await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
 
@@ -719,29 +803,27 @@ namespace RiasBot.Modules.Music
             var getUserInput = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromMinutes(1)).ConfigureAwait(false);
             if (getUserInput != null)
                 userInput = getUserInput.Content.Replace("#", "");
-            if (Int32.TryParse(userInput, out var input))
+            if (int.TryParse(userInput, out var input))
             {
                 input--;
                 if (input >= 0 && input < 5)
                 {
                     await choose.DeleteAsync().ConfigureAwait(false);
-                    if (videosList[input].title != null && videosList[input].url != null && videosList[input].thumbnail != null)
+                    if (videosList[input].Title != null && videosList[input].Url != null && videosList[input].Thumbnail != null)
                     {
-                        if (videosList[input].duration == new TimeSpan(0, 0, 0))
+                        if (videosList[input].Duration == new TimeSpan(0, 0, 0))
                         {
                             await Context.Channel.SendErrorEmbed("I can't play live YouTube videos");
-                            return;
                         }
                         else
                         {
-                            await mp.Play(videosList[input].title, videosList[input].url,
-                                videosList[input].channel, videosList[input].duration, videosList[input].thumbnail, user).ConfigureAwait(false);
+                            await mp.Play(videosList[input].Title, videosList[input].Id, videosList[input].Url,
+                                videosList[input].Channel, videosList[input].Duration, videosList[input].Thumbnail, user).ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("Please provide a direct YouTube video URL!");
-                        return;
+                        await Context.Channel.SendErrorEmbed("Please provide a direct YouTube video URL");
                     }
                 }
                 else
@@ -758,10 +840,11 @@ namespace RiasBot.Modules.Music
 
     public class VideoDetails
     {
-        public string title = null;
-        public string url = null;
-        public string channel = null;
-        public string thumbnail = null;
-        public TimeSpan duration = new TimeSpan();
+        public string Title;
+        public string Id;
+        public string Url;
+        public string Channel;
+        public string Thumbnail;
+        public TimeSpan Duration;
     }
 }

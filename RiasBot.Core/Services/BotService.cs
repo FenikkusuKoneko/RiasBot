@@ -45,6 +45,7 @@ namespace RiasBot.Services
             _discord.UserLeft += UserLeft;
             _discord.UserVoiceStateUpdated += _musicService.CheckIfAlone;
             _discord.ShardReady += ShardReady;
+            _discord.GuildUnavailable += GuildUnavailable;
 
             if (!String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
             {
@@ -176,6 +177,14 @@ namespace RiasBot.Services
                         }
                     }
                 }
+            }
+        }
+
+        private async Task GuildUnavailable(SocketGuild guild)
+        {
+            if (_musicService.MPlayer.TryGetValue(guild.Id, out var musicPlayer))
+            {
+                await musicPlayer.Destroy("", true, false);
             }
         }
 

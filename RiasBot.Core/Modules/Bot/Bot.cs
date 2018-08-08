@@ -2,19 +2,18 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.Rest;
-using Discord.Webhook;
 using Discord.WebSocket;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
 using RiasBot.Modules.Reactions.Services;
-using RiasBot.Modules.Searches.Services;
 using RiasBot.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RiasBot.Modules.Music.Services;
 
 namespace RiasBot.Modules.Bot
 {
@@ -30,9 +29,10 @@ namespace RiasBot.Modules.Bot
         private readonly InteractiveService _is;
         private readonly IBotCredentials _creds;
         private readonly ReactionsService _reactionsService;
+        private readonly MusicService _musicService;
 
         public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordShardedClient client, DiscordRestClient restClient,
-            BotService botService, InteractiveService interactiveService, IBotCredentials creds, ReactionsService reactionsService)
+            BotService botService, InteractiveService interactiveService, IBotCredentials creds, ReactionsService reactionsService, MusicService musicService)
         {
             _ch = ch;
             _service = service;
@@ -44,6 +44,7 @@ namespace RiasBot.Modules.Bot
             _is = interactiveService;
             _creds = creds;
             _reactionsService = reactionsService;
+            _musicService = musicService;
         }
 
         [RiasCommand][@Alias]
@@ -71,6 +72,12 @@ namespace RiasBot.Modules.Bot
         public async Task Update()
         {
             await Context.Channel.SendConfirmationEmbed("Shutting down...").ConfigureAwait(false);
+
+            foreach (var musicPlayer in _musicService.MPlayer)
+            {
+                await musicPlayer.Value.Destroy("", true, false);
+            }
+            
             await Context.Client.StopAsync().ConfigureAwait(false);
             Environment.Exit(0);
         }
