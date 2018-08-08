@@ -34,19 +34,32 @@ namespace RiasBot.Modules.Music.Services
                 var userG = (SocketGuildUser)user;
                 var mp = GetMusicPlayer(userG.Guild);
 
-                if (mp?.Timeout != null)
+                if (mp != null)
                 {
-                    await mp.TogglePause(false, true);
-                    mp.Timeout?.Dispose();
-                    mp.Timeout = null;
+                    if (stateNew.VoiceChannel != null)
+                    {
+                        if (stateNew.VoiceChannel.Id == mp.VoiceChannel.Id)
+                        {
+                            if (stateNew.VoiceChannel.Users.Contains(((SocketGuildUser) user).Guild.CurrentUser) && stateNew.VoiceChannel.Users.Count <= 2)
+                            {
+                                if (mp?.Timeout != null)
+                                {
+                                    await mp.TogglePause(false, true);
+                                    mp.Timeout?.Dispose();
+                                    mp.Timeout = null;
+                                }
+                            }
+                        }
+                    }
                 }
-
+                
                 if (stateOld.VoiceChannel == null)
                     return;
                 if (!stateOld.VoiceChannel.Users.Contains(((SocketGuildUser)user).Guild.CurrentUser))
                     return;
                 if (stateOld.VoiceChannel == (stateNew.VoiceChannel))
                     return;
+                
                 var users = stateOld.VoiceChannel.Users.Count(u => !u.IsBot);
                 
                 if (users < 1)
@@ -61,8 +74,9 @@ namespace RiasBot.Modules.Music.Services
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 //ignored
             }
 

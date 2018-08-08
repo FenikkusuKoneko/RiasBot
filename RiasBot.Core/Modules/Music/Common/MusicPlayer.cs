@@ -24,6 +24,7 @@ namespace RiasBot.Modules.Music.Common
         }
 
         private IAudioClient _audioClient;
+        public IVoiceChannel VoiceChannel;
         public bool Paused => PauseTaskSource != null;
         private TaskCompletionSource<bool> PauseTaskSource { get; set; }
         //private event Action<MusicPlayer, bool> OnPauseChanged;
@@ -80,6 +81,7 @@ namespace RiasBot.Modules.Music.Common
 
             if (!_isConnected)
             {
+                VoiceChannel = target;
                 _audioClient = await target.ConnectAsync().ConfigureAwait(false);
                 Channel = channel;
                 _guild = guild;
