@@ -222,6 +222,9 @@ namespace RiasBot.Modules.Music.Common
                 if (index > 0 && index < Queue.Count)
                 {
                     await Channel.SendConfirmationEmbed("Searching the song... Please wait!").ConfigureAwait(false);
+                    await TogglePause(false, false).ConfigureAwait(false);
+                    Dispose();
+                    _isRunning = false;
                     Wait = true;
                     
                     await UpdateQueue(index).ConfigureAwait(false);
@@ -249,6 +252,9 @@ namespace RiasBot.Modules.Music.Common
                     var index = Queue.FindIndex(x => x.Title.Equals(titles.FirstOrDefault()?.Title));
                     if (index > 0 && index < Queue.Count)
                     {
+                        await TogglePause(false, false).ConfigureAwait(false);
+                        Dispose();
+                        _isRunning = false;
                         Wait = true;
                         await UpdateQueue(index).ConfigureAwait(false);
                         await Task.Factory.StartNew(() => _sp.DownloadNextSong());
@@ -274,10 +280,6 @@ namespace RiasBot.Modules.Music.Common
                     await Channel.SendErrorEmbed($"I can't play songs longer than {DurationLimit} hours. Playing next song.").ConfigureAwait(false);
                     song = Queue[++index];
                 }
-                
-                await TogglePause(false, false).ConfigureAwait(false);
-                Dispose();
-                _isRunning = false;
                 
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Now Playing");
@@ -398,6 +400,9 @@ namespace RiasBot.Modules.Music.Common
             {
                 if (Queue.Count > 1)
                 {
+                    await TogglePause(false, false).ConfigureAwait(false);
+                    Dispose();
+                    _isRunning = false;
                     Wait = true;
 
                     await UpdateQueue(1).ConfigureAwait(false);
