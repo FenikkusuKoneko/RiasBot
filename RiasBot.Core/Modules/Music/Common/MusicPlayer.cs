@@ -6,6 +6,7 @@ using RiasBot.Modules.Music.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -724,11 +725,11 @@ namespace RiasBot.Modules.Music.Common
 
         private static string GetTimeString(TimeSpan timeSpan)
         {
-            var hoursInt = timeSpan.Hours;
+            var hoursInt = timeSpan.TotalHours;
             var minutesInt = timeSpan.Minutes;
             var secondsInt = timeSpan.Seconds;
 
-            var hours = hoursInt.ToString();
+            var hours = hoursInt.ToString(CultureInfo.InvariantCulture);
             var minutes = minutesInt.ToString();
             var seconds = secondsInt.ToString();
 
