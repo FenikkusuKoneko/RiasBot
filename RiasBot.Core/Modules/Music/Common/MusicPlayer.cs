@@ -725,11 +725,11 @@ namespace RiasBot.Modules.Music.Common
 
         private static string GetTimeString(TimeSpan timeSpan)
         {
-            var hoursInt = timeSpan.TotalHours;
+            var hoursInt = (int) timeSpan.TotalHours;
             var minutesInt = timeSpan.Minutes;
             var secondsInt = timeSpan.Seconds;
 
-            var hours = hoursInt.ToString(CultureInfo.InvariantCulture);
+            var hours = hoursInt.ToString();
             var minutes = minutesInt.ToString();
             var seconds = secondsInt.ToString();
 
