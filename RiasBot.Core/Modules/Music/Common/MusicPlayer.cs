@@ -208,13 +208,24 @@ namespace RiasBot.Modules.Music.Common
             var videoListRequest = YouTubeService.Videos.List("contentDetails");
             videoListRequest.Id = ids;
             var videoListResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
+
+            var itemsToRemove = new List<int>();
             
             var index = 0;
             for (var i = startPosition; i < endPosition; i++)
             {
-                Queue[i].Duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items[index].ContentDetails.Duration);
-                index++;
+                if (Queue[i].Id.Equals(videoListResponse.Items[index].Id))
+                {
+                    Queue[i].Duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items[index].ContentDetails.Duration);
+                    index++;
+                }
+                else
+                {
+                    itemsToRemove.Add(i);
+                }
             }
+            foreach (var item in itemsToRemove)
+                Queue.RemoveAt(item);
         }
 
         public async Task SkipTo(int index)

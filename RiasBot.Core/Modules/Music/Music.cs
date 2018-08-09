@@ -342,7 +342,7 @@ namespace RiasBot.Modules.Music
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(0)]
-        public async Task SkipTo(string title)
+        public async Task SkipTo([Remainder]string title)
         {
             if (!_service.UnlockMusic(Context.Guild.OwnerId))
             {
@@ -675,21 +675,26 @@ namespace RiasBot.Modules.Music
                         {
                             index = 0;
                         }
-                            
+                        
                         var title = playlistItem.Snippet.Title;
+
+                        if (title.Equals("Deleted video"))
+                            continue;
+                        
                         var itemVideoId = playlistItem.Snippet.ResourceId.VideoId;
                         var url = "https://youtu.be/" + itemVideoId;
                         var channel = playlistItem.Snippet.ChannelTitle;
-                        var thumbnail = playlistItem.Snippet.Thumbnails.High.Url;
+                        var thumbnail = playlistItem.Snippet.Thumbnails?.Maxres?.Url;
+                        if (string.IsNullOrEmpty(thumbnail))
+                            thumbnail = playlistItem.Snippet.Thumbnails?.Standard?.Url;
+                        if (string.IsNullOrEmpty(thumbnail))
+                            thumbnail = playlistItem.Snippet.Thumbnails?.Default__?.Url;
 
-                        if (title != null)
-                        {
-                            await mp.Playlist(title, itemVideoId, url, channel, thumbnail, (IGuildUser)Context.User, index);
-                            ids += itemVideoId + ",";
-                            if (mp.Destroyed)
-                                return;
-                            items++;
-                        }
+                        await mp.Playlist(title, itemVideoId, url, channel, thumbnail, (IGuildUser)Context.User, index);
+                        ids += itemVideoId + ",";
+                        if (mp.Destroyed)
+                            return;
+                        items++;
                     }
 
                     await mp.LoadSongsLength(ids, startPosition, mp.Queue.Count);
@@ -697,7 +702,7 @@ namespace RiasBot.Modules.Music
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed("Something went wrong! Please check if the link is available or if the playlist is unlisted or public!");
+                    await Context.Channel.SendErrorEmbed("Something went wrong! Please check if the link of the playlist is available or the link of the video is available!");
                     mp.RegisteringPlaylist = false;
                     mp.Wait = false;
                     return;
@@ -719,14 +724,24 @@ namespace RiasBot.Modules.Music
 
             var url = "https://youtu.be/" + videoId;
             var title = videoListResponse.Items.FirstOrDefault()?.Snippet.Title;
+
+            if (!string.IsNullOrEmpty(title))
+                if (title.Equals("Deleted video"))
+                {
+                    await Context.Channel.SendErrorEmbed("The video is not available!");
+                }
+            
             var channel = videoListResponse.Items.FirstOrDefault()?.Snippet.ChannelTitle;
             var thumbnail = videoListResponse.Items.FirstOrDefault()?.Snippet.Thumbnails.High.Url;
 
-            var duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items.FirstOrDefault()?.ContentDetails.Duration);
+            var duration = TimeSpan.Zero;
+            var durationString = videoListResponse.Items.FirstOrDefault()?.ContentDetails.Duration;
+            if (!string.IsNullOrEmpty(durationString))
+                duration = System.Xml.XmlConvert.ToTimeSpan(durationString);
 
             if (title != null && thumbnail != null)
             {
-                if (duration == new TimeSpan(0, 0, 0))
+                if (duration == TimeSpan.Zero)
                 {
                     await Context.Channel.SendErrorEmbed("I can't play live YouTube videos");
                 }
@@ -737,7 +752,7 @@ namespace RiasBot.Modules.Music
             }
             else
             {
-                await Context.Channel.SendErrorEmbed("Please provide a direct YouTube video URL!");
+                await Context.Channel.SendErrorEmbed("Please provide a direct and valid YouTube video URL!");
             }
         }
 
