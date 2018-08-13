@@ -281,7 +281,6 @@ namespace RiasBot.Modules.Gambling
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
-            [RequireOwner]
             public async Task Leaderboard(int page = 1)
             {
                 if (page < 1)
