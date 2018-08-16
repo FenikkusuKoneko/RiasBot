@@ -367,10 +367,15 @@ namespace RiasBot.Modules.Administration.Services
         {
             var permissions = new OverwritePermissions().Modify(addReactions: PermValue.Deny, sendMessages: PermValue.Deny);
 
-            var channels = await guild.GetTextChannelsAsync();
-            foreach (var c in channels)
+            var textChannels = await guild.GetTextChannelsAsync();
+            foreach (var c in textChannels)
             {
                 await c.AddPermissionOverwriteAsync(role, permissions).ConfigureAwait(false);
+            }
+            var categories = await guild.GetCategoriesAsync();
+            foreach (var cat in categories)
+            {
+                await cat.AddPermissionOverwriteAsync(role, permissions).ConfigureAwait(false);
             }
         }
     }

@@ -29,7 +29,7 @@ namespace RiasBot.Modules.Administration
             [RequireUserPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireBotPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireContext(ContextType.Guild)]
-            [Priority(0)]
+            [Priority(1)]
             public async Task Mute(IGuildUser user, [Remainder]string reason = null)
             {
                 if (user.Id == Context.User.Id)
@@ -56,7 +56,7 @@ namespace RiasBot.Modules.Administration
             [RequireUserPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireBotPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireContext(ContextType.Guild)]
-            [Priority(1)]
+            [Priority(0)]
             public async Task Mute(UntilTime untilTime, IGuildUser user, [Remainder]string reason = null)
             {
                 if (user.Id == Context.User.Id)
