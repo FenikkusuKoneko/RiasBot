@@ -41,7 +41,8 @@ namespace RiasBot
                 {
                     LogLevel = LogSeverity.Info,
                     MessageCacheSize = 500,
-                    AlwaysDownloadUsers = true
+                    AlwaysDownloadUsers = true,
+                    TotalShards = 3
                 }))
                 .AddSingleton(new DiscordRestClient())
                 .AddSingleton(new CommandService(new CommandServiceConfig     // Add the command service to the service provider
