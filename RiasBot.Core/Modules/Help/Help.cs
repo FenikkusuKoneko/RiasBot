@@ -33,6 +33,7 @@ namespace RiasBot.Modules.Help
             embed.WithDescription(_creds.HelpDM.Replace("%invite%", RiasBot.Invite).Replace("%creatorServer%", RiasBot.CreatorServer));
             try
             {
+                await Context.Message.AddReactionAsync(new Emoji("✅")).ConfigureAwait(false);
                 await Context.Message.Author.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
             catch
@@ -267,7 +268,15 @@ namespace RiasBot.Modules.Help
                 {
                     embed.WithFooter($"For a specific command info type {_ch.Prefix + "h <command>"}");
                     embed.WithCurrentTimestamp();
-                    await Context.User.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    try
+                    {
+                        await Context.User.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't send you the help DM. Please verify if you disabled receiving DM from this server.");
+                        return;
+                    }
                     embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 }
             }
@@ -275,6 +284,7 @@ namespace RiasBot.Modules.Help
             embed.WithCurrentTimestamp();
             try
             {
+                await Context.Message.AddReactionAsync(new Emoji("✅")).ConfigureAwait(false);
                 await Context.User.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
             catch
