@@ -37,7 +37,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                 {
-                    await _service.KickUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason).ConfigureAwait(false);
+                    await _service.KickUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, Context.Message, reason).ConfigureAwait(false);
                 }
                 else
                 {
@@ -63,7 +63,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                 {
-                    await _service.BanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
+                    await _service.BanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, Context.Message, reason);
                 }
                 else
                 {
@@ -89,7 +89,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                 {
-                    await _service.SoftbanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
+                    await _service.SoftbanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, Context.Message, reason);
                 }
                 else
                 {
@@ -115,7 +115,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                 {
-                    await _service.PrunebanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
+                    await _service.PrunebanUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, Context.Message, reason);
                 }
                 else
                 {

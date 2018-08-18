@@ -22,7 +22,7 @@ namespace RiasBot.Modules.Administration.Services
             _db = db;
         }
 
-        public async Task WarnUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, string reason)
+        public async Task WarnUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, IUserMessage message, string reason)
         {
             using (var db = _db.GetDbContext())
             {
@@ -47,9 +47,14 @@ namespace RiasBot.Modules.Administration.Services
                 {
                     var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
                     if (modlog != null)
+                    {
+                        await message.AddReactionAsync(new Emoji("✅")).ConfigureAwait(false);
                         await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                     else
+                    {
                         await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                 }
                 else
                 {
@@ -68,16 +73,16 @@ namespace RiasBot.Modules.Administration.Services
                                 await _muteService.MuteUser(guild, moderator, user, channel, TimeSpan.Zero, $"You got {guildDb.WarnsPunishment} warnings! Mute punishment applied!").ConfigureAwait(false);
                                 break;
                             case "kick":
-                                await _adminService.KickUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! Kick punishment applied!").ConfigureAwait(false);
+                                await _adminService.KickUser(guild, moderator, user, channel, message, $"You got {guildDb.WarnsPunishment} warnings! Kick punishment applied!").ConfigureAwait(false);
                                 break;
                             case "ban":
-                                await _adminService.BanUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! Ban punishment applied!").ConfigureAwait(false);
+                                await _adminService.BanUser(guild, moderator, user, channel, message, $"You got {guildDb.WarnsPunishment} warnings! Ban punishment applied!").ConfigureAwait(false);
                                 break;
                             case "softban":
-                                await _adminService.SoftbanUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! SoftBan punishment applied!").ConfigureAwait(false);
+                                await _adminService.SoftbanUser(guild, moderator, user, channel, message, $"You got {guildDb.WarnsPunishment} warnings! SoftBan punishment applied!").ConfigureAwait(false);
                                 break;
                             case "pruneban":
-                                await _adminService.PrunebanUser(guild, moderator, user, channel, $"You got {guildDb.WarnsPunishment} warnings! PruneBan punishment applied!").ConfigureAwait(false);
+                                await _adminService.PrunebanUser(guild, moderator, user, channel, message, $"You got {guildDb.WarnsPunishment} warnings! PruneBan punishment applied!").ConfigureAwait(false);
                                 break;
                         }
                     }

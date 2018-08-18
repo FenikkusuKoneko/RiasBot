@@ -51,7 +51,7 @@ namespace RiasBot.Modules.Administration
                     }
                     if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                     {
-                        await _service.WarnUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, reason);
+                        await _service.WarnUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, Context.Message, reason);
                     }
                     else
                     {

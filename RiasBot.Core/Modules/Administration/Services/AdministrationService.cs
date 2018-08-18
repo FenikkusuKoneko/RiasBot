@@ -22,7 +22,7 @@ namespace RiasBot.Modules.Administration.Services
             _db = db;
         }
 
-        public async Task KickUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, string reason)
+        public async Task KickUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, IUserMessage message, string reason)
         {
             using (var db = _db.GetDbContext())
             {
@@ -40,9 +40,14 @@ namespace RiasBot.Modules.Administration.Services
                 {
                     var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
                     if (modlog != null)
+                    {
+                        await message.AddReactionAsync(new Emoji("✅")).ConfigureAwait(false);
                         await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                     else
+                    {
                         await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                 }
                 else
                 {
@@ -61,7 +66,7 @@ namespace RiasBot.Modules.Administration.Services
             }
         }
 
-        public async Task BanUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, string reason)
+        public async Task BanUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, IUserMessage message, string reason)
         {
             using (var db = _db.GetDbContext())
             {
@@ -79,9 +84,14 @@ namespace RiasBot.Modules.Administration.Services
                 {
                     var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
                     if (modlog != null)
+                    {
+                        await message.AddReactionAsync(new Emoji("✅")).ConfigureAwait(false);
                         await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                     else
+                    {
                         await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                 }
                 else
                 {
@@ -100,7 +110,7 @@ namespace RiasBot.Modules.Administration.Services
             }
         }
 
-        public async Task SoftbanUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, string reason)
+        public async Task SoftbanUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, IUserMessage message, string reason)
         {
             using (var db = _db.GetDbContext())
             {
@@ -118,9 +128,14 @@ namespace RiasBot.Modules.Administration.Services
                 {
                     var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
                     if (modlog != null)
+                    {
+                        await message.AddReactionAsync(new Emoji("✅")).ConfigureAwait(false);
                         await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                     else
+                    {
                         await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                 }
                 else
                 {
@@ -140,7 +155,7 @@ namespace RiasBot.Modules.Administration.Services
             }
         }
 
-        public async Task PrunebanUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, string reason)
+        public async Task PrunebanUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel, IUserMessage message, string reason)
         {
             using (var db = _db.GetDbContext())
             {
@@ -158,9 +173,14 @@ namespace RiasBot.Modules.Administration.Services
                 {
                     var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
                     if (modlog != null)
+                    {
+                        await message.AddReactionAsync(new Emoji("✅")).ConfigureAwait(false);
                         await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                     else
+                    {
                         await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    }
                 }
                 else
                 {
