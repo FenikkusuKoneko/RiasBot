@@ -38,11 +38,23 @@ namespace RiasBot.Modules.Administration.Services
                 var embed = new EmbedBuilder().WithColor(0xffff00);
                 embed.WithTitle($"Warn");
                 embed.AddField("Username", $"{user}", true).AddField("ID", user.Id.ToString(), true);
-                embed.AddField("Warn no.", nrWarnings + 1).AddField("Moderator", moderator, true);
+                embed.AddField("Warn no.", nrWarnings + 1, true).AddField("Moderator", moderator, true);
+                embed.WithThumbnailUrl(user.RealAvatarUrl());
                 if (!String.IsNullOrEmpty(reason))
                     embed.AddField("Reason", reason, true);
 
-                await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                if (guildDb != null)
+                {
+                    var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
+                    if (modlog != null)
+                        await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    else
+                        await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
+                else
+                {
+                    await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
                 try
                 {
                     if (nrWarnings + 1 >= guildDb.WarnsPunishment && guildDb.WarnsPunishment != 0)

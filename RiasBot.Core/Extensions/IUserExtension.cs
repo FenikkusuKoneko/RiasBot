@@ -6,7 +6,7 @@ namespace RiasBot.Extensions
 {
     public static class IUserExtension
     {
-        public static string RealAvatarUrl(this IGuildUser user, ushort size = 128)
+        public static string RealAvatarUrl(this IGuildUser user, ushort size = 1024)
         {
             if (!String.IsNullOrEmpty(user.AvatarId))
             {
@@ -23,7 +23,7 @@ namespace RiasBot.Extensions
         public static string DefaultAvatarUrl(this IGuildUser user)
             => $"{DiscordConfig.CDNUrl}embed/avatars/{user.DiscriminatorValue % 5}.png";
 
-        public static string RealAvatarUrl(this IUser user, ushort size = 128)
+        public static string RealAvatarUrl(this IUser user, ushort size = 1024)
         {
             if (!String.IsNullOrEmpty(user.AvatarId))
             {
@@ -40,7 +40,7 @@ namespace RiasBot.Extensions
         public static string DefaultAvatarUrl(this IUser user)
             => $"{DiscordConfig.CDNUrl}embed/avatars/{user.DiscriminatorValue % 5}.png";
 
-        public static string RealAvatarUrl(this RestUser user, ushort size = 128)
+        public static string RealAvatarUrl(this RestUser user, ushort size = 1024)
         {
             if (!String.IsNullOrEmpty(user.AvatarId))
             {
