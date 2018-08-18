@@ -14,12 +14,12 @@ namespace RiasBot
 {
     public class RiasBot
     {
-        public const string Version = "1.8.3";
+        public const string Version = "1.8.4";
         public const uint GoodColor = 0x009688;
         public const uint BadColor = 0xff0000;
         public const string Currency = "<:heart_diamond:416513090549448724>";
         public const string Invite = "https://discordapp.com/oauth2/authorize?client_id=381387277764395008&scope=bot&permissions=1609952503";
-        public const string Author = "Koneko#0001";
+        public const string Author = "Koneko#9999";
         public const ulong KonekoId = 327927038360944640;
         public const string CreatorServer = "https://discord.gg/VPfBvBt";
         public const ulong SupportServer = 416492045859946507;

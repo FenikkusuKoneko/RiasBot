@@ -206,6 +206,11 @@ namespace RiasBot.Modules.Gambling
             [Description][@Remarks]
             public async Task Give(int amount, [Remainder]IGuildUser user)
             {
+                if (amount < 1)
+                {
+                    await Context.Channel.SendErrorEmbed($"You cannot give less than 1 {RiasBot.Currency}").ConfigureAwait(false);
+                    return;
+                }
                 using (var db = _db.GetDbContext())
                 {
                     var firstUser = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
