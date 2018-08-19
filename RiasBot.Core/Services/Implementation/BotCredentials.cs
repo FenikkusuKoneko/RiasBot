@@ -15,7 +15,7 @@ namespace RiasBot.Services.Implementation
         public string UrbanDictionaryApiKey { get; }
         public string PatreonAccessToken { get; }
         public string DiscordBotsListApiKey { get; }
-        public string ImgurClientID { get; } //this client id is from koneko who manage the lists of reactions images
+        public string WeebServicesToken { get; }
         public string HelpDM { get; }
 
         private readonly string _credsFileName = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
@@ -24,18 +24,18 @@ namespace RiasBot.Services.Implementation
             var configBuilder = new ConfigurationBuilder();
             configBuilder.AddJsonFile(_credsFileName);
 
-            var _config = configBuilder.Build();
+            var config = configBuilder.Build();
 
-            UInt64.TryParse(_config[nameof(ClientId)], out var clientId);
+            UInt64.TryParse(config[nameof(ClientId)], out var clientId);
             ClientId = clientId;
-            Prefix = _config[nameof(Prefix)];
-            Token = _config[nameof(Token)];
-            GoogleApiKey = _config[nameof(GoogleApiKey)];
-            UrbanDictionaryApiKey = _config[nameof(UrbanDictionaryApiKey)];
-            PatreonAccessToken = _config[nameof(PatreonAccessToken)];
-            DiscordBotsListApiKey = _config[nameof(DiscordBotsListApiKey)];
-            ImgurClientID = _config[nameof(ImgurClientID)];
-            HelpDM = _config[nameof(HelpDM)];
+            Prefix = config[nameof(Prefix)];
+            Token = config[nameof(Token)];
+            GoogleApiKey = config[nameof(GoogleApiKey)];
+            UrbanDictionaryApiKey = config[nameof(UrbanDictionaryApiKey)];
+            PatreonAccessToken = config[nameof(PatreonAccessToken)];
+            DiscordBotsListApiKey = config[nameof(DiscordBotsListApiKey)];
+            WeebServicesToken = config[nameof(WeebServicesToken)];
+            HelpDM = config[nameof(HelpDM)];
         }
     }
 }
