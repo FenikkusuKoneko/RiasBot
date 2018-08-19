@@ -25,6 +25,7 @@ namespace RiasBot
         public const ulong SupportServer = 416492045859946507;
         public const string Patreon = "https://www.patreon.com/riasbot";
         public const string Website = "https://riasbot.me/";
+        public const string WeebApi = "https://api-v2.weeb.sh/";
         public static readonly Stopwatch UpTime = new Stopwatch();
         public static int CommandsRun = 0;
 
