@@ -10,43 +10,58 @@ namespace RiasBot.Modules.Searches.Services
 {
     public class CuteGirlsService : IRService
     {
-        public CuteGirlsService()
+        private readonly IBotCredentials _creds;
+        public CuteGirlsService(IBotCredentials creds)
         {
-
+            _creds = creds;
         }
 
         public async Task<string> GetNekoImage()
         {
-            try
+            using (var http = new HttpClient())
             {
-                using (var http = new HttpClient())
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Wolke " + _creds.WeebServicesToken);
+                http.DefaultRequestHeaders.Add("User-Agent", "RiasBot/" + RiasBot.Version);
+                var patRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=neko&filetype=gif").ConfigureAwait(false);
+                if (patRequest.IsSuccessStatusCode)
                 {
-                    var nekoUrl = await http.GetStringAsync(RiasBot.Website + "api/neko").ConfigureAwait(false);
-                    var nekoImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(nekoUrl);
-                    return nekoImage["url"];
+                    var patImage = JsonConvert.DeserializeObject<WeebServices>(await patRequest.Content.ReadAsStringAsync());
+                    return patImage.Url;
                 }
-            }
-            catch
-            {
+
                 return null;
             }
         }
 
         public async Task<string> GetKitsuneImage()
         {
-            try
+            using (var http = new HttpClient())
             {
-                using (var http = new HttpClient())
+                var kitsuneRequest = await http.GetAsync(RiasBot.Website + "api/kitsune").ConfigureAwait(false);
+                if (kitsuneRequest.IsSuccessStatusCode)
                 {
-                    var kitsuneUrl = await http.GetStringAsync(RiasBot.Website + "api/kitsune").ConfigureAwait(false);
-                    var kitsuneImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(kitsuneUrl);
+                    var kitsuneImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(await kitsuneRequest.Content.ReadAsStringAsync());
                     return kitsuneImage["url"];
                 }
-            }
-            catch
-            {
+
                 return null;
             }
+        }
+        
+        private class WeebServices
+        {
+            //public int Status { get; }
+            //public string Id { get; }
+            //public string Type { get; }
+            //public string BaseType { get; }
+            //public bool Nsfw { get; }
+            //public string FileType { get; }
+            //public string MimeType { get; }
+            //public string Account { get; }
+            //public bool Hidden { get; }
+            //public string[] Tags { get; }
+            public string Url { get; set; }
         }
     }
 }

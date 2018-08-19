@@ -207,14 +207,6 @@
     ]
   },
 
-  "updateimages": {
-    "Command": "updateimages",
-    "Description": "Update images with reactions, neko and kitsune.",
-    "Remarks": [
-      "[prefix]updateimages"
-    ]
-  },
-
   "finduser": {
     "Command": "finduser",
     "Description": "Search an user from Discord and show it's info.",

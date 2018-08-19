@@ -196,24 +196,6 @@ namespace RiasBot.Modules.Bot
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireOwner]
-        public async Task UpdateImages()
-        {
-            await _reactionsService.UpdateImages("H1Pqa", _reactionsService.biteList);
-            await _reactionsService.UpdateImages("woGOn", _reactionsService.cryList);
-            await _reactionsService.UpdateImages("GdiXR", _reactionsService.gropeList);
-            await _reactionsService.UpdateImages("KTkPe", _reactionsService.hugList);
-            await _reactionsService.UpdateImages("CotHR", _reactionsService.kissList);
-            await _reactionsService.UpdateImages("5cMDN", _reactionsService.lickList);
-            await _reactionsService.UpdateImages("OQjWy", _reactionsService.patList);
-            await _reactionsService.UpdateImages("AQoU8", _reactionsService.slapList);
-            await _reactionsService.UpdateImages("Xqjh9UM", _reactionsService.cuddleList);
-
-            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} reactions images, updated");
-        }
-
-        [RiasCommand][@Alias]
-        [Description][@Remarks]
-        [RequireOwner]
         [Priority(1)]
         public async Task FindUser([Remainder]string user)
         {

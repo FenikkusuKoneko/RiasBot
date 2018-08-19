@@ -15,102 +15,180 @@ namespace RiasBot.Modules.Reactions.Services
         public ReactionsService(IBotCredentials creds)
         {
             _creds = creds;
-            UpdateImages("H1Pqa", biteList).GetAwaiter().GetResult();
-            UpdateImages("woGOn", cryList).GetAwaiter().GetResult();
-            UpdateImages("Xqjh9UM", cuddleList).GetAwaiter().GetResult();
-            UpdateImages("GdiXR", gropeList).GetAwaiter().GetResult();
-            UpdateImages("KTkPe", hugList).GetAwaiter().GetResult();
-            UpdateImages("CotHR", kissList).GetAwaiter().GetResult();
-            UpdateImages("5cMDN", lickList).GetAwaiter().GetResult();
-            UpdateImages("OQjWy", patList).GetAwaiter().GetResult();
-            UpdateImages("AQoU8", slapList).GetAwaiter().GetResult();
         }
 
-        public List<string> biteList = new List<string>();
-        public List<string> cryList = new List<string>();
-        public List<string> cuddleList = new List<string>();
-        public List<string> gropeList = new List<string>();
-        public List<string> hugList = new List<string>();
-        public List<string> kissList = new List<string>();
-        public List<string> lickList = new List<string>();
-        public List<string> patList = new List<string>();
-        public List<string> slapList = new List<string>();
-
-        public string GetImage(List<string> listImages)
+        public async Task<string> GetPatImage()
         {
-            try
+            using (var http = new HttpClient())
             {
-                var rnd = new Random((int)DateTime.UtcNow.Ticks);
-                var index = rnd.Next(0, listImages.Count);
-                return listImages[index];
-            }
-            catch
-            {
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Wolke " + _creds.WeebServicesToken);
+                http.DefaultRequestHeaders.Add("User-Agent", "RiasBot/" + RiasBot.Version);
+                var patRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=pat&filetype=gif").ConfigureAwait(false);
+                if (patRequest.IsSuccessStatusCode)
+                {
+                    var patImage = JsonConvert.DeserializeObject<WeebServices>(await patRequest.Content.ReadAsStringAsync());
+                    return patImage.Url;
+                }
+
                 return null;
             }
         }
-
-        public async Task UpdateImages(string albumID, List<string> listImages)
+        
+        public async Task<string> GetHugImage()
         {
-            try
+            using (var http = new HttpClient())
             {
-                using (var http = new HttpClient())
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Wolke " + _creds.WeebServicesToken);
+                http.DefaultRequestHeaders.Add("User-Agent", "RiasBot/" + RiasBot.Version);
+                var hugRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=hug&filetype=gif").ConfigureAwait(false);
+                if (hugRequest.IsSuccessStatusCode)
                 {
-                    http.DefaultRequestHeaders.Clear();
-                    http.DefaultRequestHeaders.Add("Authorization", "Client-ID " + _creds.ImgurClientID);
-
-                    var url = $"https://api.imgur.com/3/album/{albumID}/images";
-                    var data = await http.GetStringAsync(url);
-
-                    var images = JsonConvert.DeserializeObject<ImgurData>(data);
-
-                    foreach (var image in images.data)
-                    {
-                        if (!listImages.Contains(image.link))
-                            listImages.Add(image.link);
-                    }
+                    var hugImage = JsonConvert.DeserializeObject<WeebServices>(await hugRequest.Content.ReadAsStringAsync());
+                    return hugImage.Url;
                 }
-            }
-            catch
-            {
 
+                return null;
             }
         }
-    }
+        
+        public async Task<string> GetKissImage()
+        {
+            using (var http = new HttpClient())
+            {
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Wolke " + _creds.WeebServicesToken);
+                http.DefaultRequestHeaders.Add("User-Agent", "RiasBot/" + RiasBot.Version);
+                var kissRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=kiss&filetype=gif").ConfigureAwait(false);
+                if (kissRequest.IsSuccessStatusCode)
+                {
+                    var kissImage = JsonConvert.DeserializeObject<WeebServices>(await kissRequest.Content.ReadAsStringAsync());
+                    return kissImage.Url;
+                }
 
-    public class ImgurData
-    {
-        public List<ImgurImage> data { get; set; }
-    }
+                return null;
+            }
+        }
+        
+        public async Task<string> GetBiteImage()
+        {
+            using (var http = new HttpClient())
+            {
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Wolke " + _creds.WeebServicesToken);
+                http.DefaultRequestHeaders.Add("User-Agent", "RiasBot/" + RiasBot.Version);
+                var biteRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=bite&filetype=gif").ConfigureAwait(false);
+                if (biteRequest.IsSuccessStatusCode)
+                {
+                    var biteImage = JsonConvert.DeserializeObject<WeebServices>(await biteRequest.Content.ReadAsStringAsync());
+                    return biteImage.Url;
+                }
 
-    public class ImgurImage
-    {
-        public string id { get; set; }
-        public string title { get; set; }
-        public string description { get; set; }
-        /// <summary>
-        /// The DateTimne is represented in ticks
-        /// </summary>
-        public long datetime { get; set; }
-        /// <summary>
-        /// The type of the image, png, jpg or jpeg. The result is image/jpeg for example
-        /// </summary>
-        public string type { get; set; }
-        /// <summary>
-        /// If the image is a gif or not
-        /// </summary>
-        public bool animated { get; set; }
-        public int width { get; set; }
-        public int height { get; set; }
-        /// <summary>
-        /// The site in bytes of the image
-        /// </summary>
-        public int size { get; set; }
-        public int views { get; set; }
-        public object nsfw { get; set; }
-        public string[] tags { get; set; }
-        public string deletehash { get; set; }
-        public string name { get; set; }
-        public string link { get; set; }
+                return null;
+            }
+        }
+        
+        public async Task<string> GetLickImage()
+        {
+            using (var http = new HttpClient())
+            {
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Wolke " + _creds.WeebServicesToken);
+                http.DefaultRequestHeaders.Add("User-Agent", "RiasBot/" + RiasBot.Version);
+                var lickRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=lick&filetype=gif").ConfigureAwait(false);
+                if (lickRequest.IsSuccessStatusCode)
+                {
+                    var lickImage = JsonConvert.DeserializeObject<WeebServices>(await lickRequest.Content.ReadAsStringAsync());
+                    return lickImage.Url;
+                }
+
+                return null;
+            }
+        }
+        
+        public async Task<string> GetCryImage()
+        {
+            using (var http = new HttpClient())
+            {
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Wolke " + _creds.WeebServicesToken);
+                http.DefaultRequestHeaders.Add("User-Agent", "RiasBot/" + RiasBot.Version);
+                var cryRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=cry&filetype=gif").ConfigureAwait(false);
+                if (cryRequest.IsSuccessStatusCode)
+                {
+                    var cryImage = JsonConvert.DeserializeObject<WeebServices>(await cryRequest.Content.ReadAsStringAsync());
+                    return cryImage.Url;
+                }
+
+                return null;
+            }
+        }
+        
+        public async Task<string> GetCuddleImage()
+        {
+            using (var http = new HttpClient())
+            {
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Wolke " + _creds.WeebServicesToken);
+                http.DefaultRequestHeaders.Add("User-Agent", "RiasBot/" + RiasBot.Version);
+                var cuddleRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=cuddle&filetype=gif").ConfigureAwait(false);
+                if (cuddleRequest.IsSuccessStatusCode)
+                {
+                    var cuddleImage = JsonConvert.DeserializeObject<WeebServices>(await cuddleRequest.Content.ReadAsStringAsync());
+                    return cuddleImage.Url;
+                }
+
+                return null;
+            }
+        }
+        
+        public async Task<string> GetSlapImage()
+        {
+            using (var http = new HttpClient())
+            {
+                http.DefaultRequestHeaders.Clear();
+                http.DefaultRequestHeaders.Add("Authorization", "Wolke " + _creds.WeebServicesToken);
+                http.DefaultRequestHeaders.Add("User-Agent", "RiasBot/" + RiasBot.Version);
+                var slapRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=slap&filetype=gif").ConfigureAwait(false);
+                if (slapRequest.IsSuccessStatusCode)
+                {
+                    var slapImage = JsonConvert.DeserializeObject<WeebServices>(await slapRequest.Content.ReadAsStringAsync());
+                    return slapImage.Url;
+                }
+
+                return null;
+            }
+        }
+        
+        public async Task<string> GetGropeImage()
+        {
+            using (var http = new HttpClient())
+            {
+                var kitsuneRequest = await http.GetAsync(RiasBot.Website + "api/grope").ConfigureAwait(false);
+                if (kitsuneRequest.IsSuccessStatusCode)
+                {
+                    var kitsuneImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(await kitsuneRequest.Content.ReadAsStringAsync());
+                    return kitsuneImage["url"];
+                }
+
+                return null;
+            }
+        }
+        
+        private class WeebServices
+        {
+            //public int Status { get; }
+            //public string Id { get; }
+            //public string Type { get; }
+            //public string BaseType { get; }
+            //public bool Nsfw { get; }
+            //public string FileType { get; }
+            //public string MimeType { get; }
+            //public string Account { get; }
+            //public bool Hidden { get; }
+            //public string[] Tags { get; }
+            public string Url { get; set; }
+        }
     }
 }

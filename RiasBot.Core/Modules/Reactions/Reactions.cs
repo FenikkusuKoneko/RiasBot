@@ -25,7 +25,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Pat([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.patList));
+            embed.WithImageUrl(await _service.GetPatImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             await Context.Channel.SendMessageAsync($"{user.Mention} you have been patted by {Format.Bold(Context.User.ToString())} <3",
                 embed: embed.Build());
@@ -39,7 +40,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Pat([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.patList));
+            embed.WithImageUrl(await _service.GetPatImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             if (user is null)
             {
@@ -62,7 +64,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Hug([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.hugList));
+            embed.WithImageUrl(await _service.GetHugImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             await Context.Channel.SendMessageAsync($"{user.Mention} you have been hugged by {Format.Bold(Context.User.ToString())} <3",
                 embed: embed.Build()).ConfigureAwait(false);
@@ -76,7 +79,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Hug([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.hugList));
+            embed.WithImageUrl(await _service.GetHugImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             if (user is null)
             {
@@ -99,7 +103,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Kiss([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.kissList));
+            embed.WithImageUrl(await _service.GetKissImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             await Context.Channel.SendMessageAsync($"{user.Mention} you have been kissed by {Format.Bold(Context.User.ToString())} ❤️",
                 embed: embed.Build()).ConfigureAwait(false);
@@ -113,7 +118,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Kiss([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.kissList));
+            embed.WithImageUrl(await _service.GetKissImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             if (user is null)
             {
@@ -136,7 +142,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Bite([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.biteList));
+            embed.WithImageUrl(await _service.GetBiteImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             await Context.Channel.SendMessageAsync($"{user.Mention} you have been bitten by {Format.Bold(Context.User.ToString())}",
                 embed: embed.Build()).ConfigureAwait(false);
@@ -150,7 +157,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Bite([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.biteList));
+            embed.WithImageUrl(await _service.GetBiteImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             if (user is null)
             {
@@ -173,7 +181,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Lick([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.lickList));
+            embed.WithImageUrl(await _service.GetLickImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             await Context.Channel.SendMessageAsync($"{user.Mention} you have been licked by {Format.Bold(Context.User.ToString())}, lewd",
                 embed: embed.Build()).ConfigureAwait(false);
@@ -187,7 +196,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Lick([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.lickList));
+            embed.WithImageUrl(await _service.GetLickImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             if (user is null)
             {
@@ -210,7 +220,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Slap([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.slapList));
+            embed.WithImageUrl(await _service.GetSlapImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             await Context.Channel.SendMessageAsync($"{user.Mention} you have been slapped by {Format.Bold(Context.User.ToString())}",
                 embed: embed.Build()).ConfigureAwait(false);
@@ -224,7 +235,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Slap([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.slapList));
+            embed.WithImageUrl(await _service.GetSlapImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             if (user is null)
             {
@@ -245,7 +257,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Cry()
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.cryList));
+            embed.WithImageUrl(await _service.GetCryImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             await Context.Channel.SendMessageAsync($"Aww don't cry {Context.Message.Author.Mention}. I will {Format.Italics("pat")} and {Format.Italics("hug")} you <3",
                 embed: embed.Build()).ConfigureAwait(false);
@@ -259,7 +272,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Grope([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.gropeList));
+            embed.WithImageUrl(await _service.GetGropeImage());
+            embed.WithFooter("Powered by riasbot.me");
 
             await Context.Channel.SendMessageAsync($"{user.Mention} you have been groped by {Format.Bold(Context.User.ToString())}",
                 embed: embed.Build()).ConfigureAwait(false);
@@ -273,7 +287,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Grope([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.gropeList));
+            embed.WithImageUrl(await _service.GetGropeImage());
+            embed.WithFooter("Powered by riasbot.me");
 
             if (user is null)
             {
@@ -296,7 +311,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Cuddle([Remainder]IGuildUser user)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.cuddleList));
+            embed.WithImageUrl(await _service.GetCuddleImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             await Context.Channel.SendMessageAsync($"{user.Mention}, {Format.Bold(Context.User.ToString())} is cuddling you",
                 embed: embed.Build()).ConfigureAwait(false);
@@ -312,7 +328,8 @@ namespace RiasBot.Modules.Reactions
         public async Task Cuddle([Remainder]string user = null)
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithImageUrl(_service.GetImage(_service.cuddleList));
+            embed.WithImageUrl(await _service.GetCuddleImage());
+            embed.WithFooter("Powered by weeb.sh");
 
             if (user is null)
             {

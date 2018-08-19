@@ -35,6 +35,7 @@ namespace RiasBot.Modules.Searches
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Neko <3");
                 embed.WithImageUrl(neko);
+                embed.WithFooter("Powered by weeb.sh");
 
                 await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
@@ -49,6 +50,7 @@ namespace RiasBot.Modules.Searches
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Kitsune <3");
                 embed.WithImageUrl(kitsune);
+                embed.WithFooter("Powered by riasbot.me");
 
                 await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
