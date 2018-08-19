@@ -14,7 +14,7 @@ namespace RiasBot
 {
     public class RiasBot
     {
-        public const string Version = "1.8.5";
+        public const string Version = "1.8.6";
         public const uint GoodColor = 0x009688;
         public const uint BadColor = 0xff0000;
         public const string Currency = "<:heart_diamond:416513090549448724>";
@@ -24,7 +24,7 @@ namespace RiasBot
         public const string CreatorServer = "https://discord.gg/VPfBvBt";
         public const ulong SupportServer = 416492045859946507;
         public const string Patreon = "https://www.patreon.com/riasbot";
-        public const string Website = "https://loveneko.me/";
+        public const string Website = "https://riasbot.me/";
         public static readonly Stopwatch UpTime = new Stopwatch();
         public static int CommandsRun = 0;
 

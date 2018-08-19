@@ -172,8 +172,8 @@ namespace RiasBot.Modules.Bot
             var index = 0;
             foreach (var vote in _botService.VotesList)
             {
-                var user = await Context.Client.GetUserAsync(vote.user);
-                votes.Add($"#{index+1} {user?.ToString()} ({vote.user})");
+                var user = await Context.Client.GetUserAsync(vote.User);
+                votes.Add($"#{index+1} {user?.ToString()} ({vote.User})");
                 index++;
             }
             var pager = new PaginatedMessage

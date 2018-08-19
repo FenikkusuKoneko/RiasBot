@@ -15,17 +15,15 @@ namespace RiasBot.Modules.Searches.Services
 
         }
 
-        private List<string> kitsuneList = new List<string>();
-
         public async Task<string> GetNekoImage()
         {
             try
             {
                 using (var http = new HttpClient())
                 {
-                    var nekoUrl = await http.GetStringAsync(RiasBot.Website + "neko").ConfigureAwait(false);
+                    var nekoUrl = await http.GetStringAsync(RiasBot.Website + "api/neko").ConfigureAwait(false);
                     var nekoImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(nekoUrl);
-                    return nekoImage["neko"];
+                    return nekoImage["url"];
                 }
             }
             catch
@@ -40,9 +38,9 @@ namespace RiasBot.Modules.Searches.Services
             {
                 using (var http = new HttpClient())
                 {
-                    var nekoUrl = await http.GetStringAsync(RiasBot.Website + "kitsune").ConfigureAwait(false);
-                    var nekoImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(nekoUrl);
-                    return nekoImage["kitsune"];
+                    var kitsuneUrl = await http.GetStringAsync(RiasBot.Website + "api/kitsune").ConfigureAwait(false);
+                    var kitsuneImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(kitsuneUrl);
+                    return kitsuneImage["url"];
                 }
             }
             catch

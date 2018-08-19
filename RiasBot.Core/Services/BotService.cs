@@ -278,42 +278,39 @@ namespace RiasBot.Services
                 {
                     var votesApi = await http.GetStringAsync(RiasBot.Website + "api/votes.json");
                     var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
-                    var votes = dblVotes.data.votes.Where(x => x.type == "upvote");
+                    var votes = dblVotes.Votes.Where(x => x.Type == "upvote");
                     VotesList = new List<Votes>();
                     foreach (var vote in votes)
                     {
-                        if (DateTime.TryParseExact(vote.date, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.CurrentCulture, DateTimeStyles.None, out var date))
+                        var date = vote.Date.AddHours(12);
+                        if (DateTime.Compare(date.ToUniversalTime(), DateTime.UtcNow) >= 1)
                         {
-                            date = date.AddHours(12);
-                            if (DateTime.Compare(date.ToUniversalTime(), DateTime.UtcNow) >= 1)
+                            VotesList.Add(vote);
+                            if (!_populateVotesList)
                             {
-                                VotesList.Add(vote);
-                                if (!_populateVotesList)
+                                var getGuildUser = _discord.GetGuild(RiasBot.SupportServer).GetUser(vote.User);
+                                if (getGuildUser != null)
                                 {
-                                    var getGuildUser = _discord.GetGuild(RiasBot.SupportServer).GetUser(vote.user);
-                                    if (getGuildUser != null)
+                                    var userDb = db.Users.FirstOrDefault(x => x.UserId == vote.User);
+                                    if (userDb != null)
                                     {
-                                        var userDb = db.Users.Where(x => x.UserId == vote.user).FirstOrDefault();
-                                        if (userDb != null)
-                                        {
-                                            if (!userDb.IsBlacklisted)
-                                                userDb.Currency += vote.isWeekend ? 20 : 10;
-                                        }
-                                        else
-                                        {
-                                            var currency = new UserConfig { UserId = vote.user, Currency = 10 };
-                                        }
-                                        await db.SaveChangesAsync().ConfigureAwait(false);
+                                        if (!userDb.IsBlacklisted)
+                                            userDb.Currency += vote.IsWeekend ? 20 : 10;
                                     }
                                     else
                                     {
-                                        //User not in the support server!
+                                        var currency = new UserConfig { UserId = vote.User, Currency = 10 };
                                     }
+                                    await db.SaveChangesAsync().ConfigureAwait(false);
                                 }
                                 else
                                 {
-                                    
+                                    //User not in the support server!
                                 }
+                            }
+                            else
+                            {
+                                    
                             }
                         }
                     }
@@ -334,20 +331,20 @@ namespace RiasBot.Services
 
     public class DBL
     {
-        public Data data { get; set; }
+        public List<Votes> Votes { get; set; }
+        public DateTime Date { get; set; }
     }
     public class Data
     {
-        public Votes[] votes { get; set; }
-        public string date { get; set; }
+        
     }
     public class Votes
     {
-        public ulong bot { get; set; }
-        public ulong user { get; set; }
-        public string type { get; set; }
-        public bool isWeekend { get; set; }
-        public string query { get; set; }
-        public string date { get; set; }
+        public ulong Bot { get; set; }
+        public ulong User { get; set; }
+        public string Type { get; set; }
+        public bool IsWeekend { get; set; }
+        public string Query { get; set; }
+        public DateTime Date { get; set; }
     }
 }
