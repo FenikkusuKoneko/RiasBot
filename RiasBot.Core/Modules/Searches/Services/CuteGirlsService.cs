@@ -23,7 +23,7 @@ namespace RiasBot.Modules.Searches.Services
                 http.DefaultRequestHeaders.Clear();
                 http.DefaultRequestHeaders.Add("Authorization", "Wolke " + _creds.WeebServicesToken);
                 http.DefaultRequestHeaders.Add("User-Agent", "RiasBot/" + RiasBot.Version);
-                var patRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=neko&filetype=gif").ConfigureAwait(false);
+                var patRequest = await http.GetAsync(RiasBot.WeebApi + "images/random?type=neko").ConfigureAwait(false);
                 if (patRequest.IsSuccessStatusCode)
                 {
                     var patImage = JsonConvert.DeserializeObject<WeebServices>(await patRequest.Content.ReadAsStringAsync());
