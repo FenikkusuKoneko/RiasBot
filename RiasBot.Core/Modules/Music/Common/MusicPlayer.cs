@@ -38,7 +38,7 @@ namespace RiasBot.Modules.Music.Common
         public IMessageChannel Channel;
         private IGuild _guild;
 
-        public readonly List<Song> Queue = new List<Song>();
+        public List<Song> Queue = new List<Song>();
         
         private float _volume = 1.0f;
         private bool _isRunning;
@@ -124,7 +124,9 @@ namespace RiasBot.Modules.Music.Common
                         if (_repeat)
                             await UpdateQueue(1).ConfigureAwait(false);
                         else
-                            await UpdateQueue(0).ConfigureAwait(false);
+                        {
+                            await UpdateQueue(Queue.Count < 2 ? 0 : 1).ConfigureAwait(false);
+                        }
                     }
                     else
                     {
@@ -142,7 +144,7 @@ namespace RiasBot.Modules.Music.Common
                         embed.WithAuthor("Added to queue", song.User.GetAvatarUrl() ?? song.User.DefaultAvatarUrl());
                         embed.WithDescription($"[{song.Title}]({song.Url})");
                         embed.AddField("Channel", song.Channel, true).AddField("Length", song.Duration, true);
-                        embed.AddField("ETA", timeEta, true).AddField("Position", Queue.Count, true);
+                        embed.AddField("ETA", timeEta, true).AddField("Position", Queue.Count - 1, true);
                         embed.WithThumbnailUrl(song.Thumbnail);
 
                         await Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
@@ -210,27 +212,39 @@ namespace RiasBot.Modules.Music.Common
             videoListRequest.Id = ids;
             var videoListResponse = await videoListRequest.ExecuteAsync().ConfigureAwait(false);
 
-            var itemsToRemove = new List<int>();
+            var itemsToRemove = new List<Song>();
             
             var index = 0;
             for (var i = startPosition; i < endPosition; i++)
             {
-                if (Queue[i].Id.Equals(videoListResponse.Items[index].Id))
+                if (index < videoListResponse.Items.Count)
                 {
-                    Queue[i].Duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items[index].ContentDetails.Duration);
-                    index++;
+                    if (Queue[i].Id.Equals(videoListResponse.Items[index].Id))
+                    {
+                        Queue[i].Duration = System.Xml.XmlConvert.ToTimeSpan(videoListResponse.Items[index].ContentDetails.Duration);
+                        index++;
+                    }
+                    else
+                    {
+                        itemsToRemove.Add(Queue[i]);
+                    }
                 }
                 else
                 {
-                    itemsToRemove.Add(i);
+                    itemsToRemove.Add(Queue[i]);
                 }
             }
-            foreach (var item in itemsToRemove)
-                Queue.RemoveAt(item);
+
+            Queue = Queue.Except(itemsToRemove).ToList();
         }
 
         public async Task SkipTo(int index)
         {
+            if (RegisteringPlaylist)
+            {
+                await Channel.SendErrorEmbed("I still add the songs to the playlist. Please wait!");
+                return;
+            }
             if (!Wait && !IsDownloading)
             {
                 if (index > 0 && index < Queue.Count)
@@ -253,6 +267,11 @@ namespace RiasBot.Modules.Music.Common
         
         public async Task SkipTo(string title)
         {
+            if (RegisteringPlaylist)
+            {
+                await Channel.SendErrorEmbed("I still add the songs to the playlist. Please wait!");
+                return;
+            }
             if (!Wait && !IsDownloading)
             {
                 await Channel.SendConfirmationEmbed("Searching the song... Please wait!").ConfigureAwait(false);
@@ -410,6 +429,11 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Skip()
         {
+            if (RegisteringPlaylist)
+            {
+                await Channel.SendErrorEmbed("I still add the songs to the playlist. Please wait!");
+                return;
+            }
             if (!IsDownloading)
             {
                 if (Queue.Count > 1)
@@ -534,7 +558,7 @@ namespace RiasBot.Modules.Music.Common
         public async Task Remove(int index)
         {
             var current = false;
-            try
+            if (index < Queue.Count && index >= 0)
             {
                 var song = Queue[index];
                 if (index > 0)
@@ -551,9 +575,9 @@ namespace RiasBot.Modules.Music.Common
                 else
                     await Channel.SendErrorEmbed($"{Format.Bold(song.Title)} couldn't be removed from the playlist because is running!");
             }
-            catch
+            else
             {
-                // Playlist already cleared or is not created yet
+                await Channel.SendErrorEmbed("The index is out of the playlist range!");
             }
         }
 

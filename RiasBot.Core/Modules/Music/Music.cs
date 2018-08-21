@@ -566,7 +566,7 @@ namespace RiasBot.Modules.Music
 
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Remove(index - 1).ConfigureAwait(false);
+                await mp.Remove(index).ConfigureAwait(false);
             else
                 await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I'm not in a voice channel");
         }
@@ -646,7 +646,6 @@ namespace RiasBot.Modules.Music
             mp.Wait = true;
 
             await Context.Channel.SendConfirmationEmbed("Adding songs to the playlist, please wait!").ConfigureAwait(false);
-            var items = 0;
             var nextPageToken = "";
             
             while (nextPageToken != null)
@@ -678,7 +677,7 @@ namespace RiasBot.Modules.Music
                         
                         var title = playlistItem.Snippet.Title;
 
-                        if (title.Equals("Deleted video"))
+                        if (title.Equals("Deleted video") || title.Equals("Private video"))
                             continue;
                         
                         var itemVideoId = playlistItem.Snippet.ResourceId.VideoId;
@@ -689,26 +688,28 @@ namespace RiasBot.Modules.Music
                             thumbnail = playlistItem.Snippet.Thumbnails?.Standard?.Url;
                         if (string.IsNullOrEmpty(thumbnail))
                             thumbnail = playlistItem.Snippet.Thumbnails?.Default__?.Url;
+                        if (string.IsNullOrEmpty(thumbnail))
+                            continue;
 
                         await mp.Playlist(title, itemVideoId, url, channel, thumbnail, (IGuildUser)Context.User, index);
                         ids += itemVideoId + ",";
                         if (mp.Destroyed)
                             return;
-                        items++;
                     }
 
                     await mp.LoadSongsLength(ids, startPosition, mp.Queue.Count);
                     nextPageToken = playlistItemsListResponse.NextPageToken;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    await Context.Channel.SendErrorEmbed("Something went wrong! Please check if the link of the playlist is available or the link of the video is available!");
+                    Console.WriteLine(ex);
+                    await Context.Channel.SendErrorEmbed("Something went wrong while adding the songs! Not all items were loaded from the playlist!");
                     mp.RegisteringPlaylist = false;
                     mp.Wait = false;
                     return;
                 }
             }
-            await Context.Channel.SendConfirmationEmbed($"Added to playlist {items} songs").ConfigureAwait(false);
+            await Context.Channel.SendConfirmationEmbed($"Added to playlist {mp.Queue.Count} songs").ConfigureAwait(false);
             mp.RegisteringPlaylist = false;
             mp.Wait = false;
         }
@@ -762,7 +763,7 @@ namespace RiasBot.Modules.Music
 
             var searchListRequest = youtubeService.Search.List("snippet");
             searchListRequest.Q = keywords;
-            searchListRequest.MaxResults = 15;
+            searchListRequest.MaxResults = 50;
 
             var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
             var videoListRequest = youtubeService.Videos.List("contentDetails");
