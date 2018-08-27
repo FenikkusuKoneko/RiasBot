@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Discord.Rest;
 using RiasBot.Commons.TypeReaders;
+using RiasBot.Modules.Music;
 
 namespace RiasBot.Services
 {
@@ -57,6 +58,8 @@ namespace RiasBot.Services
                 _commands.AddTypeReader(typeArgs[0], typeReader);
             }
             await _commands.AddModulesAsync(Assembly.GetAssembly(typeof(RiasBot)), _provider).ConfigureAwait(false);
+            if (!RiasBot.IsBeta)
+                await _commands.RemoveModuleAsync<Music>();
             RiasBot.UpTime.Start();
         }
     }
