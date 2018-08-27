@@ -240,7 +240,7 @@ namespace RiasBot.Modules.Music.Services
                 input--;
                 if (input >= 0 && input < tracks.Tracks.Count)
                 {
-                    var track = tracks.Tracks.ElementAt(index);
+                    var track = tracks.Tracks.ElementAt(input);
                     var mp = GetMusicPlayer(guild);
                     await mp.Play(guild, user, channel, voiceChannel, "youtube", track).ConfigureAwait(false);
                 }
