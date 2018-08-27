@@ -397,12 +397,19 @@ namespace RiasBot.Modules.Music.Common
                 playlist.Add($"♾ {CurrentTrack.Track.Title} {Format.Code("Livestream")}\n" +
                              "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
             }
+            var totalLength = TimeSpan.Zero;
+            
             for (var i = 0; i < _queue.Count; i++)
             {
                 if (!_queue[i].Track.IsStream)
+                {
                     playlist.Add($"#{i+1} {_queue[i].Track.Title} {Format.Code($"({_queue[i].Track.Length.GetTimeString()})")}");
+                    totalLength = totalLength.Add(_queue[i].Track.Length);
+                }
                 else
+                {
                     playlist.Add($"#{i+1} {_queue[i].Track.Title} {Format.Code("Livestream")}");
+                }
             }
 
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
@@ -410,7 +417,7 @@ namespace RiasBot.Modules.Music.Common
             embed.WithDescription(string.Join("\n", playlist.Skip(index * 16).Take(16)));
 
             var totalPages = (playlist.Count % 16 == 0) ? playlist.Count / 16 : playlist.Count / 16 + 1;
-            embed.WithFooter($"{index+1}/{totalPages}");
+            embed.WithFooter($"{index+1}/{totalPages} | Total length: {totalLength.GetTimeString()}");
             await Channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
         }
 
@@ -520,7 +527,7 @@ namespace RiasBot.Modules.Music.Common
             await _player.DisconnectAsync();
             _service.RemoveMusicPlayer(guild);
             if (!string.IsNullOrEmpty(message))
-                await Channel.SendMessageAsync(message).ConfigureAwait(false);
+                await Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
         }
 
         private async Task AddToQueue(Song song, IGuildUser user)
