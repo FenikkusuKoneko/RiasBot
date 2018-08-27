@@ -105,7 +105,7 @@ namespace RiasBot.Modules.Utility
                 }
                 var joinedServer = user.JoinedAt?.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
                 var accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
-
+                
                 var roleIndex = 0;
                 var getUserRoles = user.RoleIds;
                 var userRoles = new string[getUserRoles.Count - 1];

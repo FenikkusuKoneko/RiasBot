@@ -75,7 +75,7 @@ namespace RiasBot.Modules.Bot
 
             foreach (var musicPlayer in _musicService.MPlayer)
             {
-                await musicPlayer.Value.Destroy("", true, false);
+                await musicPlayer.Value.Leave(Context.Guild, null);
             }
             
             await Context.Client.StopAsync().ConfigureAwait(false);

@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
+using RiasBot.Commons;
 
 namespace RiasBot.Services.Implementation
 {
@@ -16,6 +18,7 @@ namespace RiasBot.Services.Implementation
         public string PatreonAccessToken { get; }
         public string DiscordBotsListApiKey { get; }
         public string WeebServicesToken { get; }
+        public LavalinkConfig LavalinkConfig { get; }
         public string HelpDM { get; }
 
         private readonly string _credsFileName = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
@@ -35,6 +38,12 @@ namespace RiasBot.Services.Implementation
             PatreonAccessToken = config[nameof(PatreonAccessToken)];
             DiscordBotsListApiKey = config[nameof(DiscordBotsListApiKey)];
             WeebServicesToken = config[nameof(WeebServicesToken)];
+
+            var lavalinkConfig = config.GetSection(nameof(LavalinkConfig));
+            LavalinkConfig = new LavalinkConfig(lavalinkConfig["RestHost"], ushort.Parse(lavalinkConfig["RestPort"]),
+                lavalinkConfig["WebSocketHost"], ushort.Parse(lavalinkConfig["WebSocketPort"]),
+                lavalinkConfig["Authorization"]);
+            
             HelpDM = config[nameof(HelpDM)];
         }
     }

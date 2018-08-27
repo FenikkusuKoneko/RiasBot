@@ -114,8 +114,6 @@ namespace RiasBot.Modules.Help
             var index = 0;
             foreach (var module in modules)
             {
-                if (module.Name == "Music") //don't show the Music module, is for tests
-                    continue;
                 modulesDescription[index] += Format.Bold($"•{module.Name}") + "\n";
                 var submodules = module.Submodules;
                 foreach (var submodule in submodules)

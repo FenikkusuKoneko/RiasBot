@@ -108,7 +108,7 @@ namespace RiasBot.Services
                 foreach (var pledge in pledges)
                 {
                     var patronPledgeId = pledge.relationships.patron.data.id;
-                    var patronUser = patrons.Where(x => x.id == patronPledgeId).FirstOrDefault();
+                    var patronUser = patrons.FirstOrDefault(x => x.id == patronPledgeId);
 
                     if (patronUser != null)
                     {
@@ -129,8 +129,8 @@ namespace RiasBot.Services
                         if (userId > 0)
                         {
                             patronsList.Add(userId);
-                            var patronDb = db.Patreon.Where(x => x.UserId == userId).FirstOrDefault();
-                            var userDb = db.Users.Where(x => x.UserId == userId).FirstOrDefault();
+                            var patronDb = db.Patreon.FirstOrDefault(x => x.UserId == userId);
+                            var userDb = db.Users.FirstOrDefault(x => x.UserId == userId);
                             if (patronDb != null)
                             {
                                 patronDb.Reward = amountCents * 10;
@@ -151,15 +151,16 @@ namespace RiasBot.Services
                                     }
                                     var nextTimeAward = lastTimeAwarded.AddMonths(1);
                                     patronDb.NextTimeReward = new DateTime(nextTimeAward.Year, nextTimeAward.Month, 3);
+                                    
                                     try
                                     {
                                         var user = (IUser)_client.GetUser(userId);
 
                                         var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                                         embed.WithTitle("Patreon Support!");
-                                        embed.WithDescription($"Thank you so much for supporting the project :heart:.");
+                                        embed.WithDescription("Thank you so much for supporting the project :heart:.");
                                         embed.AddField("Pledge", amountCents / 100 + "$", true).AddField("Reward", amountCents * 10 + RiasBot.Currency);
-                                        await user.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                                        await user.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
                                     }
                                     catch
                                     {

@@ -4,14 +4,13 @@ using Newtonsoft.Json;
 using RiasBot.Services.Database.Models;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using RiasBot.Migrations;
 using RiasBot.Modules.Administration.Services;
 using RiasBot.Modules.Music.Services;
+using SharpLink;
 
 namespace RiasBot.Services
 {
@@ -43,9 +42,10 @@ namespace RiasBot.Services
 
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
-            _discord.UserVoiceStateUpdated += _musicService.CheckIfAlone;
             _discord.ShardReady += ShardReady;
             _discord.GuildUnavailable += GuildUnavailable;
+            
+            _discord.UserVoiceStateUpdated += _musicService.UpdateVoiceState;
 
             if (!String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
             {
@@ -184,7 +184,7 @@ namespace RiasBot.Services
         {
             if (_musicService.MPlayer.TryGetValue(guild.Id, out var musicPlayer))
             {
-                await musicPlayer.Destroy("", true, false);
+                await musicPlayer.Leave(guild, null);
             }
         }
 
@@ -326,6 +326,21 @@ namespace RiasBot.Services
         private async Task ShardReady(DiscordSocketClient client)
         {
             await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();
+
+            if (RiasBot.Lavalink is null)
+            {
+                RiasBot.Lavalink = new LavalinkManager(_discord, new LavalinkManagerConfig
+                {
+                    RESTHost = _creds.LavalinkConfig.RestHost,
+                    RESTPort = _creds.LavalinkConfig.RestPort,
+                    WebSocketHost = _creds.LavalinkConfig.WebSocketHost,
+                    WebSocketPort = _creds.LavalinkConfig.WebSocketPort,
+                    Authorization = _creds.LavalinkConfig.Authorization,
+                    TotalShards = _discord.Shards.Count 
+                });
+                await RiasBot.Lavalink.StartAsync();
+                RiasBot.Lavalink.TrackEnd += _musicService.TrackEnd;
+            }
         }
     }
 

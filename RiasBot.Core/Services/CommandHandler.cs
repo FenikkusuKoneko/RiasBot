@@ -66,18 +66,23 @@ namespace RiasBot.Services
                     || msg.HasStringPrefix("Rias ", ref argPos)
                     || (msg.HasMentionPrefix(context.Client.CurrentUser, ref argPos)))
                 {
-                    var result = await _commands.ExecuteAsync(context, argPos, _provider).ConfigureAwait(false);
-
-                    if (guildDb != null)
-                        if (guildDb.DeleteCommandMessage)
-                            await msg.DeleteAsync().ConfigureAwait(false);
-
-                    if (result.IsSuccess)
-                        RiasBot.CommandsRun++;
-                    else if (result.Error == CommandError.UnmetPrecondition ||
-                             result.Error == CommandError.Exception)
+                    var socketGuildUser = context.Guild.GetUser(_discord.CurrentUser.Id);
+                    var preconditions = socketGuildUser.GetPermissions((IGuildChannel)context.Channel);
+                    if (preconditions.SendMessages)
                     {
-                        await Task.Factory.StartNew(() => SendErrorResult(msg, result)).ConfigureAwait(false);
+                        var result = await _commands.ExecuteAsync(context, argPos, _provider).ConfigureAwait(false);
+
+                        if (guildDb != null)
+                            if (guildDb.DeleteCommandMessage)
+                                await msg.DeleteAsync().ConfigureAwait(false);
+
+                        if (result.IsSuccess)
+                            RiasBot.CommandsRun++;
+                        else if (result.Error == CommandError.UnmetPrecondition ||
+                                 result.Error == CommandError.Exception)
+                        {
+                            await Task.Factory.StartNew(() => SendErrorResult(msg, result)).ConfigureAwait(false);
+                        }
                     }
                 }
                 await db.SaveChangesAsync();
