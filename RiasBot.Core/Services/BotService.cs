@@ -327,20 +327,21 @@ namespace RiasBot.Services
         {
             await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();
 
-            if (RiasBot.Lavalink is null)
-            {
-                RiasBot.Lavalink = new LavalinkManager(_discord, new LavalinkManagerConfig
-                {
-                    RESTHost = _creds.LavalinkConfig.RestHost,
-                    RESTPort = _creds.LavalinkConfig.RestPort,
-                    WebSocketHost = _creds.LavalinkConfig.WebSocketHost,
-                    WebSocketPort = _creds.LavalinkConfig.WebSocketPort,
-                    Authorization = _creds.LavalinkConfig.Authorization,
-                    TotalShards = _discord.Shards.Count 
-                });
-                await RiasBot.Lavalink.StartAsync();
-                RiasBot.Lavalink.TrackEnd += _musicService.TrackEnd;
-            }
+            //f (RiasBot.Lavalink is null)
+            //
+            //   RiasBot.Lavalink = new LavalinkManager(_discord, new LavalinkManagerConfig
+            //   {
+            //       RESTHost = _creds.LavalinkConfig.RestHost,
+            //       RESTPort = _creds.LavalinkConfig.RestPort,
+            //       WebSocketHost = _creds.LavalinkConfig.WebSocketHost,
+            //       WebSocketPort = _creds.LavalinkConfig.WebSocketPort,
+            //       Authorization = _creds.LavalinkConfig.Authorization,
+            //       TotalShards = _discord.Shards.Count 
+            //   });
+            //   await RiasBot.Lavalink.StartAsync();
+            //   RiasBot.Lavalink.TrackEnd += _musicService.TrackEnd;
+            //   Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} Lavalink started!");
+            //
         }
     }
 

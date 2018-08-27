@@ -210,7 +210,16 @@ namespace RiasBot.Modules.Music.Services
         private async Task SearchTrackOnYouTube(ShardedCommandContext context, IGuild guild, IMessageChannel channel,
             IGuildUser user, IVoiceChannel voiceChannel, string keywords)
         {
-            var tracks = await RiasBot.Lavalink.GetTracksAsync("ytsearch:" + keywords);
+            LoadTracksResponse tracks;
+            try
+            {
+                tracks = await RiasBot.Lavalink.GetTracksAsync("ytsearch:" + keywords);
+            }
+            catch
+            {
+                await channel.SendErrorEmbed("An error occurred while trying to get the tracks!");
+                return;
+            }
 
             var description = "";
             var index = 1;

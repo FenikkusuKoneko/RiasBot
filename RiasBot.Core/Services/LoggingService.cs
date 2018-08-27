@@ -11,14 +11,13 @@ namespace RiasBot.Services
 {
     public class LoggingService : IRService
     {
-        private readonly CommandHandler _ch;
         private readonly DiscordShardedClient _discord;
         private readonly CommandService _commands;
 
         private bool ready;
-        public LoggingService(CommandHandler ch, DiscordShardedClient discord, CommandService commands)
+        public string CommandArguments;
+        public LoggingService(DiscordShardedClient discord, CommandService commands)
         {
-            _ch = ch;
             _discord = discord;
             _commands = commands;
 
@@ -34,14 +33,14 @@ namespace RiasBot.Services
             {
                 if (msg.Severity != LogSeverity.Verbose && msg.Severity != LogSeverity.Warning)
                 {
-                    var log = $"{DateTime.UtcNow.ToString("MMM dd hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
+                    var log = $"{DateTime.UtcNow:MMM dd hh:mm:ss} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
                     
                     return Console.Out.WriteLineAsync(log);
                 }
             }
             else
             {
-                var log = $"{DateTime.UtcNow.ToString("MMM dd hh:mm:ss")} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
+                var log = $"{DateTime.UtcNow:MMM dd hh:mm:ss} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
                 
                 return Console.Out.WriteLineAsync(log);
             }
@@ -52,7 +51,8 @@ namespace RiasBot.Services
         {
             var log = new List<string>()
             {
-                $"{DateTime.UtcNow.ToString("MMM dd hh:mm:ss")} [Command] \"{commandInfo.Name}\"",
+                $"{DateTime.UtcNow:MMM dd hh:mm:ss} [Command] \"{commandInfo.Name}\"",
+                $"\t[Arguments] \"{CommandArguments}\"",
                 $"\t[User] \"{context.User}\" ({context.User.Id})",
                 $"\t[Channel] \"{context.Channel.Name}\" ({context.Channel.Id})",
                 $"\t[Guild] \"{context.Guild?.Name ?? "DM"}\" ({context.Guild?.Id ?? 0})"

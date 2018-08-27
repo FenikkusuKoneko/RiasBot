@@ -379,6 +379,7 @@ namespace RiasBot.Modules.Music.Common
         {
             if (CurrentTrack is null)
             {
+                await SendMessage(MessageType.Error, "The queue is empty!").ConfigureAwait(false);
                 return;
             }
             
@@ -537,12 +538,19 @@ namespace RiasBot.Modules.Music.Common
                 Timeout.Dispose();
                 Timeout = null;
             }
-            
-            await _player.StopAsync();
-            await _player.DisconnectAsync();
-            _service.RemoveMusicPlayer(guild);
-            if (!string.IsNullOrEmpty(message))
-                await SendMessage(MessageType.Confirmation, message).ConfigureAwait(false);
+
+            try
+            {
+                await _player.DisconnectAsync(true);
+                _service.RemoveMusicPlayer(guild);
+                if (!string.IsNullOrEmpty(message))
+                    await SendMessage(MessageType.Confirmation, message).ConfigureAwait(false);
+            }
+            catch
+            {
+                await SendMessage(MessageType.Error, "An error occurred while trying to stop and leave the voice channel! " +
+                                                     "Please report this to the support server with additional screenshots!").ConfigureAwait(false);
+            }
         }
 
         private async Task AddToQueue(Song song, IGuildUser user)

@@ -23,10 +23,12 @@ namespace RiasBot.Services
         private readonly DbService _db;
         private readonly XpService _xpService;
         private readonly BotService _botService;
+        private readonly LoggingService _loggingService;
 
         public string Prefix;
 
-        public CommandHandler(DiscordShardedClient discord, CommandService commands, IBotCredentials creds, IServiceProvider provider, DbService db, XpService xpService, BotService botService)
+        public CommandHandler(DiscordShardedClient discord, CommandService commands, IBotCredentials creds, IServiceProvider provider,
+            DbService db, XpService xpService, BotService botService, LoggingService loggingService)
         {
             _discord = discord;
             _commands = commands;
@@ -35,6 +37,7 @@ namespace RiasBot.Services
             _db = db;
             _xpService = xpService;
             _botService = botService;
+            _loggingService = loggingService;
 
             _discord.MessageReceived += OnMessageReceivedAsync;
         }
@@ -71,7 +74,7 @@ namespace RiasBot.Services
                     if (preconditions.SendMessages)
                     {
                         var result = await _commands.ExecuteAsync(context, argPos, _provider).ConfigureAwait(false);
-
+                        _loggingService.CommandArguments = msg.Content.Substring(argPos);
                         if (guildDb != null)
                             if (guildDb.DeleteCommandMessage)
                                 await msg.DeleteAsync().ConfigureAwait(false);
