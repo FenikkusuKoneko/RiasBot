@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 using SharpLink;
 
 namespace RiasBot.Modules.Music.Common
@@ -18,7 +19,8 @@ namespace RiasBot.Modules.Music.Common
         {
             _service = service;
         }
-        
+
+        public IGuild Guild;
         public IMessageChannel Channel;
         public IVoiceChannel VoiceChannel;
 
@@ -55,14 +57,15 @@ namespace RiasBot.Modules.Music.Common
             if (_player is null)
             {
                 _player = await RiasBot.Lavalink.JoinAsync(voiceChannel);
+                Guild = guild;
                 Channel = channel;
                 VoiceChannel = voiceChannel;
-                await channel.SendConfirmationEmbed($"Connected to {Format.Bold(voiceChannel.ToString())}!").ConfigureAwait(false);
+                await SendMessage(MessageType.Confirmation, $"Connected to {Format.Bold(voiceChannel.ToString())}!").ConfigureAwait(false);
             }
             else
             {
                 if (check)
-                    await channel.SendErrorEmbed("I'm already connected to a voice channel!").ConfigureAwait(false);
+                    await SendMessage(MessageType.Error, "I'm already connected to a voice channel!").ConfigureAwait(false);
             }
         }
 
@@ -73,7 +76,7 @@ namespace RiasBot.Modules.Music.Common
             
             if (_queue.Count > 5000)    //5000 tracks are enough, you don't keep the music player online for years
             {
-                await channel.SendErrorEmbed("The queue is too heavy, please remove some tracks or clear it!").ConfigureAwait(false);
+                await SendMessage(MessageType.Error, "The queue is too heavy, please remove some tracks or clear it!").ConfigureAwait(false);
                 return;
             }
 
@@ -83,7 +86,7 @@ namespace RiasBot.Modules.Music.Common
                 {
                     if (TimeSpan.Compare(track.Length, new TimeSpan(3, 5, 0)) > 0)    //a little exception of 5 minutes
                     {
-                        await Channel.SendErrorEmbed("I cannot play tracks over 3 hours!");
+                        await SendMessage(MessageType.Error, "I cannot play tracks over 3 hours!").ConfigureAwait(false);
                         return;
                     }
                 }
@@ -93,7 +96,7 @@ namespace RiasBot.Modules.Music.Common
             {
                 if (track.IsStream)
                 {
-                    await Channel.SendErrorEmbed("I cannot play livestreams!");
+                    await SendMessage(MessageType.Error, "I cannot play livestreams!").ConfigureAwait(false);
                     return;
                 }
             }
@@ -147,7 +150,7 @@ namespace RiasBot.Modules.Music.Common
             if (Channel is null)
                 Channel = channel;
             
-            var message = await Channel.SendConfirmationEmbed("Adding tracks to queue, please wait!").ConfigureAwait(false);
+            var message = await SendMessage(MessageType.Confirmation, "Adding tracks to queue, please wait!").ConfigureAwait(false);
             RegisteringPlaylist = true;
             
             var count = 0;
@@ -192,7 +195,8 @@ namespace RiasBot.Modules.Music.Common
 
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithDescription($"Added to queue {count} tracks");
-                await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
+                if (message != null)
+                    await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
                 if (tracks.PlaylistInfo?.SelectedTrack != null)
                 {
                     if (tracks.PlaylistInfo.SelectedTrack > 0)
@@ -213,7 +217,8 @@ namespace RiasBot.Modules.Music.Common
             {
                 var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 embed.WithDescription("I couldn't load any track, check if the playlist link is available!");
-                await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
+                if (message != null)
+                    await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
             }
             RegisteringPlaylist = false;
         }
@@ -242,7 +247,7 @@ namespace RiasBot.Modules.Music.Common
                 await _player.PlayAsync(CurrentTrack.Track);
                 _elapsedTime.Restart();
                 _offsetElapsedTime = TimeSpan.Zero;
-                await Channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+                await SendMessageEmbed(embed).ConfigureAwait(false);
             }
         }
 
@@ -255,7 +260,7 @@ namespace RiasBot.Modules.Music.Common
             _isPaused = true;
             _elapsedTime.Stop();
             if (!string.IsNullOrEmpty(message))
-                await Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                await SendMessage(MessageType.Confirmation, message).ConfigureAwait(false);
         }
         
         public async Task Resume(string message)
@@ -267,7 +272,7 @@ namespace RiasBot.Modules.Music.Common
             _isPaused = false;
             _elapsedTime.Start();
             if (!string.IsNullOrEmpty(message))
-                await Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                await SendMessage(MessageType.Confirmation, message).ConfigureAwait(false);
         }
 
         public async Task NowPlaying()
@@ -309,11 +314,11 @@ namespace RiasBot.Modules.Music.Common
                 if (CurrentTrack.Source.Equals("youtube"))
                     embed.WithThumbnailUrl(CurrentTrack.Thumbnail);
 
-                await Channel.SendMessageAsync(embed: embed.Build());
+                await SendMessageEmbed(embed).ConfigureAwait(false);
             }
             else
             {
-                await Channel.SendErrorEmbed("No song is running!");
+                await SendMessage(MessageType.Error, "No track is running!").ConfigureAwait(false);
             }
         }
 
@@ -328,13 +333,13 @@ namespace RiasBot.Modules.Music.Common
                     if (vol <= 100)
                     {
                         await _player.SetVolumeAsync(vol).ConfigureAwait(false);
-                        await Channel.SendConfirmationEmbed($"Volume set to {volume}%").ConfigureAwait(false);
+                        await SendMessage(MessageType.Confirmation, $"Volume set to {volume}%").ConfigureAwait(false);
                     }
                 }
             }
             else
             {
-                await Channel.SendErrorEmbed("The volume is a Patreon feature!");
+                await SendMessage(MessageType.Error, "The volume is a Patreon feature!").ConfigureAwait(false);
             }
         }
 
@@ -354,19 +359,19 @@ namespace RiasBot.Modules.Music.Common
                     embed.AddField("From", _offsetElapsedTime.Add(_elapsedTime.Elapsed).GetTimeString(), true)
                         .AddField("To", time.GetTimeString(), true);
 
-                    await Channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+                    await SendMessageEmbed(embed).ConfigureAwait(false);
                     
                     _offsetElapsedTime = time;
                     _elapsedTime.Restart();
                 }
                 else
                 {
-                    await Channel.SendErrorEmbed("The time is over the track's length!");
+                    await SendMessage(MessageType.Error, "The time is over the track's length!").ConfigureAwait(false);
                 }
             }
             else
             {
-                await Channel.SendErrorEmbed("The current track is not seekable!");
+                await SendMessage(MessageType.Error, "The current track is not seekable!").ConfigureAwait(false);
             }
         }
         
@@ -418,7 +423,7 @@ namespace RiasBot.Modules.Music.Common
 
             var totalPages = (playlist.Count % 16 == 0) ? playlist.Count / 16 : playlist.Count / 16 + 1;
             embed.WithFooter($"{index+1}/{totalPages} | Total length: {totalLength.GetTimeString()}");
-            await Channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+            await SendMessageEmbed(embed).ConfigureAwait(false);
         }
 
         public async Task Skip()
@@ -429,7 +434,7 @@ namespace RiasBot.Modules.Music.Common
             }
             else
             {
-                await Channel.SendErrorEmbed("No next song in the queue!").ConfigureAwait(false);
+                await SendMessage(MessageType.Error, "No next track in the queue!").ConfigureAwait(false);
             }
         }
         
@@ -441,24 +446,26 @@ namespace RiasBot.Modules.Music.Common
             }
             else
             {
-                await Channel.SendErrorEmbed("The index is outside the queue's size").ConfigureAwait(false);
+                await SendMessage(MessageType.Error, "The index is outside the queue's size").ConfigureAwait(false);
             }
         }
         
         public async Task SkipTo(string title)
         {
-            var message = await Channel.SendConfirmationEmbed("Searching the track, please wait!").ConfigureAwait(false);
+            var message = await SendMessage(MessageType.Confirmation, "Searching the track, please wait!").ConfigureAwait(false);
             var index = _queue.FindIndex(x => x.Track.Title.Contains(title, StringComparison.InvariantCultureIgnoreCase));
             if (index > 0)
             {
-                await message.DeleteAsync().ConfigureAwait(false);
+                if (message != null)
+                    await message.DeleteAsync().ConfigureAwait(false);
                 await UpdateQueue(index);
             }
             else
             {
                 var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 embed.WithDescription("I couldn't find the track!");
-                await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
+                if (message != null)
+                    await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
             }
         }
 
@@ -475,7 +482,7 @@ namespace RiasBot.Modules.Music.Common
             if (CurrentTrack != null)
             {
                 _queue.Clear();
-                await Channel.SendConfirmationEmbed("Queue cleared!");
+                await SendMessage(MessageType.Confirmation, "Queue cleared!").ConfigureAwait(false);
             }
         }
         
@@ -484,7 +491,7 @@ namespace RiasBot.Modules.Music.Common
             if (CurrentTrack != null)
             {
                 _queue.Shuffle();
-                await Channel.SendConfirmationEmbed("Queue shuffled!");
+                await SendMessage(MessageType.Confirmation, "Queue shuffled!").ConfigureAwait(false);
             }
         }
         
@@ -494,40 +501,48 @@ namespace RiasBot.Modules.Music.Common
             {
                 var song = _queue[index];
                 _queue.RemoveAt(index);
-                await Channel.SendConfirmationEmbed($"{Format.Bold(song.Track.Title)} was removed from the queue").ConfigureAwait(false);
+                await SendMessage(MessageType.Confirmation, $"{Format.Bold(song.Track.Title)} was removed from the queue").ConfigureAwait(false);
             }
             else
             {
-                await Channel.SendErrorEmbed("The index is outside the queue's size").ConfigureAwait(false);
+                await SendMessage(MessageType.Error, "The index is outside the queue's size").ConfigureAwait(false);
             }
         }
         
         public async Task Remove(string title)
         {
-            var message = await Channel.SendConfirmationEmbed("Searching the track, please wait!").ConfigureAwait(false);
+            var message = await SendMessage(MessageType.Confirmation, "Searching the track, please wait!").ConfigureAwait(false);
             var song = _queue.Find(x => x.Track.Title.Contains(title, StringComparison.InvariantCultureIgnoreCase));
             if (song != null)
             {
                 _queue.Remove(song);
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithDescription($"{Format.Bold(song.Track.Title)} was removed from the queue");
-                await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
+                if (message != null)
+                    await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
             }
             else
             {
                 var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
                 embed.WithDescription("I couldn't find the track!");
-                await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
+                if (message != null)
+                    await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
             }
         }
 
         public async Task Leave(IGuild guild, string message)
         {
+            if (Timeout != null)
+            {
+                Timeout.Dispose();
+                Timeout = null;
+            }
+            
             await _player.StopAsync();
             await _player.DisconnectAsync();
             _service.RemoveMusicPlayer(guild);
             if (!string.IsNullOrEmpty(message))
-                await Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                await SendMessage(MessageType.Confirmation, message).ConfigureAwait(false);
         }
 
         private async Task AddToQueue(Song song, IGuildUser user)
@@ -570,7 +585,55 @@ namespace RiasBot.Modules.Music.Common
             embed.WithThumbnailUrl(song.Thumbnail);
 
             _queue.Add(song);
-            await Channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+            await SendMessageEmbed(embed).ConfigureAwait(false);
+        }
+
+        private async Task<IUserMessage> SendMessage(MessageType messageType, string message)
+        {
+            if (Guild != null && Channel != null)
+            {
+                var socketGuildUser = await Guild.GetCurrentUserAsync().ConfigureAwait(false);
+                var preconditions = ((SocketGuildUser)socketGuildUser).GetPermissions((IGuildChannel)Channel);
+                if (preconditions.ViewChannel)
+                {
+                    if (preconditions.SendMessages)
+                    {
+                        switch (messageType)
+                        {
+                            case MessageType.Confirmation:
+                                return await Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                            case MessageType.Error:
+                                return await Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+        
+        private async Task<IUserMessage> SendMessageEmbed(EmbedBuilder embed)
+        {
+            if (Guild != null && Channel != null)
+            {
+                var socketGuildUser = await Guild.GetCurrentUserAsync().ConfigureAwait(false);
+                var preconditions = ((SocketGuildUser)socketGuildUser).GetPermissions((IGuildChannel)Channel);
+                if (preconditions.ViewChannel)
+                {
+                    if (preconditions.SendMessages)
+                    {
+                        return await Channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private enum MessageType
+        {
+            Confirmation = 0,
+            Error = 1
         }
     }
 }
