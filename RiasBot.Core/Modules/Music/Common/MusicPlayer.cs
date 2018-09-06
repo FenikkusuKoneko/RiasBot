@@ -541,15 +541,15 @@ namespace RiasBot.Modules.Music.Common
 
             try
             {
-                await _player.DisconnectAsync(true);
+                if (VoiceChannel != null)
+                    await _player.DisconnectAsync(true);
                 _service.RemoveMusicPlayer(guild);
                 if (!string.IsNullOrEmpty(message))
                     await SendMessage(MessageType.Confirmation, message).ConfigureAwait(false);
             }
-            catch
+            catch (Exception e)
             {
-                await SendMessage(MessageType.Error, "An error occurred while trying to stop and leave the voice channel! " +
-                                                     "Please report this to the support server with additional screenshots!").ConfigureAwait(false);
+                Console.WriteLine(e);
             }
         }
 

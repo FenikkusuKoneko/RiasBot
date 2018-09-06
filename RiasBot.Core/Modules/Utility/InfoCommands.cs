@@ -67,10 +67,9 @@ namespace RiasBot.Modules.Utility
                 embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.CommandsRun, true);
                 embed.AddField("Uptime", GetTimeString(RiasBot.UpTime.Elapsed), true).AddField("Presence", $"{guilds.Count} Servers\n{textChannels} " +
                     $"Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
-                embed.AddField("Links", "[Website](https://riasbot.me)\n"+
-                                        "[Patreon](https://patreon.com/riasbot)\n"+
-                                        "[Vote](https://discordbots.org/bot/381387277764395008)", true);
-                embed.WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl());
+                embed.AddField("Links", $"[Invite me]({RiasBot.Invite}) • [Support server]({RiasBot.CreatorServer})\n" +
+                                        $"[Website]({RiasBot.Website}) • [Support me]({RiasBot.Patreon})\n" +
+                                        $"[Vote on DBL](https://discordbots.org/bot/{Context.Client.CurrentUser.Id})");
                 embed.WithFooter("© 2018 Copyright: Koneko");
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);

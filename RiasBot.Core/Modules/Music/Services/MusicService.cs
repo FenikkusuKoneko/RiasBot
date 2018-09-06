@@ -127,8 +127,20 @@ namespace RiasBot.Modules.Music.Services
                     {
                         if (mp.RegisteringPlaylist)
                             return;    //don't let people to spam playlists
-                        
-                        var tracks = await RiasBot.Lavalink.GetTracksAsync(keywords);
+
+                        LoadTracksResponse tracks;
+                        try
+                        {
+                            tracks = await RiasBot.Lavalink.GetTracksAsync(keywords);
+                        }
+                        catch (Exception e)
+                        {
+                            await channel.SendErrorEmbed("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                                                   $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
+                            await mp.Leave(guild, null).ConfigureAwait(false);
+                            Console.WriteLine(e);
+                            return;
+                        }
                         if (tracks.Tracks != null)
                         {
                             if (tracks.Tracks.Any())
@@ -151,7 +163,19 @@ namespace RiasBot.Modules.Music.Services
                             return;    //don't let people to spam playlists
                         
                         var url = $"https://youtu.be/{youtubeTrackInfo.VideoId}?list={youtubeTrackInfo.PlaylistId}";
-                        var tracks = await RiasBot.Lavalink.GetTracksAsync(url);
+                        LoadTracksResponse tracks;
+                        try
+                        {
+                            tracks = await RiasBot.Lavalink.GetTracksAsync(url);
+                        }
+                        catch (Exception e)
+                        {
+                            await channel.SendErrorEmbed("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                                                   $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
+                            await mp.Leave(guild, null).ConfigureAwait(false);
+                            Console.WriteLine(e);
+                            return;
+                        }
                         if (tracks.Tracks != null)
                         {
                             if (tracks.Tracks.Any())
@@ -162,7 +186,7 @@ namespace RiasBot.Modules.Music.Services
                                 }
                                 else
                                 {
-                                    mp.Play(guild, user, channel, voiceChannel, "youtube", tracks.Tracks.FirstOrDefault()).ConfigureAwait(false);
+                                    await mp.Play(guild, user, channel, voiceChannel, "youtube", tracks.Tracks.FirstOrDefault()).ConfigureAwait(false);
                                 }
                             }
                             else
@@ -178,12 +202,24 @@ namespace RiasBot.Modules.Music.Services
                 }
                 else if (keywords.Contains("soundcloud"))
                 {
-                    var tracks = await RiasBot.Lavalink.GetTracksAsync(keywords);
+                    LoadTracksResponse tracks;
+                    try
+                    {
+                        tracks = await RiasBot.Lavalink.GetTracksAsync(keywords);
+                    }
+                    catch (Exception e)
+                    {
+                        await channel.SendErrorEmbed("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                                               $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
+                        await mp.Leave(guild, null).ConfigureAwait(false);
+                        Console.WriteLine(e);
+                        return;
+                    }
                     if (tracks.Tracks != null)
                     {
                         if (tracks.Tracks.Any())
                         {
-                            mp.Play(guild, user, channel, voiceChannel, "soundcloud", tracks.Tracks.FirstOrDefault()).ConfigureAwait(false);
+                            await mp.Play(guild, user, channel, voiceChannel, "soundcloud", tracks.Tracks.FirstOrDefault()).ConfigureAwait(false);
                         }
                         else
                         {
@@ -203,11 +239,11 @@ namespace RiasBot.Modules.Music.Services
             else
             {
                 await mp.Join(guild, user, channel, voiceChannel, false).ConfigureAwait(false);
-                await SearchTrackOnYouTube(context, guild, channel, user, voiceChannel, keywords).ConfigureAwait(false);
+                await SearchTrackOnYouTube(context, mp, guild, channel, user, voiceChannel, keywords).ConfigureAwait(false);
             }
         }
 
-        private async Task SearchTrackOnYouTube(ShardedCommandContext context, IGuild guild, IMessageChannel channel,
+        private async Task SearchTrackOnYouTube(ShardedCommandContext context, MusicPlayer mp, IGuild guild, IMessageChannel channel,
             IGuildUser user, IVoiceChannel voiceChannel, string keywords)
         {
             LoadTracksResponse tracks;
@@ -215,9 +251,12 @@ namespace RiasBot.Modules.Music.Services
             {
                 tracks = await RiasBot.Lavalink.GetTracksAsync("ytsearch:" + keywords);
             }
-            catch
+            catch (Exception e)
             {
-                await channel.SendErrorEmbed("An error occurred while trying to get the tracks!");
+                await channel.SendErrorEmbed("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                                       $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
+                await mp.Leave(guild, null).ConfigureAwait(false);
+                Console.WriteLine(e);
                 return;
             }
 
@@ -250,7 +289,6 @@ namespace RiasBot.Modules.Music.Services
                 if (input >= 0 && input < tracks.Tracks.Count)
                 {
                     var track = tracks.Tracks.ElementAt(input);
-                    var mp = GetMusicPlayer(guild);
                     await mp.Play(guild, user, channel, voiceChannel, "youtube", track).ConfigureAwait(false);
                 }
             }
