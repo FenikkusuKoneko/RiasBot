@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.IO;
 
@@ -18,6 +19,7 @@ namespace RiasBot.Services.Implementation
 
         public static CommandData LoadCommand(string key)
         {
+            key = key.Replace("async", "", StringComparison.InvariantCultureIgnoreCase);
             _commandData.TryGetValue(key, out var toReturn);
 
             if (toReturn == null)

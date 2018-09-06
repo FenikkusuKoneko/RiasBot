@@ -2,8 +2,8 @@
 using RiasBot.Services;
 using Discord;
 using Discord.Commands;
-using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RiasBot.Extensions;
@@ -12,9 +12,9 @@ namespace RiasBot.Modules.Help
 {
     public partial class Help : RiasModule
     {
-        public readonly CommandHandler _ch;
-        public readonly CommandService _service;
-        public readonly IBotCredentials _creds;
+        private readonly CommandHandler _ch;
+        private readonly CommandService _service;
+        private readonly IBotCredentials _creds;
 
         public Help(CommandHandler ch, CommandService service, IBotCredentials creds)
         {
@@ -26,151 +26,145 @@ namespace RiasBot.Modules.Help
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [Priority(1)]
-        public async Task H()
+        public async Task HelpAsync()
         {
-            var embed = new EmbedBuilder();
-            embed.WithColor(RiasBot.GoodColor);
-            embed.WithDescription(_creds.HelpDM.Replace("%invite%", RiasBot.Invite).Replace("%creatorServer%", RiasBot.CreatorServer));
-            try
-            {
-                await Context.Message.AddReactionAsync(new Emoji("✅")).ConfigureAwait(false);
-                await Context.Message.Author.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
-            }
-            catch
-            {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't send you the help DM. Please verify if you disabled receiving DM from this server.");
-            }
+            //Ignore the raw string coding
+            
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+            embed.WithAuthor($"{Context.Client.CurrentUser.Username} Bot v{RiasBot.Version} help page", Context.Client.CurrentUser.RealAvatarUrl());
+            embed.WithDescription("I'm based on modules and submodules. Each module has submodules and each submodule has commands.\n\n" +
+                                  $"Type `{_ch.Prefix}modules` to get a list with all modules and submodules.\n\n" +
+                                  $"Type `{_ch.Prefix}commands <moduleName>` or `{_ch.Prefix}commands <submoduleName>` to get a list with all commands from the module or submodule.\n" +
+                                  $"Example: `{_ch.Prefix}commands Administration`, `{_ch.Prefix}commands Server`\n\n" +
+                                  $"Type `{_ch.Prefix}allcommands` to get a list with all commands.");
+            embed.AddField("Links", $"[Invite me]({RiasBot.Invite}) • [Support server]({RiasBot.CreatorServer})\n" +
+                                    $"[Website]({RiasBot.Website}) • [Support me]({RiasBot.Patreon})\n" +
+                                    $"[Vote on DBL](https://discordbots.org/bot/{Context.Client.CurrentUser.Id})");
+            embed.WithFooter("© 2018 Copyright: Koneko");
+            await Context.Channel.SendMessageAsync(embed: embed.Build());
         }
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [Priority(0)]
-        public async Task H(string command)
+        public async Task HelpAsync(string name)
         {
-            command = command?.Trim();
-            var result = _service.Search(Context, command);
+            name = name?.Trim();
+            var command = _service.Commands.FirstOrDefault(x => x.Aliases.Any(y => y.Equals(name, StringComparison.InvariantCultureIgnoreCase)));
 
-            if (!result.IsSuccess)
+            if (command is null)
             {
-                await Context.Channel.SendErrorEmbed($"I couldn't find that command. For help type `{_ch.Prefix}h` to send you a DM").ConfigureAwait(false);
+                await Context.Channel.SendErrorEmbed($"I couldn't find that command. For help type `{_ch.Prefix}help`").ConfigureAwait(false);
                 return;
             }
 
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+            
+            var summary = command.Summary;
 
-            var single = true;
+            var index = 0;
+            var aliases = new string[command.Aliases.Count];
 
-            foreach (var match in result.Commands)
+            foreach (var alias in command.Aliases)
             {
-                if (single)
-                {
-                    single = false;
-
-                    var cmd = match.Command;
-                    var summary = cmd.Summary;
-
-                    var index = 0;
-                    var aliases = new String[cmd.Aliases.Count];
-
-                    foreach (var alias in cmd.Aliases)
-                    {
-                        aliases[index] = _ch.Prefix + alias;
-                        index++;
-                    }
-
-                    var require = "";
-                    if (GetCommandRequirements(cmd) != require)
-                    {
-                        require = $" Requires {GetCommandRequirements(cmd)}";
-                    }
-
-                    embed.WithTitle(string.Join("/ ", aliases));
-
-                    //Replacements
-                    //if (summary.Contains("[prefix]"))
-                        summary = summary.Replace("[prefix]", _ch.Prefix);
-                    //if (summary.Contains("[currency]"))
-                        summary = summary.Replace("[currency]", RiasBot.Currency);
-
-                    embed.WithDescription(summary + require);
-                    embed.AddField("Example", cmd.Remarks.Replace("[prefix]", _ch.Prefix));
-                }
+                aliases[index] = _ch.Prefix + alias;
+                index++;
             }
+
+            var requires = "";
+            if (GetCommandRequirements(command) != requires)
+            {
+                requires = $"{GetCommandRequirements(command)}";
+            }
+
+            embed.WithTitle(string.Join("/ ", aliases));
+
+            summary = summary.Replace("[prefix]", _ch.Prefix);
+            summary = summary.Replace("[currency]", RiasBot.Currency);
+
+            embed.WithDescription(summary);
+
+            var module = command.Module.IsSubmodule ? $"{command.Module.Parent.Name} -> {command.Module.Name}" : $"{command.Module.Name}";
+            embed.AddField("Module", module, true);
+            
+            if (!string.IsNullOrEmpty(requires))
+                embed.AddField("Requires", requires, true);
+            
+            embed.AddField("Example", command.Remarks.Replace("[prefix]", _ch.Prefix));
             embed.WithCurrentTimestamp();
+            
             await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
-        public async Task Modules()
+        public async Task ModulesAsync()
         {
             var embed = new EmbedBuilder();
             embed.WithColor(RiasBot.GoodColor);
             embed.WithTitle("List of all modules and submodules");
 
-            var modules = _service.Modules.GroupBy(m => m.GetModule()).Select(m => m.Key).OrderBy(m => m.Name);
+            var modules = _service.Modules.GroupBy(m => m.GetModule()).Select(m => m.Key).OrderBy(m => m.Name).ToList();
 
-            var modulesDescription = new string[modules.Count()];
-            var index = 0;
+            var modulesDescription = new List<string>();
             foreach (var module in modules)
             {
-                modulesDescription[index] += Format.Bold($"•{module.Name}") + "\n";
+                modulesDescription.Add(Format.Bold($"•{module.Name}"));
                 var submodules = module.Submodules;
                 foreach (var submodule in submodules)
                 {
                     if (submodule.Name == "CommandsCommands")
-                        modulesDescription[index] += "\t~>" + "Commands" + "\n";
+                        modulesDescription.Add("\t~>" + "Commands");
                     else
-                        modulesDescription[index] += "\t~>" + submodule.Name.Replace("Commands", "") + "\n";
+                        modulesDescription.Add("\t~>" + submodule.Name.Replace("Commands", ""));
                 }
             }
-            embed.WithDescription(String.Join("\n\n", modulesDescription));
-            embed.WithFooter($"To see all commands for a module or submodule, type {_ch.Prefix + "cmds <module>"} or {_ch.Prefix + "cmds <submodule>"}");
+            embed.WithDescription(string.Join("\n", modulesDescription));
+            embed.WithFooter($"To get all commands for a module or submodule, type {_ch.Prefix}cmds <module> or {_ch.Prefix}cmds <submodule>");
             embed.WithCurrentTimestamp();
             await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
-        public async Task Commands([Remainder]string module)
+        public async Task CommandsAsync([Remainder]string name)
         {
-            module = module?.Trim().ToUpperInvariant();
-            var getModule = _service.Modules.Where(m => m.GetModule().Name.ToUpperInvariant().StartsWith(module)).FirstOrDefault();
+            var module = _service.Modules.FirstOrDefault(m => m.Name.StartsWith(name, StringComparison.InvariantCultureIgnoreCase));
 
-            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            var index = 0;
-
-            if (getModule != null)
+            if (module is null)
             {
-                var moduleCommands = getModule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
+                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the module or submodule. Type {Format.Code(_ch.Prefix + "modules")} to see all modules and submodules.").ConfigureAwait(false);
+                return;
+            }
+            
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+            if (!module.IsSubmodule)
+            {
+                var moduleCommands = module.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z?.Aliases.First());
 
-                var transformed = moduleCommands.Select(x =>
+                var commands = moduleCommands.Select(x =>
                 {
                     string nextAlias = null;
-                    if (x.Aliases.Skip(1).FirstOrDefault() != null)
+                    if (x?.Aliases.Skip(1).FirstOrDefault() != null)
                         nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
 
-                    return $"{_ch.Prefix + x.Aliases.First()} {nextAlias}";
+                    return $"{_ch.Prefix + x?.Aliases.First()} {nextAlias}";
                 });
-                embed.WithTitle($"All commands for module {getModule.Name}");
-                embed.AddField(getModule.Name, String.Join("\n", transformed), true);
+                embed.WithTitle($"All commands for module {module.Name}");
+                embed.AddField(module.Name, string.Join("\n", commands), true);
 
-                foreach (var command in getModule.Submodules.OrderBy(sb => sb.Name))
+                foreach (var command in module.Submodules.OrderBy(sb => sb.Name))
                 {
-                    var submoduleCommands = command.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
-                    var transformedSb = submoduleCommands.Select(x =>
+                    var submoduleCommands = command.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z?.Aliases.First());
+                    var commandsSb = submoduleCommands.Select(x =>
                     {
                         string nextAlias = null;
-                        if (x.Aliases.Skip(1).FirstOrDefault() != null)
+                        if (x?.Aliases.Skip(1).FirstOrDefault() != null)
                             nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
 
-                        return $"{_ch.Prefix + x.Aliases.First()} {nextAlias}";
+                        return $"{_ch.Prefix + x?.Aliases.First()} {nextAlias}";
                     });
-                    if (command.Name == "CommandsCommands") // I just want the Commands submodule
-                        embed.AddField("Commands", String.Join("\n", transformedSb), true);
-                    else
-                        embed.AddField(command.Name.Replace("Commands", ""), String.Join("\n", transformedSb), true);
-                    index++;
+                    embed.AddField(command.Name.Equals("CommandsCommands") ? "Commands" : command.Name.Replace("Commands", ""), string.Join("\n", commandsSb), true);
                 }
                 embed.WithFooter($"For a specific command info type {_ch.Prefix + "h <command>"}");
                 embed.WithCurrentTimestamp();
@@ -178,89 +172,59 @@ namespace RiasBot.Modules.Help
             }
             else
             {
-                try
+                var submoduleCommands = module.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z?.Aliases.First());
+
+                var transformed = submoduleCommands.Select(x =>
                 {
-                    ModuleInfo submodule = null;
-                    foreach (var mod in _service.Modules)
-                    {
-                        var sbFound = false;
-                        foreach (var submod in mod.Submodules)
-                        {
-                            if (submod.Name.ToUpperInvariant().StartsWith(module))
-                            {
-                                submodule = submod;
-                                sbFound = true;
-                                break;
-                            }
+                    string nextAlias = null;
+                    if (x?.Aliases.Skip(1).FirstOrDefault() != null)
+                        nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
 
-                        }
-                        if (sbFound)
-                            break;
-                    }
-                    var submoduleCommands = submodule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
-
-                    var transformed = submoduleCommands.Select(x =>
-                    {
-                        string nextAlias = null;
-                        if (x.Aliases.Skip(1).FirstOrDefault() != null)
-                            nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
-
-                        return $"{_ch.Prefix + x.Aliases.First()} {nextAlias}";
-                    });
-                    embed.WithTitle($"All commands for submodule {submodule.Name.Replace("Commands", "")}");
-                    embed.WithDescription(String.Join("\n", transformed));
-                    embed.WithFooter($"For a specific command info type {_ch.Prefix + "h <command>"}");
-                    embed.WithCurrentTimestamp();
-                    await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-                }
-                catch
-                {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the module or submodule. Type {Format.Code(_ch.Prefix + "modules")} to see all modules and submodules.").ConfigureAwait(false);
-                }
+                    return $"{_ch.Prefix + x?.Aliases.First()} {nextAlias}";
+                });
+                embed.WithTitle($"All commands for submodule {module.Name.Replace("Commands", "")}");
+                embed.WithDescription(string.Join("\n", transformed));
+                embed.WithFooter($"For a specific command info type {_ch.Prefix + "h <command>"}");
+                embed.WithCurrentTimestamp();
+                await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
         }
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [Ratelimit(1, 5, Measure.Seconds, applyPerGuild: true)]
-        public async Task AllCommands()
+        public async Task AllCommandsAsync()
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            var index = 0;
 
-            foreach (var getModule in _service.Modules.GroupBy(m => m.GetModule()).Select(m => m.Key).OrderBy(m => m.Name))
+            foreach (var module in _service.Modules.GroupBy(m => m.GetModule()).Select(m => m.Key).OrderBy(m => m.Name))
             {
-                if (getModule.Name == "Music") //don't show the Music module, is for tests
-                    continue;
-                var moduleCommands = getModule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
+                var moduleCommands = module.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z?.Aliases.First());
 
-                var transformed = moduleCommands.Select(x =>
+                var commands = moduleCommands.Select(x =>
                 {
                     string nextAlias = null;
-                    if (x.Aliases.Skip(1).FirstOrDefault() != null)
+                    if (x?.Aliases.Skip(1).FirstOrDefault() != null)
                         nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
 
-                    return $"{_ch.Prefix + x.Aliases.First()} {nextAlias}";
-                });
+                    return $"{_ch.Prefix + x?.Aliases.First()} {nextAlias}";
+                }).ToList();
                 embed.WithTitle($"All commands");
-                embed.AddField(getModule.Name, String.Join("\n", transformed), true);
+                if (commands.Any())
+                    embed.AddField(module.Name, string.Join("\n", commands), true);
 
-                foreach (var command in getModule.Submodules.OrderBy(sb => sb.Name))
+                foreach (var submodule in module.Submodules.OrderBy(sb => sb.Name))
                 {
-                    var submoduleCommands = command.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z.Aliases.First());
-                    var transformedSb = submoduleCommands.Select(x =>
+                    var submoduleCommands = submodule.Commands.GroupBy(c => c.Aliases.First()).Select(y => y.FirstOrDefault()).OrderBy(z => z?.Aliases.First());
+                    var commandsSb = submoduleCommands.Select(x =>
                     {
                         string nextAlias = null;
-                        if (x.Aliases.Skip(1).FirstOrDefault() != null)
+                        if (x?.Aliases.Skip(1).FirstOrDefault() != null)
                             nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
 
-                        return $"{_ch.Prefix + x.Aliases.First()} {nextAlias}";
+                        return $"{_ch.Prefix + x?.Aliases.First()} {nextAlias}";
                     });
-                    if (command.Name == "CommandsCommands") // I just want the Commands submodule
-                        embed.AddField("Commands", String.Join("\n", transformedSb), true);
-                    else
-                        embed.AddField(command.Name.Replace("Commands", ""), String.Join("\n", transformedSb), true);
-                    index++;
+                    embed.AddField(submodule.Name == "CommandsCommands" ? "Commands" : submodule.Name.Replace("Commands", ""), string.Join("\n", commandsSb), true);
                 }
                 if (embed.Fields.Count > 20)
                 {
@@ -291,19 +255,21 @@ namespace RiasBot.Modules.Help
             }
         }
 
-        public string GetCommandRequirements(CommandInfo cmd) =>
-            string.Join(", ", cmd.Preconditions
-                  .Where(ca => ca is RequireOwnerAttribute || ca is RequireUserPermissionAttribute)
-                  .Select(ca =>
-                  {
-                      if (ca is RequireOwnerAttribute)
-                          return Format.Bold("Bot Owner");
+        private string GetCommandRequirements(CommandInfo cmd)
+        {
 
-                      var cau = (RequireUserPermissionAttribute)ca;
-                      if (cau.GuildPermission != null)
-                          return Format.Bold(cau.GuildPermission.ToString());
+            return string.Join(", ", cmd.Preconditions.Where(precondition => precondition is RequireOwnerAttribute || precondition is RequireUserPermissionAttribute)
+                .Select(precondition =>
+                {
+                    if (precondition is RequireOwnerAttribute)
+                        return "Bot Owner";
 
-                      return Format.Bold(cau.ChannelPermission.ToString());
-                  }));
+                    var preconditionAtribute = (RequireUserPermissionAttribute) precondition;
+                    if (preconditionAtribute.GuildPermission != null)
+                        return preconditionAtribute.GuildPermission.ToString();
+
+                    return preconditionAtribute.ChannelPermission.ToString();
+                }));
+        }
     }
 }

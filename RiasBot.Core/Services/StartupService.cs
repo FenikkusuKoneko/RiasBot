@@ -58,8 +58,9 @@ namespace RiasBot.Services
                 _commands.AddTypeReader(typeArgs[0], typeReader);
             }
             await _commands.AddModulesAsync(Assembly.GetAssembly(typeof(RiasBot)), _provider).ConfigureAwait(false);
-            if (!RiasBot.IsBeta)
-                await _commands.RemoveModuleAsync<Music>();
+            
+            await _commands.RemoveModuleAsync<Music>();
+            
             RiasBot.UpTime.Start();
         }
     }

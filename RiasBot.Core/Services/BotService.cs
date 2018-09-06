@@ -21,6 +21,7 @@ namespace RiasBot.Services
         private readonly MusicService _musicService;
         private readonly MuteService _muteService;
         private readonly IBotCredentials _creds;
+        private readonly LoggingService _loggingService;
 
         private Timer _dblTimer;
         private Timer _dblVotesTimer;
@@ -32,13 +33,14 @@ namespace RiasBot.Services
         public string[] Statuses;
         private int _statusCount = 0;
 
-        public BotService(DiscordShardedClient discord, DbService db, MusicService musicService, MuteService muteService, IBotCredentials creds)
+        public BotService(DiscordShardedClient discord, DbService db, MusicService musicService, MuteService muteService, IBotCredentials creds, LoggingService loggingService)
         {
             _discord = discord;
             _db = db;
             _musicService = musicService;
             _muteService = muteService;
             _creds = creds;
+            _loggingService = loggingService;
 
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
@@ -325,23 +327,23 @@ namespace RiasBot.Services
 
         private async Task ShardReady(DiscordSocketClient client)
         {
+            _loggingService.Ready = true;
             await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();
 
-            //f (RiasBot.Lavalink is null)
-            //
-            //   RiasBot.Lavalink = new LavalinkManager(_discord, new LavalinkManagerConfig
-            //   {
-            //       RESTHost = _creds.LavalinkConfig.RestHost,
-            //       RESTPort = _creds.LavalinkConfig.RestPort,
-            //       WebSocketHost = _creds.LavalinkConfig.WebSocketHost,
-            //       WebSocketPort = _creds.LavalinkConfig.WebSocketPort,
-            //       Authorization = _creds.LavalinkConfig.Authorization,
-            //       TotalShards = _discord.Shards.Count 
-            //   });
-            //   await RiasBot.Lavalink.StartAsync();
-            //   RiasBot.Lavalink.TrackEnd += _musicService.TrackEnd;
-            //   Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} Lavalink started!");
-            //
+//            if (RiasBot.Lavalink is null)
+//            
+//               RiasBot.Lavalink = new LavalinkManager(_discord, new LavalinkManagerConfig
+//               {
+//                   RESTHost = _creds.LavalinkConfig.RestHost,
+//                   RESTPort = _creds.LavalinkConfig.RestPort,
+//                   WebSocketHost = _creds.LavalinkConfig.WebSocketHost,
+//                   WebSocketPort = _creds.LavalinkConfig.WebSocketPort,
+//                   Authorization = _creds.LavalinkConfig.Authorization,
+//                   TotalShards = _discord.Shards.Count 
+//               });
+//               await RiasBot.Lavalink.StartAsync();
+//               RiasBot.Lavalink.TrackEnd += _musicService.TrackEnd;
+//            Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} Lavalink started!");
         }
     }
 

@@ -14,7 +14,7 @@ namespace RiasBot.Services
         private readonly DiscordShardedClient _discord;
         private readonly CommandService _commands;
 
-        private bool ready;
+        public bool Ready;
         public string CommandArguments;
         public LoggingService(DiscordShardedClient discord, CommandService commands)
         {
@@ -24,12 +24,11 @@ namespace RiasBot.Services
             _discord.Log += DiscordLogAsync;
             _commands.Log += DiscordLogAsync;
             _commands.CommandExecuted += CommandLogAsync;
-            _discord.ShardReady += Ready;
         }
 
         private Task DiscordLogAsync(LogMessage msg)
         {
-            if (ready)
+            if (Ready)
             {
                 if (msg.Severity != LogSeverity.Verbose && msg.Severity != LogSeverity.Warning)
                 {
@@ -59,12 +58,6 @@ namespace RiasBot.Services
             };
             
             return Console.Out.WriteLineAsync(String.Join("\n", log));
-        }
-
-        private Task Ready(DiscordSocketClient client)
-        {
-            ready = true;
-            return null;
         }
     }
 }

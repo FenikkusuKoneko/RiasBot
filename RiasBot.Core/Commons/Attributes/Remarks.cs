@@ -13,10 +13,10 @@ namespace RiasBot.Commons.Attributes
 
         }
 
-        public static string GetUsage(string memberName)
+        private static string GetUsage(string memberName)
         {
             var usage = Localization.LoadCommand(memberName.ToLowerInvariant()).Remarks;
-            return string.Join(" OR ", usage
+            return string.Join("\n", usage
                 .Select(x => Format.Code(x)));
         }
     }
