@@ -15,7 +15,7 @@ namespace RiasBot
 {
     public class RiasBot
     {
-        public const string Version = "1.10.0";
+        public const string Version = "1.11.0";
         public const uint GoodColor = 0x009688;
         public const uint BadColor = 0xff0000;
         public const string Currency = "<:heart_diamond:416513090549448724>";
@@ -29,8 +29,6 @@ namespace RiasBot
         public const string WeebApi = "https://api-v2.weeb.sh/";
         public static readonly Stopwatch UpTime = new Stopwatch();
         public static int CommandsRun = 0;
-
-        public const bool IsBeta = false;
 
         public static LavalinkManager Lavalink { get; set; }
         private BotCredentials Credentials { get; set; }

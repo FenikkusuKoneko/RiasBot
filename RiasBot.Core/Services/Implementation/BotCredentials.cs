@@ -10,7 +10,6 @@ namespace RiasBot.Services.Implementation
 {
     public class BotCredentials : IBotCredentials
     {
-        public ulong ClientId { get; }
         public string Prefix { get; }
         public string Token { get; }
         public string GoogleApiKey { get; }
@@ -19,7 +18,7 @@ namespace RiasBot.Services.Implementation
         public string DiscordBotsListApiKey { get; }
         public string WeebServicesToken { get; }
         public LavalinkConfig LavalinkConfig { get; }
-        public string HelpDM { get; }
+        public bool IsBeta { get; }    //beta bool is too protect things to run only on the public version, like apis
 
         private readonly string _credsFileName = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
         public BotCredentials()
@@ -29,8 +28,6 @@ namespace RiasBot.Services.Implementation
 
             var config = configBuilder.Build();
 
-            UInt64.TryParse(config[nameof(ClientId)], out var clientId);
-            ClientId = clientId;
             Prefix = config[nameof(Prefix)];
             Token = config[nameof(Token)];
             GoogleApiKey = config[nameof(GoogleApiKey)];
@@ -43,8 +40,7 @@ namespace RiasBot.Services.Implementation
             LavalinkConfig = new LavalinkConfig(lavalinkConfig["RestHost"], ushort.Parse(lavalinkConfig["RestPort"]),
                 lavalinkConfig["WebSocketHost"], ushort.Parse(lavalinkConfig["WebSocketPort"]),
                 lavalinkConfig["Authorization"]);
-            
-            HelpDM = config[nameof(HelpDM)];
+            IsBeta = config.GetValue<bool>(nameof(IsBeta));
         }
     }
 }

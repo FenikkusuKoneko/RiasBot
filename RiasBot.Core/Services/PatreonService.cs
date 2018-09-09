@@ -19,7 +19,7 @@ namespace RiasBot.Services
         private readonly DbService _db;
         private readonly IBotCredentials _creds;
 
-        private Timer timer;
+        private Timer _timer;
 
         public PatreonService(DiscordShardedClient client, DbService db, IBotCredentials creds)
         {
@@ -27,9 +27,9 @@ namespace RiasBot.Services
             _db = db;
             _creds = creds;
 
-            if (!RiasBot.IsBeta && !String.IsNullOrEmpty(_creds.PatreonAccessToken))
+            if (!_creds.IsBeta && !string.IsNullOrEmpty(_creds.PatreonAccessToken))
             {
-                timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
+                _timer = new Timer(new TimerCallback(async _ => await RewardPatron()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
             }
         }
         private int campaignId;

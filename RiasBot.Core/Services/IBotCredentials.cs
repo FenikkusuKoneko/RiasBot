@@ -7,7 +7,6 @@ namespace RiasBot.Services
 {
     public interface IBotCredentials
     {
-        ulong ClientId { get; }
         string Prefix { get; }
         string Token { get; }
         string GoogleApiKey { get; }
@@ -16,7 +15,7 @@ namespace RiasBot.Services
         string DiscordBotsListApiKey { get; }
         string WeebServicesToken { get; }
         LavalinkConfig LavalinkConfig { get; }
-        string HelpDM { get; }
+        bool IsBeta { get; }    //beta bool is too protect things to run only on the public version, like apis
     }
     
     public class LavalinkConfig

@@ -31,9 +31,9 @@ namespace RiasBot.Services
 
         public async Task StartAsync()
         {
-            if (_creds.ClientId <= 0 || String.IsNullOrEmpty(_creds.Token) || String.IsNullOrEmpty(_creds.Prefix))
+            if (string.IsNullOrEmpty(_creds.Token) || string.IsNullOrEmpty(_creds.Prefix))
             {
-                Console.WriteLine("You must set the client ID, the token and the prefix in credentials.json");
+                Console.WriteLine("You must set the token and the prefix in credentials.json");
                 Console.ReadKey();
                 return;
             }

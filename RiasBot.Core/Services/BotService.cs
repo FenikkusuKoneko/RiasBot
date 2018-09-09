@@ -49,9 +49,9 @@ namespace RiasBot.Services
             
             _discord.UserVoiceStateUpdated += _musicService.UpdateVoiceState;
 
-            if (!String.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
+            if (!string.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
             {
-                if(!RiasBot.IsBeta)
+                if(!_creds.IsBeta)
                 {
                     _dblTimer = new Timer(new TimerCallback(async _ => await DblStats()), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
                     _dblVotesTimer = new Timer(new TimerCallback(async _ => await DblVotes()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
