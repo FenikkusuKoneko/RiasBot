@@ -61,7 +61,7 @@ namespace RiasBot.Modules.Utility
 
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
 
-                embed.WithAuthor("Rias Bot " + RiasBot.Version, Context.Client.CurrentUser.GetAvatarUrl(ImageFormat.Auto));
+                embed.WithAuthor($"{Context.Client.CurrentUser.Username} Bot v{RiasBot.Version}", Context.Client.CurrentUser.RealAvatarUrl());
                 embed.AddField("Author", author?.ToString() ?? RiasBot.Author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
                 embed.AddField("Master ID", RiasBot.KonekoId, true).AddField("Shard", $"#{shard}/{_client.Shards.Count()}", true);
                 embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.CommandsRun, true);
@@ -70,6 +70,10 @@ namespace RiasBot.Modules.Utility
                 embed.AddField("Links", $"[Invite me]({RiasBot.Invite}) • [Support server]({RiasBot.CreatorServer})\n" +
                                         $"[Website]({RiasBot.Website}) • [Support me]({RiasBot.Patreon})\n" +
                                         $"[Vote on DBL](https://discordbots.org/bot/{Context.Client.CurrentUser.Id})");
+                embed.WithThumbnailUrl(Context.Client.CurrentUser.RealAvatarUrl());
+
+                Context.Client.CurrentUser.GetAvatarUrl();
+                
                 embed.WithFooter("© 2018 Copyright: Koneko");
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
