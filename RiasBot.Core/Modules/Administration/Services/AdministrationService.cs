@@ -32,7 +32,7 @@ namespace RiasBot.Modules.Administration.Services
                 embed.WithDescription("Kick");
                 embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Moderator", moderator, true);
-                embed.WithThumbnailUrl(user.RealAvatarUrl());
+                embed.WithThumbnailUrl(user.GetRealAvatarUrl());
                 if (!String.IsNullOrEmpty(reason))
                     embed.AddField("Reason", reason);
 
@@ -76,7 +76,7 @@ namespace RiasBot.Modules.Administration.Services
                 embed.WithDescription("Ban");
                 embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Moderator", moderator, true);
-                embed.WithThumbnailUrl(user.RealAvatarUrl());
+                embed.WithThumbnailUrl(user.GetRealAvatarUrl());
                 if (reason != null)
                     embed.AddField("Reason", reason);
 
@@ -120,7 +120,7 @@ namespace RiasBot.Modules.Administration.Services
                 embed.WithDescription("SoftBan");
                 embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Moderator", moderator, true);
-                embed.WithThumbnailUrl(user.RealAvatarUrl());
+                embed.WithThumbnailUrl(user.GetRealAvatarUrl());
                 if (reason != null)
                     embed.AddField("Reason", reason);
 
@@ -165,7 +165,7 @@ namespace RiasBot.Modules.Administration.Services
                 embed.WithDescription("PruneBan");
                 embed.AddField("User", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Moderator", moderator, true);
-                embed.WithThumbnailUrl(user.RealAvatarUrl());
+                embed.WithThumbnailUrl(user.GetRealAvatarUrl());
                 if (reason != null)
                     embed.AddField("Reason", reason);
 

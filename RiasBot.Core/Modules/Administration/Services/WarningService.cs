@@ -39,7 +39,7 @@ namespace RiasBot.Modules.Administration.Services
                 embed.WithTitle($"Warn");
                 embed.AddField("Username", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Warn no.", nrWarnings + 1, true).AddField("Moderator", moderator, true);
-                embed.WithThumbnailUrl(user.RealAvatarUrl());
+                embed.WithThumbnailUrl(user.GetRealAvatarUrl());
                 if (!String.IsNullOrEmpty(reason))
                     embed.AddField("Reason", reason, true);
 
@@ -104,14 +104,14 @@ namespace RiasBot.Modules.Administration.Services
                     warnings.WarnsPunishment = warns;
                     warnings.PunishmentMethod = "mute";
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("muted")}.").ConfigureAwait(false);
+                    await channel.SendConfirmationMessageAsync($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("muted")}.").ConfigureAwait(false);
                 }
                 else
                 {
                     var warningPunishment = new GuildConfig { GuildId = guild.Id, WarnsPunishment = warns, PunishmentMethod = "mute" };
                     await db.AddAsync(warningPunishment).ConfigureAwait(false);
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("muted")}.").ConfigureAwait(false);
+                    await channel.SendConfirmationMessageAsync($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("muted")}.").ConfigureAwait(false);
                 }
             }
         }
@@ -126,14 +126,14 @@ namespace RiasBot.Modules.Administration.Services
                     warnings.WarnsPunishment = warns;
                     warnings.PunishmentMethod = "kick";
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("kicked")}.").ConfigureAwait(false);
+                    await channel.SendConfirmationMessageAsync($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("kicked")}.").ConfigureAwait(false);
                 }
                 else
                 {
                     var warningPunishment = new GuildConfig { GuildId = guild.Id, WarnsPunishment = warns, PunishmentMethod = "kick" };
                     await db.AddAsync(warningPunishment).ConfigureAwait(false);
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("kicked")}.").ConfigureAwait(false);
+                    await channel.SendConfirmationMessageAsync($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("kicked")}.").ConfigureAwait(false);
                 }
             }
         }
@@ -148,14 +148,14 @@ namespace RiasBot.Modules.Administration.Services
                     warnings.WarnsPunishment = warns;
                     warnings.PunishmentMethod = "ban";
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("banned")}.").ConfigureAwait(false);
+                    await channel.SendConfirmationMessageAsync($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("banned")}.").ConfigureAwait(false);
                 }
                 else
                 {
                     var warningPunishment = new GuildConfig { GuildId = guild.Id, WarnsPunishment = warns, PunishmentMethod = "ban" };
                     await db.AddAsync(warningPunishment).ConfigureAwait(false);
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("banned")}.").ConfigureAwait(false);
+                    await channel.SendConfirmationMessageAsync($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("banned")}.").ConfigureAwait(false);
                 }
             }
         }
@@ -170,14 +170,14 @@ namespace RiasBot.Modules.Administration.Services
                     warnings.WarnsPunishment = warns;
                     warnings.PunishmentMethod = "softban";
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("softbanned")}.").ConfigureAwait(false);
+                    await channel.SendConfirmationMessageAsync($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("softbanned")}.").ConfigureAwait(false);
                 }
                 else
                 {
                     var warningPunishment = new GuildConfig { GuildId = guild.Id, WarnsPunishment = warns, PunishmentMethod = "softban" };
                     await db.AddAsync(warningPunishment).ConfigureAwait(false);
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("softbanned")}.").ConfigureAwait(false);
+                    await channel.SendConfirmationMessageAsync($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("softbanned")}.").ConfigureAwait(false);
                 }
             }
         }
@@ -192,14 +192,14 @@ namespace RiasBot.Modules.Administration.Services
                     warnings.WarnsPunishment = warns;
                     warnings.PunishmentMethod = "pruneban";
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("prunebanned")}.").ConfigureAwait(false);
+                    await channel.SendConfirmationMessageAsync($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("prunebanned")}.").ConfigureAwait(false);
                 }
                 else
                 {
                     var warningPunishment = new GuildConfig { GuildId = guild.Id, WarnsPunishment = warns, PunishmentMethod = "pruneban" };
                     await db.AddAsync(warningPunishment).ConfigureAwait(false);
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await channel.SendConfirmationEmbed($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("prunebanned")}.").ConfigureAwait(false);
+                    await channel.SendConfirmationMessageAsync($"{user.Mention} at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold("prunebanned")}.").ConfigureAwait(false);
                 }
             }
         }

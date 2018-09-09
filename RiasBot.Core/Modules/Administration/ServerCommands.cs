@@ -41,22 +41,22 @@ namespace RiasBot.Modules.Administration
                         if (String.IsNullOrEmpty(name))
                         {
                             await user.ModifyAsync(x => x.Nickname = name).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {Format.Bold($"{user}'s nickname")} was changed to the default name {Format.Bold(user.ToString())}.").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} {Format.Bold($"{user}'s nickname")} was changed to the default name {Format.Bold(user.ToString())}.").ConfigureAwait(false);
                         }
                         else
                         {
                             await user.ModifyAsync(x => x.Nickname = name).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {Format.Bold($"{user}'s nickname")} was changed to {Format.Bold(name)}.").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} {Format.Bold($"{user}'s nickname")} was changed to {Format.Bold(name)}.").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot change the server's owner nickname.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot change the server's owner nickname.").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the user.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the user.").ConfigureAwait(false);
                 }
             }
 
@@ -68,7 +68,7 @@ namespace RiasBot.Modules.Administration
             public async Task SetGuildName([Remainder]string name)
             {
                 await Context.Guild.ModifyAsync(x => x.Name = name);
-                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} server's name changed to {Format.Bold(name)}.").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} server's name changed to {Format.Bold(name)}.").ConfigureAwait(false);
             }
 
             [RiasCommand][@Alias]
@@ -86,11 +86,11 @@ namespace RiasBot.Modules.Administration
                     res.CopyTo(ms);
                     ms.Position = 0;
                     await Context.Guild.ModifyAsync(x => x.Icon = new Image(ms)).ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} server's icon changed successfully.").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} server's icon changed successfully.").ConfigureAwait(false);
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the image or the url are not good.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the image or the url are not good.").ConfigureAwait(false);
                 }
             }
         }

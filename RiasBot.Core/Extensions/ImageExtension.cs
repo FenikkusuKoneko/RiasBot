@@ -1,6 +1,5 @@
 ﻿using ImageMagick;
 using System;
-using Remotion.Linq.Clauses;
 
 namespace RiasBot.Extensions
 {

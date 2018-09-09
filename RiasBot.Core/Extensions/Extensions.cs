@@ -66,28 +66,28 @@ namespace RiasBot.Extensions
             {
                 var embed = new EmbedBuilder();
                 var embedDeserialized = JsonConvert.DeserializeObject<JsonEmbed>(json);
-                var color = (embedDeserialized.color == true) ? RiasBot.GoodColor : RiasBot.BadColor;
+                var color = (embedDeserialized.Color == true) ? RiasBot.GoodColor : RiasBot.BadColor;
                 embed.WithColor(color);
-                embed.WithTitle(embedDeserialized.title);
+                embed.WithTitle(embedDeserialized.Title);
 
-                var description = embedDeserialized.description;
+                var description = embedDeserialized.Description;
                 description = description.Replace("[currency]", RiasBot.Currency);
                 description = description.Replace("%currency%", RiasBot.Currency);
                 embed.WithDescription(description);
-                embed.WithThumbnailUrl(embedDeserialized.thumbnail);
-                embed.WithImageUrl(embedDeserialized.image);
+                embed.WithThumbnailUrl(embedDeserialized.Thumbnail);
+                embed.WithImageUrl(embedDeserialized.Image);
                 try
                 {
-                    foreach (var field in embedDeserialized.fields)
+                    foreach (var field in embedDeserialized.Fields)
                     {
-                        embed.AddField(field.title, field.content, field.inline);
+                        embed.AddField(field.Title, field.Content, field.Inline);
                     }
                 }
                 catch
                 {
 
                 }
-                if (embedDeserialized.timestamp)
+                if (embedDeserialized.Timestamp)
                     embed.WithCurrentTimestamp();
                 return embed;
             }
@@ -140,19 +140,19 @@ namespace RiasBot.Extensions
 
     public class JsonEmbed
     {
-        public bool color { get; set; }
-        public string title { get; set; }
-        public string description { get; set; }
-        public string thumbnail { get; set; }
-        public string image { get; set; }
-        public EmbedFields[] fields { get; set; }
-        public bool timestamp { get; set; }
+        public bool Color { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Thumbnail { get; set; }
+        public string Image { get; set; }
+        public EmbedFields[] Fields { get; set; }
+        public bool Timestamp { get; set; }
     }
 
     public class EmbedFields
     {
-        public string title { get; set; }
-        public string content { get; set; }
-        public bool inline { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public bool Inline { get; set; }
     }
 }

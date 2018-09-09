@@ -35,7 +35,7 @@ namespace RiasBot.Modules.Searches
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find anything.");
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find anything.");
                 }
             }
 
@@ -56,7 +56,7 @@ namespace RiasBot.Modules.Searches
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find anything.");
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find anything.");
                 }
             }
 
@@ -77,7 +77,7 @@ namespace RiasBot.Modules.Searches
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find anything.");
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find anything.");
                 }
             }
 
@@ -98,7 +98,7 @@ namespace RiasBot.Modules.Searches
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find anything.");
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find anything.");
                 }
             }
         }

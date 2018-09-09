@@ -58,18 +58,18 @@ namespace RiasBot.Modules.Utility
             {
                 if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
                     return;
                 }
                 if (!url.Contains("https"))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url must be https").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the url must be https").ConfigureAwait(false);
                     return;
 
                 }
                 if (!url.Contains(".png") && !url.Contains(".jpg") && !url.Contains(".jpeg"))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direct link for a png, jpg or jpeg image.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the url is not a direct link for a png, jpg or jpeg image.").ConfigureAwait(false);
                     return;
                 }
 
@@ -80,16 +80,16 @@ namespace RiasBot.Modules.Utility
                         await Context.Channel.SendFileAsync(preview, $"{Context.User.Id}_preview.png").ConfigureAwait(false);
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User} something went wrong! Check if the image is available or the url is a direct link.");
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User} something went wrong! Check if the image is available or the url is a direct link.");
                         return;
                     }
-                    await Context.Channel.SendConfirmationEmbed($"Do you want to set this background image? Price: 1000 {RiasBot.Currency}. Type `confirm` or `cancel`").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync($"Do you want to set this background image? Price: 1000 {RiasBot.Currency}. Type `confirm` or `cancel`").ConfigureAwait(false);
                     var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromMinutes(1)).ConfigureAwait(false);
                     if (input != null)
                     {
                         if (input.Content.ToLowerInvariant() != "confirm")
                         {
-                            await Context.Channel.SendErrorEmbed("Canceled!").ConfigureAwait(false);
+                            await Context.Channel.SendErrorMessageAsync("Canceled!").ConfigureAwait(false);
                             return;
                         }
                         var userDb = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
@@ -108,17 +108,17 @@ namespace RiasBot.Modules.Utility
                                     var image = new Profile { UserId = Context.User.Id, BackgroundUrl = url, BackgroundDim = 50 };
                                     await db.AddAsync(image).ConfigureAwait(false);
                                 }
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} new background image set.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} new background image set.").ConfigureAwait(false);
                                 await db.SaveChangesAsync().ConfigureAwait(false);
                             }
                             else
                             {
-                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.");
+                                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.");
                             }
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.");
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.");
                         }
                     }
                 }
@@ -143,7 +143,7 @@ namespace RiasBot.Modules.Utility
                             var dimDb = new Profile { UserId = Context.User.Id, BackgroundDim = dim };
                             await db.AddAsync(dimDb).ConfigureAwait(false);
                         }
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} profile's background dim set to {dim}%.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} profile's background dim set to {dim}%.").ConfigureAwait(false);
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                 }
@@ -168,13 +168,13 @@ namespace RiasBot.Modules.Utility
                             var bioDb = new Profile { UserId = Context.User.Id, BackgroundDim = 50, Bio = bio };
                             await db.AddAsync(bioDb).ConfigureAwait(false);
                         }
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} new profile's bio set.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} new profile's bio set.").ConfigureAwait(false);
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the bio's length must be less than 150 characters.");
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the bio's length must be less than 150 characters.");
                 }
             }
         }

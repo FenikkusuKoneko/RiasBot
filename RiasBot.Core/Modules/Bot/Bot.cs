@@ -71,7 +71,7 @@ namespace RiasBot.Modules.Bot
         [RequireOwner]
         public async Task Update()
         {
-            await Context.Channel.SendConfirmationEmbed("Shutting down...").ConfigureAwait(false);
+            await Context.Channel.SendConfirmationMessageAsync("Shutting down...").ConfigureAwait(false);
 
             foreach (var musicPlayer in _musicService.MPlayer)
             {
@@ -107,11 +107,11 @@ namespace RiasBot.Modules.Bot
                         await channel.SendMessageAsync(message).ConfigureAwait(false);
                     else
                         await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed("Message sent!").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync("Message sent!").ConfigureAwait(false);
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the guild or the channel");
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the guild or the channel");
                 }
             }
             else
@@ -123,11 +123,11 @@ namespace RiasBot.Modules.Bot
                         await user.SendMessageAsync(message).ConfigureAwait(false);
                     else
                         await user.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed("Message sent!").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync("Message sent!").ConfigureAwait(false);
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the user").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the user").ConfigureAwait(false);
                 }
             }
         }
@@ -154,11 +154,11 @@ namespace RiasBot.Modules.Bot
                     await ((IUserMessage)msg).ModifyAsync(x => x.Content = message).ConfigureAwait(false);
                 else
                     await ((IUserMessage)msg).ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
-                await Context.Channel.SendConfirmationEmbed("Message edited!");
+                await Context.Channel.SendConfirmationMessageAsync("Message edited!");
             }
             catch
             {
-                await Context.Channel.SendConfirmationEmbed("I couldn't find the channel/message!");
+                await Context.Channel.SendConfirmationMessageAsync("I couldn't find the channel/message!");
             }
         }
 
@@ -215,7 +215,7 @@ namespace RiasBot.Modules.Bot
             }
             if (getUser is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                 return;
             }
 
@@ -227,14 +227,7 @@ namespace RiasBot.Modules.Bot
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             embed.AddField("Name", getUser, true).AddField("ID", getUser.Id, true);
             embed.AddField("Joined Discord", accountCreated, true).AddField("Mutual servers (probable)", (mutualServers) ? "true" : "false", true);
-            try
-            {
-                embed.WithImageUrl(getUser.RealAvatarUrl(1024));
-            }
-            catch
-            {
-                embed.WithImageUrl(getUser.DefaultAvatarUrl());
-            }
+            embed.WithImageUrl(getUser.GetRealAvatarUrl());
             await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
         }
 
@@ -287,7 +280,7 @@ namespace RiasBot.Modules.Bot
         public async Task DownloadUsers()
         {
             await Context.Guild.DownloadUsersAsync();
-            await Context.Channel.SendConfirmationEmbed($"All users downloaded from {Context.Guild.Name}");
+            await Context.Channel.SendConfirmationMessageAsync($"All users downloaded from {Context.Guild.Name}");
         }
 
         [RiasCommand][@Alias]
@@ -297,7 +290,7 @@ namespace RiasBot.Modules.Bot
         {
             var guild = await Context.Client.GetGuildAsync(guildId).ConfigureAwait(false);
             await guild.DownloadUsersAsync();
-            await Context.Channel.SendConfirmationEmbed($"All users downloaded from {guild.Name}");
+            await Context.Channel.SendConfirmationMessageAsync($"All users downloaded from {guild.Name}");
         }
 
         public class Globals

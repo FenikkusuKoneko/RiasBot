@@ -37,7 +37,7 @@ namespace RiasBot.Modules.Utility.Services
                 try
                 {
                     //Init
-                    var avatarUrl = user.RealAvatarUrl();
+                    var avatarUrl = user.GetRealAvatarUrl();
                     var nickname = user.Nickname;
 
                     var aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
@@ -189,7 +189,7 @@ namespace RiasBot.Modules.Utility.Services
                     var profileInfo = GetProfieInfo(user.Id);
                     var profileSettings = GetProfileSettings(user.Id);
                     //Init
-                    var avatarUrl = user.RealAvatarUrl();
+                    var avatarUrl = user.GetRealAvatarUrl();
                     var nickname = user.Nickname;
 
                     var arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";

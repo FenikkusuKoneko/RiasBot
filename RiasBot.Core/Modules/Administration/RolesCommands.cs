@@ -54,7 +54,7 @@ namespace RiasBot.Modules.Administration
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} No roles on this server.");
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} No roles on this server.");
                 }
             }
 
@@ -66,7 +66,7 @@ namespace RiasBot.Modules.Administration
             public async Task CreateRole([Remainder]string name)
             {
                 await Context.Guild.CreateRoleAsync(name).ConfigureAwait(false);
-                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(name)} was created successfully.").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(name)} was created successfully.").ConfigureAwait(false);
             }
 
             [RiasCommand][@Alias]
@@ -84,22 +84,22 @@ namespace RiasBot.Modules.Administration
                         if (!role.IsManaged)
                         {
                             await role.DeleteAsync().ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(name)} was deleted successfully.").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(name)} was deleted successfully.").ConfigureAwait(false);
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(role.Name)} cannot be deleted " +
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role {Format.Bold(role.Name)} cannot be deleted " +
                                                                  "because is automatically managed by Discord").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("The role is above than or equal with my higher role").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("The role is above than or equal with my higher role").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }
             }
 
@@ -113,7 +113,7 @@ namespace RiasBot.Modules.Administration
                 color = color.Replace("#", "");
                 if (color.Length != 6)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the color is not a valid hex color.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the color is not a valid hex color.").ConfigureAwait(false);
                     return;
                 }
                 var role = Context.Guild.Roles.FirstOrDefault(r => string.Equals(r.Name, name, StringComparison.CurrentCultureIgnoreCase));
@@ -129,21 +129,21 @@ namespace RiasBot.Modules.Administration
                             var green = Convert.ToByte(greenColor);
                             var blue = Convert.ToByte(blueColor);
                             await role.ModifyAsync(r => r.Color = new Color(red, green, blue)).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the color of role {Format.Bold(name)} was changed successfully.").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} the color of role {Format.Bold(name)} was changed successfully.").ConfigureAwait(false);
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the color is not a valid hex color.").ConfigureAwait(false);
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the color is not a valid hex color.").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("The role is above than or equal with my higher role").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("The role is above than or equal with my higher role").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }
                 
             }
@@ -166,16 +166,16 @@ namespace RiasBot.Modules.Administration
                     {
                         oldName = oldRole.Name;
                         await oldRole.ModifyAsync(r => r.Name = newName).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the name of role {Format.Bold(oldName)} was renamed to {Format.Bold(newName)} successfully.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} the name of role {Format.Bold(oldName)} was renamed to {Format.Bold(newName)} successfully.").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("The role is above than or equal with my higher role").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("The role is above than or equal with my higher role").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }
             }
 
@@ -194,22 +194,22 @@ namespace RiasBot.Modules.Administration
                         if (!role.IsManaged)
                         {
                             await user.AddRoleAsync(role);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} was added to {user.Mention} successfully.").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} was added to {user.Mention} successfully.").ConfigureAwait(false);
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(role.Name)} cannot be added " +
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role {Format.Bold(role.Name)} cannot be added " +
                                                                  $"because is automatically managed by Discord").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role or the user couldn't be found.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role or the user couldn't be found.").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
                 }
             }
 
@@ -226,16 +226,16 @@ namespace RiasBot.Modules.Administration
                     if (role != null)
                     {
                         await user.RemoveRoleAsync(role).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} was removed from {user.Mention} successfully.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} was removed from {user.Mention} successfully.").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role or the user couldn't be found.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role or the user couldn't be found.").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
                 }
             }
 
@@ -267,17 +267,17 @@ namespace RiasBot.Modules.Administration
                                     await db.AddAsync(aar).ConfigureAwait(false);
                                     await db.SaveChangesAsync().ConfigureAwait(false);
                                 }
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(getRole.Name)} will be auto-assigned to the new users.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(getRole.Name)} will be auto-assigned to the new users.").ConfigureAwait(false);
                             }
                             else
                             {
-                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(getRole.Name)} cannot be auto-assigned " +
+                                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role {Format.Bold(getRole.Name)} cannot be auto-assigned " +
                                 $"because is automatically managed by Discord").ConfigureAwait(false);
                             }
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                         }
                     }
                     else
@@ -286,7 +286,7 @@ namespace RiasBot.Modules.Administration
                         {
                             guildDb.AutoAssignableRole = 0;
                             await db.SaveChangesAsync().ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} auto-assignable role disabled.").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} auto-assignable role disabled.").ConfigureAwait(false);
                         }
                         else
                         {
@@ -313,22 +313,22 @@ namespace RiasBot.Modules.Administration
                         if (role.IsHoisted)
                         {
                             await role.ModifyAsync(x => x.Hoist = false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} is not displayed independently in the userlist.").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} is not displayed independently in the userlist.").ConfigureAwait(false);
                         }
                         else
                         {
                             await role.ModifyAsync(x => x.Hoist = true);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} is now displayed independently in the userlist.").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} is now displayed independently in the userlist.").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("The role is above than or equal with my higher role").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("The role is above than or equal with my higher role").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }
             }
 
@@ -347,22 +347,22 @@ namespace RiasBot.Modules.Administration
                         if (role.IsMentionable)
                         {
                             await role.ModifyAsync(x => x.Mentionable = false).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} is not mentionable.").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} is not mentionable.").ConfigureAwait(false);
                         }
                         else
                         {
                             await role.ModifyAsync(x => x.Mentionable = true).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} is now mentionable.").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} is now mentionable.").ConfigureAwait(false);
                         } 
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("The role is above than or equal with my higher role").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("The role is above than or equal with my higher role").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                 }
             }
         }

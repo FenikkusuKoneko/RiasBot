@@ -218,9 +218,9 @@ namespace RiasBot.Modules.Xp
                     await db.SaveChangesAsync().ConfigureAwait(false);
                 }
                 if (!xpNotify)
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} Server xp notification enabled.");
+                    await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} Server xp notification enabled.");
                 else
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} Server xp notification disabled.");
+                    await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} Server xp notification disabled.");
             }
         }
 
@@ -232,7 +232,7 @@ namespace RiasBot.Modules.Xp
         {
             if (level <= 0)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you can't set a role reward for a level less or equal than 0.").ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you can't set a role reward for a level less or equal than 0.").ConfigureAwait(false);
                 return;
             }
             using (var db = _db.GetDbContext())
@@ -244,12 +244,12 @@ namespace RiasBot.Modules.Xp
                     var oldRoleReward = xpRolesSystem?.Where(x => x.Level == level).FirstOrDefault();
                     if (oldRoleReward != null)
                     {
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} no role reward for level {Format.Bold(level.ToString())}").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} no role reward for level {Format.Bold(level.ToString())}").ConfigureAwait(false);
                         db.Remove(oldRoleReward);
                     }
                     else
                     {
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the level {Format.Bold(level.ToString())} doesn't have a role reward.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} the level {Format.Bold(level.ToString())} doesn't have a role reward.").ConfigureAwait(false);
                     }
                 }
                 else
@@ -267,12 +267,12 @@ namespace RiasBot.Modules.Xp
                             var roleReward = new XpRolesSystem { GuildId = Context.Guild.Id, Level = level, RoleId = role.Id };
                             await db.AddAsync(roleReward).ConfigureAwait(false);
                         }
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} at level {Format.Bold(level.ToString())} " +
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} at level {Format.Bold(level.ToString())} " +
                                 $"the users will get {Format.Bold(role.Name)} role").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role couldn't be found.").ConfigureAwait(false);
                     }
                 }
 
@@ -316,7 +316,7 @@ namespace RiasBot.Modules.Xp
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} no levelup role rewards on this server.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} no levelup role rewards on this server.").ConfigureAwait(false);
                 }
             }
         }
@@ -336,7 +336,7 @@ namespace RiasBot.Modules.Xp
                 }
                 await db.SaveChangesAsync().ConfigureAwait(false);
             }
-            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} server xp leaderboard has been reset.");
+            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} server xp leaderboard has been reset.");
         }
 
         [RiasCommand][@Alias]
@@ -359,11 +359,11 @@ namespace RiasBot.Modules.Xp
                     }
                     await db.SaveChangesAsync().ConfigureAwait(false);
                     var user = await Context.Client.GetUserAsync(id).ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"Took {amount} global xp from {Format.Bold(user.ToString())}, current level {level}.").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync($"Took {amount} global xp from {Format.Bold(user.ToString())}, current level {level}.").ConfigureAwait(false);
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("The user doesn't exists in the database");
+                    await Context.Channel.SendErrorMessageAsync("The user doesn't exists in the database");
                 }
             }
         }
@@ -390,11 +390,11 @@ namespace RiasBot.Modules.Xp
                         userDb.Xp -= amount;
                     }
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"Took {amount} global xp from {Format.Bold(getUser.ToString())}, current level {level}.").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync($"Took {amount} global xp from {Format.Bold(getUser.ToString())}, current level {level}.").ConfigureAwait(false);
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("The user doesn't exists in the database");
+                    await Context.Channel.SendErrorMessageAsync("The user doesn't exists in the database");
                 }
             }
         }

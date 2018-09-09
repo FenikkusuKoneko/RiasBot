@@ -33,11 +33,11 @@ namespace RiasBot.Modules.Utility
                     expr.EvaluateParameter += Expr_EvaluateParameter;
                     var result = expr.Evaluate();
                     if (expr.Error == null)
-                        await Context.Channel.SendConfirmationEmbed(result.ToString()).ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync(result.ToString()).ConfigureAwait(false);
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed("Invalid expression!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("Invalid expression!").ConfigureAwait(false);
                 }
             }
 
@@ -57,7 +57,7 @@ namespace RiasBot.Modules.Utility
                         "GetType"
                         });
 
-                await Context.Channel.SendConfirmationEmbed(String.Join(", ", selection)).ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync(String.Join(", ", selection)).ConfigureAwait(false);
             }
 
             private static void Expr_EvaluateParameter(string name, NCalc.ParameterArgs args)
@@ -111,7 +111,7 @@ namespace RiasBot.Modules.Utility
                     u *= LUMatrix.u[lu, lu];
                 }
 
-                await Context.Channel.SendConfirmationEmbed("Determinant = " + (l * u).ToString());
+                await Context.Channel.SendConfirmationMessageAsync("Determinant = " + (l * u).ToString());
             }
         }
     }

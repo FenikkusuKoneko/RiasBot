@@ -31,7 +31,7 @@ namespace RiasBot.Modules.Help
             //Ignore the raw string coding
             
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithAuthor($"{Context.Client.CurrentUser.Username} Bot v{RiasBot.Version} help page", Context.Client.CurrentUser.RealAvatarUrl());
+            embed.WithAuthor($"{Context.Client.CurrentUser.Username} Bot v{RiasBot.Version} help page", Context.Client.CurrentUser.GetRealAvatarUrl());
             embed.WithDescription("I'm based on modules and submodules. Each module has submodules and each submodule has commands.\n\n" +
                                   $"Type `{_ch.Prefix}modules` to get a list with all modules and submodules.\n\n" +
                                   $"Type `{_ch.Prefix}commands <moduleName>` or `{_ch.Prefix}commands <submoduleName>` to get a list with all commands from the module or submodule.\n" +
@@ -54,7 +54,7 @@ namespace RiasBot.Modules.Help
 
             if (command is null)
             {
-                await Context.Channel.SendErrorEmbed($"I couldn't find that command. For help type `{_ch.Prefix}help`").ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"I couldn't find that command. For help type `{_ch.Prefix}help`").ConfigureAwait(false);
                 return;
             }
 
@@ -133,7 +133,7 @@ namespace RiasBot.Modules.Help
 
             if (module is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the module or submodule. Type {Format.Code(_ch.Prefix + "modules")} to see all modules and submodules.").ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the module or submodule. Type {Format.Code(_ch.Prefix + "modules")} to see all modules and submodules.").ConfigureAwait(false);
                 return;
             }
             
@@ -236,7 +236,7 @@ namespace RiasBot.Modules.Help
                     }
                     catch
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't send you the help DM. Please verify if you disabled receiving DM from this server.");
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't send you the help DM. Please verify if you disabled receiving DM from this server.");
                         return;
                     }
                     embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
@@ -251,7 +251,7 @@ namespace RiasBot.Modules.Help
             }
             catch
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't send you the help DM. Please verify if you disabled receiving DM from this server.");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't send you the help DM. Please verify if you disabled receiving DM from this server.");
             }
         }
 

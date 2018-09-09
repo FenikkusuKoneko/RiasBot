@@ -40,7 +40,7 @@ namespace RiasBot.Modules.Utility
                 var obj = await _animeService.CharacterSearch(character);
 
                 if (obj is null)
-                    await Context.Channel.SendErrorEmbed("I couldn't find the character.");
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the character.");
                 else
                 {
                     await _service.ClaimWaifu((ShardedCommandContext)Context, (IGuildUser)Context.User, Context.Channel, obj);
@@ -56,7 +56,7 @@ namespace RiasBot.Modules.Utility
 
                 var characters = (JArray)obj.characters;
                 if (characters.Count == 0)
-                    await Context.Channel.SendErrorEmbed("I couldn't find the character.");
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the character.");
                 else
                 {
                     if (characters.Count <= 1)
@@ -101,7 +101,7 @@ namespace RiasBot.Modules.Utility
                     {
                         if (userDb.Currency < 5000)
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.Currency}. 5000 {RiasBot.Currency} required.");
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}. 5000 {RiasBot.Currency} required.");
                             return;
                         }
                     }
@@ -129,17 +129,17 @@ namespace RiasBot.Modules.Utility
                                 getWaifu.IsPrimary = true;
                             }
                             userDb.Currency -= 5000;
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {getWaifu.WaifuName} is now your beloved waifu :heart:.");
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} {getWaifu.WaifuName} is now your beloved waifu :heart:.");
                             await db.SaveChangesAsync().ConfigureAwait(false);
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the waifu.").ConfigureAwait(false);
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the waifu.").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have any waifu.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have any waifu.").ConfigureAwait(false);
                     }
                 }
             }
@@ -178,12 +178,12 @@ namespace RiasBot.Modules.Utility
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find your waifu.");
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find your waifu.");
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have any waifu.");
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have any waifu.");
                     }
                 }
             }
@@ -228,9 +228,9 @@ namespace RiasBot.Modules.Utility
                             await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
                         }
                         else if (user == Context.User)
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have any waifu.");
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have any waifu.");
                         else
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} {user} doesn't have any waifu.");
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} {user} doesn't have any waifu.");
                     }
                     catch
                     {
@@ -245,18 +245,18 @@ namespace RiasBot.Modules.Utility
             {
                 if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
                     return;
                 }
                 if (!url.Contains("https"))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url must be https").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the url must be https").ConfigureAwait(false);
                     return;
 
                 }
                 if (!url.Contains(".png") && !url.Contains(".jpg") && !url.Contains(".jpeg"))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direct link for a png, jpg or jpeg image.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the url is not a direct link for a png, jpg or jpeg image.").ConfigureAwait(false);
                     return;
                 }
                 using (var db = _db.GetDbContext())
@@ -268,17 +268,17 @@ namespace RiasBot.Modules.Utility
                         if (belovedWaifu != null)
                         {
                             belovedWaifu.BelovedWaifuPicture = url;
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} new avatar set for {Format.Bold(belovedWaifu.WaifuName)}.");
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} new avatar set for {Format.Bold(belovedWaifu.WaifuName)}.");
                             await db.SaveChangesAsync().ConfigureAwait(false);
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have a beloved waifu.").ConfigureAwait(false);
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have a beloved waifu.").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have any waifu.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have any waifu.").ConfigureAwait(false);
                     }
                 }
             }
@@ -289,12 +289,12 @@ namespace RiasBot.Modules.Utility
             {
                 if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the url is not a well formed uri string.").ConfigureAwait(false);
                     return;
                 }
                 if (!url.Contains(".png") && !url.Contains(".jpg") && !url.Contains(".jpeg"))
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the url is not a direct link for a png, jpg or jpeg image.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the url is not a direct link for a png, jpg or jpeg image.").ConfigureAwait(false);
                     return;
                 }
                 using (var db = _db.GetDbContext())
@@ -327,12 +327,12 @@ namespace RiasBot.Modules.Utility
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.");
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.");
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.");
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.");
                     }
                 }
             }

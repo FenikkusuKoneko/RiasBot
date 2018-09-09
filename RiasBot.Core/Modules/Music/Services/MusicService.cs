@@ -135,7 +135,7 @@ namespace RiasBot.Modules.Music.Services
                         }
                         catch (Exception e)
                         {
-                            await channel.SendErrorEmbed("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                            await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
                                                    $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
                             await mp.Leave(guild, null).ConfigureAwait(false);
                             Console.WriteLine(e);
@@ -149,12 +149,12 @@ namespace RiasBot.Modules.Music.Services
                             }
                             else
                             {
-                                await channel.SendErrorEmbed("The URL is not valid! Or check if the playlist is available").ConfigureAwait(false);
+                                await channel.SendErrorMessageAsync("The URL is not valid! Or check if the playlist is available").ConfigureAwait(false);
                             }
                         }
                         else
                         {
-                            await channel.SendErrorEmbed("The URL is not valid! Or check if the playlist is available").ConfigureAwait(false);
+                            await channel.SendErrorMessageAsync("The URL is not valid! Or check if the playlist is available").ConfigureAwait(false);
                         }
                     }
                     else
@@ -170,7 +170,7 @@ namespace RiasBot.Modules.Music.Services
                         }
                         catch (Exception e)
                         {
-                            await channel.SendErrorEmbed("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                            await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
                                                    $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
                             await mp.Leave(guild, null).ConfigureAwait(false);
                             Console.WriteLine(e);
@@ -191,12 +191,12 @@ namespace RiasBot.Modules.Music.Services
                             }
                             else
                             {
-                                await channel.SendErrorEmbed("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
+                                await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
                             }
                         }
                         else
                         {
-                            await channel.SendErrorEmbed("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
+                            await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
                         }
                     }
                 }
@@ -209,7 +209,7 @@ namespace RiasBot.Modules.Music.Services
                     }
                     catch (Exception e)
                     {
-                        await channel.SendErrorEmbed("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                        await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
                                                $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
                         await mp.Leave(guild, null).ConfigureAwait(false);
                         Console.WriteLine(e);
@@ -223,17 +223,17 @@ namespace RiasBot.Modules.Music.Services
                         }
                         else
                         {
-                            await channel.SendErrorEmbed("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
+                            await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await channel.SendErrorEmbed("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
+                        await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await channel.SendErrorEmbed("The URL is not valid!").ConfigureAwait(false);
+                    await channel.SendErrorMessageAsync("The URL is not valid!").ConfigureAwait(false);
                 }
             }
             else
@@ -253,7 +253,7 @@ namespace RiasBot.Modules.Music.Services
             }
             catch (Exception e)
             {
-                await channel.SendErrorEmbed("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
                                        $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
                 await mp.Leave(guild, null).ConfigureAwait(false);
                 Console.WriteLine(e);

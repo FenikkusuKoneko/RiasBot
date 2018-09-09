@@ -42,12 +42,12 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot mute the owner of the server.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot mute the owner of the server.").ConfigureAwait(false);
                 }
             }
             
@@ -69,16 +69,16 @@ namespace RiasBot.Modules.Administration
                             await _service.MuteUser(Context.Guild, (IGuildUser) Context.User, user, Context.Channel,
                                 untilTime.Timer, reason).ConfigureAwait(false);
                         else
-                            await Context.Channel.SendErrorEmbed("The timer cannot be 0!").ConfigureAwait(false);
+                            await Context.Channel.SendErrorMessageAsync("The timer cannot be 0!").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot mute the owner of the server.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot mute the owner of the server.").ConfigureAwait(false);
                 }
             }
     
@@ -99,7 +99,7 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
                     }
                 }
                 else
@@ -133,7 +133,7 @@ namespace RiasBot.Modules.Administration
                         await db.AddAsync(muteRole).ConfigureAwait(false);
                     }
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed("New mute role set.");
+                    await Context.Channel.SendConfirmationMessageAsync("New mute role set.");
                     await Task.Factory.StartNew(() => _service.AddMuteRoleToChannels(role, Context.Guild));
                 }
             }

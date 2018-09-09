@@ -21,11 +21,11 @@ namespace RiasBot.Modules.Administration
             {
                 if (name.Length < 2 || name.Length > 100)
                 {
-                    await Context.Channel.SendConfirmationEmbed("The name length must be between 2 and 100 characters");
+                    await Context.Channel.SendConfirmationMessageAsync("The name length must be between 2 and 100 characters");
                     return;
                 }
                 await Context.Guild.CreateCategoryAsync(name).ConfigureAwait(false);
-                await Context.Channel.SendConfirmationEmbed($"Category {Format.Bold(name)} was created successfully");
+                await Context.Channel.SendConfirmationMessageAsync($"Category {Format.Bold(name)} was created successfully");
             }
 
             [RiasCommand][@Alias]
@@ -42,16 +42,16 @@ namespace RiasBot.Modules.Administration
                     if (permissions.ViewChannel)
                     {
                         await category.DeleteAsync().ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"Category channel {Format.Bold(category.Name)} was deleted successfully");
+                        await Context.Channel.SendConfirmationMessageAsync($"Category channel {Format.Bold(category.Name)} was deleted successfully");
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("I don't have the permission to view that category channel");
+                        await Context.Channel.SendErrorMessageAsync("I don't have the permission to view that category channel");
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the category channel").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the category channel").ConfigureAwait(false);
                 }
             }
 
@@ -73,16 +73,16 @@ namespace RiasBot.Modules.Administration
                     {
                         oldName = category.Name;
                         await category.ModifyAsync(x => x.Name = newName).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"The name of the category channel {Format.Bold(oldName)} was renamed to {Format.Bold(newName)} successfully").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"The name of the category channel {Format.Bold(oldName)} was renamed to {Format.Bold(newName)} successfully").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("I don't have the permission to view that category channel");
+                        await Context.Channel.SendErrorMessageAsync("I don't have the permission to view that category channel");
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the category").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the category").ConfigureAwait(false);
                 }
             }
 
@@ -105,16 +105,16 @@ namespace RiasBot.Modules.Administration
                     if (category != null)
                     {
                         await channel.ModifyAsync(x => x.CategoryId = category.Id).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"Text channel {Format.Bold(channel.Name)} was added to category {Format.Bold(category.Name)} successfully").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"Text channel {Format.Bold(channel.Name)} was added to category {Format.Bold(category.Name)} successfully").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("I couldn't find the category").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("I couldn't find the category").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the channel").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the channel").ConfigureAwait(false);
                 }
             }
             
@@ -137,16 +137,16 @@ namespace RiasBot.Modules.Administration
                     if (category != null)
                     {
                         await channel.ModifyAsync(x => x.CategoryId = category.Id).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"Voice channel {Format.Bold(channel.Name)} was added to category {Format.Bold(category.Name)} successfully").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"Voice channel {Format.Bold(channel.Name)} was added to category {Format.Bold(category.Name)} successfully").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("I couldn't find the category").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("I couldn't find the category").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the channel").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the channel").ConfigureAwait(false);
                 }
             }
         }

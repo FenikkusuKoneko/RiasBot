@@ -143,7 +143,7 @@ namespace RiasBot.Modules.Music.Common
             
             if (_queue.Count > 10000)    //10000 tracks are enough, you don't keep the music player online for years
             {
-                await channel.SendErrorEmbed("The queue is too heavy, please remove some tracks or clear it!").ConfigureAwait(false);
+                await channel.SendErrorMessageAsync("The queue is too heavy, please remove some tracks or clear it!").ConfigureAwait(false);
                 return;
             }
 
@@ -351,7 +351,7 @@ namespace RiasBot.Modules.Music.Common
                 if (TimeSpan.Compare(time, CurrentTrack.Track.Length) <= 0)
                 {
                     var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-                    embed.WithAuthor("Seek", user.RealAvatarUrl());
+                    embed.WithAuthor("Seek", user.GetRealAvatarUrl());
                     embed.WithDescription($"[{CurrentTrack.Track.Title}]({CurrentTrack.Track.Url})");
                     
                     await _player.SeekAsync((int)time.TotalMilliseconds);
@@ -609,9 +609,9 @@ namespace RiasBot.Modules.Music.Common
                         switch (messageType)
                         {
                             case MessageType.Confirmation:
-                                return await Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                                return await Channel.SendConfirmationMessageAsync(message).ConfigureAwait(false);
                             case MessageType.Error:
-                                return await Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                                return await Channel.SendConfirmationMessageAsync(message).ConfigureAwait(false);
                         }
                     }
                 }

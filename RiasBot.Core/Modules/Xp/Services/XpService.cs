@@ -119,7 +119,7 @@ namespace RiasBot.Modules.Xp.Services
                     if (sendXpNotificationMessage)
                     {
                         if (xpNotify)
-                            await channel.SendConfirmationEmbed($"Congratulations {user.Mention}, you've reached server level {nextLevel - 1}").ConfigureAwait(false);
+                            await channel.SendConfirmationMessageAsync($"Congratulations {user.Mention}, you've reached server level {nextLevel - 1}").ConfigureAwait(false);
                     }
                     await RoleRewardUser(guild, user, nextLevel - 1).ConfigureAwait(false);
                 }
@@ -165,7 +165,7 @@ namespace RiasBot.Modules.Xp.Services
                 try
                 {
                     //Init
-                    var avatarUrl = user.RealAvatarUrl();
+                    var avatarUrl = user.GetRealAvatarUrl();
                     var aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
                     var meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
 

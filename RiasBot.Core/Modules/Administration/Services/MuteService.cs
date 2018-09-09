@@ -47,7 +47,7 @@ namespace RiasBot.Modules.Administration.Services
                 
                 if (user.RoleIds.Any(r => r == role.Id))
                 {
-                    await channel.SendErrorEmbed($"{moderator.Mention} {Format.Bold(user.ToString())} is already muted from text and voice channels!");
+                    await channel.SendErrorMessageAsync($"{moderator.Mention} {Format.Bold(user.ToString())} is already muted from text and voice channels!");
                 }
                 else
                 {
@@ -119,7 +119,7 @@ namespace RiasBot.Modules.Administration.Services
                         if (role is null)
                         {
                             if (channel != null)
-                                await channel.SendErrorEmbed($"I couldn't unmute {user} because I couldn't find the mute role. Set a new mute role!");
+                                await channel.SendErrorMessageAsync($"I couldn't unmute {user} because I couldn't find the mute role. Set a new mute role!");
                             return;
                         }
                     }
@@ -130,7 +130,7 @@ namespace RiasBot.Modules.Administration.Services
                     if (role is null)
                     {
                         if (channel != null)
-                            await channel.SendErrorEmbed($"I couldn't unmute {user} because I couldn't find the mute role. Set a new mute role!");
+                            await channel.SendErrorMessageAsync($"I couldn't unmute {user} because I couldn't find the mute role. Set a new mute role!");
                         return;
                     }
                 }
@@ -179,7 +179,7 @@ namespace RiasBot.Modules.Administration.Services
                 {
                     if (showIsNotMutedMessage)
                         if (channel != null)
-                            await channel.SendErrorEmbed($"{moderator.Mention} {Format.Bold(user.ToString())} is not muted from text and voice channels!");
+                            await channel.SendErrorMessageAsync($"{moderator.Mention} {Format.Bold(user.ToString())} is not muted from text and voice channels!");
                 }
             }
         }

@@ -59,20 +59,20 @@ namespace RiasBot.Modules.Bot
                 }
                 if (getUser is null)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                     return;
                 }
                 if (getUser is null)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user couldn't be found");
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user couldn't be found");
                     return;
                 }
                 if (getUser.Id == RiasBot.KonekoId)
                 {
-                    await Context.Channel.SendErrorEmbed("I will not delete you from the database, Master!");
+                    await Context.Channel.SendErrorMessageAsync("I will not delete you from the database, Master!");
                     return;
                 }
-                var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
+                var confirm = await Context.Channel.SendConfirmationMessageAsync($"Are you sure you want to delete the user? Type {Format.Code("confirm")}");
                 var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                 if (input != null)
                 {
@@ -97,11 +97,11 @@ namespace RiasBot.Modules.Bot
                             }
                             if (getUser != null)
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {getUser} has been deleted from the database").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} user {getUser} has been deleted from the database").ConfigureAwait(false);
                             }
                             else
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {id} has been added to the blacklist.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} user {id} has been added to the blacklist.").ConfigureAwait(false);
                             }
                             await db.SaveChangesAsync().ConfigureAwait(false);
                         }
@@ -109,7 +109,7 @@ namespace RiasBot.Modules.Bot
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("Canceled!");
+                    await Context.Channel.SendErrorMessageAsync("Canceled!");
                 }
             }
 
@@ -134,7 +134,7 @@ namespace RiasBot.Modules.Bot
                 }
                 if (getUser is null)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                     return;
                 }
 
@@ -151,7 +151,7 @@ namespace RiasBot.Modules.Bot
                     embed.AddField("Global level", userDb?.Level, true).AddField("Global XP", userDb?.Xp, true);
                     embed.AddField("Is blacklisted", (userDb.IsBlacklisted) ? "true" : "false", true).AddField("Is banned", (userDb.IsBanned) ? "true" : "false", true);
                     embed.AddField("Mutual servers (probable)", (mutualServers) ? "true" : "false", true);
-                    embed.WithImageUrl(getUser.RealAvatarUrl(1024));
+                    embed.WithImageUrl(getUser.GetRealAvatarUrl(1024));
 
                     await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
                 }
@@ -177,16 +177,16 @@ namespace RiasBot.Modules.Bot
                 }
                 if (getUser is null)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                     return;
                 }
                 if (getUser.Id == RiasBot.KonekoId)
                 {
-                    await Context.Channel.SendErrorEmbed("I will not add you on the blacklist, Master!");
+                    await Context.Channel.SendErrorMessageAsync("I will not add you on the blacklist, Master!");
                     return;
                 }
 
-                var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to add this user to the blacklist? Type {Format.Code("confirm")}");
+                var confirm = await Context.Channel.SendConfirmationMessageAsync($"Are you sure you want to add this user to the blacklist? Type {Format.Code("confirm")}");
                 var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                 if (input != null)
                 {
@@ -206,18 +206,18 @@ namespace RiasBot.Modules.Bot
                             }
                             if (getUser != null)
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {getUser} has been added to the blacklist.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} user {getUser} has been added to the blacklist.").ConfigureAwait(false);
                             }
                             else
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {id} has been added to the blacklist.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} user {id} has been added to the blacklist.").ConfigureAwait(false);
                             }
                             await db.SaveChangesAsync().ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("Canceled!");
+                        await Context.Channel.SendErrorMessageAsync("Canceled!");
                     }
                 }
             }
@@ -242,11 +242,11 @@ namespace RiasBot.Modules.Bot
                 }
                 if (getUser.Id == RiasBot.KonekoId)
                 {
-                    await Context.Channel.SendErrorEmbed("You are not in the blacklist, Master!");
+                    await Context.Channel.SendErrorMessageAsync("You are not in the blacklist, Master!");
                     return;
                 }
 
-                var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to remove this user from the blacklist? Type {Format.Code("confirm")}");
+                var confirm = await Context.Channel.SendConfirmationMessageAsync($"Are you sure you want to remove this user from the blacklist? Type {Format.Code("confirm")}");
                 var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                 if (input != null)
                 {
@@ -266,11 +266,11 @@ namespace RiasBot.Modules.Bot
                             }
                             if (getUser != null)
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {getUser} has been removed from the blacklist.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} user {getUser} has been removed from the blacklist.").ConfigureAwait(false);
                             }
                             else
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {id} has been removed from the blacklist.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} user {id} has been removed from the blacklist.").ConfigureAwait(false);
                             }
                             await db.SaveChangesAsync().ConfigureAwait(false);
                         }
@@ -298,16 +298,16 @@ namespace RiasBot.Modules.Bot
                 }
                 if (getUser is null)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                     return;
                 }
                 if (getUser.Id == RiasBot.KonekoId)
                 {
-                    await Context.Channel.SendErrorEmbed("I will not ban you from using me, Master!");
+                    await Context.Channel.SendErrorMessageAsync("I will not ban you from using me, Master!");
                     return;
                 }
 
-                var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to ban this user from using the commands? Type {Format.Code("confirm")}");
+                var confirm = await Context.Channel.SendConfirmationMessageAsync($"Are you sure you want to ban this user from using the commands? Type {Format.Code("confirm")}");
                 var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                 if (input != null)
                 {
@@ -328,18 +328,18 @@ namespace RiasBot.Modules.Bot
                             }
                             if (getUser != null)
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {getUser} has been banned from using the bot.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} user {getUser} has been banned from using the bot.").ConfigureAwait(false);
                             }
                             else
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {id} has been banned from using the bot.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} user {id} has been banned from using the bot.").ConfigureAwait(false);
                             }
                             await db.SaveChangesAsync().ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("Canceled!");
+                        await Context.Channel.SendErrorMessageAsync("Canceled!");
                     }
                 }
             }
@@ -364,16 +364,16 @@ namespace RiasBot.Modules.Bot
                 }
                 if (getUser is null)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the user.").ConfigureAwait(false);
                     return;
                 }
                 if (getUser.Id == RiasBot.KonekoId)
                 {
-                    await Context.Channel.SendErrorEmbed("You are not banned from using me, Master!");
+                    await Context.Channel.SendErrorMessageAsync("You are not banned from using me, Master!");
                     return;
                 }
 
-                var confirm = await Context.Channel.SendConfirmationEmbed($"Are you sure you want to unban this user from using the commands? Type {Format.Code("confirm")}");
+                var confirm = await Context.Channel.SendConfirmationMessageAsync($"Are you sure you want to unban this user from using the commands? Type {Format.Code("confirm")}");
                 var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                 if (input != null)
                 {
@@ -393,18 +393,18 @@ namespace RiasBot.Modules.Bot
                             }
                             if (getUser != null)
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {getUser} has been unbanned from using the bot.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} user {getUser} has been unbanned from using the bot.").ConfigureAwait(false);
                             }
                             else
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} user {id} has been unbanned from using the bot.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} user {id} has been unbanned from using the bot.").ConfigureAwait(false);
                             }
                             await db.SaveChangesAsync().ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("Canceled!");
+                        await Context.Channel.SendErrorMessageAsync("Canceled!");
                     }
                 }
             }

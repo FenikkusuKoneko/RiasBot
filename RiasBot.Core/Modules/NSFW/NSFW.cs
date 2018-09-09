@@ -23,7 +23,7 @@ namespace RiasBot.Modules.NSFW
             var channel = (ITextChannel)Context.Channel;
             if (!channel.IsNsfw)
             {
-                await channel.SendErrorEmbed($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
+                await channel.SendErrorMessageAsync($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
                 return;
             }
             tag = tag?.Replace(" ", "%20");
@@ -75,7 +75,7 @@ namespace RiasBot.Modules.NSFW
             var channel = (ITextChannel)Context.Channel;
             if (!channel.IsNsfw)
             {
-                await channel.SendErrorEmbed($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
+                await channel.SendErrorMessageAsync($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
                 return;
             }
             tag = tag?.Replace(" ", "%20");
@@ -114,7 +114,7 @@ namespace RiasBot.Modules.NSFW
             var channel = (ITextChannel)Context.Channel;
             if (!channel.IsNsfw)
             {
-                await channel.SendErrorEmbed($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
+                await channel.SendErrorMessageAsync($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
                 return;
             }
             tag = tag?.Replace(" ", "%20");
@@ -153,7 +153,7 @@ namespace RiasBot.Modules.NSFW
             var channel = (ITextChannel)Context.Channel;
             if (!channel.IsNsfw)
             {
-                await channel.SendErrorEmbed($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
+                await channel.SendErrorMessageAsync($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
                 return;
             }
             tag = tag?.Replace(" ", "%20");
@@ -192,7 +192,7 @@ namespace RiasBot.Modules.NSFW
             var channel = (ITextChannel)Context.Channel;
             if (!channel.IsNsfw)
             {
-                await channel.SendErrorEmbed($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
+                await channel.SendErrorMessageAsync($"{Context.User.Mention} you can't use nsfw commands in a non-nsfw channel");
                 return;
             }
             await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);

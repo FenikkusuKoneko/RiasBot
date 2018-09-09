@@ -61,7 +61,7 @@ namespace RiasBot.Modules.Utility
 
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
 
-                embed.WithAuthor($"{Context.Client.CurrentUser.Username} Bot v{RiasBot.Version}", Context.Client.CurrentUser.RealAvatarUrl());
+                embed.WithAuthor($"{Context.Client.CurrentUser.Username} Bot v{RiasBot.Version}", Context.Client.CurrentUser.GetRealAvatarUrl());
                 embed.AddField("Author", author?.ToString() ?? RiasBot.Author, true).AddField("Bot ID", Context.Client.CurrentUser.Id, true);
                 embed.AddField("Master ID", RiasBot.KonekoId, true).AddField("Shard", $"#{shard}/{_client.Shards.Count()}", true);
                 embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.CommandsRun, true);
@@ -70,7 +70,7 @@ namespace RiasBot.Modules.Utility
                 embed.AddField("Links", $"[Invite me]({RiasBot.Invite}) • [Support server]({RiasBot.CreatorServer})\n" +
                                         $"[Website]({RiasBot.Website}) • [Support me]({RiasBot.Patreon})\n" +
                                         $"[Vote on DBL](https://discordbots.org/bot/{Context.Client.CurrentUser.Id})");
-                embed.WithThumbnailUrl(Context.Client.CurrentUser.RealAvatarUrl());
+                embed.WithThumbnailUrl(Context.Client.CurrentUser.GetRealAvatarUrl());
 
                 Context.Client.CurrentUser.GetAvatarUrl();
                 
@@ -136,7 +136,7 @@ namespace RiasBot.Modules.Utility
                 embed.AddField("Status", user.Status, true).AddField("Joined Server", joinedServer, true);
                 embed.AddField("Joined Discord", accountCreated, true).AddField($"Roles ({roleIndex})",
                     (roleIndex == 0) ? "-" : String.Join("\n", userRoles), true);
-                embed.WithThumbnailUrl(user.RealAvatarUrl(1024));
+                embed.WithThumbnailUrl(user.GetRealAvatarUrl(1024));
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
@@ -205,7 +205,7 @@ namespace RiasBot.Modules.Utility
                 if (user is null)
                     user = (IGuildUser)Context.User;
 
-                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the ID of {user} is {Format.Code(user.Id.ToString())}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} the ID of {user} is {Format.Code(user.Id.ToString())}").ConfigureAwait(false);
             }
 
             [RiasCommand]
@@ -215,7 +215,7 @@ namespace RiasBot.Modules.Utility
             [RequireContext(ContextType.Guild)]
             public async Task ChannelId()
             {
-                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the ID of this channel is {Format.Code(Context.Channel.Id.ToString())}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} the ID of this channel is {Format.Code(Context.Channel.Id.ToString())}").ConfigureAwait(false);
             }
 
             [RiasCommand]
@@ -226,7 +226,7 @@ namespace RiasBot.Modules.Utility
             public async Task ServerId()
             {
 
-                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the ID of this server is {Format.Code(Context.Guild.Id.ToString())}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} the ID of this server is {Format.Code(Context.Guild.Id.ToString())}").ConfigureAwait(false);
             }
 
             [RiasCommand]
@@ -241,8 +241,8 @@ namespace RiasBot.Modules.Utility
 
                 var embed = new EmbedBuilder();
                 embed.WithColor(RiasBot.GoodColor);
-                embed.WithAuthor($"{user}", null, user.RealAvatarUrl(1024));
-                embed.WithImageUrl(user.RealAvatarUrl(1024));
+                embed.WithAuthor($"{user}", null, user.GetRealAvatarUrl(1024));
+                embed.WithImageUrl(user.GetRealAvatarUrl(1024));
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }
@@ -314,7 +314,7 @@ namespace RiasBot.Modules.Utility
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"No users are playing {game}.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"No users are playing {game}.").ConfigureAwait(false);
                 }
             }
         }

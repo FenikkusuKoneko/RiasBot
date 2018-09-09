@@ -46,7 +46,7 @@ namespace RiasBot.Modules.Administration
                 {
                     if (user is null)
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
+                        await Context.Channel.SendErrorMessageAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
                         return;
                     }
                     if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
@@ -55,12 +55,12 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot warn the owner of the server.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot warn the owner of the server.").ConfigureAwait(false);
                 }
             }
 
@@ -75,7 +75,7 @@ namespace RiasBot.Modules.Administration
 
                     if (warnings.Count == 0)
                     {
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} No warned users.");
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} No warned users.");
                     }
                     else
                     {
@@ -114,7 +114,7 @@ namespace RiasBot.Modules.Administration
                             await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
                         }
                         else
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} No warned users.");
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} No warned users.");
                     }
                 }
             }
@@ -126,7 +126,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (user is null)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
+                    await Context.Channel.SendErrorMessageAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
                     return;
                 }
 
@@ -143,7 +143,7 @@ namespace RiasBot.Modules.Administration
                     }
                     if (warningsUser.Count == 0)
                     {
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} {user} doesn't have any warning!");
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} {user} doesn't have any warning!");
                     }
                     else
                     {
@@ -175,7 +175,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (user is null)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
+                    await Context.Channel.SendErrorMessageAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
                     return;
                 }
 
@@ -185,14 +185,14 @@ namespace RiasBot.Modules.Administration
 
                     if (warnings.Count == 0)
                     {
-                        await Context.Channel.SendConfirmationEmbed("The user doesn't have any warning.");
+                        await Context.Channel.SendConfirmationMessageAsync("The user doesn't have any warning.");
                         return;
                     }
                     if ((index - 1) < warnings.Count)
                     {
                         db.Remove(warnings[index - 1]);
                         await db.SaveChangesAsync().ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed("Warning removed!");
+                        await Context.Channel.SendConfirmationMessageAsync("Warning removed!");
                     }
                 }
             }
@@ -206,7 +206,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (user is null)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.Message.Author.Mention} I couldn't find the user.");
+                    await Context.Channel.SendErrorMessageAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
                     return;
                 }
 
@@ -216,7 +216,7 @@ namespace RiasBot.Modules.Administration
 
                     if (warnings.Count == 0)
                     {
-                        await Context.Channel.SendConfirmationEmbed("The user doesn't have any warning.");
+                        await Context.Channel.SendConfirmationMessageAsync("The user doesn't have any warning.");
                     }
                     else
                     {
@@ -227,7 +227,7 @@ namespace RiasBot.Modules.Administration
                                 db.Remove(warning);
                             }
                             await db.SaveChangesAsync().ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed("All warnings removed!");
+                            await Context.Channel.SendConfirmationMessageAsync("All warnings removed!");
                         }
                     }
                 }
@@ -261,11 +261,11 @@ namespace RiasBot.Modules.Administration
                                 warnings.WarnsPunishment = warns;
                                 warnings.PunishmentMethod = null;
                                 await db.SaveChangesAsync().ConfigureAwait(false);
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} no warning punishment will be applied in this server.");
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} no warning punishment will be applied in this server.");
                             }
                             catch
                             {
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} no warning punishment will be applied in this server.");
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} no warning punishment will be applied in this server.");
                             }
                         }
                     }
@@ -304,7 +304,7 @@ namespace RiasBot.Modules.Administration
                                 await _service.RegisterPrunebanWarning(Context.Guild, (IGuildUser)Context.User, Context.Channel, warns);
                                 break;
                             default:
-                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the punishment method introduced is not valid. Use {Format.Bold("mute, kick, ban, softban or pruneban")}");
+                                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the punishment method introduced is not valid. Use {Format.Bold("mute, kick, ban, softban or pruneban")}");
                                 break;
                         }
                     }
@@ -326,12 +326,12 @@ namespace RiasBot.Modules.Administration
                     if (warns > 0)
                     {
                         if (punish.Contains("mute"))
-                            await Context.Channel.SendConfirmationEmbed($"The punishement method for warning in this server is:\n ~at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold(punish + "d")}~");
+                            await Context.Channel.SendConfirmationMessageAsync($"The punishement method for warning in this server is:\n ~at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold(punish + "d")}~");
                         else
-                            await Context.Channel.SendConfirmationEmbed($"The punishement method for warning in this server is:\n ~at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold(punish + "ed")}~");
+                            await Context.Channel.SendConfirmationMessageAsync($"The punishement method for warning in this server is:\n ~at {Format.Bold(warns.ToString())} warnings the user will be {Format.Bold(punish + "ed")}~");
                     }
                     else
-                        await Context.Channel.SendErrorEmbed("No punishment for warnings applied in this server.");
+                        await Context.Channel.SendErrorMessageAsync("No punishment for warnings applied in this server.");
                 }
             }
         }

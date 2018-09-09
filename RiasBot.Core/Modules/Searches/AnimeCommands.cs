@@ -39,7 +39,7 @@ namespace RiasBot.Modules.Searches
                 var obj = await _service.AnimeSearch(anime);
 
                 if (obj is null)
-                    await Context.Channel.SendErrorEmbed("I couldn't find the anime.");
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the anime.");
                 else
                 {
                     var title = $"{(string)obj.title.romaji ?? (string)obj.title.english} (AniList URL)";
@@ -105,7 +105,7 @@ namespace RiasBot.Modules.Searches
                 var obj = await _service.CharacterSearch(character);
 
                 if (obj is null)
-                    await Context.Channel.SendErrorEmbed("I couldn't find the character.");
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the character.");
                 else
                 {
                     var name = $"{(string)obj.name.first} {(string)obj.name.last} (AniList URL)";
@@ -152,7 +152,7 @@ namespace RiasBot.Modules.Searches
 
                 var characters = (JArray)obj.characters;
                 if (characters.Count == 0)
-                    await Context.Channel.SendErrorEmbed("I couldn't find the character.");
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the character.");
                 else
                 {
                     if (characters.Count <= 1)
@@ -223,7 +223,7 @@ namespace RiasBot.Modules.Searches
                 var obj = await _service.AnimeListSearch(anime);
 
                 if (obj is null)
-                    await Context.Channel.SendErrorEmbed("I couldn't find anime.");
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find anime.");
                 else
                 {
                     string description = null;

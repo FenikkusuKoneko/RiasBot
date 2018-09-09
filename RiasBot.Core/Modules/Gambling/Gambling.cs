@@ -33,7 +33,7 @@ namespace RiasBot.Modules.Gambling
         {
             if(bet < 50)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you can't bet less than 50 {RiasBot.Currency}");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you can't bet less than 50 {RiasBot.Currency}");
                 return;
             }
 
@@ -72,18 +72,18 @@ namespace RiasBot.Modules.Gambling
                         if (win > 0)
                         {
                             userDb.Currency += win - bet;
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User} you rolled {roll} {Format.Bold($"(x{multiplier})")}. You won {win}{RiasBot.Currency}");
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User} you rolled {roll} {Format.Bold($"(x{multiplier})")}. You won {win}{RiasBot.Currency}");
                         }
                         else
                         {
                             userDb.Currency += win - bet;
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User} you rolled {roll} {Format.Bold("(x0)")}.");
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User} you rolled {roll} {Format.Bold("(x0)")}.");
                         }
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.Currency}");
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}");
                     }
                 }
                 catch { }
@@ -97,7 +97,7 @@ namespace RiasBot.Modules.Gambling
         {
             if (bet < 50)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you can't bet less than 50 {RiasBot.Currency}");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you can't bet less than 50 {RiasBot.Currency}");
                 return;
             }
 
@@ -124,7 +124,7 @@ namespace RiasBot.Modules.Gambling
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you don't have enough {RiasBot.Currency}");
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}");
                     }
                 }
                 catch

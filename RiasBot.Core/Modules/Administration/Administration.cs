@@ -41,12 +41,12 @@ namespace RiasBot.Modules.Administration
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
                 }
             }
             else
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot kick the owner of the server.").ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot kick the owner of the server.").ConfigureAwait(false);
             }
         }
 
@@ -67,12 +67,12 @@ namespace RiasBot.Modules.Administration
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
                 }
             }
             else
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot ban the owner of the server.").ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot ban the owner of the server.").ConfigureAwait(false);
             }
         }
 
@@ -93,12 +93,12 @@ namespace RiasBot.Modules.Administration
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
                 }
             }
             else
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot softban the owner of the server.").ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot softban the owner of the server.").ConfigureAwait(false);
             }
         }
 
@@ -119,12 +119,12 @@ namespace RiasBot.Modules.Administration
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
                 }
             }
             else
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you cannot pruneban the owner of the server.").ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot pruneban the owner of the server.").ConfigureAwait(false);
             }
         }
 
@@ -151,7 +151,7 @@ namespace RiasBot.Modules.Administration
             }
             else
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete any message because they are older than 14 days.");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't delete any message because they are older than 14 days.");
             }
         }
 
@@ -181,7 +181,7 @@ namespace RiasBot.Modules.Administration
             }
             else
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't delete any message because they are older than 14 days.");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't delete any message because they are older than 14 days.");
             }
         }
 
@@ -210,9 +210,9 @@ namespace RiasBot.Modules.Administration
                     greet = true;
                 }
                 if (greet)
-                    await Context.Channel.SendConfirmationEmbed("Enabling announcements in this channel for users who join the server!");
+                    await Context.Channel.SendConfirmationMessageAsync("Enabling announcements in this channel for users who join the server!");
                 else
-                    await Context.Channel.SendConfirmationEmbed("Disabling announcements for users who join the server!");
+                    await Context.Channel.SendConfirmationMessageAsync("Disabling announcements for users who join the server!");
             }
         }
 
@@ -237,7 +237,7 @@ namespace RiasBot.Modules.Administration
                     await db.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
-            await Context.Channel.SendConfirmationEmbed("New announcement message set for users who join the server!");
+            await Context.Channel.SendConfirmationMessageAsync("New announcement message set for users who join the server!");
         }
 
         [RiasCommand][@Alias]
@@ -266,9 +266,9 @@ namespace RiasBot.Modules.Administration
                     bye = true;
                 }
                 if (bye)
-                    await Context.Channel.SendConfirmationEmbed("Enabling announcements in this channel for users who leave the server!");
+                    await Context.Channel.SendConfirmationMessageAsync("Enabling announcements in this channel for users who leave the server!");
                 else
-                    await Context.Channel.SendConfirmationEmbed("Disabling announcements for users who leave the server!");
+                    await Context.Channel.SendConfirmationMessageAsync("Disabling announcements for users who leave the server!");
             }
         }
 
@@ -293,7 +293,7 @@ namespace RiasBot.Modules.Administration
                     await db.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
-            await Context.Channel.SendConfirmationEmbed("New announcement message set for users who leave the server!");
+            await Context.Channel.SendConfirmationMessageAsync("New announcement message set for users who leave the server!");
         }
 
         [RiasCommand][@Alias]
@@ -311,13 +311,13 @@ namespace RiasBot.Modules.Administration
                     {
                         guildDb.ModLogChannel = Context.Channel.Id;
                         await db.SaveChangesAsync().ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} notifications about mute, unmute, kick, ban, unban will be posted in this channel.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} notifications about mute, unmute, kick, ban, unban will be posted in this channel.").ConfigureAwait(false);
                     }
                     else
                     {
                         guildDb.ModLogChannel = 0;
                         await db.SaveChangesAsync().ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} notifications about mute, unmute, kick, ban, unban disabled.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} notifications about mute, unmute, kick, ban, unban disabled.").ConfigureAwait(false);
                     }
                 }
                 catch
@@ -325,7 +325,7 @@ namespace RiasBot.Modules.Administration
                     var modlog = new GuildConfig { GuildId = Context.Guild.Id, ModLogChannel = Context.Channel.Id };
                     await db.AddAsync(modlog).ConfigureAwait(false);
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} notifications about mute, unmute, kick, ban, unban will be posted in this channel.").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} notifications about mute, unmute, kick, ban, unban will be posted in this channel.").ConfigureAwait(false);
                 }
             }
         }

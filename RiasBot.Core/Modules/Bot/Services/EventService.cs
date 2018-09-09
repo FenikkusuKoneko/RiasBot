@@ -102,7 +102,7 @@ namespace RiasBot.Modules.Bot.Services
                             if (number == maximum)
                             {
                                 gameStarted = false;
-                                await channel.SendConfirmationEmbed($"Congratulations you earned {reward}{RiasBot.Currency}!");
+                                await channel.SendConfirmationMessageAsync($"Congratulations you earned {reward}{RiasBot.Currency}!");
                                 await AwardUsersCounter().ConfigureAwait(false);
                             }
                         }
@@ -139,7 +139,7 @@ namespace RiasBot.Modules.Bot.Services
                         {
                             players[i] = playerNumbers[i].User.ToString();
                         }
-                        await channel.SendConfirmationEmbed($"Congratulations {String.Join(" ", players)} you earned {reward}{RiasBot.Currency}!");
+                        await channel.SendConfirmationMessageAsync($"Congratulations {String.Join(" ", players)} you earned {reward}{RiasBot.Currency}!");
                         await AwardUsersCounter().ConfigureAwait(false);
                     }
                 }

@@ -29,7 +29,7 @@ namespace RiasBot.Modules.Bot
             [RequireOwner]
             public async Task Event(int timeout, int reward, int maximum, int differencePerUser, bool onlyNumbers, bool botStarts, [Remainder]string message)
             {
-                await Context.Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync(message).ConfigureAwait(false);
                 await Task.Factory.StartNew(() => _service.CounterSetup(Context.Channel, reward, maximum, differencePerUser, onlyNumbers, botStarts)).ConfigureAwait(false);
             }
 
@@ -39,7 +39,7 @@ namespace RiasBot.Modules.Bot
             public async Task Event(int timeout, int reward, [Remainder]string message)
             {
                 IUserMessage userMessage = null;
-                userMessage = await Context.Channel.SendConfirmationEmbed(message).ConfigureAwait(false);
+                userMessage = await Context.Channel.SendConfirmationMessageAsync(message).ConfigureAwait(false);
 
                 await Task.Factory.StartNew(() => _service.Hearts(userMessage, timeout, reward)).ConfigureAwait(false);
             }
@@ -50,7 +50,7 @@ namespace RiasBot.Modules.Bot
             public async Task StopEvent()
             {
                 _service.gameStarted = false;
-                await Context.Channel.SendConfirmationEmbed("Event stopped!").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync("Event stopped!").ConfigureAwait(false);
             }
         }
     }

@@ -23,11 +23,11 @@ namespace RiasBot.Modules.Administration
             {
                 if (name.Length < 2 || name.Length > 100)
                 {
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the name length must be between 2 and 100 characters");
+                    await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} the name length must be between 2 and 100 characters");
                     return;
                 }
                 await Context.Guild.CreateVoiceChannelAsync(name).ConfigureAwait(false);
-                await Context.Channel.SendConfirmationEmbed($"Voice channel {Format.Bold(name)} was created successfully").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"Voice channel {Format.Bold(name)} was created successfully").ConfigureAwait(false);
             }
             
             [RiasCommand][@Alias]
@@ -44,16 +44,16 @@ namespace RiasBot.Modules.Administration
                     if (permissions.ViewChannel)
                     {
                         await channel.DeleteAsync();
-                        await Context.Channel.SendConfirmationEmbed($"Voice channel {Format.Bold(channel.Name)} was deleted successfully").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"Voice channel {Format.Bold(channel.Name)} was deleted successfully").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("I don't have the permission to view that channel");
+                        await Context.Channel.SendErrorMessageAsync("I don't have the permission to view that channel");
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the channel").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the channel").ConfigureAwait(false);
                 }
             }
 
@@ -77,16 +77,16 @@ namespace RiasBot.Modules.Administration
                     {
                         oldName = channel.Name;
                         await channel.ModifyAsync(x => x.Name = newName).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"The name of the voice channel {Format.Bold(oldName)} was renamed to {Format.Bold(newName)} successfully").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"The name of the voice channel {Format.Bold(oldName)} was renamed to {Format.Bold(newName)} successfully").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("I don't have the permission to view that channel");
+                        await Context.Channel.SendErrorMessageAsync("I don't have the permission to view that channel");
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the channel").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the channel").ConfigureAwait(false);
                 }
             }
         }

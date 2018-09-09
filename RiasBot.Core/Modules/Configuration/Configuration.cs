@@ -40,11 +40,11 @@ namespace RiasBot.Modules.Configuration
             try
             {
                 await Context.Client.CurrentUser.ModifyAsync(u => u.Username = name);
-                await Context.Channel.SendConfirmationEmbed("New name " + name);
+                await Context.Channel.SendConfirmationMessageAsync("New name " + name);
             }
             catch
             {
-                await Context.Channel.SendErrorEmbed("You need to wait 2 hours to change your name again.");
+                await Context.Channel.SendErrorMessageAsync("You need to wait 2 hours to change your name again.");
             }
         }
 

@@ -33,7 +33,7 @@ namespace RiasBot.Modules.Searches
             {
                 if (String.IsNullOrEmpty(_creds.UrbanDictionaryApiKey))
                 {
-                    await Context.Channel.SendErrorEmbed("The urban dictionary api key needs to be set to use this command!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("The urban dictionary api key needs to be set to use this command!").ConfigureAwait(false);
                     return;
                 }
 
@@ -59,7 +59,7 @@ namespace RiasBot.Modules.Searches
             }
             catch
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find anything.");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find anything.");
             }
         }
 
@@ -86,7 +86,7 @@ namespace RiasBot.Modules.Searches
             }
             catch
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find anything.");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find anything.");
             }
         }
     }

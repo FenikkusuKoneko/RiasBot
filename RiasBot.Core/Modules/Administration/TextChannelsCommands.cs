@@ -24,11 +24,11 @@ namespace RiasBot.Modules.Administration
             {
                 if (name.Length < 2 || name.Length > 100)
                 {
-                    await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} the name length must be between 2 and 100 characters");
+                    await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} the name length must be between 2 and 100 characters");
                     return;
                 }
                 await Context.Guild.CreateTextChannelAsync(name).ConfigureAwait(false);
-                await Context.Channel.SendConfirmationEmbed($"Text channel {Format.Bold(name)} was created successfully").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"Text channel {Format.Bold(name)} was created successfully").ConfigureAwait(false);
             }
 
             [RiasCommand][@Alias]
@@ -48,21 +48,21 @@ namespace RiasBot.Modules.Administration
                         if (channel.Id != Context.Channel.Id)
                         {
                             await channel.DeleteAsync();
-                            await Context.Channel.SendConfirmationEmbed($"Text channel {Format.Bold(channel.Name)} was deleted successfully").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"Text channel {Format.Bold(channel.Name)} was deleted successfully").ConfigureAwait(false);
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed("You can't delete the channel were this command is executed").ConfigureAwait(false);
+                            await Context.Channel.SendErrorMessageAsync("You can't delete the channel were this command is executed").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("I don't have the permission to view that channel");
+                        await Context.Channel.SendErrorMessageAsync("I don't have the permission to view that channel");
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the channel").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the channel").ConfigureAwait(false);
                 }
             }
             
@@ -84,16 +84,16 @@ namespace RiasBot.Modules.Administration
                     {
                         oldName = channel.Name;
                         await channel.ModifyAsync(x => x.Name = newName).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"The name of the text channel {Format.Bold(oldName)} was renamed to {Format.Bold(newName)} successfully").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"The name of the text channel {Format.Bold(oldName)} was renamed to {Format.Bold(newName)} successfully").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed("I don't have the permission to view that channel");
+                        await Context.Channel.SendErrorMessageAsync("I don't have the permission to view that channel");
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("I couldn't find the channel.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the channel.").ConfigureAwait(false);
                 }
             }
             
@@ -111,7 +111,7 @@ namespace RiasBot.Modules.Administration
                     await Context.Channel.SendMessageAsync(embed: embed.Build());
                 }
                 else
-                    await Context.Channel.SendConfirmationEmbed("No topic set on this channel");
+                    await Context.Channel.SendConfirmationMessageAsync("No topic set on this channel");
             }
 
             [RiasCommand][@Alias]
@@ -124,10 +124,10 @@ namespace RiasBot.Modules.Administration
                 var channel = (ITextChannel)Context.Channel;
                 await channel.ModifyAsync(x => x.Topic = topic);
                 if (string.IsNullOrEmpty(topic))
-                    await Context.Channel.SendConfirmationEmbed($"Channel's topic set to {Format.Bold("null")}");
+                    await Context.Channel.SendConfirmationMessageAsync($"Channel's topic set to {Format.Bold("null")}");
                 else
                 {
-                    await Context.Channel.SendConfirmationEmbed($"Channel's topic set to {Format.Bold(topic)}");
+                    await Context.Channel.SendConfirmationMessageAsync($"Channel's topic set to {Format.Bold(topic)}");
                 }
             }
 
@@ -149,22 +149,22 @@ namespace RiasBot.Modules.Administration
                     {
                         await channel.ModifyAsync(x => x.IsNsfw = false).ConfigureAwait(false);
                         if (channel.Id == Context.Channel.Id)
-                            await Context.Channel.SendConfirmationEmbed("This channel is not NSFW anymore.");
+                            await Context.Channel.SendConfirmationMessageAsync("This channel is not NSFW anymore.");
                         else
-                            await Context.Channel.SendConfirmationEmbed($"{Format.Bold(channel.Name)} is not NSFW anymore.");
+                            await Context.Channel.SendConfirmationMessageAsync($"{Format.Bold(channel.Name)} is not NSFW anymore.");
                     }
                     else
                     {
                         await channel.ModifyAsync(x => x.IsNsfw = true).ConfigureAwait(false);
                         if (channel.Id == Context.Channel.Id)
-                            await Context.Channel.SendConfirmationEmbed("This channel is now NSFW.");
+                            await Context.Channel.SendConfirmationMessageAsync("This channel is now NSFW.");
                         else
-                            await Context.Channel.SendConfirmationEmbed($"{Format.Bold(channel.Name)} is now NSFW.");
+                            await Context.Channel.SendConfirmationMessageAsync($"{Format.Bold(channel.Name)} is now NSFW.");
                     }
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("I don't have the permission to view that channel");
+                    await Context.Channel.SendErrorMessageAsync("I don't have the permission to view that channel");
                 }
             }
         }

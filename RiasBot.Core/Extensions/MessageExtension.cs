@@ -1,19 +1,14 @@
 ﻿using Discord;
-using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RiasBot.Extensions
 {
-    public static class IMessageExtension
+    public static class MessageExtension
     {
         ///<summary>
         ///Send confirmation embed message in current text channel.
         ///</summary>
-        public static async Task<IUserMessage> SendConfirmationEmbed(this IMessageChannel channel, string description)
+        public static async Task<IUserMessage> SendConfirmationMessageAsync(this IMessageChannel channel, string description)
         {
             if (channel != null)
             {
@@ -28,7 +23,7 @@ namespace RiasBot.Extensions
         ///<summary>
         ///Send error embed message in current text channel.
         ///</summary>
-        public static async Task<IUserMessage> SendErrorEmbed(this IMessageChannel channel, string description)
+        public static async Task<IUserMessage> SendErrorMessageAsync(this IMessageChannel channel, string description)
         {
             if (channel != null)
             {

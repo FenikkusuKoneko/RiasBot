@@ -19,7 +19,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed("You are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync("You are not in a voice channel!");
                 return;
             }
             
@@ -27,7 +27,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel.Id != botVoiceChannel.Id)
                 {
-                    await Context.Channel.SendErrorEmbed("I am already in a voice channel!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("I am already in a voice channel!").ConfigureAwait(false);
                     return;
                 }
 
@@ -35,7 +35,7 @@ namespace RiasBot.Modules.Music
             var preconditions = socketGuildUser.GetPermissions(voiceChannel);
             if (!preconditions.Connect)
             {
-                await Context.Channel.SendErrorEmbed($"I don't have permission to connect in the channel {Format.Bold(voiceChannel.Name)}!");
+                await Context.Channel.SendErrorMessageAsync($"I don't have permission to connect in the channel {Format.Bold(voiceChannel.Name)}!");
                 return;
             }
             var mp = await _service.CreateMusicPlayer(Context.Guild);
@@ -50,7 +50,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed("You are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync("You are not in a voice channel!");
                 return;
             }
 
@@ -58,7 +58,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel.Id != botVoiceChannel.Id)
                 {
-                    await Context.Channel.SendErrorEmbed("You are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("You are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
 
@@ -66,7 +66,7 @@ namespace RiasBot.Modules.Music
             var preconditions = socketGuildUser.GetPermissions(voiceChannel);
             if (!preconditions.Connect)
             {
-                await Context.Channel.SendErrorEmbed($"I don't have permission to connect in the channel {Format.Bold(voiceChannel.Name)}!");
+                await Context.Channel.SendErrorMessageAsync($"I don't have permission to connect in the channel {Format.Bold(voiceChannel.Name)}!");
                 return;
             }
 
@@ -84,7 +84,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -92,7 +92,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -110,7 +110,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -118,7 +118,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -136,7 +136,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -144,7 +144,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -162,7 +162,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -170,7 +170,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -188,7 +188,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -196,7 +196,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -212,7 +212,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -220,7 +220,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -236,7 +236,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -244,7 +244,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -260,7 +260,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -268,7 +268,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -285,7 +285,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -293,7 +293,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -310,7 +310,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -318,7 +318,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -334,7 +334,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -342,7 +342,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -351,12 +351,12 @@ namespace RiasBot.Modules.Music
                 if (!mp.Repeat)
                 {
                     mp.Repeat = true;
-                    await Context.Channel.SendConfirmationEmbed("Repeat enabled!").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync("Repeat enabled!").ConfigureAwait(false);
                 }
                 else
                 {
                     mp.Repeat = true;
-                    await Context.Channel.SendConfirmationEmbed("Repeat disabled!").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync("Repeat disabled!").ConfigureAwait(false);
                 }
             }
         }
@@ -369,7 +369,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -377,7 +377,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -393,7 +393,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -401,7 +401,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -417,7 +417,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -425,7 +425,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -442,7 +442,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -450,7 +450,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
@@ -467,7 +467,7 @@ namespace RiasBot.Modules.Music
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
             {
-                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in a voice channel!");
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in a voice channel!");
                 return;
             }
 
@@ -475,7 +475,7 @@ namespace RiasBot.Modules.Music
             if (botVoiceChannel != null)
                 if (voiceChannel != botVoiceChannel)
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you are not in the same voice channel with me!").ConfigureAwait(false);
                     return;
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);

@@ -69,7 +69,7 @@ namespace RiasBot.Modules.Utility.Services
                     {
                         if (input.Content != "confirm")
                         {
-                            await channel.SendErrorEmbed("Claim waifu canceled!").ConfigureAwait(false);
+                            await channel.SendErrorMessageAsync("Claim waifu canceled!").ConfigureAwait(false);
                             return;
                         }
                     }
@@ -80,12 +80,12 @@ namespace RiasBot.Modules.Utility.Services
 
                     if (userDb.Currency < waifuPrice)
                     {
-                        await channel.SendErrorEmbed($"{user.Mention} you don't have enough {RiasBot.Currency}.");
+                        await channel.SendErrorMessageAsync($"{user.Mention} you don't have enough {RiasBot.Currency}.");
                         return;
                     }
                     if (waifuDb.Any(x => x.WaifuId == waifuId))
                     {
-                        await channel.SendErrorEmbed($"{user.Mention} you already claimed this waifu.");
+                        await channel.SendErrorMessageAsync($"{user.Mention} you already claimed this waifu.");
                         return;
                     }
 

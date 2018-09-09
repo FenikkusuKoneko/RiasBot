@@ -54,15 +54,15 @@ namespace RiasBot.Modules.Bot
                 {
                     case "playing":
                         await _client.SetActivityAsync(new Game(name, ActivityType.Playing)).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"Activity status set to {Format.Bold($"Playing {name}")}");
+                        await Context.Channel.SendConfirmationMessageAsync($"Activity status set to {Format.Bold($"Playing {name}")}");
                         break;
                     case "listening":
                         await _client.SetActivityAsync(new Game(name, ActivityType.Listening)).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"Activity status set to {Format.Bold($"Listening to {name}")}");
+                        await Context.Channel.SendConfirmationMessageAsync($"Activity status set to {Format.Bold($"Listening to {name}")}");
                         break;
                     case "watching":
                         await _client.SetActivityAsync(new Game(name, ActivityType.Watching)).ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationEmbed($"Activity status set to {Format.Bold($"Watching {name}")}");
+                        await Context.Channel.SendConfirmationMessageAsync($"Activity status set to {Format.Bold($"Watching {name}")}");
                         break;
                 }
             }
@@ -79,7 +79,7 @@ namespace RiasBot.Modules.Bot
                 _botService.Statuses = statuses;
                 _botService.Status = new Timer(async _ => await _botService.StatusRotate(), null, 0, time * 1000);
 
-                await Context.Channel.SendConfirmationEmbed($"Activity status rotation set: {time} seconds\n{String.Join("\n", statuses)}");
+                await Context.Channel.SendConfirmationMessageAsync($"Activity status rotation set: {time} seconds\n{String.Join("\n", statuses)}");
             }
 
             [RiasCommand]
@@ -94,27 +94,27 @@ namespace RiasBot.Modules.Bot
                 {
                     case "online":
                         await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.Online);
-                        await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("Online")}");
+                        await Context.Channel.SendConfirmationMessageAsync($"Status set to {Format.Code("Online")}");
                         break;
                     case "idle":
                         await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.Idle);
-                        await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("Idle")}");
+                        await Context.Channel.SendConfirmationMessageAsync($"Status set to {Format.Code("Idle")}");
                         break;
                     case "afk":
                         await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.AFK);
-                        await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("AFK")}");
+                        await Context.Channel.SendConfirmationMessageAsync($"Status set to {Format.Code("AFK")}");
                         break;
                     case "donotdisturb":
                         await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.DoNotDisturb);
-                        await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("DoNotDisturb")}");
+                        await Context.Channel.SendConfirmationMessageAsync($"Status set to {Format.Code("DoNotDisturb")}");
                         break;
                     case "dnd":
                         await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.DoNotDisturb);
-                        await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("DoNotDisturb")}");
+                        await Context.Channel.SendConfirmationMessageAsync($"Status set to {Format.Code("DoNotDisturb")}");
                         break;
                     case "invisible":
                         await ((DiscordShardedClient)Context.Client).SetStatusAsync(UserStatus.Invisible);
-                        await Context.Channel.SendConfirmationEmbed($"Status set to {Format.Code("Invisible")}");
+                        await Context.Channel.SendConfirmationMessageAsync($"Status set to {Format.Code("Invisible")}");
                         break;
                 }
             }
@@ -129,7 +129,7 @@ namespace RiasBot.Modules.Bot
                 _botService.Status?.Dispose();
                 var game = new StreamingGame(name, url);
                 await _client.SetActivityAsync(game).ConfigureAwait(false);
-                await Context.Channel.SendConfirmationEmbed($"Activity status set to {Format.Bold($"Streaming {name}")}");
+                await Context.Channel.SendConfirmationMessageAsync($"Activity status set to {Format.Bold($"Streaming {name}")}");
             }
         }
     }

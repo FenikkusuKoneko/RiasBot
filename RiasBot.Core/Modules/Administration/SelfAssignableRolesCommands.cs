@@ -44,16 +44,16 @@ namespace RiasBot.Modules.Administration
                         {
                             var user = (IGuildUser)Context.User;
                             await user.AddRoleAsync(role).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} you are now {Format.Bold(role.Name)}.");
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} you are now {Format.Bold(role.Name)}.");
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(role.Name)} is not self assignable.");
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role {Format.Bold(role.Name)} is not self assignable.");
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the role.");
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the role.");
                     }
                 }
             }
@@ -72,12 +72,12 @@ namespace RiasBot.Modules.Administration
                         {
                             var user = (IGuildUser)Context.User;
                             await user.RemoveRoleAsync(role).ConfigureAwait(false);
-                            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} you are not {Format.Bold(role.Name)}.");
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} you are not {Format.Bold(role.Name)}.");
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the role.");
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the role.");
                     }
                 }
             }
@@ -101,22 +101,22 @@ namespace RiasBot.Modules.Administration
                                 await db.AddAsync(sar).ConfigureAwait(false);
                                 await db.SaveChangesAsync().ConfigureAwait(false);
 
-                                await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} was added in the self assignable roles list successfully.").ConfigureAwait(false);
+                                await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} was added in the self assignable roles list successfully.").ConfigureAwait(false);
                             }
                             else
                             {
-                                await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(role.Name)} is already in the self assignable roles list.").ConfigureAwait(false);
+                                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role {Format.Bold(role.Name)} is already in the self assignable roles list.").ConfigureAwait(false);
                             }
                         }
                         else
                         {
-                            await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the role {Format.Bold(role.Name)} cannot be added to the self assignable roles list " +
+                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the role {Format.Bold(role.Name)} cannot be added to the self assignable roles list " +
                                 $"because is automatically managed by Discord").ConfigureAwait(false);
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} I couldn't find the role.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the role.").ConfigureAwait(false);
                     }
                 }
             }
@@ -137,7 +137,7 @@ namespace RiasBot.Modules.Administration
                         db.Remove(sar);
                         await db.SaveChangesAsync().ConfigureAwait(false);
 
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(role.Name)} was deleted from the self assignable roles list successfully.");
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(role.Name)} was deleted from the self assignable roles list successfully.");
                     }
                     else
                     {
@@ -145,7 +145,7 @@ namespace RiasBot.Modules.Administration
                         db.Remove(sar);
                         await db.SaveChangesAsync().ConfigureAwait(false);
 
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} role {Format.Bold(name)} was deleted from the self assignable roles list successfully.");
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} role {Format.Bold(name)} was deleted from the self assignable roles list successfully.");
                     }
                 }
             }
@@ -200,7 +200,7 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        await Context.Channel.SendErrorEmbed($"{Context.User.Mention} no self assignable roles on this server.");
+                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} no self assignable roles on this server.");
                     }
                 }
             }

@@ -52,9 +52,9 @@ namespace RiasBot.Modules.Games
                 var botChoice = rnd.Next(1, 4);
 
                 if (botChoice % 3 + 1 == playerChoice)
-                    await Context.Channel.SendConfirmationEmbed($"I chose {Format.Bold(types[botChoice - 1])}, you won!").ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync($"I chose {Format.Bold(types[botChoice - 1])}, you won!").ConfigureAwait(false);
                 else if (playerChoice % 3 + 1 == botChoice)
-                    await Context.Channel.SendErrorEmbed($"I chose {Format.Bold(types[botChoice - 1])}, you lost!").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"I chose {Format.Bold(types[botChoice - 1])}, you lost!").ConfigureAwait(false);
                 else
                 {
                     var embed = new EmbedBuilder().WithColor(0xffff00);

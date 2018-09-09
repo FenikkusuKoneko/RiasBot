@@ -51,11 +51,11 @@ namespace RiasBot.Modules.Configuration
                     await db.SaveChangesAsync().ConfigureAwait(false);
                     if (deleteCmdMsg)
                     {
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} automatically delete user's command message enabled.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} automatically delete user's command message enabled.").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} automatically delete user's command message disabled.").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} automatically delete user's command message disabled.").ConfigureAwait(false);
                     }
                 }
             }

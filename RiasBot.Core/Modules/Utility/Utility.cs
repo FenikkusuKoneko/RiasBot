@@ -41,7 +41,7 @@ namespace RiasBot.Modules.Utility
             var user = (IGuildUser)Context.User;
             if (newPrefix is null)
             {
-                await Context.Channel.SendConfirmationEmbed($"{user.Mention} the prefix on this server is {Format.Bold(_ch.Prefix)}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"{user.Mention} the prefix on this server is {Format.Bold(_ch.Prefix)}").ConfigureAwait(false);
             }
             else if (user.GuildPermissions.Administrator)
             {
@@ -63,11 +63,11 @@ namespace RiasBot.Modules.Utility
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                 }
-                await Context.Channel.SendConfirmationEmbed($"{user.Mention} the prefix on this server was changed from {Format.Bold(oldPrefix)} to {Format.Bold(newPrefix)}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"{user.Mention} the prefix on this server was changed from {Format.Bold(oldPrefix)} to {Format.Bold(newPrefix)}").ConfigureAwait(false);
             }
             else
             {
-                await Context.Channel.SendConfirmationEmbed($"{user.Mention} you don't have {Format.Bold("Administration")} permission").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"{user.Mention} you don't have {Format.Bold("Administration")} permission").ConfigureAwait(false);
             }
         }
 
@@ -75,14 +75,14 @@ namespace RiasBot.Modules.Utility
         [Description][@Remarks]
         public async Task Invite()
         {
-            await Context.Channel.SendConfirmationEmbed($"{Context.User.Mention} invite me on your server: [invite]({(RiasBot.Invite)})");
+            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} invite me on your server: [invite]({(RiasBot.Invite)})");
         }
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
         public async Task Donate()
         {
-            await Context.Channel.SendConfirmationEmbed($"Support me! Support this project on [Patreon](https://www.patreon.com/riasbot).\n" +
+            await Context.Channel.SendConfirmationMessageAsync($"Support me! Support this project on [Patreon](https://www.patreon.com/riasbot).\n" +
                 $"For every dollar donated you will receive 1000 {RiasBot.Currency}.");
         }
 
@@ -95,7 +95,7 @@ namespace RiasBot.Modules.Utility
             stopwatch.Start();
             await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
             stopwatch.Stop();
-            await Context.Channel.SendConfirmationEmbed(":ping_pong:" + stopwatch.ElapsedMilliseconds + "ms").ConfigureAwait(false);
+            await Context.Channel.SendConfirmationMessageAsync(":ping_pong:" + stopwatch.ElapsedMilliseconds + "ms").ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
@@ -106,7 +106,7 @@ namespace RiasBot.Modules.Utility
 
             var rnd = new Random((int)DateTime.UtcNow.Ticks);
             var choice = rnd.Next(choices.Length);
-            await Context.Channel.SendConfirmationEmbed($"I chose: {Format.Bold(choices[choice].Trim())}");
+            await Context.Channel.SendConfirmationMessageAsync($"I chose: {Format.Bold(choices[choice].Trim())}");
         }
 
         [RiasCommand][@Alias]
@@ -184,7 +184,7 @@ namespace RiasBot.Modules.Utility
                 }
                 else
                 {
-                    await Context.Channel.SendErrorEmbed("Invalid units").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("Invalid units").ConfigureAwait(false);
                 }
             }
             else
@@ -233,7 +233,7 @@ namespace RiasBot.Modules.Utility
                 }
                 catch
                 {
-                    await Context.Channel.SendErrorEmbed($"{Context.User.Mention} the color is not a valid hex color.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the color is not a valid hex color.").ConfigureAwait(false);
                 }
             }
         }
