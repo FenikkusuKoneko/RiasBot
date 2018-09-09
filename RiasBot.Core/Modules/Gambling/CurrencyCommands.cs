@@ -204,6 +204,7 @@ namespace RiasBot.Modules.Gambling
 
             [RiasCommand][Discord.Commands.Alias]
             [Description][@Remarks]
+            [RequireContext(ContextType.Guild)]
             public async Task Give(int amount, [Remainder]IGuildUser user)
             {
                 if (amount < 1)
@@ -308,6 +309,54 @@ namespace RiasBot.Modules.Gambling
                         embed.WithDescription("No users on this page");
 
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());
+                }
+            }
+
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
+            [RequireContext(ContextType.Guild)]
+            public async Task DailyAsync()
+            {
+                using (var db = _db.GetDbContext())
+                {
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == Context.User.Id);
+                    var dailyDb = db.Dailies.FirstOrDefault(x => x.UserId == Context.User.Id);
+                    
+                    var nextDateTime = DateTime.UtcNow.AddDays(1);
+                    var nextDateTimeDaily = new DateTime(nextDateTime.Year, nextDateTime.Month, nextDateTime.Day);
+                    
+                    if (dailyDb != null)
+                    {
+                        if (DateTime.Compare(DateTime.UtcNow, dailyDb.NextDaily) >= 0)
+                        {
+                            dailyDb.NextDaily = nextDateTimeDaily;
+                        }
+                        else
+                        {
+                            var timeLeft = dailyDb.NextDaily.Subtract(DateTime.UtcNow);
+                            await Context.Channel.SendErrorMessageAsync($"You can get your next daily in {timeLeft.StringTimeSpan()}.").ConfigureAwait(false);;
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        var newDailyDb = new Dailies { UserId = Context.User.Id, NextDaily = nextDateTimeDaily};
+                        await db.AddAsync(newDailyDb).ConfigureAwait(false);
+                    }
+
+                    if (userDb != null)
+                    {
+                        userDb.Currency += 100;
+                    }
+                    else
+                    {
+                        var newUserDb = new UserConfig {UserId = Context.User.Id, Currency = 100};
+                        await db.AddAsync(newUserDb).ConfigureAwait(false);
+                    }
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+                    await Context.Channel.SendConfirmationMessageAsync($"You received your daily 100 {RiasBot.Currency}.").ConfigureAwait(false);;
                 }
             }
         }

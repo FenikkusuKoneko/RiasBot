@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RiasBot.Services.Database;
 
 namespace RiasBot.Migrations
 {
     [DbContext(typeof(RiasContext))]
-    partial class RiasContextModelSnapshot : ModelSnapshot
+    [Migration("20180909021004_Dailies")]
+    partial class Dailies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

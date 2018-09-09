@@ -32,6 +32,7 @@ namespace RiasBot.Services.Database
         public DbSet<XpRolesSystem> XpRolesSystem { get; set; }
         public DbSet<Profile> Profile { get; set; }
         public DbSet<MuteTimers> MuteTimers { get; set; }
+        public DbSet<Dailies> Dailies { get; set; }
 
         public RiasContext(DbContextOptions<RiasContext> options) : base(options)
         {
@@ -116,6 +117,12 @@ namespace RiasBot.Services.Database
             #region MuteTimers
 
             var muteTimers = modelBuilder.Entity<MuteTimers>();
+
+            #endregion
+            
+            #region Dailies
+
+            var dailies = modelBuilder.Entity<Dailies>();
 
             #endregion
         }

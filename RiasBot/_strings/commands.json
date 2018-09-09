@@ -707,6 +707,14 @@
     ]
   },
 
+  "daily": {
+    "Command": "daily dailies",
+    "Description": "Get your daily [currency].",
+    "Remarks": [
+      "[prefix]lb"
+    ]
+  },
+
   "betroll": {
     "Command": "betroll br",
     "Description": "Bet on roll. Over 80 -> 1x, over 90 -> 1.5x, over 95 -> 2x, over 99 -> 5x of the bet.",
