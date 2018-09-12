@@ -199,11 +199,11 @@
     ]
   },
 
-  "dbl": {
-    "Command": "dbl",
-    "Description": "Show a list with voters for today from Discord Bots List.",
+  "votes": {
+    "Command": "votes",
+    "Description": "Show a list with voters within the last 12 hours from Discord Bots List.",
     "Remarks": [
-      "[prefix]dbl"
+      "[prefix]votes"
     ]
   },
 

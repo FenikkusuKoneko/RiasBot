@@ -161,32 +161,38 @@ namespace RiasBot.Modules.Bot
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireOwner]
-        public async Task Dbl()
+        public async Task Votes()
         {
-            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             var votes = new List<string>();
             var index = 0;
-            foreach (var vote in _votesService.VotesList)
+            if (_votesService.VotesList != null)
             {
-                var user = await Context.Client.GetUserAsync(vote.User);
-                votes.Add($"#{index+1} {user?.ToString()} ({vote.User})");
-                index++;
-            }
-            var pager = new PaginatedMessage
-            {
-                Title = "List of voters in the past 12 hours",
-                Color = new Color(RiasBot.GoodColor),
-                Pages = votes,
-                Options = new PaginatedAppearanceOptions
+                foreach (var vote in _votesService.VotesList)
                 {
-                    ItemsPerPage = 15,
-                    Timeout = TimeSpan.FromMinutes(1),
-                    DisplayInformationIcon = false,
-                    JumpDisplayOptions = JumpDisplayOptions.Never
+                    var user = await Context.Client.GetUserAsync(vote.User);
+                    votes.Add($"#{index+1} {user?.ToString()} ({vote.User})");
+                    index++;
                 }
+                var pager = new PaginatedMessage
+                {
+                    Title = "List of voters in the past 12 hours",
+                    Color = new Color(RiasBot.GoodColor),
+                    Pages = votes,
+                    Options = new PaginatedAppearanceOptions
+                    {
+                        ItemsPerPage = 15,
+                        Timeout = TimeSpan.FromMinutes(1),
+                        DisplayInformationIcon = false,
+                        JumpDisplayOptions = JumpDisplayOptions.Never
+                    }
 
-            };
-            await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
+                };
+                await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager); 
+            }
+            else
+            {
+                await Context.Channel.SendErrorMessageAsync("The votes manager is not configured!").ConfigureAwait(false);
+            }
         }
 
         [RiasCommand][@Alias]

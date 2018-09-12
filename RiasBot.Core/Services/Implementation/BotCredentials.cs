@@ -43,8 +43,9 @@ namespace RiasBot.Services.Implementation
                 lavalinkConfig["Authorization"]);
             
             var votesManagerConfig = config.GetSection(nameof(VotesManagerConfig));
-            VotesManagerConfig = new VotesManagerConfig(votesManagerConfig["WebSocketHost"], ushort.Parse(votesManagerConfig["WebSocketPort"]),
-                bool.Parse(votesManagerConfig["IsSecureConnection"]), votesManagerConfig["UrlParameters"], votesManagerConfig["Authorization"]);
+            VotesManagerConfig = new VotesManagerConfig(votesManagerConfig.GetValue<string>("WebSocketHost"), votesManagerConfig.GetValue<ushort>("WebSocketPort"),
+                votesManagerConfig.GetValue<bool>("IsSecureConnection"), votesManagerConfig.GetValue<string>("UrlParameters"),
+                votesManagerConfig.GetValue<string>("Authorization"));
             IsBeta = config.GetValue<bool>(nameof(IsBeta));
         }
     }
