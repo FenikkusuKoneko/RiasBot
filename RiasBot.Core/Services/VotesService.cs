@@ -82,12 +82,41 @@ namespace RiasBot.Services
                 Console.WriteLine(ex);
             }
         }
+        
+        private async Task RefreshVotes()
+        {
+            try
+            {
+                using (var http = new HttpClient())
+                {
+                    http.DefaultRequestHeaders.Clear();
+                    http.DefaultRequestHeaders.Add("Authorization", _creds.VotesManagerConfig.Authorization);
+                    var votesApi = await http.GetStringAsync($"https://{_creds.VotesManagerConfig.WebSocketHost}/api/votes");
+                    var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
+                    
+                    VotesList = new List<Votes>();
+                    var votes = dblVotes.Votes.Where(x => x.Type == "upvote").ToList();
+                    
+                    foreach (var vote in votes)
+                    {
+                        var date = vote.Date.AddHours(12);
+                        if (DateTime.Compare(date.ToUniversalTime(), DateTime.UtcNow) >= 1)
+                        {
+                            VotesList.Add(vote);
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
 
         private async Task AwardVoter(JObject vote)
         {
             using (var db = _db.GetDbContext())
             {
-                VotesList.Add(vote.ToObject<Votes>());
                 var userId = ulong.Parse(vote["User"].ToString());
                 var isWeekend = (bool) vote["IsWeekend"];
                 var userDb = db.Users.FirstOrDefault(x => x.UserId == userId);
@@ -122,6 +151,7 @@ namespace RiasBot.Services
             {
                 Console.WriteLine(ex);
             }
+            await RefreshVotes();
         }
     }
     
