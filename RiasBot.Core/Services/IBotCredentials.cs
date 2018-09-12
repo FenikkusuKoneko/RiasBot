@@ -15,6 +15,7 @@ namespace RiasBot.Services
         string DiscordBotsListApiKey { get; }
         string WeebServicesToken { get; }
         LavalinkConfig LavalinkConfig { get; }
+        VotesManagerConfig VotesManagerConfig { get; }
         bool IsBeta { get; }    //beta bool is too protect things to run only on the public version, like apis
     }
     
@@ -32,6 +33,24 @@ namespace RiasBot.Services
             RestPort = restPort;
             WebSocketHost = webSocketHost;
             WebSocketPort = webSocketPort;
+            Authorization = authorization;
+        }
+    }
+    
+    public class VotesManagerConfig
+    {
+        public string WebSocketHost { get; }
+        public ushort WebSocketPort { get; }
+        public bool IsSecureConnection { get; }
+        public string UrlParameters { get; }
+        public string Authorization { get; }
+
+        public VotesManagerConfig(string webSocketHost, ushort webSocketPort, bool isSecureConnection, string urlParameters, string authorization)
+        {
+            WebSocketHost = webSocketHost;
+            WebSocketPort = webSocketPort;
+            IsSecureConnection = isSecureConnection;
+            UrlParameters = urlParameters;
             Authorization = authorization;
         }
     }

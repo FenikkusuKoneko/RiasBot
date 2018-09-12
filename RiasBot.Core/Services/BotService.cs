@@ -24,11 +24,7 @@ namespace RiasBot.Services
         private readonly LoggingService _loggingService;
 
         private Timer _dblTimer;
-        private Timer _dblVotesTimer;
         public Timer Status;
-
-        public List<Votes> VotesList = new List<Votes>();
-        private bool _populateVotesList = true;
 
         public string[] Statuses;
         private int _statusCount = 0;
@@ -54,7 +50,6 @@ namespace RiasBot.Services
                 if(!_creds.IsBeta)
                 {
                     _dblTimer = new Timer(new TimerCallback(async _ => await DblStats()), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
-                    _dblVotesTimer = new Timer(new TimerCallback(async _ => await DblVotes()), null, TimeSpan.Zero, new TimeSpan(1, 0, 0));
                 }
             }
         }
@@ -271,60 +266,6 @@ namespace RiasBot.Services
             }
         }
 
-        public async Task DblVotes()
-        {
-            try
-            {
-                using (var db = _db.GetDbContext())
-                using (var http = new HttpClient())
-                {
-                    var votesApi = await http.GetStringAsync(RiasBot.Website + "api/votes.json");
-                    var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
-                    var votes = dblVotes.Votes.Where(x => x.Type == "upvote");
-                    VotesList = new List<Votes>();
-                    foreach (var vote in votes)
-                    {
-                        var date = vote.Date.AddHours(12);
-                        if (DateTime.Compare(date.ToUniversalTime(), DateTime.UtcNow) >= 1)
-                        {
-                            VotesList.Add(vote);
-                            if (!_populateVotesList)
-                            {
-                                var getGuildUser = _discord.GetGuild(RiasBot.SupportServer).GetUser(vote.User);
-                                if (getGuildUser != null)
-                                {
-                                    var userDb = db.Users.FirstOrDefault(x => x.UserId == vote.User);
-                                    if (userDb != null)
-                                    {
-                                        if (!userDb.IsBlacklisted)
-                                            userDb.Currency += vote.IsWeekend ? 20 : 10;
-                                    }
-                                    else
-                                    {
-                                        var currency = new UserConfig { UserId = vote.User, Currency = 10 };
-                                    }
-                                    await db.SaveChangesAsync().ConfigureAwait(false);
-                                }
-                                else
-                                {
-                                    //User not in the support server!
-                                }
-                            }
-                            else
-                            {
-                                    
-                            }
-                        }
-                    }
-                    _populateVotesList = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-
         private async Task ShardReady(DiscordSocketClient client)
         {
             _loggingService.Ready = true;
@@ -345,24 +286,5 @@ namespace RiasBot.Services
 //               RiasBot.Lavalink.TrackEnd += _musicService.TrackEnd;
 //            Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} Lavalink started!");
         }
-    }
-
-    public class DBL
-    {
-        public List<Votes> Votes { get; set; }
-        public DateTime Date { get; set; }
-    }
-    public class Data
-    {
-        
-    }
-    public class Votes
-    {
-        public ulong Bot { get; set; }
-        public ulong User { get; set; }
-        public string Type { get; set; }
-        public bool IsWeekend { get; set; }
-        public string Query { get; set; }
-        public DateTime Date { get; set; }
     }
 }

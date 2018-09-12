@@ -21,30 +21,26 @@ namespace RiasBot.Modules.Bot
     {
         private readonly CommandHandler _ch;
         private readonly CommandService _service;
-        private readonly IServiceProvider _provider;
         private readonly DbService _db;
         private readonly DiscordShardedClient _client;
         private readonly DiscordRestClient _restClient;
         private readonly BotService _botService;
         private readonly InteractiveService _is;
-        private readonly IBotCredentials _creds;
-        private readonly ReactionsService _reactionsService;
         private readonly MusicService _musicService;
+        private readonly VotesService _votesService;
 
-        public Bot(CommandHandler ch, CommandService service, IServiceProvider provider, DbService db, DiscordShardedClient client, DiscordRestClient restClient,
-            BotService botService, InteractiveService interactiveService, IBotCredentials creds, ReactionsService reactionsService, MusicService musicService)
+        public Bot(CommandHandler ch, CommandService service, DbService db, DiscordShardedClient client, DiscordRestClient restClient,
+            BotService botService, InteractiveService interactiveService, MusicService musicService, VotesService votesService)
         {
             _ch = ch;
             _service = service;
-            _provider = provider;
             _db = db;
             _client = client;
             _restClient = restClient;
             _botService = botService;
             _is = interactiveService;
-            _creds = creds;
-            _reactionsService = reactionsService;
             _musicService = musicService;
+            _votesService = votesService;
         }
 
         [RiasCommand][@Alias]
@@ -170,7 +166,7 @@ namespace RiasBot.Modules.Bot
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             var votes = new List<string>();
             var index = 0;
-            foreach (var vote in _botService.VotesList)
+            foreach (var vote in _votesService.VotesList)
             {
                 var user = await Context.Client.GetUserAsync(vote.User);
                 votes.Add($"#{index+1} {user?.ToString()} ({vote.User})");
@@ -178,7 +174,7 @@ namespace RiasBot.Modules.Bot
             }
             var pager = new PaginatedMessage
             {
-                Title = "List of voters today",
+                Title = "List of voters in the past 12 hours",
                 Color = new Color(RiasBot.GoodColor),
                 Pages = votes,
                 Options = new PaginatedAppearanceOptions

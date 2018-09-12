@@ -71,6 +71,7 @@ namespace RiasBot
             provider.GetRequiredService<BotService>();
             provider.GetRequiredService<DbService>();
             provider.GetRequiredService<PatreonService>();
+            await provider.GetRequiredService<VotesService>().ConfigureVotesWebSocket();
 
             await Task.Delay(-1).ConfigureAwait(false);     // Prevent the application from closing
         }

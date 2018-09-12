@@ -18,6 +18,7 @@ namespace RiasBot.Services.Implementation
         public string DiscordBotsListApiKey { get; }
         public string WeebServicesToken { get; }
         public LavalinkConfig LavalinkConfig { get; }
+        public VotesManagerConfig VotesManagerConfig { get; }
         public bool IsBeta { get; }    //beta bool is too protect things to run only on the public version, like apis
 
         private readonly string _credsFileName = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
@@ -40,6 +41,10 @@ namespace RiasBot.Services.Implementation
             LavalinkConfig = new LavalinkConfig(lavalinkConfig["RestHost"], ushort.Parse(lavalinkConfig["RestPort"]),
                 lavalinkConfig["WebSocketHost"], ushort.Parse(lavalinkConfig["WebSocketPort"]),
                 lavalinkConfig["Authorization"]);
+            
+            var votesManagerConfig = config.GetSection(nameof(VotesManagerConfig));
+            VotesManagerConfig = new VotesManagerConfig(votesManagerConfig["WebSocketHost"], ushort.Parse(votesManagerConfig["WebSocketPort"]),
+                bool.Parse(votesManagerConfig["IsSecureConnection"]), votesManagerConfig["UrlParameters"], votesManagerConfig["Authorization"]);
             IsBeta = config.GetValue<bool>(nameof(IsBeta));
         }
     }
