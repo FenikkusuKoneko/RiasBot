@@ -202,7 +202,7 @@ namespace RiasBot.Modules.Gambling
                 }
             }
 
-            [RiasCommand][Discord.Commands.Alias]
+            /*[RiasCommand][Discord.Commands.Alias]
             [Description][@Remarks]
             [RequireContext(ContextType.Guild)]
             public async Task Give(int amount, [Remainder]IGuildUser user)
@@ -251,7 +251,7 @@ namespace RiasBot.Modules.Gambling
                         await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.").ConfigureAwait(false);
                     }
                 }
-            }
+            }*/
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
