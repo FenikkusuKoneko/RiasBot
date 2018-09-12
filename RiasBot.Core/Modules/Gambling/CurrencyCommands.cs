@@ -324,8 +324,7 @@ namespace RiasBot.Modules.Gambling
                     var userDb = db.Users.FirstOrDefault(x => x.UserId == Context.User.Id);
                     var dailyDb = db.Dailies.FirstOrDefault(x => x.UserId == Context.User.Id);
                     
-                    var nextDateTime = DateTime.UtcNow.AddDays(1);
-                    var nextDateTimeDaily = new DateTime(nextDateTime.Year, nextDateTime.Month, nextDateTime.Day);
+                    var nextDateTimeDaily = DateTime.UtcNow.AddHours(23);
                     
                     if (dailyDb != null)
                     {
