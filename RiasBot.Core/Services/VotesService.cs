@@ -20,6 +20,9 @@ namespace RiasBot.Services
             _db = db;
         }
         public List<Votes> VotesList;
+        private VotesWebSocket _votesWebSocket;
+
+        private string protocol;
 
         public async Task ConfigureVotesWebSocket()
         {
@@ -29,11 +32,13 @@ namespace RiasBot.Services
                 return;
             }
             
-            var votesWebSocket = new VotesWebSocket(_creds.VotesManagerConfig);
-            await votesWebSocket.Connect().ConfigureAwait(false);
-            votesWebSocket.OnReceive += AwardVoter;
+            protocol = _creds.VotesManagerConfig.IsSecureConnection ? "https" : "http";
+            
+            _votesWebSocket = new VotesWebSocket(_creds.VotesManagerConfig);
+            await _votesWebSocket.Connect().ConfigureAwait(false);
 
-            await LoadVotes();
+            _votesWebSocket.OnConnected += VotesWebSocketConnected;
+            _votesWebSocket.OnReceive += AwardVoter;
         }
 
         private async Task LoadVotes()
@@ -45,7 +50,7 @@ namespace RiasBot.Services
                 {
                     http.DefaultRequestHeaders.Clear();
                     http.DefaultRequestHeaders.Add("Authorization", _creds.VotesManagerConfig.Authorization);
-                    var votesApi = await http.GetStringAsync($"https://{_creds.VotesManagerConfig.WebSocketHost}/api/votes");
+                    var votesApi = await http.GetStringAsync($"{protocol}://{_creds.VotesManagerConfig.WebSocketHost}/api/votes");
                     var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
                     
                     VotesList = new List<Votes>();
@@ -76,6 +81,7 @@ namespace RiasBot.Services
                         }
                     }
                 }
+                Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} The votes list was loaded successfully!");
             }
             catch (Exception ex)
             {
@@ -91,7 +97,7 @@ namespace RiasBot.Services
                 {
                     http.DefaultRequestHeaders.Clear();
                     http.DefaultRequestHeaders.Add("Authorization", _creds.VotesManagerConfig.Authorization);
-                    var votesApi = await http.GetStringAsync($"https://{_creds.VotesManagerConfig.WebSocketHost}/api/votes");
+                    var votesApi = await http.GetStringAsync($"{protocol}://{_creds.VotesManagerConfig.WebSocketHost}/api/votes");
                     var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
                     
                     VotesList = new List<Votes>();
@@ -144,7 +150,7 @@ namespace RiasBot.Services
                     http.DefaultRequestHeaders.Clear();
                     http.DefaultRequestHeaders.Add("Authorization", _creds.VotesManagerConfig.Authorization);
 
-                    await http.PostAsync($"https://{_creds.VotesManagerConfig.WebSocketHost}/api/votes/{userId}", null).ConfigureAwait(false);
+                    await http.PostAsync($"{protocol}://{_creds.VotesManagerConfig.WebSocketHost}/api/votes/{userId}", null).ConfigureAwait(false);
                 }
             }
             catch (HttpRequestException ex)
@@ -152,6 +158,11 @@ namespace RiasBot.Services
                 Console.WriteLine(ex);
             }
             await RefreshVotes();
+        }
+
+        private async Task VotesWebSocketConnected()
+        {
+            await LoadVotes();
         }
     }
     

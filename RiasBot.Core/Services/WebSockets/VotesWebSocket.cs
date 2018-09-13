@@ -18,12 +18,33 @@ namespace RiasBot.Services.WebSockets
         public event AsyncEvent<JObject> OnReceive;
 
         public event AsyncEvent<WebSocketCloseStatus?, string> OnClosed;
+        
+        public event Func<Task> OnConnected; 
 
         public VotesWebSocket(VotesManagerConfig config)
         {
             _config = config;
             var connectionType = config.IsSecureConnection ? "wss" : "ws";
             _hostUri = new Uri($"{connectionType}://{config.WebSocketHost}:{config.WebSocketPort}/{config.UrlParameters}");
+        }
+
+        private async Task TryConnectWebSocketAsync()
+        {
+            while (!IsConnected())
+            {
+                try
+                {
+                    await ConnectWebSocketAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} The VotesWebSocket connection was closed or aborted! Attempting reconnect in 30 seconds!");
+                    _connected = false;
+                    await Task.Delay(30 * 1000);
+                    await Connect().ConfigureAwait(false);
+                    break;
+                }
+            }
         }
 
         private async Task ConnectWebSocketAsync()
@@ -33,14 +54,15 @@ namespace RiasBot.Services.WebSockets
             
             await _webSocket.ConnectAsync(_hostUri, CancellationToken.None);
             Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} VotesWebSocket connected!");
+            if (OnConnected != null) await OnConnected.Invoke();
             _connected = true;
             while (_webSocket.State == WebSocketState.Open)
             {
                 var jsonString = await ReceiveAsync(_webSocket);
                 var json = JObject.Parse(jsonString);
-                // ISSUE: reference to a compiler-generated field
                 if (OnReceive != null) await OnReceive.InvokeAsync(json);
             }
+            var timer = new Timer(async _ => await Connect(), null, new TimeSpan(0, 0, 30), TimeSpan.Zero);
         }
 
         private async Task DisconnectWebSocketAsync()
@@ -60,10 +82,8 @@ namespace RiasBot.Services.WebSockets
                 var result = socketReceiveResult;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    // ISSUE: reference to a compiler-generated field
-                    var onClosed = OnClosed;
-                    if (onClosed != null)
-                        await onClosed.InvokeAsync(result.CloseStatus, result.CloseStatusDescription);
+                    if (OnClosed != null)
+                        await OnClosed.InvokeAsync(result.CloseStatus, result.CloseStatusDescription);
                     _connected = false;
                     Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} VotesWebSocket disconnected!");
                 }
@@ -89,7 +109,7 @@ namespace RiasBot.Services.WebSockets
 
         public async Task Connect()
         {
-            await Task.Factory.StartNew(async () => await ConnectWebSocketAsync());
+            await Task.Factory.StartNew(async () => await TryConnectWebSocketAsync());
         }
 
         public async Task Disconnect()

@@ -49,7 +49,7 @@ namespace RiasBot.Services
             {
                 if(!_creds.IsBeta)
                 {
-                    _dblTimer = new Timer(new TimerCallback(async _ => await DblStats()), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
+                    _dblTimer = new Timer(async _ => await DblStats(), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
                 }
             }
         }

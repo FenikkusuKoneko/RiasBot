@@ -165,11 +165,11 @@ namespace RiasBot.Modules.Reactions.Services
         {
             using (var http = new HttpClient())
             {
-                var kitsuneRequest = await http.GetAsync(RiasBot.Website + "api/grope").ConfigureAwait(false);
-                if (kitsuneRequest.IsSuccessStatusCode)
+                var gropeRequest = await http.GetAsync(RiasBot.Website + "api/grope").ConfigureAwait(false);
+                if (gropeRequest.IsSuccessStatusCode)
                 {
-                    var kitsuneImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(await kitsuneRequest.Content.ReadAsStringAsync());
-                    return kitsuneImage["url"];
+                    var gropeImage = JsonConvert.DeserializeObject<Dictionary<string, string>>(await gropeRequest.Content.ReadAsStringAsync());
+                    return gropeImage["url"];
                 }
 
                 return null;
