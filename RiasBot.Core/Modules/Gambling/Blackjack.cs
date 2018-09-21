@@ -26,7 +26,7 @@ namespace RiasBot.Modules.Gambling
             public async Task BlackjackAsync(int bet)
             {
                 var currency = _service.GetCurrency((IGuildUser)Context.User);
-                if (bet < 1)
+                if (bet < 5)
                 {
                     await Context.Channel.SendErrorMessageAsync($"You cannot bet less than 5 {RiasBot.Currency}.").ConfigureAwait(false);
                 }

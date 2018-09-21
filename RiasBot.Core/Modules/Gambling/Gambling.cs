@@ -27,44 +27,50 @@ namespace RiasBot.Modules.Gambling
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
+        [RequireContext(ContextType.Guild)]
         [Ratelimit(3, 5, Measure.Seconds, applyPerGuild: true)]
         public async Task Wheel(int bet)
         {
-            if (bet < 50)
+            if (bet < 5)
             {
-                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you can't bet less than 50 {RiasBot.Currency}");
-                return;
+                await Context.Channel.SendErrorMessageAsync($"You cannot bet less than 5 {RiasBot.Currency}.");
             }
-
-            string[] arrow = { "⬆", "↗", "➡", "↘", "⬇", "↙", "⬅", "↖" };
-            float[] wheelMultiple = { 1.7f, 2.0f, 1.2f, 0.5f, 0.3f, 0.0f, 0.2f, 1.5f };
-            var rnd = new Random((int)DateTime.UtcNow.Ticks);
-            var wheel = rnd.Next(8);
-
-            using (var db = _db.GetDbContext())
+            else if (bet > 1000)
             {
-                var userDb = db.Users.Where(Xp => Xp.UserId == Context.User.Id).FirstOrDefault();
-                try
-                {
-                    if (bet <= userDb.Currency)
-                    {
-                        var win = (int)(bet * wheelMultiple[wheel]);
-                        userDb.Currency += win - bet;
-                        await db.SaveChangesAsync().ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"You cannot bet more than 1000 {RiasBot.Currency}.");
+            }
+            else
+            {
+                string[] arrow = { "⬆", "↗", "➡", "↘", "⬇", "↙", "⬅", "↖" };
+                float[] wheelMultiple = { 1.7f, 2.0f, 1.2f, 0.5f, 0.3f, 0.0f, 0.2f, 1.5f };
+                var rnd = new Random((int)DateTime.UtcNow.Ticks);
+                var wheel = rnd.Next(8);
 
-                        var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-                        embed.WithTitle($"{Context.User} you won {win} {RiasBot.Currency}");
-                        embed.WithDescription($"「1.5x」\t「1.7x」\t「2.0x」\n\n「0.2x」\t    {arrow[wheel]}    \t「1.2x」\n\n「0.0x」\t「0.3x」\t「0.5x」");
-                        await Context.Channel.SendMessageAsync("", embed: embed.Build());
+                using (var db = _db.GetDbContext())
+                {
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == Context.User.Id);
+                    if (userDb != null)
+                    {
+                        if (bet <= userDb.Currency)
+                        {
+                            var win = (int)(bet * wheelMultiple[wheel]);
+                            userDb.Currency += win - bet;
+                            await db.SaveChangesAsync().ConfigureAwait(false);
+
+                            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+                            embed.WithTitle($"{Context.User} you won {win} {RiasBot.Currency}");
+                            embed.WithDescription($"「1.5x」\t「1.7x」\t「2.0x」\n\n「0.2x」\t    {arrow[wheel]}    \t「1.2x」\n\n「0.0x」\t「0.3x」\t「0.5x」");
+                            await Context.Channel.SendMessageAsync("", embed: embed.Build());
+                        }
+                        else
+                        {
+                            await Context.Channel.SendErrorMessageAsync($"You don't have enough {RiasBot.Currency}.");
+                        }
                     }
                     else
                     {
-                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}");
+                        await Context.Channel.SendErrorMessageAsync($"You don't have enough {RiasBot.Currency}.");
                     }
-                }
-                catch
-                {
-
                 }
             }
         }
