@@ -7,12 +7,12 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
-using RiasBot.Modules.Reactions.Services;
 using RiasBot.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using RiasBot.Modules.Music.Services;
 
 namespace RiasBot.Modules.Bot
@@ -248,14 +248,13 @@ namespace RiasBot.Modules.Bot
             };
             object result = null;
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithAuthor(Context.User);
             try
             {
                 result = await CSharpScript.EvaluateAsync(expression,
                 ScriptOptions.Default.WithReferences(typeof(RiasBot).Assembly).WithImports(new[] { "System", "System.Collections.Generic",
                     "System.Linq", "Discord", "System.Threading.Tasks" }), globals);
 
-                embed.WithDescription("Success");
+                embed.WithAuthor("Success", Context.User.GetDefaultAvatarUrl());
                 embed.AddField("Code", Format.Code(expression, "csharp"));
                 if (result != null)
                 {
@@ -265,7 +264,7 @@ namespace RiasBot.Modules.Bot
             }
             catch (Exception e)
             {
-                embed.WithDescription("Failed");
+                embed.WithAuthor("Failed", Context.User.GetDefaultAvatarUrl());
                 embed.AddField("CompilationErrorException", Format.Code(e.Message, "csharp"));
                 await Context.Channel.SendMessageAsync(embed: embed.Build());
             }
@@ -273,6 +272,48 @@ namespace RiasBot.Modules.Bot
             {
                 if (result != null)
                     GC.Collect(GC.GetGeneration(result), GCCollectionMode.Optimized);
+            }
+        }
+
+        [RiasCommand]
+        [@Alias]
+        [Description]
+        [@Remarks]
+        [RequireOwner]
+        public async Task ExecuteSqlAsync([Remainder] string query)
+        {
+            var message = await Context.Channel.SendConfirmationMessageAsync("Do you want to execute this SQL query?").ConfigureAwait(false);
+            var input = await _is.NextMessageAsync((ShardedCommandContext)Context, timeout: TimeSpan.FromMinutes(1));
+            if (input != null)
+            {
+                if (input.Content.Equals("yes", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    using (var db = _db.GetDbContext())
+                    {
+                        var transaction = await db.Database.BeginTransactionAsync().ConfigureAwait(false);
+                        var rows = await db.Database.ExecuteSqlCommandAsync(query).ConfigureAwait(false);
+                        transaction.Commit();
+                        
+                        var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+                        embed.WithAuthor("Execute SQL Query", Context.User.GetRealAvatarUrl());
+                        embed.WithDescription(Format.Code(query));
+                        embed.AddField("Rows affected ", Format.Code(rows.ToString()));
+
+                        await message.DeleteAsync().ConfigureAwait(false);
+                        await Context.Message.DeleteAsync().ConfigureAwait(false);
+                        await Context.Channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    await message.DeleteAsync().ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("Execution aborted!").ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                await message.DeleteAsync().ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync("Execution aborted!").ConfigureAwait(false);
             }
         }
         

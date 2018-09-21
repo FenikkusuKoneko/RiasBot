@@ -223,6 +223,14 @@
     ]
   },
 
+  "executesql": {
+    "Command": "executesql execsql",
+    "Description": "Execute a SQL query.",
+    "Remarks": [
+      "[prefix]execsql UPDATE table SET column WHERE condition..."
+    ]
+  },
+
   "downloadusers": {
     "Command": "downloadusers",
     "Description": "Download all users from a guild",
