@@ -262,11 +262,9 @@ namespace RiasBot.Modules.Gambling
 
                 using (var db = _db.GetDbContext())
                 {
-                    var currencyAmount = 0;
                     var userDb = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
                     try
                     {
-                        currencyAmount = userDb.Currency;
                         if (user == Context.User)
                             await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} you have {userDb.Currency} {RiasBot.Currency}").ConfigureAwait(false);
                         else

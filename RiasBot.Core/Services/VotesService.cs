@@ -22,7 +22,7 @@ namespace RiasBot.Services
         public List<Votes> VotesList;
         private VotesWebSocket _votesWebSocket;
 
-        private string protocol;
+        private string _protocol;
 
         public async Task ConfigureVotesWebSocket()
         {
@@ -32,7 +32,7 @@ namespace RiasBot.Services
                 return;
             }
             
-            protocol = _creds.VotesManagerConfig.IsSecureConnection ? "https" : "http";
+            _protocol = _creds.VotesManagerConfig.IsSecureConnection ? "https" : "http";
             
             _votesWebSocket = new VotesWebSocket(_creds.VotesManagerConfig);
             await _votesWebSocket.Connect().ConfigureAwait(false);
@@ -50,7 +50,7 @@ namespace RiasBot.Services
                 {
                     http.DefaultRequestHeaders.Clear();
                     http.DefaultRequestHeaders.Add("Authorization", _creds.VotesManagerConfig.Authorization);
-                    var votesApi = await http.GetStringAsync($"{protocol}://{_creds.VotesManagerConfig.WebSocketHost}/api/votes");
+                    var votesApi = await http.GetStringAsync($"{_protocol}://{_creds.VotesManagerConfig.WebSocketHost}/api/votes");
                     var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
                     
                     VotesList = new List<Votes>();
@@ -97,7 +97,7 @@ namespace RiasBot.Services
                 {
                     http.DefaultRequestHeaders.Clear();
                     http.DefaultRequestHeaders.Add("Authorization", _creds.VotesManagerConfig.Authorization);
-                    var votesApi = await http.GetStringAsync($"{protocol}://{_creds.VotesManagerConfig.WebSocketHost}/api/votes");
+                    var votesApi = await http.GetStringAsync($"{_protocol}://{_creds.VotesManagerConfig.WebSocketHost}/api/votes");
                     var dblVotes = JsonConvert.DeserializeObject<DBL>(votesApi);
                     
                     VotesList = new List<Votes>();
@@ -150,7 +150,7 @@ namespace RiasBot.Services
                     http.DefaultRequestHeaders.Clear();
                     http.DefaultRequestHeaders.Add("Authorization", _creds.VotesManagerConfig.Authorization);
 
-                    await http.PostAsync($"{protocol}://{_creds.VotesManagerConfig.WebSocketHost}/api/votes/{userId}", null).ConfigureAwait(false);
+                    await http.PostAsync($"{_protocol}://{_creds.VotesManagerConfig.WebSocketHost}/api/votes/{userId}", null).ConfigureAwait(false);
                 }
             }
             catch (HttpRequestException ex)

@@ -219,7 +219,7 @@
     "Command": "evaluate eval",
     "Description": "Evaluate a C# block code.",
     "Remarks": [
-      "[prefix]eval code"
+      "[prefix]eval code..."
     ]
   },
 
@@ -663,6 +663,16 @@
     "Remarks": [
       "[prefix]warnpunish 0",
       "[prefix]warnpunish 3 kick"
+    ]
+  },
+
+  "blackjack": {
+    "Command": "blackjack bj",
+    "Description": "Play a game of blackjack. Minimum bet 5[currency], maximum bet 1000[currency].\n\nOptions:\n- hit(🎴) - draw a card from the deck\n- stand(🤚) - stand pat with your cards\n- split(↔) - split your hand in two if you have a pair\n\nThe game is played with 4 decks.",
+    "Remarks": [
+      "[prefix]bj 100",
+      "[prefix]bj resume (resume the blackjack session in the current channel)",
+      "[prefix]bj stop (surrender, you will lose the bet)"
     ]
   },
 
