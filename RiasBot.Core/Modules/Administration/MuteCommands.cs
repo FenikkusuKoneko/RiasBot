@@ -30,11 +30,15 @@ namespace RiasBot.Modules.Administration
             [RequireBotPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireContext(ContextType.Guild)]
             [Priority(1)]
-            public async Task Mute(IGuildUser user, [Remainder]string reason = null)
+            public async Task MuteAsync(IGuildUser user, [Remainder]string reason = null)
             {
                 if (user.Id == Context.User.Id)
                     return;
                 if (user.Id != Context.Guild.OwnerId)
+                    await Context.Channel.SendErrorMessageAsync("You cannot mute the owner of the server.").ConfigureAwait(false);
+                else if (user.GuildPermissions.Administrator)
+                    await Context.Channel.SendErrorMessageAsync("You cannot mute an administrator.").ConfigureAwait(false);
+                else
                 {
                     if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                     {
@@ -42,12 +46,8 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("The user is above me in the hierarchy roles.").ConfigureAwait(false);
                     }
-                }
-                else
-                {
-                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot mute the owner of the server.").ConfigureAwait(false);
                 }
             }
             
@@ -57,11 +57,15 @@ namespace RiasBot.Modules.Administration
             [RequireBotPermission(GuildPermission.ManageRoles | GuildPermission.MuteMembers)]
             [RequireContext(ContextType.Guild)]
             [Priority(0)]
-            public async Task Mute(UntilTime untilTime, IGuildUser user, [Remainder]string reason = null)
+            public async Task MuteAsync(UntilTime untilTime, IGuildUser user, [Remainder]string reason = null)
             {
                 if (user.Id == Context.User.Id)
                     return;
                 if (user.Id != Context.Guild.OwnerId)
+                    await Context.Channel.SendErrorMessageAsync("You cannot mute the owner of the server.").ConfigureAwait(false);
+                else if (user.GuildPermissions.Administrator)
+                    await Context.Channel.SendErrorMessageAsync("You cannot mute an administrator.").ConfigureAwait(false);
+                else
                 {
                     if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                     {
@@ -69,16 +73,12 @@ namespace RiasBot.Modules.Administration
                             await _service.MuteUser(Context.Guild, (IGuildUser) Context.User, user, Context.Channel,
                                 untilTime.Timer, reason).ConfigureAwait(false);
                         else
-                            await Context.Channel.SendErrorMessageAsync("The timer cannot be 0!").ConfigureAwait(false);
+                            await Context.Channel.SendErrorMessageAsync("The timer cannot be 0.").ConfigureAwait(false);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("The user is above me in the hierarchy roles.").ConfigureAwait(false);
                     }
-                }
-                else
-                {
-                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot mute the owner of the server.").ConfigureAwait(false);
                 }
             }
     
@@ -87,7 +87,7 @@ namespace RiasBot.Modules.Administration
             [RequireUserPermission(GuildPermission.ManageRoles)]
             [RequireBotPermission(GuildPermission.ManageRoles)]
             [RequireContext(ContextType.Guild)]
-            public async Task UnMute(IGuildUser user, [Remainder]string reason = null)
+            public async Task UnMuteAsync(IGuildUser user, [Remainder]string reason = null)
             {
                 if (user.Id == Context.User.Id)
                     return;
@@ -99,13 +99,9 @@ namespace RiasBot.Modules.Administration
                     }
                     else
                     {
-                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("The user is above me in the hierarchy roles.").ConfigureAwait(false);
                     }
                 }
-                else
-                {
-                    // doesn't matter
-                } 
             }
             
             [RiasCommand][@Alias]
@@ -113,7 +109,7 @@ namespace RiasBot.Modules.Administration
             [RequireUserPermission(GuildPermission.ManageRoles)]
             [RequireBotPermission(GuildPermission.ManageRoles)]
             [RequireContext(ContextType.Guild)]
-            public async Task SetMute([Remainder]string name)
+            public async Task SetMuteAsync([Remainder]string name)
             {
                 using (var db = _db.GetDbContext())
                 {

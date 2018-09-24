@@ -1,11 +1,9 @@
 ﻿using Discord;
 using Discord.Commands;
-using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using RiasBot.Commons.Attributes;
 using RiasBot.Services;
-using System.Collections.Generic;
 using RiasBot.Modules.Administration.Services;
 using RiasBot.Services.Database.Models;
 using RiasBot.Extensions;
@@ -15,12 +13,10 @@ namespace RiasBot.Modules.Administration
 {
     public partial class Administration : RiasModule<AdministrationService>
     {
-        public readonly CommandHandler _ch;
-        public readonly DbService _db;
+        private readonly DbService _db;
 
-        public Administration(CommandHandler ch, DbService db)
+        public Administration( DbService db)
         {
-            _ch = ch;
             _db = db;
         }
 
@@ -29,11 +25,15 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.KickMembers)]
         [RequireBotPermission(GuildPermission.KickMembers)]
-        public async Task Kick(IGuildUser user, [Remainder] string reason = null)
+        public async Task KickAsync(IGuildUser user, [Remainder] string reason = null)
         {
             if (user.Id == Context.User.Id)
                 return;
             if (user.Id != Context.Guild.OwnerId)
+                await Context.Channel.SendErrorMessageAsync("You cannot kick the owner of the server.").ConfigureAwait(false);
+            else if (user.GuildPermissions.Administrator)
+                await Context.Channel.SendErrorMessageAsync("You cannot kick an administrator.").ConfigureAwait(false);
+            else
             {
                 if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                 {
@@ -41,12 +41,8 @@ namespace RiasBot.Modules.Administration
                 }
                 else
                 {
-                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("The user is above me in the hierarchy roles.").ConfigureAwait(false);
                 }
-            }
-            else
-            {
-                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot kick the owner of the server.").ConfigureAwait(false);
             }
         }
 
@@ -55,11 +51,15 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.BanMembers)]
         [RequireBotPermission(GuildPermission.BanMembers)]
-        public async Task Ban(IGuildUser user, [Remainder] string reason = null)
+        public async Task BanAsync(IGuildUser user, [Remainder] string reason = null)
         {
             if (user.Id == Context.User.Id)
                 return;
             if (user.Id != Context.Guild.OwnerId)
+                await Context.Channel.SendErrorMessageAsync("You cannot ban the owner of the server.").ConfigureAwait(false);
+            else if (user.GuildPermissions.Administrator)
+                await Context.Channel.SendErrorMessageAsync("You cannot ban an administrator.").ConfigureAwait(false);
+            else
             {
                 if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                 {
@@ -67,12 +67,8 @@ namespace RiasBot.Modules.Administration
                 }
                 else
                 {
-                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("The user is above me in the hierarchy roles.").ConfigureAwait(false);
                 }
-            }
-            else
-            {
-                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot ban the owner of the server.").ConfigureAwait(false);
             }
         }
 
@@ -81,11 +77,15 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.BanMembers | GuildPermission.ManageMessages)]
         [RequireBotPermission(GuildPermission.BanMembers | GuildPermission.ManageMessages)]
-        public async Task SoftBan(IGuildUser user, [Remainder]string reason = null)
+        public async Task SoftBanAsync(IGuildUser user, [Remainder]string reason = null)
         {
             if (user.Id == Context.User.Id)
                 return;
             if (user.Id != Context.Guild.OwnerId)
+                await Context.Channel.SendErrorMessageAsync("You cannot softban the owner of the server.").ConfigureAwait(false);
+            else if (user.GuildPermissions.Administrator)
+                await Context.Channel.SendErrorMessageAsync("You cannot softban an administrator.").ConfigureAwait(false);
+            else
             {
                 if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                 {
@@ -93,12 +93,8 @@ namespace RiasBot.Modules.Administration
                 }
                 else
                 {
-                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("The user is above me in the hierarchy roles.").ConfigureAwait(false);
                 }
-            }
-            else
-            {
-                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot softban the owner of the server.").ConfigureAwait(false);
             }
         }
 
@@ -107,11 +103,15 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.BanMembers | GuildPermission.ManageMessages)]
         [RequireBotPermission(GuildPermission.BanMembers | GuildPermission.ManageMessages)]
-        public async Task PruneBan(IGuildUser user, [Remainder]string reason = null)
+        public async Task PruneBanAsync(IGuildUser user, [Remainder]string reason = null)
         {
             if (user.Id == Context.User.Id)
                 return;
             if (user.Id != Context.Guild.OwnerId)
+                await Context.Channel.SendErrorMessageAsync("You cannot pruneban the owner of the server.").ConfigureAwait(false);
+            else if (user.GuildPermissions.Administrator)
+                await Context.Channel.SendErrorMessageAsync("You cannot pruneban an administrator.").ConfigureAwait(false);
+            else
             {
                 if (_service.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                 {
@@ -119,12 +119,8 @@ namespace RiasBot.Modules.Administration
                 }
                 else
                 {
-                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync("The user is above me in the hierarchy roles.").ConfigureAwait(false);
                 }
-            }
-            else
-            {
-                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot pruneban the owner of the server.").ConfigureAwait(false);
             }
         }
 

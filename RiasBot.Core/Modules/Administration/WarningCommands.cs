@@ -6,11 +6,9 @@ using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
 using RiasBot.Modules.Administration.Services;
 using RiasBot.Services;
-using RiasBot.Services.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RiasBot.Modules.Administration
@@ -19,16 +17,12 @@ namespace RiasBot.Modules.Administration
     {
         public class WarningCommands : RiasSubmodule<WarningService>
         {
-            private DiscordShardedClient _client;
-            private readonly CommandHandler _ch;
             private readonly DbService _db;
             private readonly AdministrationService _adminService;
             private readonly InteractiveService _is;
 
-            public WarningCommands(DiscordShardedClient client, CommandHandler ch, DbService db, AdministrationService adminService, InteractiveService interactiveService)
+            public WarningCommands(DbService db, AdministrationService adminService, InteractiveService interactiveService)
             {
-                _client = client;
-                _ch = ch;
                 _db = db;
                 _adminService = adminService;
                 _is = interactiveService;
@@ -38,36 +32,31 @@ namespace RiasBot.Modules.Administration
             [RequireUserPermission(GuildPermission.KickMembers | GuildPermission.BanMembers)]
             [RequireBotPermission(GuildPermission.KickMembers | GuildPermission.BanMembers)]
             [RequireContext(ContextType.Guild)]
-            public async Task Warning(IGuildUser user, [Remainder]string reason = null)
+            public async Task WarningAsync(IGuildUser user, [Remainder]string reason = null)
             {
                 if (user.Id == Context.User.Id)
                     return;
                 if (user.Id != Context.Guild.OwnerId)
+                    await Context.Channel.SendErrorMessageAsync("You cannot warn the owner of the server.").ConfigureAwait(false);
+                else if (user.GuildPermissions.Administrator)
+                    await Context.Channel.SendErrorMessageAsync("You cannot warn an administrator.").ConfigureAwait(false);
+                else
                 {
-                    if (user is null)
-                    {
-                        await Context.Channel.SendErrorMessageAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
-                        return;
-                    }
                     if (_adminService.CheckHierarchyRole(Context.Guild, user, await Context.Guild.GetCurrentUserAsync()))
                     {
                         await _service.WarnUser(Context.Guild, (IGuildUser)Context.User, user, Context.Channel, Context.Message, reason);
                     }
                     else
                     {
-                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} the user is above the bot in the hierarchy roles.").ConfigureAwait(false);
+                        await Context.Channel.SendErrorMessageAsync("The user is above me in the hierarchy roles.").ConfigureAwait(false);
                     }
-                }
-                else
-                {
-                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot warn the owner of the server.").ConfigureAwait(false);
                 }
             }
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireContext(ContextType.Guild)]
-            public async Task WarningList()
+            public async Task WarningListAsync()
             {
                 using (var db = _db.GetDbContext())
                 {
@@ -95,7 +84,7 @@ namespace RiasBot.Modules.Administration
                             }
                         }
                         await db.SaveChangesAsync().ConfigureAwait(false);
-                        if (warnUsers.Any(x => !String.IsNullOrEmpty(x)))
+                        if (warnUsers.Any(x => !string.IsNullOrEmpty(x)))
                         {
                             var pager = new PaginatedMessage
                             {
@@ -122,7 +111,7 @@ namespace RiasBot.Modules.Administration
             [RiasCommand][@Alias]
             [Description][@Remarks]
             [RequireContext(ContextType.Guild)]
-            public async Task WarningLog([Remainder]IGuildUser user)
+            public async Task WarningLogAsync([Remainder]IGuildUser user)
             {
                 if (user is null)
                 {
@@ -171,7 +160,7 @@ namespace RiasBot.Modules.Administration
             [RequireUserPermission(GuildPermission.Administrator)]
             [RequireContext(ContextType.Guild)]
             [Priority(1)]
-            public async Task WarningClear(IGuildUser user, int index)
+            public async Task WarningClearAsync(IGuildUser user, int index)
             {
                 if (user is null)
                 {
@@ -202,7 +191,7 @@ namespace RiasBot.Modules.Administration
             [RequireUserPermission(GuildPermission.Administrator)]
             [RequireContext(ContextType.Guild)]
             [Priority(0)]
-            public async Task WarningClear(IGuildUser user, string all)
+            public async Task WarningClearAsync(IGuildUser user, string all)
             {
                 if (user is null)
                 {
@@ -237,7 +226,7 @@ namespace RiasBot.Modules.Administration
             [Description][@Remarks]
             [RequireUserPermission(GuildPermission.Administrator)]
             [RequireContext(ContextType.Guild)]
-            public async Task WarningPunishment([Remainder]string punishment)
+            public async Task WarningPunishmentAsync([Remainder]string punishment)
             {
                 var punish = punishment.ToLowerInvariant().Split(" ");
                 try
@@ -315,7 +304,7 @@ namespace RiasBot.Modules.Administration
             [Description][@Remarks]
             [RequireUserPermission(GuildPermission.Administrator)]
             [RequireContext(ContextType.Guild)]
-            public async Task WarningPunishment()
+            public async Task WarningPunishmentAsync()
             {
                 using (var db = _db.GetDbContext())
                 {
