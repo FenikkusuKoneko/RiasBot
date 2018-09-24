@@ -129,25 +129,24 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageMessages)]
         [RequireBotPermission(GuildPermission.ManageMessages)]
-        [Priority(1)]
-        public async Task Prune(int amount = 100)
+        public async Task PruneAsync(int amount = 100)
         {
             var channel = (ITextChannel)Context.Channel;
 
+            amount++;
             if (amount < 1)
                 return;
             if (amount > 100)
                 amount = 100;
 
-            await Context.Message.DeleteAsync().ConfigureAwait(false);
-            var msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt.ToUniversalTime()).Days < 14);
+            var msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt.ToUniversalTime()).Days < 14).ToList();
             if (msgs.Any())
             {
                 await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
             }
             else
             {
-                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't delete any message because they are older than 14 days.");
+                await Context.Channel.SendErrorMessageAsync("I couldn't delete any message because they are older than 14 days.");
             }
         }
 
@@ -156,8 +155,7 @@ namespace RiasBot.Modules.Administration
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageMessages)]
         [RequireBotPermission(GuildPermission.ManageMessages)]
-        [Priority(0)]
-        public async Task Prune(IGuildUser user, int amount = 100)
+        public async Task PruneAsync(IGuildUser user, int amount = 100)
         {
             var channel = (ITextChannel)Context.Channel;
             if (user.Id == Context.Message.Author.Id)
@@ -170,14 +168,47 @@ namespace RiasBot.Modules.Administration
                 amount = 100;
 
             await Context.Message.DeleteAsync().ConfigureAwait(false);
-            var msgs = (await channel.GetMessagesAsync(amount).FlattenAsync()).Where((x) => x.Author.Id == user.Id).Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt.ToUniversalTime()).Days < 14);
+            var msgs = (await channel.GetMessagesAsync().FlattenAsync()).Where(m => m.Author.Id == user.Id &&
+                       DateTimeOffset.UtcNow.Subtract(m.CreatedAt.ToUniversalTime()).Days < 14)
+                       .Take(amount).ToList();
             if (msgs.Any())
             {
                 await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
             }
             else
             {
-                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't delete any message because they are older than 14 days.");
+                await Context.Channel.SendErrorMessageAsync("I couldn't delete any message because they are older than 14 days.");
+            }
+        }
+        
+        [RiasCommand][@Alias]
+        [Description][@Remarks]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.ManageMessages)]
+        [RequireBotPermission(GuildPermission.ManageMessages)]
+        public async Task PruneAsync(int amount, IGuildUser user)
+        {
+            var channel = (ITextChannel)Context.Channel;
+            if (user.Id == Context.Message.Author.Id)
+                amount++;
+
+            if (amount < 1)
+                return;
+
+            if (amount > 100)
+                amount = 100;
+
+            await Context.Message.DeleteAsync().ConfigureAwait(false);
+            var msgs = (await channel.GetMessagesAsync().FlattenAsync()).Where(m => m.Author.Id == user.Id &&
+                       DateTimeOffset.UtcNow.Subtract(m.CreatedAt.ToUniversalTime()).Days < 14)
+                       .Take(amount).ToList();
+            if (msgs.Any())
+            {
+                await channel.DeleteMessagesAsync(msgs).ConfigureAwait(false);
+            }
+            else
+            {
+                await Context.Channel.SendErrorMessageAsync("I couldn't delete any message because they are older than 14 days.");
             }
         }
 
