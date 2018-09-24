@@ -184,9 +184,8 @@ namespace RiasBot.Modules.Utility
                 embed.AddField("Members", guild.MemberCount, true).AddField("Currently online", onlineUsers, true);
                 embed.AddField("Bots", bots, true).AddField("Created at", serverCreated, true);
                 embed.AddField("Text channels", textChannels.Count, true).AddField("Voice channels", voiceChannels.Count, true);
-                embed.AddField("Default channel", guild.DefaultChannel?.Name ?? "-", true).AddField("AFK channel", guild.AFKChannel?.Name ?? "-", true);
-                embed.AddField("Region", Context.Guild.VoiceRegionId, true).AddField("Verification level", guild.VerificationLevel.ToString(), true);
-                embed.AddField($"Features ({guild.Features.Count})", features, true);
+                embed.AddField("AFK channel", guild.AFKChannel?.Name ?? "-", true).AddField("Region", Context.Guild.VoiceRegionId, true);
+                embed.AddField("Verification level", guild.VerificationLevel.ToString(), true).AddField($"Features ({guild.Features.Count})", features, true);
                 embed.AddField($"Custom Emotes ({Context.Guild.Emotes.Count})", emotes);
                 embed.WithThumbnailUrl(Context.Guild.IconUrl);
                 if (!string.IsNullOrEmpty(guild.SplashUrl))
