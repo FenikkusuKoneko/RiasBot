@@ -36,7 +36,7 @@ namespace RiasBot.Modules.Administration
             {
                 if (user.Id == Context.User.Id)
                     return;
-                if (user.Id != Context.Guild.OwnerId)
+                if (user.Id == Context.Guild.OwnerId)
                     await Context.Channel.SendErrorMessageAsync("You cannot warn the owner of the server.").ConfigureAwait(false);
                 else if (user.GuildPermissions.Administrator)
                     await Context.Channel.SendErrorMessageAsync("You cannot warn an administrator.").ConfigureAwait(false);

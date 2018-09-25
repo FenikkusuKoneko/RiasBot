@@ -29,7 +29,7 @@ namespace RiasBot.Modules.Administration
         {
             if (user.Id == Context.User.Id)
                 return;
-            if (user.Id != Context.Guild.OwnerId)
+            if (user.Id == Context.Guild.OwnerId)
                 await Context.Channel.SendErrorMessageAsync("You cannot kick the owner of the server.").ConfigureAwait(false);
             else if (user.GuildPermissions.Administrator)
                 await Context.Channel.SendErrorMessageAsync("You cannot kick an administrator.").ConfigureAwait(false);
@@ -55,7 +55,7 @@ namespace RiasBot.Modules.Administration
         {
             if (user.Id == Context.User.Id)
                 return;
-            if (user.Id != Context.Guild.OwnerId)
+            if (user.Id == Context.Guild.OwnerId)
                 await Context.Channel.SendErrorMessageAsync("You cannot ban the owner of the server.").ConfigureAwait(false);
             else if (user.GuildPermissions.Administrator)
                 await Context.Channel.SendErrorMessageAsync("You cannot ban an administrator.").ConfigureAwait(false);
@@ -81,7 +81,7 @@ namespace RiasBot.Modules.Administration
         {
             if (user.Id == Context.User.Id)
                 return;
-            if (user.Id != Context.Guild.OwnerId)
+            if (user.Id == Context.Guild.OwnerId)
                 await Context.Channel.SendErrorMessageAsync("You cannot softban the owner of the server.").ConfigureAwait(false);
             else if (user.GuildPermissions.Administrator)
                 await Context.Channel.SendErrorMessageAsync("You cannot softban an administrator.").ConfigureAwait(false);
@@ -107,7 +107,7 @@ namespace RiasBot.Modules.Administration
         {
             if (user.Id == Context.User.Id)
                 return;
-            if (user.Id != Context.Guild.OwnerId)
+            if (user.Id == Context.Guild.OwnerId)
                 await Context.Channel.SendErrorMessageAsync("You cannot pruneban the owner of the server.").ConfigureAwait(false);
             else if (user.GuildPermissions.Administrator)
                 await Context.Channel.SendErrorMessageAsync("You cannot pruneban an administrator.").ConfigureAwait(false);
