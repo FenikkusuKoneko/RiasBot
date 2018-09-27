@@ -355,7 +355,7 @@ namespace RiasBot.Modules.Music
                 }
                 else
                 {
-                    mp.Repeat = true;
+                    mp.Repeat = false;
                     await Context.Channel.SendConfirmationMessageAsync("Repeat disabled!").ConfigureAwait(false);
                 }
             }
