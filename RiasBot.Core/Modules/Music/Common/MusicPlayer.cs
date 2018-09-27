@@ -24,7 +24,7 @@ namespace RiasBot.Modules.Music.Common
         public IMessageChannel Channel;
         public IVoiceChannel VoiceChannel;
 
-        private LavalinkPlayer _player;
+        public LavalinkPlayer _player;
         public Song CurrentTrack;
         private readonly List<Song> _queue = new List<Song>();
 
@@ -403,7 +403,7 @@ namespace RiasBot.Modules.Music.Common
                 playlist.Add($"♾ {CurrentTrack.Track.Title} {Format.Code("Livestream")}\n" +
                              "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
             }
-            var totalLength = TimeSpan.Zero;
+            var totalLength = CurrentTrack.Track.IsStream ? TimeSpan.Zero : CurrentTrack.Track.Length;
             
             for (var i = 0; i < _queue.Count; i++)
             {

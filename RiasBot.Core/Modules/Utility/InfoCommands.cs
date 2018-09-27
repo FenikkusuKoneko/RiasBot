@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Diagnostics;
 using Discord.Addons.Interactive;
 using Microsoft.EntityFrameworkCore;
+using RiasBot.Modules.Music.Services;
 
 namespace RiasBot.Modules.Utility
 {
@@ -22,18 +23,14 @@ namespace RiasBot.Modules.Utility
         public class InfoCommands : RiasModule
         {
             private readonly DiscordShardedClient _client;
-            private readonly CommandHandler _ch;
-            private readonly CommandService _service;
             private readonly InteractiveService _is;
-            private readonly DbService _db;
+            private readonly MusicService _musicService;
 
-            public InfoCommands(DiscordShardedClient client, CommandHandler ch, CommandService service, InteractiveService interactiveService, DbService db)
+            public InfoCommands(DiscordShardedClient client, InteractiveService interactiveService, MusicService musicService)
             {
                 _client = client;
-                _ch = ch;
-                _service = service;
                 _is = interactiveService;
-                _db = db;
+                _musicService = musicService;
             }
 
             [RiasCommand]
@@ -59,6 +56,9 @@ namespace RiasBot.Modules.Utility
                     users += guild.MemberCount;
                 }
 
+                var musicPlaying = _musicService.MPlayer.Count(m => m.Value._player.Playing);
+                var musicAfk = _musicService.MPlayer.Count(m => !m.Value._player.Playing);
+
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
 
                 embed.WithAuthor($"{Context.Client.CurrentUser.Username} Bot v{RiasBot.Version}", Context.Client.CurrentUser.GetRealAvatarUrl());
@@ -67,9 +67,10 @@ namespace RiasBot.Modules.Utility
                 embed.AddField("In server", Context.Guild?.Name ?? "-", true).AddField("Commands Run", RiasBot.CommandsRun, true);
                 embed.AddField("Uptime", GetTimeString(RiasBot.UpTime.Elapsed), true).AddField("Presence", $"{guilds.Count} Servers\n{textChannels} " +
                     $"Text Channels\n{voiceChannels} Voice Channels\n{users} Users", true);
-                embed.AddField("Links", $"[Invite me]({RiasBot.Invite}) • [Support server]({RiasBot.CreatorServer})\n" +
+                embed.AddField("Music", $"Playing in {musicPlaying} voice channels\nAFK in {musicAfk} voice channels", true)
+                    .AddField("Links", $"[Invite me]({RiasBot.Invite}) • [Support server]({RiasBot.CreatorServer})\n" +
                                         $"[Website]({RiasBot.Website}) • [Support me]({RiasBot.Patreon})\n" +
-                                        $"[Vote on DBL](https://discordbots.org/bot/{Context.Client.CurrentUser.Id})");
+                                        $"[Vote on DBL](https://discordbots.org/bot/{Context.Client.CurrentUser.Id})", true);
                 embed.WithThumbnailUrl(Context.Client.CurrentUser.GetRealAvatarUrl());
 
                 Context.Client.CurrentUser.GetAvatarUrl();

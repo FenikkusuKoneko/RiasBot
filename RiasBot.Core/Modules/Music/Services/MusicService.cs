@@ -136,7 +136,7 @@ namespace RiasBot.Modules.Music.Services
                         catch (Exception e)
                         {
                             await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
-                                                   $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
+                                                   $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
                             await mp.Leave(guild, null).ConfigureAwait(false);
                             Console.WriteLine(e);
                             return;
@@ -171,7 +171,7 @@ namespace RiasBot.Modules.Music.Services
                         catch (Exception e)
                         {
                             await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
-                                                   $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
+                                                   $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
                             await mp.Leave(guild, null).ConfigureAwait(false);
                             Console.WriteLine(e);
                             return;
@@ -210,7 +210,7 @@ namespace RiasBot.Modules.Music.Services
                     catch (Exception e)
                     {
                         await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
-                                               $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
+                                               $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
                         await mp.Leave(guild, null).ConfigureAwait(false);
                         Console.WriteLine(e);
                         return;
@@ -254,7 +254,7 @@ namespace RiasBot.Modules.Music.Services
             catch (Exception e)
             {
                 await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
-                                       $"[Support Server]({RiasBot.CreatorServer}!").ConfigureAwait(false);
+                                       $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
                 await mp.Leave(guild, null).ConfigureAwait(false);
                 Console.WriteLine(e);
                 return;
@@ -296,7 +296,7 @@ namespace RiasBot.Modules.Music.Services
             await choose.DeleteAsync().ConfigureAwait(false);
         }
 
-        public YouTubeTrackInfo GetYouTubeTrackInfo(string url)
+        private YouTubeTrackInfo GetYouTubeTrackInfo(string url)
         {
             var regex = new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]*)(?:.*list=|(?:.*/)?)([a-zA-Z0-9-_]*)");
             var match = regex.Match(url);
@@ -358,7 +358,7 @@ namespace RiasBot.Modules.Music.Services
             }
         }
 
-        public class YouTubeTrackInfo
+        private class YouTubeTrackInfo
         {
             public string VideoId { get; set; }
             public string PlaylistId { get; set; }
@@ -366,12 +366,9 @@ namespace RiasBot.Modules.Music.Services
         
         public async Task TrackEnd(LavalinkPlayer player, LavalinkTrack track, string reason)
         {
-            if (reason.Equals("FINISHED"))
-            {
-                var mp = GetMusicPlayer(player.VoiceChannel.Guild);
-                if (mp != null)
-                    await mp.UpdateQueue(mp.Repeat ? -1 : 0).ConfigureAwait(false);
-            }
+            var mp = GetMusicPlayer(player.VoiceChannel.Guild);
+            if (mp != null)
+                await mp.UpdateQueue(mp.Repeat ? -1 : 0).ConfigureAwait(false);
         }
 
         private void UnlockFeatures(MusicPlayer player, IGuildUser user)

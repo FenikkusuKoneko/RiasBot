@@ -59,8 +59,6 @@ namespace RiasBot.Services
             }
             await _commands.AddModulesAsync(Assembly.GetAssembly(typeof(RiasBot)), _provider).ConfigureAwait(false);
             
-            await _commands.RemoveModuleAsync<Music>();
-            
             RiasBot.UpTime.Start();
         }
     }
