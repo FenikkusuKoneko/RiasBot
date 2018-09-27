@@ -156,12 +156,12 @@ namespace SharpLink
 
                 case Event.TrackEnd:
                     {
-                        if (((string) eventData["reason"]).Equals("FINISHED"))
+                        if (((string)eventData).Equals("FINISHED"))
                         {
                             CurrentTrack = null;
                             Playing = false;
                         }
-                        else if (((string) eventData["reason"]).Equals("REPLACED"))
+                        else if (((string)eventData).Equals("REPLACED"))
                         {
                             Playing = true;
                         }

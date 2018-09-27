@@ -366,9 +366,12 @@ namespace RiasBot.Modules.Music.Services
         
         public async Task TrackEnd(LavalinkPlayer player, LavalinkTrack track, string reason)
         {
-            var mp = GetMusicPlayer(player.VoiceChannel.Guild);
-            if (mp != null)
-                await mp.UpdateQueue(mp.Repeat ? -1 : 0).ConfigureAwait(false);
+            if (reason.Equals("FINISHED"))
+            {
+                var mp = GetMusicPlayer(player.VoiceChannel.Guild);
+                if (mp != null)
+                    await mp.UpdateQueue(mp.Repeat ? -1 : 0).ConfigureAwait(false);
+            }
         }
 
         private void UnlockFeatures(MusicPlayer player, IGuildUser user)
