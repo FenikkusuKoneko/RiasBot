@@ -370,7 +370,8 @@ namespace RiasBot.Modules.Music.Services
             {
                 var mp = GetMusicPlayer(player.VoiceChannel.Guild);
                 if (mp != null)
-                    await mp.UpdateQueue(mp.Repeat ? -1 : 0).ConfigureAwait(false);
+                    if (!mp._player.Playing)
+                        await mp.UpdateQueue(mp.Repeat ? -1 : 0).ConfigureAwait(false);
             }
         }
 
