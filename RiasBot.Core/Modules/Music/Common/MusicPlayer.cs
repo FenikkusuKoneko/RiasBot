@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using Google.Apis.Customsearch.v1.Data;
 using SharpLink;
 
 namespace RiasBot.Modules.Music.Common
@@ -542,14 +543,17 @@ namespace RiasBot.Modules.Music.Common
             try
             {
                 if (VoiceChannel != null)
-                    await _player.DisconnectAsync(true);
-                _service.RemoveMusicPlayer(guild);
-                if (!string.IsNullOrEmpty(message))
-                    await SendMessage(MessageType.Confirmation, message).ConfigureAwait(false);
+                    await _player.DisconnectAsync();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
+            }
+            finally
+            {
+                _service.RemoveMusicPlayer(guild);
+                if (!string.IsNullOrEmpty(message))
+                    await SendMessage(MessageType.Confirmation, message).ConfigureAwait(false);
             }
         }
 

@@ -22,6 +22,7 @@ namespace RiasBot.Modules.Bot
         private readonly CommandHandler _ch;
         private readonly CommandService _service;
         private readonly DbService _db;
+        private readonly IBotCredentials _creds;
         private readonly DiscordShardedClient _client;
         private readonly DiscordRestClient _restClient;
         private readonly BotService _botService;
@@ -29,12 +30,13 @@ namespace RiasBot.Modules.Bot
         private readonly MusicService _musicService;
         private readonly VotesService _votesService;
 
-        public Bot(CommandHandler ch, CommandService service, DbService db, DiscordShardedClient client, DiscordRestClient restClient,
+        public Bot(CommandHandler ch, CommandService service, DbService db, IBotCredentials creds, DiscordShardedClient client, DiscordRestClient restClient,
             BotService botService, InteractiveService interactiveService, MusicService musicService, VotesService votesService)
         {
             _ch = ch;
             _service = service;
             _db = db;
+            _creds = creds;
             _client = client;
             _restClient = restClient;
             _botService = botService;
@@ -73,8 +75,6 @@ namespace RiasBot.Modules.Bot
             {
                 await musicPlayer.Value.Leave(Context.Guild, null);
             }
-            
-            await Context.Client.StopAsync().ConfigureAwait(false);
             Environment.Exit(0);
         }
 
@@ -254,7 +254,7 @@ namespace RiasBot.Modules.Bot
                 ScriptOptions.Default.WithReferences(typeof(RiasBot).Assembly).WithImports(new[] { "System", "System.Collections.Generic",
                     "System.Linq", "Discord", "System.Threading.Tasks" }), globals);
 
-                embed.WithAuthor("Success", Context.User.GetDefaultAvatarUrl());
+                embed.WithAuthor("Success", Context.User.GetRealAvatarUrl());
                 embed.AddField("Code", Format.Code(expression, "csharp"));
                 if (result != null)
                 {
@@ -264,7 +264,7 @@ namespace RiasBot.Modules.Bot
             }
             catch (Exception e)
             {
-                embed.WithAuthor("Failed", Context.User.GetDefaultAvatarUrl());
+                embed.WithAuthor("Failed", Context.User.GetRealAvatarUrl());
                 embed.AddField("CompilationErrorException", Format.Code(e.Message, "csharp"));
                 await Context.Channel.SendMessageAsync(embed: embed.Build());
             }

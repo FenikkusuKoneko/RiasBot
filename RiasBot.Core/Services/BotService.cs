@@ -282,7 +282,7 @@ namespace RiasBot.Services
                    Authorization = _creds.LavalinkConfig.Authorization,
                    TotalShards = _discord.Shards.Count 
                });
-               await RiasBot.Lavalink.StartAsync();
+               await RiasBot.Lavalink.StartAsync().ConfigureAwait(false);
                RiasBot.Lavalink.TrackEnd += _musicService.TrackEnd;
             Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} Lavalink started!");
         }

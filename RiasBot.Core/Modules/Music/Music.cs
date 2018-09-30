@@ -225,7 +225,10 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Leave(Context.Guild, $"Left {Format.Bold(mp.VoiceChannel.ToString())}").ConfigureAwait(false);
+                if (mp.VoiceChannel != null)
+                    await mp.Leave(Context.Guild, $"Left {Format.Bold(mp.VoiceChannel.ToString())}").ConfigureAwait(false);
+                else
+                    await mp.Leave(Context.Guild, null).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
