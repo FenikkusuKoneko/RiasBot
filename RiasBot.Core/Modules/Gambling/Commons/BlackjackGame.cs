@@ -114,7 +114,7 @@ namespace RiasBot.Modules.Gambling.Commons
             _channel = channel;
             _user = user;
             
-            if (_bot.GuildPermissions.ManageMessages)
+            if (_bot.GuildPermissions.ManageMessages && _message != null)
                 await _message.DeleteAsync().ConfigureAwait(false);
             _message = null;
             _bot = _service.Client.GetGuild(user.GuildId).CurrentUser;
@@ -476,9 +476,9 @@ namespace RiasBot.Modules.Gambling.Commons
 
         public async Task StopGameAsync(IGuildUser user)
         {
-            if (_bot.GuildPermissions.ManageMessages)
-                await _message.RemoveAllReactionsAsync();
             _service.RemoveGame(_user);
+            if (_bot.GuildPermissions.ManageMessages && _message != null)
+                await _message.RemoveAllReactionsAsync();
         }
         
         private void UserTurn(PlayerHand userHand)
