@@ -59,8 +59,15 @@ namespace RiasBot.Modules.Administration.Services
                 if (reason != null)
                     reasonEmbed.AddField("Reason", reason);
 
-                if (!user.IsBot)
-                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                try
+                {
+                    if (!user.IsBot)
+                        await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // the user blocked messages from the guild users
+                }
 
                 await user.KickAsync(reason).ConfigureAwait(false);
             }
@@ -103,8 +110,15 @@ namespace RiasBot.Modules.Administration.Services
                 if (reason != null)
                     reasonEmbed.AddField("Reason", reason);
 
-                if (!user.IsBot)
-                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                try
+                {
+                    if (!user.IsBot)
+                        await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // the user blocked messages from the guild users
+                }
 
                 await guild.AddBanAsync(user).ConfigureAwait(false);
             }
@@ -147,8 +161,16 @@ namespace RiasBot.Modules.Administration.Services
                 if (reason != null)
                     reasonEmbed.AddField("Reason", reason);
 
-                if (!user.IsBot)
-                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                try
+                {
+                    if (!user.IsBot)
+                        await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // the user blocked messages from the guild users
+                }
+                
                 await Task.Delay(1000).ConfigureAwait(false);
                 await guild.AddBanAsync(user, 7).ConfigureAwait(false);
                 await guild.RemoveBanAsync(user).ConfigureAwait(false);
@@ -192,8 +214,16 @@ namespace RiasBot.Modules.Administration.Services
                 if (reason != null)
                     reasonEmbed.AddField("Reason", reason);
 
-                if (!user.IsBot)
-                    await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                try
+                {
+                    if (!user.IsBot)
+                        await user.SendMessageAsync("", embed: reasonEmbed.Build()).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // the user blocked messages from the guild users
+                }
+                
                 await Task.Delay(1000).ConfigureAwait(false);
                 await guild.AddBanAsync(user, 7).ConfigureAwait(false);
             }
