@@ -825,14 +825,6 @@
     ]
   },
 
-  "join": {
-    "Command": "join connect",
-    "Description": "Make me to join to your voice channel",
-    "Remarks": [
-      "[prefix]join"
-    ]
-  },
-
   "play": {
     "Command": "play",
     "Description": "1. Play a song. Automatically search from YouTube using keywords or provide a link.\n2. Provide a youtube playlist link to create a playlist.\nI will auto-join to the voice channel.",

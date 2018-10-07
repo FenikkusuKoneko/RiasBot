@@ -56,8 +56,8 @@ namespace RiasBot.Modules.Utility
                     users += guild.MemberCount;
                 }
 
-                var musicPlaying = _musicService.MPlayer.Count(m => m.Value._player.Playing);
-                var musicAfk = _musicService.MPlayer.Count(m => !m.Value._player.Playing);
+                var musicPlaying = _musicService.MPlayer.Count(m => m.Value.Player != null && m.Value.Player.Playing);
+                var musicAfk = _musicService.MPlayer.Count(m => m.Value.Player != null && !m.Value.Player.Playing);
 
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
 

@@ -9,39 +9,6 @@ namespace RiasBot.Modules.Music
 {
     public class Music : RiasModule<MusicService>
     {
-        [RiasCommand]
-        [@Alias]
-        [Description]
-        [@Remarks]
-        [RequireContext(ContextType.Guild)]
-        public async Task Join()
-        {
-            var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
-            if (voiceChannel is null)
-            {
-                await Context.Channel.SendErrorMessageAsync("You are not in a voice channel!");
-                return;
-            }
-            
-            var botVoiceChannel = (await Context.Guild.GetCurrentUserAsync()).VoiceChannel;
-            if (botVoiceChannel != null)
-                if (voiceChannel.Id != botVoiceChannel.Id)
-                {
-                    await Context.Channel.SendErrorMessageAsync("I am already in a voice channel!").ConfigureAwait(false);
-                    return;
-                }
-
-            var socketGuildUser = await Context.Guild.GetCurrentUserAsync();
-            var preconditions = socketGuildUser.GetPermissions(voiceChannel);
-            if (!preconditions.Connect)
-            {
-                await Context.Channel.SendErrorMessageAsync($"I don't have permission to connect in the channel {Format.Bold(voiceChannel.Name)}!");
-                return;
-            }
-            var mp = await _service.CreateMusicPlayer(Context.Guild);
-            await mp.Join(Context.Guild, (IGuildUser)Context.User, Context.Channel, voiceChannel).ConfigureAwait(false);
-        }
-
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]

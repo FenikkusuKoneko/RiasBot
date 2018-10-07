@@ -238,7 +238,6 @@ namespace RiasBot.Modules.Music.Services
             }
             else
             {
-                await mp.Join(guild, user, channel, voiceChannel, false).ConfigureAwait(false);
                 await SearchTrackOnYouTube(context, mp, guild, channel, user, voiceChannel, keywords).ConfigureAwait(false);
             }
         }
@@ -370,7 +369,7 @@ namespace RiasBot.Modules.Music.Services
             {
                 var mp = GetMusicPlayer(player.VoiceChannel.Guild);
                 if (mp != null)
-                    if (!mp._player.Playing)
+                    if (!mp.Player.Playing)
                         await mp.UpdateQueue(mp.Repeat ? -1 : 0).ConfigureAwait(false);
             }
         }

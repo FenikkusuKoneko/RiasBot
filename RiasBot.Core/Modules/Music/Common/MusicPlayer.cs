@@ -25,7 +25,7 @@ namespace RiasBot.Modules.Music.Common
         public IMessageChannel Channel;
         public IVoiceChannel VoiceChannel;
 
-        public LavalinkPlayer _player;
+        public LavalinkPlayer Player;
         public Song CurrentTrack;
         private readonly List<Song> _queue = new List<Song>();
 
@@ -53,27 +53,22 @@ namespace RiasBot.Modules.Music.Common
             public string TrackId { get; set; }
         }
         
-        public async Task Join(IGuild guild, IGuildUser user, IMessageChannel channel, IVoiceChannel voiceChannel, bool check = true)
+        private async Task Join(IGuild guild, IGuildUser user, IMessageChannel channel, IVoiceChannel voiceChannel)
         {
-            if (_player is null)
+            if (Player is null)
             {
-                _player = await RiasBot.Lavalink.JoinAsync(voiceChannel);
-                Guild = guild;
+                Player = RiasBot.Lavalink.GetPlayer(guild.Id) ?? await RiasBot.Lavalink.JoinAsync(voiceChannel);
                 Channel = channel;
-                VoiceChannel = voiceChannel;
                 await SendMessage(MessageType.Confirmation, $"Connected to {Format.Bold(voiceChannel.ToString())}!").ConfigureAwait(false);
             }
-            else
-            {
-                if (check)
-                    await SendMessage(MessageType.Error, "I'm already connected to a voice channel!").ConfigureAwait(false);
-            }
+            Guild = guild;
+            VoiceChannel = voiceChannel;
         }
 
         public async Task Play(IGuild guild, IGuildUser user, IMessageChannel channel, IVoiceChannel voiceChannel,
             string source, LavalinkTrack track)
         {
-            await Join(guild, user, channel, voiceChannel, false);
+            await Join(guild, user, channel, voiceChannel);
             
             if (_queue.Count > 5000)    //5000 tracks are enough, you don't keep the music player online for years
             {
@@ -112,7 +107,7 @@ namespace RiasBot.Modules.Music.Common
 
             if (source.Equals("youtube"))
             {
-                song.Thumbnail = $"http://i3.ytimg.com/vi/{_service.GetYouTubeTrackId(track.Url)}/maxresdefault.jpg";
+                song.Thumbnail = $"https://img.youtube.com/vi/{_service.GetYouTubeTrackId(track.Url)}/maxresdefault.jpg";
             }
             else if (source.Equals("soundcloud"))
             {
@@ -125,7 +120,7 @@ namespace RiasBot.Modules.Music.Common
             }
             else
             {
-                if (_player.Playing)
+                if (Player.Playing)
                 {
                     await AddToQueue(song, user);
                 }
@@ -140,7 +135,7 @@ namespace RiasBot.Modules.Music.Common
         public async Task AddPlaylist(IGuild guild, IGuildUser user, IMessageChannel channel, IVoiceChannel voiceChannel,
             string source, LoadTracksResponse tracks)
         {
-            await Join(guild, user, channel, voiceChannel, false);
+            await Join(guild, user, channel, voiceChannel);
             
             if (_queue.Count > 10000)    //10000 tracks are enough, you don't keep the music player online for years
             {
@@ -188,7 +183,7 @@ namespace RiasBot.Modules.Music.Common
 
                     if (source.Equals("youtube"))
                     {
-                        song.Thumbnail = $"http://i3.ytimg.com/vi/{_service.GetYouTubeTrackId(track.Url)}/maxresdefault.jpg";
+                        song.Thumbnail = $"https://img.youtube.com/vi/{_service.GetYouTubeTrackId(track.Url)}/maxresdefault.jpg";
                     }
                     _queue.Add(song);
                     count++;
@@ -210,7 +205,7 @@ namespace RiasBot.Modules.Music.Common
                 
                 if (CurrentTrack is null)
                 {
-                    if (_player.VoiceChannel != null)
+                    if (Player.VoiceChannel != null)
                         await UpdateQueue(0).ConfigureAwait(false);
                 }
             }
@@ -245,7 +240,7 @@ namespace RiasBot.Modules.Music.Common
                     embed.AddField("Repeat", "Enabled", true);
                 embed.WithThumbnailUrl(CurrentTrack.Thumbnail);
                 
-                await _player.PlayAsync(CurrentTrack.Track);
+                await Player.PlayAsync(CurrentTrack.Track);
                 _elapsedTime.Restart();
                 _offsetElapsedTime = TimeSpan.Zero;
                 await SendMessageEmbed(embed).ConfigureAwait(false);
@@ -254,10 +249,10 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task Pause(string message)
         {
-            if (!_player.Playing)
+            if (!Player.Playing)
                 return;
             
-            await _player.PauseAsync().ConfigureAwait(false);
+            await Player.PauseAsync().ConfigureAwait(false);
             _isPaused = true;
             _elapsedTime.Stop();
             if (!string.IsNullOrEmpty(message))
@@ -266,10 +261,10 @@ namespace RiasBot.Modules.Music.Common
         
         public async Task Resume(string message)
         {
-            if (_player.Playing)
+            if (Player.Playing)
                 return;
             
-            await _player.ResumeAsync().ConfigureAwait(false);
+            await Player.ResumeAsync().ConfigureAwait(false);
             _isPaused = false;
             _elapsedTime.Start();
             if (!string.IsNullOrEmpty(message))
@@ -278,7 +273,7 @@ namespace RiasBot.Modules.Music.Common
 
         public async Task NowPlaying()
         {
-            if (_player.Playing)
+            if (Player.Playing)
             {
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Now Playing");
@@ -333,7 +328,7 @@ namespace RiasBot.Modules.Music.Common
                 {
                     if (vol <= 100)
                     {
-                        await _player.SetVolumeAsync(vol).ConfigureAwait(false);
+                        await Player.SetVolumeAsync(vol).ConfigureAwait(false);
                         await SendMessage(MessageType.Confirmation, $"Volume set to {volume}%").ConfigureAwait(false);
                     }
                 }
@@ -355,7 +350,7 @@ namespace RiasBot.Modules.Music.Common
                     embed.WithAuthor("Seek", user.GetRealAvatarUrl());
                     embed.WithDescription($"[{CurrentTrack.Track.Title}]({CurrentTrack.Track.Url})");
                     
-                    await _player.SeekAsync((int)time.TotalMilliseconds);
+                    await Player.SeekAsync((int)time.TotalMilliseconds);
 
                     embed.AddField("From", _offsetElapsedTime.Add(_elapsedTime.Elapsed).GetTimeString(), true)
                         .AddField("To", time.GetTimeString(), true);
@@ -387,7 +382,7 @@ namespace RiasBot.Modules.Music.Common
             var playlist = new List<string>();
             
             string status;
-            if (_player.Playing)
+            if (Player.Playing)
                 status = "▶";
             else if (_isPaused)
                 status = "⏸";
@@ -542,8 +537,8 @@ namespace RiasBot.Modules.Music.Common
 
             try
             {
-                if (VoiceChannel != null)
-                    await _player.DisconnectAsync();
+                if (Player != null)
+                    await RiasBot.Lavalink.LeaveAsync(guild.Id);
             }
             catch (Exception e)
             {
