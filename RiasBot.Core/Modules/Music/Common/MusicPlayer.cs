@@ -62,6 +62,18 @@ namespace RiasBot.Modules.Music.Common
                 Player = RiasBot.Lavalink.GetPlayer(guild.Id) ?? await RiasBot.Lavalink.JoinAsync(voiceChannel);
                 Channel = channel;
                 await SendMessage(MessageType.Confirmation, $"Connected to {Format.Bold(voiceChannel.ToString())}!").ConfigureAwait(false);
+                await UnmuteItself(guild, voiceChannel);
+            }
+        }
+        
+        private async Task UnmuteItself(IGuild guild, IGuildChannel voiceChannel)
+        {
+            var selfUSer = await guild.GetCurrentUserAsync().ConfigureAwait(false);
+            var preconditions = selfUSer.GetPermissions(voiceChannel);
+            if (!preconditions.Speak)
+            {
+                if (selfUSer.GuildPermissions.MuteMembers)
+                    await selfUSer.ModifyAsync(x => x.Mute = false);
             }
         }
 
@@ -538,7 +550,9 @@ namespace RiasBot.Modules.Music.Common
             try
             {
                 if (Player != null)
+                {
                     await Player.DisconnectAsync().ConfigureAwait(false);
+                }
             }
             catch (Exception e)
             {
