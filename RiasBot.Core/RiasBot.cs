@@ -15,7 +15,7 @@ namespace RiasBot
 {
     public class RiasBot
     {
-        public const string Version = "1.13.10";
+        public const string Version = "1.13.11";
         public const uint GoodColor = 0x009688;
         public const uint BadColor = 0xff0000;
         public const string Currency = "<:heart_diamond:416513090549448724>";
@@ -42,8 +42,7 @@ namespace RiasBot
                 {
                     LogLevel = LogSeverity.Info,
                     MessageCacheSize = 500,
-                    AlwaysDownloadUsers = true,
-                    TotalShards = 3
+                    AlwaysDownloadUsers = true
                 }))
                 .AddSingleton(new DiscordRestClient())
                 .AddSingleton(new CommandService(new CommandServiceConfig     // Add the command service to the service provider

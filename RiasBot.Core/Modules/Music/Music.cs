@@ -37,8 +37,15 @@ namespace RiasBot.Modules.Music
                 return;
             }
 
-            await _service.SearchTrack((ShardedCommandContext) Context, Context.Guild, Context.Channel,
-                (IGuildUser) Context.User, voiceChannel, keywords);
+            if (RiasBot.Lavalink != null)
+            {
+                await _service.SearchTrack((ShardedCommandContext) Context, Context.Guild, Context.Channel,
+                    (IGuildUser) Context.User, voiceChannel, keywords);
+            }
+            else
+            {
+                await Context.Channel.SendErrorMessageAsync("Lavalink has not started yet! Please wait few seconds!").ConfigureAwait(false);
+            }
         }
 
         [RiasCommand]
