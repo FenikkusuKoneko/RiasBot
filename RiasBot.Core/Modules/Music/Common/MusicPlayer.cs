@@ -55,14 +55,14 @@ namespace RiasBot.Modules.Music.Common
         
         private async Task Join(IGuild guild, IGuildUser user, IMessageChannel channel, IVoiceChannel voiceChannel)
         {
+            Guild = guild;
+            VoiceChannel = voiceChannel;
             if (Player is null)
             {
                 Player = RiasBot.Lavalink.GetPlayer(guild.Id) ?? await RiasBot.Lavalink.JoinAsync(voiceChannel);
                 Channel = channel;
                 await SendMessage(MessageType.Confirmation, $"Connected to {Format.Bold(voiceChannel.ToString())}!").ConfigureAwait(false);
             }
-            Guild = guild;
-            VoiceChannel = voiceChannel;
         }
 
         public async Task Play(IGuild guild, IGuildUser user, IMessageChannel channel, IVoiceChannel voiceChannel,
@@ -538,7 +538,7 @@ namespace RiasBot.Modules.Music.Common
             try
             {
                 if (Player != null)
-                    await RiasBot.Lavalink.LeaveAsync(guild.Id);
+                    await Player.DisconnectAsync().ConfigureAwait(false);
             }
             catch (Exception e)
             {
