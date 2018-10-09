@@ -44,7 +44,7 @@ namespace RiasBot.Services
 
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
-            _discord.ShardReady += ShardReady;
+            _discord.ShardConnected += ShardConnected;
             _discord.GuildUnavailable += GuildUnavailable;
             
             _discord.UserVoiceStateUpdated += _musicService.UpdateVoiceState;
@@ -270,7 +270,7 @@ namespace RiasBot.Services
             }
         }
 
-        private async Task ShardReady(DiscordSocketClient client)
+        private async Task ShardConnected(DiscordSocketClient client)
         {
             _loggingService.Ready = true;
             if (!_allShardsDoneConnection)
