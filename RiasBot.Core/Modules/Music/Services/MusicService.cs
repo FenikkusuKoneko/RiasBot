@@ -128,7 +128,6 @@ namespace RiasBot.Modules.Music.Services
                         if (mp.RegisteringPlaylist)
                             return;    //don't let people to spam playlists
 
-                        await channel.SendConfirmationMessageAsync("Adding the track in the queue, please wait!").ConfigureAwait(false);
                         LoadTracksResponse tracks;
                         try
                         {
@@ -183,7 +182,6 @@ namespace RiasBot.Modules.Music.Services
                             {
                                 if (!string.IsNullOrEmpty(youtubeTrackInfo.PlaylistId))
                                 {
-                                    await channel.SendConfirmationMessageAsync("Adding the track in the queue, please wait!").ConfigureAwait(false);
                                     await mp.AddPlaylist(guild, user, channel, voiceChannel, "youtube", tracks).ConfigureAwait(false);
                                 }
                                 else

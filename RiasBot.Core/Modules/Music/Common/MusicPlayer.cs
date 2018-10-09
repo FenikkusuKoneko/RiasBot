@@ -150,71 +150,67 @@ namespace RiasBot.Modules.Music.Common
             RegisteringPlaylist = true;
             
             var count = 0;
-            if (tracks.Tracks.Any())
+            foreach (var track in tracks.Tracks)
             {
-                foreach (var track in tracks.Tracks)
+                if (!UnlockLongTracks)
                 {
-                    if (!UnlockLongTracks)
+                    if (track.IsSeekable)
                     {
-                        if (track.IsSeekable)
-                        {
-                            if (TimeSpan.Compare(track.Length, new TimeSpan(3, 5, 0)) > 0)    //a little exception of 5 minutes
-                            {
-                                continue;
-                            }
-                        }
-                    }
-
-                    if (!UnlockLivestreams)
-                    {
-                        if (track.IsStream)
+                        if (TimeSpan.Compare(track.Length, new TimeSpan(3, 5, 0)) > 0)    //a little exception of 5 minutes
                         {
                             continue;
                         }
                     }
-                    
-                    var song = new Song
-                    {
-                        Track = track,
-                        User = user,
-                        Source = source,
-                        TrackId = _service.GetYouTubeTrackId(track.Url)
-                    };
-
-                    if (source.Equals("youtube"))
-                    {
-                        song.Thumbnail = $"https://img.youtube.com/vi/{_service.GetYouTubeTrackId(track.Url)}/maxresdefault.jpg";
-                    }
-                    _queue.Add(song);
-                    count++;
                 }
-
-                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-                embed.WithDescription($"Added to queue {count} tracks");
-                if (message != null)
-                    await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
-                if (tracks.PlaylistInfo?.SelectedTrack != null)
+                
+                if (!UnlockLivestreams)
                 {
-                    if (tracks.PlaylistInfo.SelectedTrack > 0)
+                    if (track.IsStream)
                     {
-                        var track = _queue[tracks.PlaylistInfo.SelectedTrack];
-                        _queue.RemoveAt(tracks.PlaylistInfo.SelectedTrack);
-                        _queue.Insert(0, track);
+                        continue;
                     }
                 }
                 
-                if (CurrentTrack is null)
+                var song = new Song
                 {
-                    if (Player.VoiceChannel != null)
-                        await UpdateQueue(0).ConfigureAwait(false);
+                    Track = track,
+                    User = user,
+                    Source = source,
+                    TrackId = _service.GetYouTubeTrackId(track.Url)
+                };
+                
+                if (source.Equals("youtube"))
+                {
+                    song.Thumbnail = $"https://img.youtube.com/vi/{_service.GetYouTubeTrackId(track.Url)}/maxresdefault.jpg";
                 }
+                _queue.Add(song);
+                count++;
+            }
+            
+            var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+            embed.WithDescription($"Added to queue {count} tracks");
+            if (message != null)
+                await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
+            if (tracks.PlaylistInfo?.SelectedTrack != null)
+            {
+                if (tracks.PlaylistInfo.SelectedTrack > 0)
+                {
+                    var track = _queue[tracks.PlaylistInfo.SelectedTrack];
+                    _queue.RemoveAt(tracks.PlaylistInfo.SelectedTrack);
+                    _queue.Insert(0, track);
+                }
+            }
+            
+            if (CurrentTrack is null)
+            {
+                await UpdateQueue(0).ConfigureAwait(false);
             }
             else
             {
-                var embed = new EmbedBuilder().WithColor(RiasBot.BadColor);
-                embed.WithDescription("I couldn't load any track, check if the playlist link is available!");
-                if (message != null)
-                    await message.ModifyAsync(x => x.Embed = embed.Build()).ConfigureAwait(false);
+                if (!Player.Playing)
+                {
+                    await UpdateQueue(0).ConfigureAwait(false);
+                }
             }
             RegisteringPlaylist = false;
         }
