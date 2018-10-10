@@ -45,7 +45,7 @@ namespace RiasBot.Services
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
             _discord.ShardConnected += ShardConnected;
-            _discord.GuildUnavailable += GuildUnavailable;
+            _discord.ShardDisconnected += ShardDisconnected;
             
             _discord.UserVoiceStateUpdated += _musicService.UpdateVoiceState;
 
@@ -181,14 +181,6 @@ namespace RiasBot.Services
             }
         }
 
-        private async Task GuildUnavailable(SocketGuild guild)
-        {
-            if (_musicService.MPlayer.TryGetValue(guild.Id, out var musicPlayer))
-            {
-                await musicPlayer.Leave(guild, null);
-            }
-        }
-
         public async Task AddAssignableRole(IGuild guild, IGuildUser user)
         {
             using (var db = _db.GetDbContext())
@@ -296,6 +288,18 @@ namespace RiasBot.Services
                 RiasBot.Lavalink.TrackEnd += _musicService.TrackEnd;
                 Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} Lavalink started!");
                 _allShardsDoneConnection = true;
+            }
+        }
+        
+        private async Task ShardDisconnected(Exception exception, DiscordSocketClient client)
+        {
+            foreach (var guild in client.Guilds)
+            {
+                if (_musicService.MPlayer.TryGetValue(guild.Id, out var musicPlayer))
+                {
+                    //remove the music player from MusicService
+                    await musicPlayer.ShardDisconnected(guild);
+                }
             }
         }
     }

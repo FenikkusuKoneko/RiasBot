@@ -549,6 +549,20 @@ namespace RiasBot.Modules.Music.Common
                     await SendMessage(MessageType.Confirmation, message).ConfigureAwait(false);
             }
         }
+        
+        public Task ShardDisconnected(IGuild guild)
+        {
+            if (Timeout != null)
+            {
+                Timeout.Dispose();
+                Timeout = null;
+            }
+
+            // the LavaLink library takes care to disconnect all players from the shard
+            
+            _service.RemoveMusicPlayer(guild);
+            return Task.CompletedTask;
+        }
 
         private async Task AddToQueue(Song song, IGuildUser user)
         {
