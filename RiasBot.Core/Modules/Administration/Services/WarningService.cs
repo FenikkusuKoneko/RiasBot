@@ -15,10 +15,10 @@ namespace RiasBot.Modules.Administration.Services
         private readonly AdministrationService _adminService;
         private readonly MuteService _muteService;
         private readonly DbService _db;
-        public WarningService(AdministrationService adminService, MuteService muteSevice, DbService db)
+        public WarningService(AdministrationService adminService, MuteService muteService, DbService db)
         {
             _adminService = adminService;
-            _muteService = muteSevice;
+            _muteService = muteService;
             _db = db;
         }
 
@@ -26,21 +26,18 @@ namespace RiasBot.Modules.Administration.Services
         {
             using (var db = _db.GetDbContext())
             {
-                var nrWarnings = 0;
-                var guildDb = db.Guilds.Where(x => x.GuildId == guild.Id).FirstOrDefault();
+                var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
                 var warnings = db.Warnings.Where(x => x.GuildId == guild.Id).Where(y => y.UserId == user.Id).ToList();
 
-                nrWarnings = warnings.Where(x => x.UserId == user.Id).Count();
+                var nrWarnings = warnings.Count;
                 var warning = new Warnings { GuildId = guild.Id, UserId = user.Id, Reason = reason, Moderator = moderator.Id };
-                await db.AddAsync(warning).ConfigureAwait(false);
-                await db.SaveChangesAsync().ConfigureAwait(false);
 
                 var embed = new EmbedBuilder().WithColor(0xffff00);
                 embed.WithTitle($"Warn");
                 embed.AddField("Username", $"{user}", true).AddField("ID", user.Id.ToString(), true);
                 embed.AddField("Warn no.", nrWarnings + 1, true).AddField("Moderator", moderator, true);
                 embed.WithThumbnailUrl(user.GetRealAvatarUrl());
-                if (!String.IsNullOrEmpty(reason))
+                if (!string.IsNullOrEmpty(reason))
                     embed.AddField("Reason", reason, true);
 
                 if (guildDb != null)
@@ -60,11 +57,10 @@ namespace RiasBot.Modules.Administration.Services
                 {
                     await channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
                 }
-                try
+                if (guildDb != null)
                 {
                     if (nrWarnings + 1 >= guildDb.WarnsPunishment && guildDb.WarnsPunishment != 0)
                     {
-                        db.Remove(warning);
                         db.RemoveRange(warnings);
                         await db.SaveChangesAsync().ConfigureAwait(false);
                         switch (guildDb.PunishmentMethod)
@@ -86,10 +82,11 @@ namespace RiasBot.Modules.Administration.Services
                                 break;
                         }
                     }
-                }
-                catch
-                {
-
+                    else
+                    {
+                        await db.AddAsync(warning).ConfigureAwait(false);
+                        await db.SaveChangesAsync().ConfigureAwait(false);
+                    }
                 }
             }
         }
