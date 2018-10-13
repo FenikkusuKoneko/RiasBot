@@ -312,7 +312,7 @@ namespace RiasBot.Modules.Music.Services
             if (int.TryParse(userInput, out var input))
             {
                 input--;
-                if (input >= 0 && input < tracks.Tracks.Count())
+                if (input >= 0 && input < 5)
                 {
                     var track = tracks.Tracks.ElementAt(input);
                     await mp.PlayAsync(guild, user, channel, voiceChannel, "youtube", track).ConfigureAwait(false);
