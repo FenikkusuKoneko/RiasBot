@@ -27,11 +27,11 @@ namespace RiasBot.Modules.Bot
         private readonly DiscordRestClient _restClient;
         private readonly BotService _botService;
         private readonly InteractiveService _is;
-        private readonly MusicService _musicService;
         private readonly VotesService _votesService;
+        private readonly MusicService _musicService;
 
         public Bot(CommandHandler ch, CommandService service, DbService db, IBotCredentials creds, DiscordShardedClient client, DiscordRestClient restClient,
-            BotService botService, InteractiveService interactiveService, MusicService musicService, VotesService votesService)
+            BotService botService, InteractiveService interactiveService, VotesService votesService, MusicService musicService)
         {
             _ch = ch;
             _service = service;
@@ -41,8 +41,8 @@ namespace RiasBot.Modules.Bot
             _restClient = restClient;
             _botService = botService;
             _is = interactiveService;
-            _musicService = musicService;
             _votesService = votesService;
+            _musicService = musicService;
         }
 
         [RiasCommand][@Alias]
@@ -73,8 +73,9 @@ namespace RiasBot.Modules.Bot
 
             foreach (var musicPlayer in _musicService.MPlayer)
             {
-                await musicPlayer.Value.Leave(Context.Guild, null);
+                await musicPlayer.Value.LeaveAsync(Context.Guild, null);
             }
+            
             Environment.Exit(0);
         }
 

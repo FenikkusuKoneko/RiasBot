@@ -2,18 +2,12 @@
 using RiasBot.Extensions;
 using Discord;
 using Discord.Commands;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
-using RiasBot.Services;
 using Discord.WebSocket;
-using System.Globalization;
-using System.Diagnostics;
 using Discord.Addons.Interactive;
-using Microsoft.EntityFrameworkCore;
 using RiasBot.Modules.Music.Services;
 
 namespace RiasBot.Modules.Utility
@@ -56,8 +50,8 @@ namespace RiasBot.Modules.Utility
                     users += guild.MemberCount;
                 }
                 
-                var musicPlaying = _musicService.MPlayer.Count(m => m.Value.Player != null && m.Value.Player.Playing);
-                var musicAfk = _musicService.MPlayer.Count(m => m.Value.Player != null && !m.Value.Player.Playing);
+                var musicPlaying = _musicService.MPlayer.Count(m => !m.Value.IsPaused);
+                var musicAfk = _musicService.MPlayer.Count(m => m.Value.IsPaused);
 
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
 

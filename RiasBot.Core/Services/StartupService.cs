@@ -6,8 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord.Rest;
-using RiasBot.Commons.TypeReaders;
-using RiasBot.Modules.Music;
 
 namespace RiasBot.Services
 {

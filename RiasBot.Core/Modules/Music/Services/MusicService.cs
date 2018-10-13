@@ -1,7 +1,3 @@
-﻿using Discord;
-using Discord.WebSocket;
-using RiasBot.Modules.Music.Common;
-using RiasBot.Services;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
@@ -11,10 +7,16 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
+using Discord.WebSocket;
 using RiasBot.Extensions;
-using SharpLink;
+using RiasBot.Modules.Music.Commons;
+using RiasBot.Services;
+using Victoria;
+using Victoria.Objects;
+using Victoria.Objects.Enums;
 
 namespace RiasBot.Modules.Music.Services
 {
@@ -30,9 +32,10 @@ namespace RiasBot.Modules.Music.Services
             _creds = creds;
             _is = iss;
         }
-
+        
         public readonly ConcurrentDictionary<ulong, MusicPlayer> MPlayer = new ConcurrentDictionary<ulong, MusicPlayer>();
-
+        public LavaNode LavaNode;
+        
         public async Task UpdateVoiceState(SocketUser user, SocketVoiceState stateOld, SocketVoiceState stateNew)
         {
             var wasMoved = false;
@@ -66,7 +69,7 @@ namespace RiasBot.Modules.Music.Services
                         {
                             if (mp.Timeout != null)
                             {
-                                await mp.Resume("The music player has been resumed!");
+                                await mp.ResumeAsync("The music player has been resumed!");
                                 mp.Timeout.Dispose();
                                 mp.Timeout = null;
                             }
@@ -88,36 +91,42 @@ namespace RiasBot.Modules.Music.Services
             {
                 if (mp != null)
                 {
-                    await mp.Pause("All users left the voice channel! The music player has been paused and I will leave in two minutes " +
+                    await mp.PauseAsync("All users left the voice channel! The music player has been paused and I will leave in two minutes " +
                                    "if you don't join back!");
-                    mp.Timeout = new Timer(async _ => await mp.Leave(userG.Guild, $"I left {Format.Bold(mp.VoiceChannel.ToString())} due to inactivity!"), null,
+                    mp.Timeout = new Timer(async _ => await mp.LeaveAsync(userG.Guild, $"I left {Format.Bold(mp.VoiceChannel.ToString())} due to inactivity!"), null,
                         TimeSpan.FromMinutes(2), TimeSpan.Zero);
                 }
             } 
         }
 
-        public async Task<MusicPlayer> CreateMusicPlayer(IGuild guild)
+        public void InitializeLavaNode(LavaNode node)
+        {
+            LavaNode = node;
+            LavaNode.Finished += OnFinished;
+        }
+
+        private async Task<MusicPlayer> GetOrCreateMusicPlayerAsync(IGuild guild)
         {
             var mp = MPlayer.GetOrAdd(guild.Id, new MusicPlayer(this));
             UnlockFeatures(mp, await guild.GetOwnerAsync());
             return mp;
         }
-        
+
         public MusicPlayer GetMusicPlayer(IGuild guild)
         {
             MPlayer.TryGetValue(guild.Id, out var mp);
             return mp;
         }
-        
+
         public MusicPlayer RemoveMusicPlayer(IGuild guild)
         {
-            return MPlayer.TryRemove(guild.Id, out var musicPlayer) ? musicPlayer : null;
+            return MPlayer.TryRemove(guild.Id, out var mp) ? mp : null;
         }
 
-        public async Task SearchTrack(ShardedCommandContext context, IGuild guild, IMessageChannel channel,
-            IGuildUser user, IVoiceChannel voiceChannel, string keywords)
+        public async Task SearchTrackAsync(ShardedCommandContext context, IGuild guild, IMessageChannel channel,
+            IVoiceChannel voiceChannel, IGuildUser user, string keywords)
         {
-            var mp = await CreateMusicPlayer(guild);
+            var mp = await GetOrCreateMusicPlayerAsync(guild);
             if (Uri.IsWellFormedUriString(keywords, UriKind.Absolute))
             {
                 if (keywords.Contains("youtube") || keywords.Contains("youtu.be"))
@@ -125,111 +134,16 @@ namespace RiasBot.Modules.Music.Services
                     var youtubeTrackInfo = GetYouTubeTrackInfo(keywords);
                     if (youtubeTrackInfo.VideoId.Equals("playlist"))
                     {
-                        if (mp.RegisteringPlaylist)
-                            return;    //don't let people to spam playlists
-
-                        LoadTracksResponse tracks;
-                        try
-                        {
-                            tracks = await RiasBot.Lavalink.GetTracksAsync(keywords);
-                        }
-                        catch (Exception e)
-                        {
-                            await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
-                                                   $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
-                            await mp.Leave(guild, null).ConfigureAwait(false);
-                            Console.WriteLine(e);
-                            return;
-                        }
-                        if (tracks.Tracks != null)
-                        {
-                            if (tracks.Tracks.Any())
-                            {
-                                await mp.AddPlaylist(guild, user, channel, voiceChannel, "youtube", tracks).ConfigureAwait(false);
-                            }
-                            else
-                            {
-                                await channel.SendErrorMessageAsync("The URL is not valid! Or check if the playlist is available").ConfigureAwait(false);
-                            }
-                        }
-                        else
-                        {
-                            await channel.SendErrorMessageAsync("The URL is not valid! Or check if the playlist is available").ConfigureAwait(false);
-                        }
+                        await AddYouTubePlaylistAsync(mp, guild, channel, voiceChannel, user, keywords).ConfigureAwait(false);
                     }
                     else
                     {
-                        if (mp.RegisteringPlaylist)
-                            return;    //don't let people to spam playlists
-                        
-                        var url = $"https://youtu.be/{youtubeTrackInfo.VideoId}?list={youtubeTrackInfo.PlaylistId}";
-                        LoadTracksResponse tracks;
-                        try
-                        {
-                            tracks = await RiasBot.Lavalink.GetTracksAsync(url);
-                        }
-                        catch (Exception e)
-                        {
-                            await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
-                                                   $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
-                            await mp.Leave(guild, null).ConfigureAwait(false);
-                            Console.WriteLine(e);
-                            return;
-                        }
-                        if (tracks.Tracks != null)
-                        {
-                            if (tracks.Tracks.Any())
-                            {
-                                if (!string.IsNullOrEmpty(youtubeTrackInfo.PlaylistId))
-                                {
-                                    await mp.AddPlaylist(guild, user, channel, voiceChannel, "youtube", tracks).ConfigureAwait(false);
-                                }
-                                else
-                                {
-                                    await mp.Play(guild, user, channel, voiceChannel, "youtube", tracks.Tracks.FirstOrDefault()).ConfigureAwait(false);
-                                }
-                            }
-                            else
-                            {
-                                await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
-                            }
-                        }
-                        else
-                        {
-                            await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
-                        }
+                        await AddYouTubeTrackAsync(mp, guild, channel, voiceChannel, user, youtubeTrackInfo).ConfigureAwait(false);
                     }
                 }
                 else if (keywords.Contains("soundcloud"))
                 {
-                    LoadTracksResponse tracks;
-                    try
-                    {
-                        tracks = await RiasBot.Lavalink.GetTracksAsync(keywords);
-                    }
-                    catch (Exception e)
-                    {
-                        await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
-                                               $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
-                        await mp.Leave(guild, null).ConfigureAwait(false);
-                        Console.WriteLine(e);
-                        return;
-                    }
-                    if (tracks.Tracks != null)
-                    {
-                        if (tracks.Tracks.Any())
-                        {
-                            await mp.Play(guild, user, channel, voiceChannel, "soundcloud", tracks.Tracks.FirstOrDefault()).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
-                        }
-                    }
-                    else
-                    {
-                        await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
-                    }
+                    await AddSoundcloudTrackAsync(mp, guild, channel, voiceChannel, user, keywords).ConfigureAwait(false);
                 }
                 else
                 {
@@ -238,23 +152,136 @@ namespace RiasBot.Modules.Music.Services
             }
             else
             {
-                await SearchTrackOnYouTube(context, mp, guild, channel, user, voiceChannel, keywords).ConfigureAwait(false);
+                await SearchTrackOnYouTubeAsync(context, mp, guild, channel, user, voiceChannel, keywords).ConfigureAwait(false);
             }
         }
 
-        private async Task SearchTrackOnYouTube(ShardedCommandContext context, MusicPlayer mp, IGuild guild, IMessageChannel channel,
-            IGuildUser user, IVoiceChannel voiceChannel, string keywords)
+        private async Task AddYouTubePlaylistAsync(MusicPlayer mp, IGuild guild, IMessageChannel channel,
+            IVoiceChannel voiceChannel, IGuildUser user, string keywords)
         {
-            LoadTracksResponse tracks;
+            if (mp.RegisteringPlaylist)
+                return;    //don't let people to spam playlists
+
+            LavaResult tracks;
             try
             {
-                tracks = await RiasBot.Lavalink.GetTracksAsync("ytsearch:" + keywords);
+                tracks = await LavaNode.GetTracksAsync(new Uri(keywords)).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                                                    $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
+                await mp.LeaveAsync(guild, null).ConfigureAwait(false);
+                Console.WriteLine(e);
+                return;
+            }
+            if (tracks.Tracks != null)
+            {
+                if (tracks.Tracks.Any())
+                {
+                    await mp.AddPlaylistAsync(guild, user, channel, voiceChannel, "youtube", tracks).ConfigureAwait(false);
+                }
+                else
+                {
+                    await channel.SendErrorMessageAsync("The URL is not valid! Or check if the playlist is available").ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                await channel.SendErrorMessageAsync("The URL is not valid! Or check if the playlist is available").ConfigureAwait(false);
+            }
+        }
+
+        private async Task AddYouTubeTrackAsync(MusicPlayer mp, IGuild guild, IMessageChannel channel,
+            IVoiceChannel voiceChannel, IGuildUser user, YouTubeTrackInfo youtubeTrackInfo)
+        {
+            if (mp.RegisteringPlaylist)
+                return;    //don't let people to spam playlists
+            
+            var url = $"https://youtu.be/{youtubeTrackInfo.VideoId}?list={youtubeTrackInfo.PlaylistId}";
+            LavaResult tracks;
+            try
+            {
+                tracks = await LavaNode.GetTracksAsync(new Uri(url)).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                                                    $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
+                await mp.LeaveAsync(guild, null).ConfigureAwait(false);
+                Console.WriteLine(e);
+                return;
+            }
+            if (tracks.Tracks != null)
+            {
+                if (tracks.Tracks.Any())
+                {
+                    if (!string.IsNullOrEmpty(youtubeTrackInfo.PlaylistId))
+                    {
+                        await mp.AddPlaylistAsync(guild, user, channel, voiceChannel, "youtube", tracks).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await mp.PlayAsync(guild, user, channel, voiceChannel, "youtube", tracks.Tracks.FirstOrDefault()).ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
+            }
+        }
+
+        private async Task AddSoundcloudTrackAsync(MusicPlayer mp, IGuild guild, IMessageChannel channel,
+            IVoiceChannel voiceChannel, IGuildUser user, string keywords)
+        {
+            LavaResult tracks;
+            try
+            {
+                tracks = await LavaNode.GetTracksAsync(new Uri(keywords)).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
+                                                    $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
+                await mp.LeaveAsync(guild, null).ConfigureAwait(false);
+                Console.WriteLine(e);
+                return;
+            }
+            if (tracks.Tracks != null)
+            {
+                if (tracks.Tracks.Any())
+                {
+                    await mp.PlayAsync(guild, user, channel, voiceChannel, "soundcloud", tracks.Tracks.FirstOrDefault()).ConfigureAwait(false);
+                }
+                else
+                {
+                    await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                await channel.SendErrorMessageAsync("The URL is not valid! Or check if the track is available").ConfigureAwait(false);
+            }
+        }
+        
+        private async Task SearchTrackOnYouTubeAsync(ShardedCommandContext context, MusicPlayer mp, IGuild guild, IMessageChannel channel,
+            IGuildUser user, IVoiceChannel voiceChannel, string keywords)
+        {
+            LavaResult tracks;
+            try
+            {
+                tracks = await LavaNode.SearchYouTubeAsync(keywords);
             }
             catch (Exception e)
             {
                 await channel.SendErrorMessageAsync("Something went wrong when trying to get the tracks. If this still continue, please report in the " +
                                        $"[Support Server]({RiasBot.CreatorServer})!").ConfigureAwait(false);
-                await mp.Leave(guild, null).ConfigureAwait(false);
+                await mp.LeaveAsync(guild, null).ConfigureAwait(false);
                 Console.WriteLine(e);
                 return;
             }
@@ -285,16 +312,16 @@ namespace RiasBot.Modules.Music.Services
             if (int.TryParse(userInput, out var input))
             {
                 input--;
-                if (input >= 0 && input < tracks.Tracks.Count)
+                if (input >= 0 && input < tracks.Tracks.Count())
                 {
                     var track = tracks.Tracks.ElementAt(input);
-                    await mp.Play(guild, user, channel, voiceChannel, "youtube", track).ConfigureAwait(false);
+                    await mp.PlayAsync(guild, user, channel, voiceChannel, "youtube", track).ConfigureAwait(false);
                 }
             }
             
             await choose.DeleteAsync().ConfigureAwait(false);
         }
-
+        
         private YouTubeTrackInfo GetYouTubeTrackInfo(string url)
         {
             var regex = new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]*)(?:.*list=|(?:.*/)?)([a-zA-Z0-9-_]*)");
@@ -303,28 +330,29 @@ namespace RiasBot.Modules.Music.Services
             {
                 return new YouTubeTrackInfo
                 {
-                    PlaylistId = match.Groups[2].Value,
-                    VideoId = match.Groups[1].Value
+                    VideoId = match.Groups[1].Value,
+                    PlaylistId = match.Groups[2].Value
+                    
                 };
             }
 
             return null;
         }
-
-        public string GetYouTubeTrackId(string url)
+        
+        public string GetYouTubeTrackId(Uri uri)
         {
             var regex = new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]*)");
-            var match = regex.Match(url);
+            var match = regex.Match(uri.ToString());
             return match.Groups.Count > 0 ? match.Groups[1].Value : null;
         }
-
-        public async Task<string> GetTrackThumbnail(string url)
+        
+        public async Task<string> GetTrackThumbnail(Uri uri)
         {
             try
             {
                 using (var client = new HttpClient())
                 {
-                    using (var request = new HttpRequestMessage(HttpMethod.Get, new Uri(url)))
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
                     {
                         request.Headers.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml,application/xml");
                         request.Headers.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate");
@@ -356,24 +384,13 @@ namespace RiasBot.Modules.Music.Services
                 return null;
             }
         }
-
+        
         private class YouTubeTrackInfo
         {
             public string VideoId { get; set; }
             public string PlaylistId { get; set; }
         }
         
-        public async Task TrackEnd(LavalinkPlayer player, LavalinkTrack track, string reason)
-        {
-            if (reason.Equals("FINISHED"))
-            {
-                var mp = GetMusicPlayer(player.VoiceChannel.Guild);
-                if (mp != null)
-                    if (!mp.Player.Playing)
-                        await mp.UpdateQueue(mp.Repeat ? -1 : 0).ConfigureAwait(false);
-            }
-        }
-
         private void UnlockFeatures(MusicPlayer player, IGuildUser user)
         {
             if (!string.IsNullOrEmpty(_creds.PatreonAccessToken) && user.Id != RiasBot.KonekoId)
@@ -402,6 +419,18 @@ namespace RiasBot.Modules.Music.Services
                 player.UnlockVolume = true;
                 player.UnlockLongTracks = true;
                 player.UnlockLivestreams = true;
+            }
+        }
+        
+        private async Task OnFinished(LavaPlayer player, LavaTrack track, TrackReason reason)
+        {
+            if (reason == TrackReason.Finished)
+            {
+                var mp = GetMusicPlayer(player.VoiceChannel.Guild);
+                if (mp != null)
+                {
+                    await mp.UpdateQueueAsync(mp.Repeat ? -1 : 0).ConfigureAwait(false);
+                }
             }
         }
     }

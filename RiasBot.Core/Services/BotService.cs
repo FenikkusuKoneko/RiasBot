@@ -1,7 +1,5 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using Newtonsoft.Json;
-using RiasBot.Services.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using RiasBot.Modules.Administration.Services;
 using RiasBot.Modules.Music.Services;
-using SharpLink;
+using Victoria;
 
 namespace RiasBot.Services
 {
@@ -18,36 +16,39 @@ namespace RiasBot.Services
     {
         private readonly DiscordShardedClient _discord;
         private readonly DbService _db;
-        private readonly MusicService _musicService;
         private readonly MuteService _muteService;
         private readonly IBotCredentials _creds;
         private readonly LoggingService _loggingService;
+        private readonly MusicService _musicService;
+        private readonly Lavalink _lavalink;
 
         private Timer _dblTimer;
         public Timer Status;
 
         public string[] Statuses;
-        private int _statusCount = 0;
-
+        private int _statusCount;
+        
         private bool _allShardsDoneConnection;
-        private int _shardsConnected = 0;
-        private int _recommendedShardCount = 0;
+        private int _shardsConnected;
+        private int _recommendedShardCount;
 
-        public BotService(DiscordShardedClient discord, DbService db, MusicService musicService, MuteService muteService, IBotCredentials creds, LoggingService loggingService)
+        public BotService(DiscordShardedClient discord, DbService db, MuteService muteService, 
+            IBotCredentials creds, LoggingService loggingService, MusicService musicService, Lavalink lavalink)
         {
             _discord = discord;
             _db = db;
-            _musicService = musicService;
             _muteService = muteService;
             _creds = creds;
             _loggingService = loggingService;
+            _musicService = musicService;
+            _lavalink = lavalink;
 
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
             _discord.ShardConnected += ShardConnected;
             _discord.ShardDisconnected += ShardDisconnected;
-            
             _discord.UserVoiceStateUpdated += _musicService.UpdateVoiceState;
+            
 
             if (!string.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
             {
@@ -217,7 +218,7 @@ namespace RiasBot.Services
             switch (type)
             {
                 case "playing":
-                    await _discord.SetActivityAsync(new Game(statusName, ActivityType.Playing)).ConfigureAwait(false);
+                    await _discord.SetActivityAsync(new Game(statusName)).ConfigureAwait(false);
                     break;
                 case "listening":
                     await _discord.SetActivityAsync(new Game(statusName, ActivityType.Listening)).ConfigureAwait(false);
@@ -273,19 +274,26 @@ namespace RiasBot.Services
 
             if (_shardsConnected == _recommendedShardCount && !_allShardsDoneConnection)
             {
-                await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync();
+                await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync().ConfigureAwait(false);
 
-                RiasBot.Lavalink = new LavalinkManager(_discord, new LavalinkManagerConfig
+                var lavaNode = await _lavalink.ConnectAsync(_discord, new LavaConfig
                 {
-                    RESTHost = _creds.LavalinkConfig.RestHost,
-                    RESTPort = _creds.LavalinkConfig.RestPort,
-                    WebSocketHost = _creds.LavalinkConfig.WebSocketHost,
-                    WebSocketPort = _creds.LavalinkConfig.WebSocketPort,
+                    MaxTries = 5,
                     Authorization = _creds.LavalinkConfig.Authorization,
-                    TotalShards = _recommendedShardCount
+                    Rest = new Endpoint
+                    {
+                        Host = _creds.LavalinkConfig.RestHost,
+                        Port = _creds.LavalinkConfig.RestPort
+                    },
+                    Socket = new Endpoint
+                    {
+                        Host = _creds.LavalinkConfig.WebSocketHost,
+                        Port = _creds.LavalinkConfig.WebSocketPort
+                    },
+                    Severity = LogSeverity.Info
                 });
-                await RiasBot.Lavalink.StartAsync().ConfigureAwait(false);
-                RiasBot.Lavalink.TrackEnd += _musicService.TrackEnd;
+                
+                _musicService.InitializeLavaNode(lavaNode);
                 Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} Lavalink started!");
                 _allShardsDoneConnection = true;
             }

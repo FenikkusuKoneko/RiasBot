@@ -22,12 +22,12 @@ namespace RiasBot.Services
     public class LavalinkConfig
     {
         public string RestHost { get; }
-        public ushort RestPort { get; }
+        public int RestPort { get; }
         public string WebSocketHost { get; }
-        public ushort WebSocketPort { get; }
+        public int WebSocketPort { get; }
         public string Authorization { get; }
 
-        public LavalinkConfig(string restHost, ushort restPort, string webSocketHost, ushort webSocketPort, string authorization)
+        public LavalinkConfig(string restHost, int restPort, string webSocketHost, int webSocketPort, string authorization)
         {
             RestHost = restHost;
             RestPort = restPort;

@@ -9,13 +9,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using SharpLink;
+using Victoria;
 
 namespace RiasBot
 {
     public class RiasBot
     {
-        public const string Version = "1.14.0";
+        public const string Version = "1.15.0";
         public const uint GoodColor = 0x009688;
         public const uint BadColor = 0xff0000;
         public const string Currency = "<:heart_diamond:416513090549448724>";
@@ -30,7 +30,6 @@ namespace RiasBot
         public static readonly Stopwatch UpTime = new Stopwatch();
         public static int CommandsRun = 0;
 
-        public static LavalinkManager Lavalink { get; set; }
         private BotCredentials Credentials { get; set; }
 
         public async Task StartAsync()
@@ -50,7 +49,8 @@ namespace RiasBot
                     DefaultRunMode = RunMode.Async,     // Force all commands to run async
                     LogLevel = LogSeverity.Verbose
                 }))
-                .AddSingleton<IBotCredentials>(Credentials); 
+                .AddSingleton<IBotCredentials>(Credentials)
+                .AddSingleton<Lavalink>();
             var assembly = Assembly.GetAssembly(typeof(RiasBot));
 
             var iRServices = assembly.GetTypes()

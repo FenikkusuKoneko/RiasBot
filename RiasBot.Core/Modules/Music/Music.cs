@@ -1,18 +1,26 @@
-﻿using Discord;
+using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using RiasBot.Commons.Attributes;
 using RiasBot.Extensions;
 using RiasBot.Modules.Music.Services;
-using System.Threading.Tasks;
+using Victoria;
 
 namespace RiasBot.Modules.Music
 {
     public class Music : RiasModule<MusicService>
     {
+        private readonly Lavalink _lavalink;
+
+        public Music(Lavalink lavalink)
+        {
+            _lavalink = lavalink;
+        }
+        
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Play([Remainder] string keywords)
+        public async Task PlayAsync([Remainder] string keywords)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -37,23 +45,23 @@ namespace RiasBot.Modules.Music
                 return;
             }
 
-            if (RiasBot.Lavalink != null)
+            if (_service.LavaNode != null)
             {
-                await _service.SearchTrack((ShardedCommandContext) Context, Context.Guild, Context.Channel,
-                    (IGuildUser) Context.User, voiceChannel, keywords);
+                await _service.SearchTrackAsync((ShardedCommandContext) Context, Context.Guild, Context.Channel,
+                    voiceChannel, (IGuildUser) Context.User, keywords);
             }
             else
             {
                 await Context.Channel.SendErrorMessageAsync("Lavalink has not started yet! Please wait few seconds!").ConfigureAwait(false);
             }
         }
-
+        
         [RiasCommand]
         [@Alias]
         [Description]
         [@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Pause()
+        public async Task PauseAsync()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -71,7 +79,7 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Pause("The music player has been paused!").ConfigureAwait(false);
+                await mp.PauseAsync("The music player has been paused!").ConfigureAwait(false);
         }
         
         [RiasCommand]
@@ -79,7 +87,7 @@ namespace RiasBot.Modules.Music
         [Description]
         [@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Resume()
+        public async Task ResumeAsync()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -97,7 +105,7 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Resume("The music player has been resumed!").ConfigureAwait(false);
+                await mp.ResumeAsync("The music player has been resumed!").ConfigureAwait(false);
         }
         
         [RiasCommand]
@@ -105,7 +113,7 @@ namespace RiasBot.Modules.Music
         [Description]
         [@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task NowPlaying()
+        public async Task NowPlayingAsync()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -123,7 +131,7 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.NowPlaying().ConfigureAwait(false);
+                await mp.NowPlayingAsync().ConfigureAwait(false);
         }
         
         [RiasCommand]
@@ -131,7 +139,7 @@ namespace RiasBot.Modules.Music
         [Description]
         [@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Volume(string volume)
+        public async Task VolumeAsync(string volume)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -149,7 +157,7 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.SetVolume(volume).ConfigureAwait(false);
+                await mp.SetVolumeAsync(volume).ConfigureAwait(false);
         }
         
         [RiasCommand]
@@ -157,7 +165,7 @@ namespace RiasBot.Modules.Music
         [Description]
         [@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Seek(string time)
+        public async Task SeekAsync(string time)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -175,13 +183,13 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Seek(time, (IGuildUser)Context.User).ConfigureAwait(false);
+                await mp.SeekAsync(time, (IGuildUser)Context.User).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Leave()
+        public async Task LeaveAsync()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -200,15 +208,15 @@ namespace RiasBot.Modules.Music
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
                 if (mp.VoiceChannel != null)
-                    await mp.Leave(Context.Guild, $"Left {Format.Bold(mp.VoiceChannel.ToString())}").ConfigureAwait(false);
+                    await mp.LeaveAsync(Context.Guild, $"Left {Format.Bold(mp.VoiceChannel.ToString())}").ConfigureAwait(false);
                 else
-                    await mp.Leave(Context.Guild, null).ConfigureAwait(false);
+                    await mp.LeaveAsync(Context.Guild, null).ConfigureAwait(false);
         }
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Queue(int index = 1)
+        public async Task QueueAsync(int index = 1)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -226,13 +234,13 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Playlist(index - 1).ConfigureAwait(false);
+                await mp.PlaylistAsync(index - 1).ConfigureAwait(false);
         }
         
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Skip()
+        public async Task SkipAsync()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -250,14 +258,14 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Skip().ConfigureAwait(false);
+                await mp.SkipAsync().ConfigureAwait(false);
         }
         
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(1)]
-        public async Task SkipTo(int index)
+        public async Task SkipToAsync(int index)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -275,14 +283,14 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.SkipTo(index - 1).ConfigureAwait(false);
+                await mp.SkipToAsync(index - 1).ConfigureAwait(false);
         }
         
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(0)]
-        public async Task SkipTo([Remainder]string title)
+        public async Task SkipToAsync([Remainder]string title)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -300,13 +308,13 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.SkipTo(title).ConfigureAwait(false);
+                await mp.SkipToAsync(title).ConfigureAwait(false);
         }
         
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Repeat()
+        public async Task RepeatAsync()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -341,7 +349,7 @@ namespace RiasBot.Modules.Music
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Replay()
+        public async Task ReplayAsync()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -359,13 +367,13 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Replay().ConfigureAwait(false);
+                await mp.ReplayAsync().ConfigureAwait(false);
         }
         
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Clear()
+        public async Task ClearAsync()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -383,13 +391,13 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Clear().ConfigureAwait(false);
+                await mp.ClearAsync().ConfigureAwait(false);
         }
         
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
-        public async Task Shuffle()
+        public async Task ShuffleAsync()
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -407,14 +415,14 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Shuffle().ConfigureAwait(false);
+                await mp.ShuffleAsync().ConfigureAwait(false);
         }
         
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(1)]
-        public async Task Remove(int index)
+        public async Task RemoveAsync(int index)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -432,14 +440,14 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Remove(index - 1).ConfigureAwait(false);
+                await mp.RemoveAsync(index - 1).ConfigureAwait(false);
         }
         
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
         [Priority(0)]
-        public async Task Remove([Remainder]string title)
+        public async Task RemoveAsync([Remainder]string title)
         {
             var voiceChannel = ((IVoiceState)Context.User).VoiceChannel;
             if (voiceChannel is null)
@@ -457,7 +465,7 @@ namespace RiasBot.Modules.Music
                 }
             var mp = _service.GetMusicPlayer(Context.Guild);
             if (mp != null)
-                await mp.Remove(title).ConfigureAwait(false);
+                await mp.RemoveAsync(title).ConfigureAwait(false);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using SharpLink.Events;
+using RiasBot.Commons.Events;
 
 namespace RiasBot.Services.WebSockets
 {
