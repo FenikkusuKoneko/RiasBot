@@ -55,7 +55,7 @@ namespace RiasBot.Modules.Utility
                     voiceChannels += guild.VoiceChannels.Count;
                     users += guild.MemberCount;
                 }
-
+                
                 var musicPlaying = _musicService.MPlayer.Count(m => m.Value.Player != null && m.Value.Player.Playing);
                 var musicAfk = _musicService.MPlayer.Count(m => m.Value.Player != null && !m.Value.Player.Playing);
 
@@ -193,6 +193,51 @@ namespace RiasBot.Modules.Utility
                     embed.WithImageUrl(guild.SplashUrl);
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
+            }
+
+            [RiasCommand]
+            [@Alias]
+            [Description]
+            [@Remarks]
+            public async Task ShardsInfo()
+            {
+                var shards = _client.Shards;
+                var shardsConnected = shards.Count(x => x.ConnectionState == ConnectionState.Connected);
+                var shardsConnectionState = new List<string>();
+
+                foreach (var shard in shards)
+                {
+                    switch (shard.ConnectionState)
+                    {
+                        case ConnectionState.Connected:
+                            shardsConnectionState.Add($"Shard #{shard.ShardId} is connected");
+                            break;
+                        case ConnectionState.Connecting:
+                            shardsConnectionState.Add($"Shard #{shard.ShardId} is connecting");
+                            break;
+                        case ConnectionState.Disconnecting:
+                            shardsConnectionState.Add($"Shard #{shard.ShardId} is disconnecting");
+                            break;
+                        case ConnectionState.Disconnected:
+                            shardsConnectionState.Add($"Shard #{shard.ShardId} is disconnected");
+                            break;
+                    }
+                }
+                var pager = new PaginatedMessage
+                {
+                    Title = $"Shards info: {shardsConnected} shards connected from {shards.Count} shards",
+                    Color = new Color(RiasBot.GoodColor),
+                    Pages = shardsConnectionState,
+                    Options = new PaginatedAppearanceOptions
+                    {
+                        ItemsPerPage = 15,
+                        Timeout = TimeSpan.FromMinutes(1),
+                        DisplayInformationIcon = false,
+                        JumpDisplayOptions = JumpDisplayOptions.Never
+                    }
+
+                };
+                await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
             }
 
             [RiasCommand]

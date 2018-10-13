@@ -783,6 +783,14 @@
     ]
   },
 
+  "shardsinfo": {
+    "Command": "shardsinfo shinfo",
+    "Description": "Show the connection state of all shards.",
+    "Remarks": [
+      "[prefix]shinfo"
+    ]
+  },
+
   "userid": {
     "Command": "userid uid",
     "Description": "Show the ID of an user. Provide no parameters to see your ID.",
