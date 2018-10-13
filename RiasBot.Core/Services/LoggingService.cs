@@ -35,7 +35,7 @@ namespace RiasBot.Services
         {
             if (Ready)
             {
-                if (msg.Severity != LogSeverity.Verbose && msg.Severity != LogSeverity.Warning && msg.Severity != LogSeverity.Debug)
+                if (msg.Severity == LogSeverity.Info || msg.Severity == LogSeverity.Error || msg.Severity == LogSeverity.Critical)
                 {
                     var log = $"{DateTime.UtcNow:MMM dd hh:mm:ss} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
                     
@@ -62,7 +62,7 @@ namespace RiasBot.Services
                 $"\t[Guild] \"{context.Guild?.Name ?? "DM"}\" ({context.Guild?.Id ?? 0})"
             };
             
-            return Console.Out.WriteLineAsync(String.Join("\n", log));
+            return Console.Out.WriteLineAsync(string.Join("\n", log));
         }
     }
 }
