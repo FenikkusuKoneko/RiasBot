@@ -22,7 +22,7 @@ namespace RiasBot.Modules.Administration.Services
             _client = client;
             _db = db;
             
-            LoadMutetimers().GetAwaiter().GetResult();
+            LoadMuteTimers().GetAwaiter().GetResult();
         }
         
         private readonly ConcurrentDictionary<ulong, List<UserMute>> _muteTimers = new ConcurrentDictionary<ulong, List<UserMute>>();
@@ -276,11 +276,20 @@ namespace RiasBot.Modules.Administration.Services
                     UserId = user.Id,
                     MuteTimer = muteTimer
                 };
-                _muteTimers.AddOrUpdate(guild.Id, new List<UserMute> {userMute}, (id, timer) =>
+                
+                if (_muteTimers.TryGetValue(guild.Id, out var muteUser))
                 {
-                    timer.Add(userMute);
-                    return timer;
-                });
+                    _muteTimers.AddOrUpdate(guild.Id, muteUser, (id, timer) =>
+                    {
+                        timer.Add(userMute);
+                        return timer;
+                    });
+                }
+                else
+                {
+                    _muteTimers.TryAdd(guild.Id, new List<UserMute> {userMute});
+                }
+                
                 if (addToDb)
                 {
                     var muteTimerDb = db.MuteTimers.Where(x => x.GuildId == guild.Id).FirstOrDefault(x => x.UserId == user.Id);
@@ -334,7 +343,7 @@ namespace RiasBot.Modules.Administration.Services
             }
         }
 
-        private async Task LoadMutetimers()
+        private async Task LoadMuteTimers()
         {
             using (var db = _db.GetDbContext())
             {
@@ -356,8 +365,6 @@ namespace RiasBot.Modules.Administration.Services
                     {
                         await UnmuteUser(guild, moderator, user, channel, "Time's Up!", false);
                     }
-
-                    db.Remove(muteTimer);
                 }
                 await db.SaveChangesAsync().ConfigureAwait(false);
             }
