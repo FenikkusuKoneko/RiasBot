@@ -86,21 +86,29 @@ namespace RiasBot.Modules.Utility
                 var activity = user.Activity?.Name;
                 var activityType = user.Activity?.Type;
 
-                switch (activityType)
+                if (activityType != null)
                 {
-                    case ActivityType.Playing:
-                        activity = "Playing " + activity;
-                        break;
-                    case ActivityType.Streaming:
-                        activity = "Streaming " + activity;
-                        break;
-                    case ActivityType.Listening:
-                        activity = "Listening to " + activity;
-                        break;
-                    case ActivityType.Watching:
-                        activity = "Watching " + activity;
-                        break;
+                    switch (activityType)
+                    {
+                        case ActivityType.Playing:
+                            activity = "Playing " + activity;
+                            break;
+                        case ActivityType.Streaming:
+                            activity = "Streaming " + activity;
+                            break;
+                        case ActivityType.Listening:
+                            activity = "Listening to " + activity;
+                            break;
+                        case ActivityType.Watching:
+                            activity = "Watching " + activity;
+                            break;
+                    }
                 }
+                else
+                {
+                    activity = "-";
+                }
+                
                 var joinedServer = user.JoinedAt?.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
                 var accountCreated = user.CreatedAt.UtcDateTime.ToUniversalTime().ToString("dd MMM yyyy hh:mm tt");
                 
@@ -127,10 +135,10 @@ namespace RiasBot.Modules.Utility
 
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.AddField("Name", user, true).AddField("Nickname", user.Nickname ?? "-", true);
-                embed.AddField("Activity", activity ?? "-", true).AddField("ID", user.Id, true);
-                embed.AddField("Status", user.Status, true).AddField("Joined Server", joinedServer, true);
+                embed.AddField("Activity", activity, true).AddField("ID", user.Id, true);
+                embed.AddField("Status", user.Status, true).AddField("Joined Server", joinedServer ?? "-", true);
                 embed.AddField("Joined Discord", accountCreated, true).AddField($"Roles ({roleIndex})",
-                    (roleIndex == 0) ? "-" : String.Join("\n", userRoles), true);
+                    (roleIndex == 0) ? "-" : string.Join("\n", userRoles), true);
                 embed.WithThumbnailUrl(user.GetRealAvatarUrl(1024));
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
