@@ -730,7 +730,7 @@
     "Command": "daily dailies",
     "Description": "Get your daily [currency].",
     "Remarks": [
-      "[prefix]lb"
+      "[prefix]daily"
     ]
   },
 
