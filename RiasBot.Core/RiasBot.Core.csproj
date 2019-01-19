@@ -1,41 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RuntimeFrameworkVersion>2.1.1</RuntimeFrameworkVersion>
-    <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>NU1701</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Cleverbot.Net" Version="1.0.0" />
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <RuntimeFrameworkVersion>2.2.0</RuntimeFrameworkVersion>
+        <LangVersion>latest</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <NoWarn>NU1701</NoWarn>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    </PropertyGroup>
+	<ItemGroup>
     <PackageReference Include="CoreCLR-NCalc" Version="2.2.34" />
-    <PackageReference Include="Discord.Net" Version="2.0.0-beta2-01001" />
+    <PackageReference Include="Discord.Net" Version="2.0.2-dev-01059" />
     <PackageReference Include="DiscordBotsList.Api" Version="1.1.0" />
-    <PackageReference Include="Google.Apis.Translate.v2" Version="1.34.0.875" />
-    <PackageReference Include="Google.Apis.Urlshortener.v1" Version="1.34.0.138" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.34.0.1226" />
-    <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.34.0.1216" />
     <PackageReference Include="GoogleApi" Version="3.5.0" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.5.0.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.0.0-dev-61717-03" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.0.0-dev-61717-03" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.0.0-dev-61717-03" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Scripting" Version="3.0.0-dev-61717-03" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.SyndicationFeed.ReaderWriter" Version="1.0.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Unirest-API" Version="1.0.7.6" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.11.0-beta1-final" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1-beta1" />
     <PackageReference Include="UnitsNet" Version="3.102.0" />
     <PackageReference Include="Urban.NET" Version="1.0.0" />
     <PackageReference Include="Victoria" Version="2.2.2" />

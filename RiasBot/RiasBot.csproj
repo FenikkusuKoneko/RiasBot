@@ -1,15 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RuntimeFrameworkVersion>2.1.1</RuntimeFrameworkVersion>
-    <OutputType>Exe</OutputType>
-    <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>NU1701</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RiasBot.Core\RiasBot.Core.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <RuntimeFrameworkVersion>2.2.0</RuntimeFrameworkVersion>
+        <OutputType>Exe</OutputType>
+        <LangVersion>latest</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <NoWarn>NU1701</NoWarn>
+        <Configurations>Debug;Release;Deploy</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\RiasBot.Core\RiasBot.Core.csproj" />
+    </ItemGroup>
 </Project>

@@ -1,23 +1,13 @@
-﻿using Google.Apis.Customsearch.v1;
-using Google.Apis.Services;
+﻿using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
-using Google.Apis.Translate.v2;
 using RiasBot.Services;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Google.Apis.Translate.v2.Data;
-using System.Linq;
-using System.Net.Http;
-using Newtonsoft.Json.Linq;
-using System.Net;
 
 namespace RiasBot.Modules.Searches.Services
 {
     public class GoogleService : IRService
     {
-        const string search_engine_id = "018084019232060951019:hs5piey28-e";
         private readonly IBotCredentials _creds;
         public GoogleService(IBotCredentials creds)
         {
@@ -78,71 +68,6 @@ namespace RiasBot.Modules.Searches.Services
                     return videos;
             }
             return null;
-        }
-
-        public async Task<string[]> GoogleSearch(string keywords)
-        {
-            if (String.IsNullOrEmpty(_creds.GoogleApiKey))
-            {
-                return new string[0];
-            }
-
-            var googleService = new CustomsearchService(new BaseClientService.Initializer()
-            {
-                ApiKey = _creds.GoogleApiKey,
-                ApplicationName = "Rias Bot"
-            });
-            var searchListRequest = googleService.Cse.List(keywords);
-            searchListRequest.Cx = search_engine_id;
-            var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
-
-            if (searchListResponse.Items != null)
-            {
-                var index = 0;
-                var results = new string[searchListResponse.Items.Count];
-
-                foreach (var result in searchListResponse.Items)
-                {
-                    results[index] = result.Title + "&link=" + result.Link;
-                    index++;
-                }
-                return results;
-            }
-            else
-                return null;
-        }
-
-        public async Task<string[]> GoogleImageSearch(string keywords)
-        {
-            if (String.IsNullOrEmpty(_creds.GoogleApiKey))
-            {
-                return new string[0];
-            }
-
-            var googleService = new CustomsearchService(new BaseClientService.Initializer()
-            {
-                ApiKey = _creds.GoogleApiKey,
-                ApplicationName = "Rias Bot"
-            });
-            var searchListRequest = googleService.Cse.List(keywords);
-            searchListRequest.Cx = search_engine_id;
-            searchListRequest.SearchType = CseResource.ListRequest.SearchTypeEnum.Image;
-            var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
-
-            if (searchListResponse.Items != null)
-            {
-                var index = 0;
-                var results = new string[searchListResponse.Items.Count];
-
-                foreach (var result in searchListResponse.Items)
-                {
-                    results[index] = result.Link;
-                    index++;
-                }
-                return results;
-            }
-            else
-                return null;
         }
     }
 }

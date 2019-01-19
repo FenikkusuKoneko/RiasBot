@@ -1,14 +1,10 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
-using Cleverbot.Net;
 using Discord;
 using RiasBot.Modules.Xp.Services;
-using System.Collections.Concurrent;
-using System.ComponentModel;
 using RiasBot.Extensions;
 using RiasBot.Services.Database.Models;
 

@@ -8,7 +8,6 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using unirest_net.http;
 
 namespace RiasBot.Modules.Searches
 {
@@ -31,7 +30,7 @@ namespace RiasBot.Modules.Searches
         {
             try
             {
-                if (String.IsNullOrEmpty(_creds.UrbanDictionaryApiKey))
+                if (string.IsNullOrEmpty(_creds.UrbanDictionaryApiKey))
                 {
                     await Context.Channel.SendErrorMessageAsync("The urban dictionary api key needs to be set to use this command!").ConfigureAwait(false);
                     return;
@@ -39,23 +38,25 @@ namespace RiasBot.Modules.Searches
 
                 await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
 
-                var response = Unirest.get("https://mashape-community-urban-dictionary.p.mashape.com/define?term=" + Uri.EscapeUriString(keyword))
-                .header("X-Mashape-Key", _creds.UrbanDictionaryApiKey)
-                .header("Accept", "text/plain")
-                .asString();
+                using (var http = new HttpClient())
+                {
+                    http.DefaultRequestHeaders.Add("X-Mashape-Key", _creds.UrbanDictionaryApiKey);
+                    http.DefaultRequestHeaders.Add("Accept", "text/plain");
+                    var response = await http.GetStringAsync("https://mashape-community-urban-dictionary.p.mashape.com/define?term=" + Uri.EscapeUriString(keyword));
+                    
+                    var items = JObject.Parse(response);
+                    var item = items["list"][0];
+                    var word = item["word"].ToString();
+                    var def = item["definition"].ToString();
+                    var link = item["permalink"].ToString();
 
-                var items = JObject.Parse(response.Body);
-                var item = items["list"][0];
-                var word = item["word"].ToString();
-                var def = item["definition"].ToString();
-                var link = item["permalink"].ToString();
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+                    embed.WithUrl(link);
+                    embed.WithAuthor(word, "https://i.imgur.com/re5jokL.jpg");
+                    embed.WithDescription(def);
 
-                var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-                embed.WithUrl(link);
-                embed.WithAuthor(word, "https://i.imgur.com/re5jokL.jpg");
-                embed.WithDescription(def);
-
-                await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                }
             }
             catch
             {

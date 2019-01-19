@@ -51,11 +51,11 @@ namespace RiasBot.Services
             return null;
         }
 
-        private Task CommandLogAsync(CommandInfo commandInfo, ICommandContext context, IResult result)
+        private Task CommandLogAsync(Optional<CommandInfo> commandInfo, ICommandContext context, IResult result)
         {
             var log = new List<string>()
             {
-                $"{DateTime.UtcNow:MMM dd hh:mm:ss} [Command] \"{commandInfo.Name}\"",
+                $"{DateTime.UtcNow:MMM dd hh:mm:ss} [Command] \"{commandInfo.Value.Name}\"",
                 $"\t[Arguments] \"{CommandArguments}\"",
                 $"\t[User] \"{context.User}\" ({context.User.Id})",
                 $"\t[Channel] \"{context.Channel.Name}\" ({context.Channel.Id})",
