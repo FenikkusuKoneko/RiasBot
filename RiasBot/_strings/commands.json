@@ -1341,7 +1341,7 @@
 
   "divorce": {
     "Command": "divorce",
-    "Description": "Divorce from a waifu. You will receive 90% cashback.",
+    "Description": "Divorce from a waifu.",
     "Remarks": [
       "[prefix]divorce Rias Gremory"
     ]

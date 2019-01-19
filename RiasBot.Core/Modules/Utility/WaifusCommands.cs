@@ -163,15 +163,12 @@ namespace RiasBot.Modules.Utility
                         }
                         if (waifu != null)
                         {
-                            var waifuCashback = waifu.WaifuPrice * 90 / 100;
-                            userDb.Currency += waifuCashback;
-
                             db.Remove(waifu);
                             await db.SaveChangesAsync().ConfigureAwait(false);
 
                             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                             embed.WithTitle("Divorce!");
-                            embed.WithDescription($"You successfully divorced from {waifu.WaifuName}. You received {waifuCashback} {RiasBot.Currency} back.");
+                            embed.WithDescription($"You divorced from {waifu.WaifuName}.");
                             embed.WithThumbnailUrl(!string.IsNullOrEmpty(waifu.BelovedWaifuPicture) ? waifu.BelovedWaifuPicture : waifu.WaifuPicture);
 
                             await Context.Channel.SendMessageAsync("", embed: embed.Build());
