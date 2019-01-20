@@ -39,16 +39,17 @@ namespace RiasBot.Services
                 {
                     var log = $"{DateTime.UtcNow:MMM dd hh:mm:ss} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
                     
-                    return Console.Out.WriteLineAsync(log);
+                    Console.Out.WriteLineAsync(log);
                 }
             }
             else
             {
                 var log = $"{DateTime.UtcNow:MMM dd hh:mm:ss} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
                 
-                return Console.Out.WriteLineAsync(log);
+                Console.Out.WriteLineAsync(log);
             }
-            return null;
+            
+            return Task.CompletedTask;
         }
 
         private Task CommandLogAsync(Optional<CommandInfo> commandInfo, ICommandContext context, IResult result)
@@ -62,7 +63,9 @@ namespace RiasBot.Services
                 $"\t[Guild] \"{context.Guild?.Name ?? "DM"}\" ({context.Guild?.Id ?? 0})"
             };
             
-            return Console.Out.WriteLineAsync(string.Join("\n", log));
+            Console.Out.WriteLineAsync(string.Join("\n", log));
+            
+            return Task.CompletedTask;
         }
     }
 }

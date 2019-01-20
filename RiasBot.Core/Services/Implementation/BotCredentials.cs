@@ -38,9 +38,12 @@ namespace RiasBot.Services.Implementation
             WeebServicesToken = config[nameof(WeebServicesToken)];
 
             var lavalinkConfig = config.GetSection(nameof(LavalinkConfig));
-            LavalinkConfig = new LavalinkConfig(lavalinkConfig["RestHost"], ushort.Parse(lavalinkConfig["RestPort"]),
-                lavalinkConfig["WebSocketHost"], ushort.Parse(lavalinkConfig["WebSocketPort"]),
-                lavalinkConfig["Authorization"]);
+            LavalinkConfig = new LavalinkConfig
+            {
+                Host = lavalinkConfig["host"],
+                Port = ushort.Parse(lavalinkConfig["port"]),
+                Authorization = lavalinkConfig["Authorization"]
+            };
             
             var votesManagerConfig = config.GetSection(nameof(VotesManagerConfig));
             VotesManagerConfig = new VotesManagerConfig(votesManagerConfig.GetValue<string>("WebSocketHost"), votesManagerConfig.GetValue<ushort>("WebSocketPort"),

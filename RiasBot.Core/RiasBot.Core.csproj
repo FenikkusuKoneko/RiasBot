@@ -26,6 +26,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1-beta1" />
     <PackageReference Include="UnitsNet" Version="3.102.0" />
     <PackageReference Include="Urban.NET" Version="1.0.0" />
-    <PackageReference Include="Victoria" Version="2.2.2" />
+    <PackageReference Include="Victoria" Version="3.2.2" />
   </ItemGroup>
 </Project>

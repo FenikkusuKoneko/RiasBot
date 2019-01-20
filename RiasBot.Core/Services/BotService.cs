@@ -22,7 +22,6 @@ namespace RiasBot.Services
         private readonly MusicService _musicService;
         private readonly Lavalink _lavalink;
 
-        private Timer _dblTimer;
         public Timer Status;
 
         public string[] Statuses;
@@ -45,6 +44,7 @@ namespace RiasBot.Services
 
             _discord.UserJoined += UserJoined;
             _discord.UserLeft += UserLeft;
+            _discord.ChannelDestroyed += ChannelDestroyed;
             _discord.ShardConnected += ShardConnected;
             _discord.ShardDisconnected += ShardDisconnected;
             _discord.UserVoiceStateUpdated += _musicService.UpdateVoiceState;
@@ -54,7 +54,7 @@ namespace RiasBot.Services
             {
                 if(!_creds.IsBeta)
                 {
-                    _dblTimer = new Timer(async _ => await DblStats(), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
+                    var unused = new Timer(async _ => await DblStats(), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
                 }
             }
         }
@@ -263,6 +263,20 @@ namespace RiasBot.Services
             }
         }
 
+        private Task ChannelDestroyed(SocketChannel channel)
+        {
+            if (channel is SocketGuildChannel guildChannel)
+            {
+                var mpPlayer = _musicService.GetMusicPlayer(guildChannel.Guild);
+                if (mpPlayer != null)
+                {
+                    mpPlayer.Channel = null;
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
         private async Task ShardConnected(DiscordSocketClient client)
         {
             _loggingService.Ready = true;
@@ -276,21 +290,16 @@ namespace RiasBot.Services
             {
                 await _discord.GetGuild(RiasBot.SupportServer).DownloadUsersAsync().ConfigureAwait(false);
 
-                var lavaNode = await _lavalink.ConnectAsync(_discord, new LavaConfig
+                var lavaNode = await _lavalink.AddNodeAsync(_discord, new Configuration
                 {
-                    MaxTries = 5,
+                    ReconnectAttempts = 10,
+                    ReconnectInterval = TimeSpan.FromSeconds(3.0),
+                    Host = _creds.LavalinkConfig.Host,
+                    Port = _creds.LavalinkConfig.Port,
                     Authorization = _creds.LavalinkConfig.Authorization,
-                    Rest = new Endpoint
-                    {
-                        Host = _creds.LavalinkConfig.RestHost,
-                        Port = _creds.LavalinkConfig.RestPort
-                    },
-                    Socket = new Endpoint
-                    {
-                        Host = _creds.LavalinkConfig.WebSocketHost,
-                        Port = _creds.LavalinkConfig.WebSocketPort
-                    },
-                    Severity = LogSeverity.Info
+                    Severity = LogSeverity.Info,
+                    NodePrefix = "LavaNode_",
+                    BufferSize = 1024
                 });
                 
                 _musicService.InitializeLavaNode(lavaNode);

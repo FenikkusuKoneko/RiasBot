@@ -21,20 +21,9 @@ namespace RiasBot.Services
     
     public class LavalinkConfig
     {
-        public string RestHost { get; }
-        public int RestPort { get; }
-        public string WebSocketHost { get; }
-        public int WebSocketPort { get; }
-        public string Authorization { get; }
-
-        public LavalinkConfig(string restHost, int restPort, string webSocketHost, int webSocketPort, string authorization)
-        {
-            RestHost = restHost;
-            RestPort = restPort;
-            WebSocketHost = webSocketHost;
-            WebSocketPort = webSocketPort;
-            Authorization = authorization;
-        }
+        public string Host { get; set; }
+        public ushort Port { get; set; }
+        public string Authorization { get; set; }
     }
     
     public class VotesManagerConfig

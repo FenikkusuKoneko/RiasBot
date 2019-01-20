@@ -9,7 +9,7 @@ using Discord.WebSocket;
 using RiasBot.Extensions;
 using RiasBot.Modules.Music.Services;
 using Victoria;
-using Victoria.Objects;
+using Victoria.Entities;
 
 namespace RiasBot.Modules.Music.Commons
 {
@@ -23,7 +23,7 @@ namespace RiasBot.Modules.Music.Commons
         }
 
         private IGuild _guild;
-        private IMessageChannel _channel;
+        public IMessageChannel Channel;
         public IVoiceChannel VoiceChannel;
 
         public LavaPlayer Player;
@@ -60,8 +60,8 @@ namespace RiasBot.Modules.Music.Commons
             VoiceChannel = voiceChannel;
             if (Player is null)
             {
-                _channel = channel;
-                Player = await _service.LavaNode.JoinAsync(voiceChannel, channel);
+                Channel = channel;
+                Player = await _service.LavaNode.ConnectAsync(voiceChannel, channel);
                 await SendMessageAsync(MessageType.Confirmation, $"Connected to {Format.Bold(voiceChannel.ToString())}!").ConfigureAwait(false);
             }
         }
@@ -144,8 +144,8 @@ namespace RiasBot.Modules.Music.Commons
                 return;
             }
 
-            if (_channel is null)
-                _channel = channel;
+            if (Channel is null)
+                Channel = channel;
             
             var message = await SendMessageAsync(MessageType.Confirmation, "Adding tracks to queue, please wait!").ConfigureAwait(false);
             RegisteringPlaylist = true;
@@ -206,7 +206,7 @@ namespace RiasBot.Modules.Music.Commons
             }
             else
             {
-                if (!Player.IsConnected)
+                if (!Player.IsPlaying)
                 {
                     await UpdateQueueAsync(0).ConfigureAwait(false);
                 }
@@ -235,7 +235,7 @@ namespace RiasBot.Modules.Music.Commons
                     embed.AddField("Repeat", "Enabled", true);
                 embed.WithThumbnailUrl(_currentTrack.Thumbnail);
                 
-                Player.Play(_currentTrack.Track);
+                await Player.PlayAsync(_currentTrack.Track);
                 _elapsedTime.Restart();
                 _offsetElapsedTime = TimeSpan.Zero;
                 IsPaused = false;
@@ -296,7 +296,7 @@ namespace RiasBot.Modules.Music.Commons
             if (IsPaused)
                 return;
             
-            Player.Pause();
+            await Player.PauseAsync();
             IsPaused = true;
             _elapsedTime.Stop();
             if (!string.IsNullOrEmpty(message))
@@ -308,7 +308,7 @@ namespace RiasBot.Modules.Music.Commons
             if (!IsPaused)
                 return;
 
-            Player.Resume();
+            await Player.PauseAsync();
             IsPaused = false;
             _elapsedTime.Start();
             if (!string.IsNullOrEmpty(message))
@@ -372,7 +372,7 @@ namespace RiasBot.Modules.Music.Commons
                 {
                     if (vol >= 0 && vol <= 100)
                     {
-                        Player.Volume(vol);
+                        await Player.SetVolumeAsync(vol);
                         await SendMessageAsync(MessageType.Confirmation, $"Volume set to {volume}%").ConfigureAwait(false);
                     }
                 }
@@ -394,7 +394,7 @@ namespace RiasBot.Modules.Music.Commons
                     embed.WithAuthor("Seek", user.GetRealAvatarUrl());
                     embed.WithDescription($"[{_currentTrack.Track.Title}]({_currentTrack.Track.Uri})");
                     
-                    Player.Seek(time);
+                    await Player.SeekAsync(time);
 
                     embed.AddField("From", _offsetElapsedTime.Add(_elapsedTime.Elapsed).GetTimeString(), true)
                         .AddField("To", time.GetTimeString(), true);
@@ -426,9 +426,9 @@ namespace RiasBot.Modules.Music.Commons
             var playlist = new List<string>();
             
             string status;
-            if (Player.IsConnected && !IsPaused)
+            if (Player.IsPlaying)
                 status = "▶";
-            else if (Player.IsConnected && IsPaused)
+            else if (Player.IsPaused)
                 status = "⏸";
             else
                 status = "⏹";
@@ -583,7 +583,7 @@ namespace RiasBot.Modules.Music.Commons
             {
                 if (Player != null)
                 {
-                    await _service.LavaNode.LeaveAsync(guild.Id);
+                    await _service.LavaNode.DisconnectAsync(guild.Id);
                 }
             }
             catch (Exception e)
@@ -613,18 +613,18 @@ namespace RiasBot.Modules.Music.Commons
 
         private async Task<IUserMessage> SendMessageAsync(MessageType messageType, string message)
         {
-            if (_guild != null && _channel != null)
+            if (_guild != null && Channel != null)
             {
                 var socketGuildUser = await _guild.GetCurrentUserAsync().ConfigureAwait(false);
-                var preconditions = ((SocketGuildUser) socketGuildUser).GetPermissions((IGuildChannel) _channel);
+                var preconditions = ((SocketGuildUser) socketGuildUser).GetPermissions((IGuildChannel) Channel);
                 if (preconditions.ViewChannel && preconditions.SendMessages)
                 {
                     switch (messageType)
                     {
                         case MessageType.Confirmation:
-                            return await _channel.SendConfirmationMessageAsync(message).ConfigureAwait(false);
+                            return await Channel.SendConfirmationMessageAsync(message).ConfigureAwait(false);
                         case MessageType.Error:
-                            return await _channel.SendErrorMessageAsync(message).ConfigureAwait(false);
+                            return await Channel.SendErrorMessageAsync(message).ConfigureAwait(false);
                     }
                 }
             }
@@ -634,15 +634,15 @@ namespace RiasBot.Modules.Music.Commons
         
         private async Task<IUserMessage> SendMessageEmbedAsync(EmbedBuilder embed)
         {
-            if (_guild != null && _channel != null)
+            if (_guild != null && Channel != null)
             {
                 var socketGuildUser = await _guild.GetCurrentUserAsync().ConfigureAwait(false);
-                var preconditions = ((SocketGuildUser)socketGuildUser).GetPermissions((IGuildChannel)_channel);
+                var preconditions = ((SocketGuildUser)socketGuildUser).GetPermissions((IGuildChannel)Channel);
                 if (preconditions.ViewChannel)
                 {
                     if (preconditions.SendMessages)
                     {
-                        return await _channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+                        return await Channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                 }
             }

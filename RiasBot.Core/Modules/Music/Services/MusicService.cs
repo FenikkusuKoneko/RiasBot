@@ -15,8 +15,8 @@ using RiasBot.Extensions;
 using RiasBot.Modules.Music.Commons;
 using RiasBot.Services;
 using Victoria;
-using Victoria.Objects;
-using Victoria.Objects.Enums;
+using Victoria.Entities;
+using Victoria.Entities.Enums;
 
 namespace RiasBot.Modules.Music.Services
 {
@@ -102,7 +102,7 @@ namespace RiasBot.Modules.Music.Services
         public void InitializeLavaNode(LavaNode node)
         {
             LavaNode = node;
-            LavaNode.Finished += OnFinished;
+            LavaNode.TrackFinished += OnFinishedAsync;
         }
 
         private async Task<MusicPlayer> GetOrCreateMusicPlayerAsync(IGuild guild)
@@ -165,7 +165,7 @@ namespace RiasBot.Modules.Music.Services
             LavaResult tracks;
             try
             {
-                tracks = await LavaNode.GetTracksAsync(new Uri(keywords)).ConfigureAwait(false);
+                tracks = await LavaNode.GetTracksAsync(keywords).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -202,7 +202,7 @@ namespace RiasBot.Modules.Music.Services
             LavaResult tracks;
             try
             {
-                tracks = await LavaNode.GetTracksAsync(new Uri(url)).ConfigureAwait(false);
+                tracks = await LavaNode.GetTracksAsync(url).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -242,7 +242,7 @@ namespace RiasBot.Modules.Music.Services
             LavaResult tracks;
             try
             {
-                tracks = await LavaNode.GetTracksAsync(new Uri(keywords)).ConfigureAwait(false);
+                tracks = await LavaNode.GetTracksAsync(keywords).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -422,7 +422,7 @@ namespace RiasBot.Modules.Music.Services
             }
         }
         
-        private async Task OnFinished(LavaPlayer player, LavaTrack track, TrackReason reason)
+        private async Task OnFinishedAsync(LavaPlayer player, LavaTrack track, TrackReason reason)
         {
             if (reason == TrackReason.Finished)
             {
