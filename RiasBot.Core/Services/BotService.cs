@@ -26,12 +26,12 @@ namespace RiasBot.Services
 
         public string[] Statuses;
         private int _statusCount;
-        
+
         private bool _allShardsDoneConnection;
         private int _shardsConnected;
         private int _recommendedShardCount;
 
-        public BotService(DiscordShardedClient discord, DbService db, MuteService muteService, 
+        public BotService(DiscordShardedClient discord, DbService db, MuteService muteService,
             IBotCredentials creds, LoggingService loggingService, MusicService musicService, Lavalink lavalink)
         {
             _discord = discord;
@@ -48,7 +48,7 @@ namespace RiasBot.Services
             _discord.ShardConnected += ShardConnected;
             _discord.ShardDisconnected += ShardDisconnected;
             _discord.UserVoiceStateUpdated += _musicService.UpdateVoiceState;
-            
+
 
             if (!string.IsNullOrEmpty(_creds.DiscordBotsListApiKey))
             {
@@ -215,17 +215,24 @@ namespace RiasBot.Services
                 var users = _discord.Guilds.Sum(guild => guild.MemberCount);
                 statusName = statusName.Replace("%users%", users.ToString());
             }
-            switch (type)
+
+            foreach (var shard in _discord.Shards)
             {
-                case "playing":
-                    await _discord.SetActivityAsync(new Game(statusName)).ConfigureAwait(false);
-                    break;
-                case "listening":
-                    await _discord.SetActivityAsync(new Game(statusName, ActivityType.Listening)).ConfigureAwait(false);
-                    break;
-                case "watching":
-                    await _discord.SetActivityAsync(new Game(statusName, ActivityType.Watching)).ConfigureAwait(false);
-                    break;
+                if (shard.ConnectionState == ConnectionState.Connected)
+                {
+                    switch (type)
+                    {
+                        case "playing":
+                            await shard.SetActivityAsync(new Game(statusName)).ConfigureAwait(false);
+                            break;
+                        case "listening":
+                            await shard.SetActivityAsync(new Game(statusName, ActivityType.Listening)).ConfigureAwait(false);
+                            break;
+                        case "watching":
+                            await shard.SetActivityAsync(new Game(statusName, ActivityType.Watching)).ConfigureAwait(false);
+                            break;
+                    }
+                }
             }
 
             if (_statusCount > Statuses.Length - 2)
@@ -282,7 +289,7 @@ namespace RiasBot.Services
             _loggingService.Ready = true;
             if (!_allShardsDoneConnection)
                 _shardsConnected++;
-            
+
             if (_recommendedShardCount == 0)
                 _recommendedShardCount = await _discord.GetRecommendedShardCountAsync().ConfigureAwait(false);
 
@@ -301,13 +308,13 @@ namespace RiasBot.Services
                     NodePrefix = "LavaNode_",
                     BufferSize = 1024
                 });
-                
+
                 _musicService.InitializeLavaNode(lavaNode);
                 Console.WriteLine($"{DateTime.UtcNow:MMM dd hh:mm:ss} Lavalink started!");
                 _allShardsDoneConnection = true;
             }
         }
-        
+
         private async Task ShardDisconnected(Exception exception, DiscordSocketClient client)
         {
             foreach (var guild in client.Guilds)
