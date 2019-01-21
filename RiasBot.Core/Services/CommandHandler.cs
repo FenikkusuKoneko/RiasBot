@@ -54,15 +54,15 @@ namespace RiasBot.Services
 
                 Prefix = GetPrefix(context, guildDb);
                 await GiveXp(context, msg, userDb);
-                
+
                 if (userDb != null)
                     if (userDb.IsBanned)
                         return;     //banned users will cannot use the commands
 
                 var argPos = 0;     // Check if the message has a valid command prefix
 
-                if (msg.HasStringPrefix(Prefix, ref argPos) || msg.HasStringPrefix("rias ", ref argPos)
-                    || msg.HasStringPrefix("Rias ", ref argPos)
+                if (msg.HasStringPrefix(Prefix, ref argPos) ||
+                    msg.HasStringPrefix("rias ", ref argPos, StringComparison.CurrentCultureIgnoreCase)
                     || (msg.HasMentionPrefix(context.Client.CurrentUser, ref argPos)))
                 {
                     var socketGuildUser = context.Guild.GetUser(_discord.CurrentUser.Id);
