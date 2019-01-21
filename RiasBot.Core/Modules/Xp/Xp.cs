@@ -119,33 +119,34 @@ namespace RiasBot.Modules.Xp
 
         [RiasCommand][@Alias]
         [Description][@Remarks]
+        [Ratelimit(1, 10, Measure.Seconds, applyPerGuild: true)]
         public async Task XpLeaderboard(int page = 1)
         {
+            await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
             page--;
             using (var db = _db.GetDbContext())
             {
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Global XP Leaderboard");
 
-                var xpUser = new List<string>();
+                var xpUsersList = new List<string>();
+                var xpUsersDb = db.Users.OrderByDescending(u => u.Xp).Skip(page * 10).Take(10).ToList();
 
-                var xps = db.Users
-                    .GroupBy(x => new { x.Xp, x.UserId, x.Level })
-                    .OrderByDescending(y => y.Key.Xp)
-                    .Skip(page * 10).Take(10).ToList();
-
-                for (var i = 0; i < xps.Count; i++)
+                var index = 1;
+                foreach (var xpUserDb in xpUsersDb)
                 {
-                    var user = await Context.Client.GetUserAsync(xps[i].Key.UserId);
+                    var user = await Context.Client.GetUserAsync(xpUserDb.UserId);
                     if (user != null)
-                        xpUser.Add(($"#{i+1 + (page * 10)} {user} ({user.Id})\n\t\t{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n"));
+                        xpUsersList.Add(($"#{index + (page * 10)} {user} ({user.Id})\n\t\t{xpUserDb.Xp} xp\tlevel {xpUserDb.Level}\n"));
                     else
-                        xpUser.Add(($"#{i+1 + (page * 10)} {xps[i].Key.UserId.ToString()}\n\t\t{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n"));
+                        xpUsersList.Add(($"#{index + (page * 10)} {xpUserDb.UserId.ToString()}\n\t\t{xpUserDb.Xp} xp\tlevel {xpUserDb.Level}\n"));
+                    index++;
                 }
-                if (xps.Count == 0)
+
+                if (xpUsersDb.Count == 0)
                     embed.WithDescription("No users on this page");
                 else
-                    embed.WithDescription(String.Join('\n', xpUser));
+                    embed.WithDescription(string.Join('\n', xpUsersList));
 
                 await Context.Channel.SendMessageAsync("", embed: embed.Build());
             }
@@ -154,15 +155,15 @@ namespace RiasBot.Modules.Xp
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireContext(ContextType.Guild)]
+        [Ratelimit(1, 10, Measure.Seconds, applyPerGuild: true)]
         public async Task GuildXpLeaderboard(int page = 1)
         {
+            await Context.Channel.TriggerTypingAsync().ConfigureAwait(false);
             page--;
             using (var db = _db.GetDbContext())
             {
                 var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 embed.WithTitle("Server XP Leaderboard");
-
-                var xpUser = new List<string>();
 
                 var xpSystemDb = db.XpSystem.Where(x => x.GuildId == Context.Guild.Id).ToList();
                 var xpSystemDbList = new List<XpSystem>();
@@ -172,24 +173,24 @@ namespace RiasBot.Modules.Xp
                     if (user != null)
                         xpSystemDbList.Add(x);
                 });
-                    
-                var xps = xpSystemDbList
-                    .GroupBy(x => new { x.Xp, x.UserId, x.Level })
-                    .OrderByDescending(y => y.Key.Xp)
-                    .Skip(page * 10).Take(10).ToList();
+                
+                var xpUserList = new List<string>();
+                var xpUsersDb = xpSystemDbList.OrderByDescending(u => u.Xp).Skip(page * 10).Take(10).ToList();
 
-                for (var i = 0; i < xps.Count; i++)
+                var index = 1;
+                foreach (var xpUserDb in xpUsersDb)
                 {
-                    var user = await Context.Client.GetUserAsync(xps[i].Key.UserId);
+                    var user = await Context.Client.GetUserAsync(xpUserDb.UserId);
                     if (user != null)
-                        xpUser.Add(($"#{i + 1 + (page * 10)} {user} ({user.Id})\n\t\t{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n"));
+                        xpUserList.Add(($"#{index + (page * 10)} {user} ({user.Id})\n\t\t{xpUserDb.Xp} xp\tlevel {xpUserDb.Level}\n"));
                     else
-                        xpUser.Add(($"#{i + 1 + (page * 10)} {xps[i].Key.UserId.ToString()}\n\t\t{xps[i].Key.Xp} xp\tlevel {xps[i].Key.Level}\n"));
+                        xpUserList.Add(($"#{index + (page * 10)} {xpUserDb.UserId.ToString()}\n\t\t{xpUserDb.Xp} xp\tlevel {xpUserDb.Level}\n"));
+                    index++;
                 }
-                if (xps.Count == 0)
+                if (xpUsersDb.Count == 0)
                     embed.WithDescription("No users on this page");
                 else
-                    embed.WithDescription(String.Join('\n', xpUser));
+                    embed.WithDescription(String.Join('\n', xpUserList));
 
                 await Context.Channel.SendMessageAsync("", embed: embed.Build());
             }
