@@ -62,8 +62,8 @@ namespace RiasBot.Services
                 var argPos = 0;     // Check if the message has a valid command prefix
 
                 if (msg.HasStringPrefix(Prefix, ref argPos) ||
-                    msg.HasStringPrefix("rias ", ref argPos, StringComparison.CurrentCultureIgnoreCase)
-                    || (msg.HasMentionPrefix(context.Client.CurrentUser, ref argPos)))
+                    msg.HasStringPrefix("rias ", ref argPos, StringComparison.InvariantCultureIgnoreCase) ||
+                    msg.HasMentionPrefix(context.Client.CurrentUser, ref argPos))
                 {
                     var socketGuildUser = context.Guild.GetUser(_discord.CurrentUser.Id);
                     var preconditions = socketGuildUser.GetPermissions((IGuildChannel)context.Channel);
