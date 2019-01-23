@@ -24,6 +24,9 @@ namespace RiasBot.Services
 
         public Timer Status;
 
+        // ReSharper disable once NotAccessedField.Local
+        private Timer _dblTimer;
+
         public string[] Statuses;
         private int _statusCount;
 
@@ -54,7 +57,7 @@ namespace RiasBot.Services
             {
                 if(!_creds.IsBeta)
                 {
-                    var unused = new Timer(async _ => await DblStats(), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
+                    _dblTimer = new Timer(async _ => await DblStats(), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
                 }
             }
         }
