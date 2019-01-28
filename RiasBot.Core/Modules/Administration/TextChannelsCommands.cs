@@ -136,7 +136,7 @@ namespace RiasBot.Modules.Administration
             [RequireUserPermission(GuildPermission.ManageChannels)]
             [RequireBotPermission(GuildPermission.ManageChannels)]
             [RequireContext(ContextType.Guild)]
-            public async Task SetNfwChannel(ITextChannel channel = null)
+            public async Task SetNsfwChannel(ITextChannel channel = null)
             {
                 if (channel is null)
                 {
