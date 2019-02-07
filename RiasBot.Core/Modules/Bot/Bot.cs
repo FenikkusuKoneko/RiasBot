@@ -70,13 +70,18 @@ namespace RiasBot.Modules.Bot
         [RequireOwner]
         public async Task Update()
         {
+            var musicPlayerTasks = new List<Task>();
+
             await Context.Channel.SendConfirmationMessageAsync("Shutting down...").ConfigureAwait(false);
 
             foreach (var musicPlayer in _musicService.MPlayer)
             {
-                await musicPlayer.Value.LeaveAsync(Context.Guild, null);
+                var task = Task.Run(async () => await musicPlayer.Value.LeaveAsync(Context.Guild, null));
+                musicPlayerTasks.Add(task);
             }
-            
+
+            Task.WaitAll(musicPlayerTasks.ToArray());
+
             Environment.Exit(0);
         }
 
@@ -189,7 +194,7 @@ namespace RiasBot.Modules.Bot
                     }
 
                 };
-                await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager); 
+                await _is.SendPaginatedMessageAsync((ShardedCommandContext)Context, pager);
             }
             else
             {
@@ -295,7 +300,7 @@ namespace RiasBot.Modules.Bot
                         var transaction = await db.Database.BeginTransactionAsync().ConfigureAwait(false);
                         var rows = await db.Database.ExecuteSqlCommandAsync(query).ConfigureAwait(false);
                         transaction.Commit();
-                        
+
                         var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                         embed.WithAuthor("Execute SQL Query", Context.User.GetRealAvatarUrl());
                         embed.WithDescription(Format.Code(query));
@@ -318,7 +323,7 @@ namespace RiasBot.Modules.Bot
                 await Context.Channel.SendErrorMessageAsync("Execution aborted!").ConfigureAwait(false);
             }
         }
-        
+
         [RiasCommand][@Alias]
         [Description][@Remarks]
         [RequireOwner]
