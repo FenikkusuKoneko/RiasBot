@@ -70,17 +70,19 @@ namespace RiasBot.Modules.Bot
         [RequireOwner]
         public async Task Update()
         {
-            var musicPlayerTasks = new List<Task>();
-
             await Context.Channel.SendConfirmationMessageAsync("Shutting down...").ConfigureAwait(false);
 
             foreach (var musicPlayer in _musicService.MPlayer)
             {
-                var task = Task.Run(async () => await musicPlayer.Value.LeaveAsync(Context.Guild, null));
-                musicPlayerTasks.Add(task);
+                try
+                {
+                    musicPlayer.Value.LeaveAsync(Context.Guild, null).Wait();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
-
-            Task.WaitAll(musicPlayerTasks.ToArray());
 
             Environment.Exit(0);
         }
