@@ -33,10 +33,10 @@ namespace RiasBot.Modules.Help
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
             embed.WithAuthor($"{Context.Client.CurrentUser.Username} Bot v{RiasBot.Version} help page", Context.Client.CurrentUser.GetRealAvatarUrl());
             embed.WithDescription("I'm based on modules and submodules. Each module has submodules and each submodule has commands.\n\n" +
-                                  $"Type `{_ch.Prefix}modules` to get a list with all modules and submodules.\n\n" +
-                                  $"Type `{_ch.Prefix}commands <moduleName>` or `{_ch.Prefix}commands <submoduleName>` to get a list with all commands from the module or submodule.\n" +
-                                  $"Example: `{_ch.Prefix}commands Administration`, `{_ch.Prefix}commands Server`\n\n" +
-                                  $"Type `{_ch.Prefix}allcommands` to get a list with all commands.");
+                                  $"Type `{_ch.GetPrefix(Context.Guild)}modules` to get a list with all modules and submodules.\n\n" +
+                                  $"Type `{_ch.GetPrefix(Context.Guild)}commands <moduleName>` or `{_ch.GetPrefix(Context.Guild)}commands <submoduleName>` to get a list with all commands from the module or submodule.\n" +
+                                  $"Example: `{_ch.GetPrefix(Context.Guild)}commands Administration`, `{_ch.GetPrefix(Context.Guild)}commands Server`\n\n" +
+                                  $"Type `{_ch.GetPrefix(Context.Guild)}allcommands` to get a list with all commands.");
             embed.AddField("Links", $"[Invite me]({RiasBot.Invite}) • [Support server]({RiasBot.CreatorServer})\n" +
                                     $"[Website]({RiasBot.Website}) • [Support me]({RiasBot.Patreon})\n" +
                                     $"[Vote on DBL](https://discordbots.org/bot/{Context.Client.CurrentUser.Id})");
@@ -54,7 +54,7 @@ namespace RiasBot.Modules.Help
 
             if (command is null)
             {
-                await Context.Channel.SendErrorMessageAsync($"I couldn't find that command. For help type `{_ch.Prefix}help`").ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"I couldn't find that command. For help type `{_ch.GetPrefix(Context.Guild)}help`").ConfigureAwait(false);
                 return;
             }
 
@@ -67,7 +67,7 @@ namespace RiasBot.Modules.Help
 
             foreach (var alias in command.Aliases)
             {
-                aliases[index] = _ch.Prefix + alias;
+                aliases[index] = _ch.GetPrefix(Context.Guild) + alias;
                 index++;
             }
 
@@ -79,7 +79,7 @@ namespace RiasBot.Modules.Help
 
             embed.WithTitle(string.Join("/ ", aliases));
 
-            summary = summary.Replace("[prefix]", _ch.Prefix);
+            summary = summary.Replace("[prefix]", _ch.GetPrefix(Context.Guild));
             summary = summary.Replace("[currency]", RiasBot.Currency);
 
             embed.WithDescription(summary);
@@ -90,7 +90,7 @@ namespace RiasBot.Modules.Help
             if (!string.IsNullOrEmpty(requires))
                 embed.AddField("Requires", requires, true);
             
-            embed.AddField("Example", command.Remarks.Replace("[prefix]", _ch.Prefix));
+            embed.AddField("Example", command.Remarks.Replace("[prefix]", _ch.GetPrefix(Context.Guild)));
             embed.WithCurrentTimestamp();
             
             await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
@@ -120,7 +120,7 @@ namespace RiasBot.Modules.Help
                 }
             }
             embed.WithDescription(string.Join("\n", modulesDescription));
-            embed.WithFooter($"To get all commands for a module or submodule, type {_ch.Prefix}cmds <module> or {_ch.Prefix}cmds <submodule>");
+            embed.WithFooter($"To get all commands for a module or submodule, type {_ch.GetPrefix(Context.Guild)}cmds <module> or {_ch.GetPrefix(Context.Guild)}cmds <submodule>");
             embed.WithCurrentTimestamp();
             await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
         }
@@ -133,7 +133,7 @@ namespace RiasBot.Modules.Help
 
             if (module is null)
             {
-                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the module or submodule. Type {Format.Code(_ch.Prefix + "modules")} to see all modules and submodules.").ConfigureAwait(false);
+                await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} I couldn't find the module or submodule. Type {Format.Code(_ch.GetPrefix(Context.Guild) + "modules")} to see all modules and submodules.").ConfigureAwait(false);
                 return;
             }
             
@@ -146,9 +146,9 @@ namespace RiasBot.Modules.Help
                 {
                     string nextAlias = null;
                     if (x?.Aliases.Skip(1).FirstOrDefault() != null)
-                        nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
+                        nextAlias = $"[{_ch.GetPrefix(Context.Guild)}{x.Aliases.Skip(1).FirstOrDefault()}]";
 
-                    return $"{_ch.Prefix + x?.Aliases.First()} {nextAlias}";
+                    return $"{_ch.GetPrefix(Context.Guild) + x?.Aliases.First()} {nextAlias}";
                 });
                 embed.WithTitle($"All commands for module {module.Name}");
                 embed.AddField(module.Name, string.Join("\n", commands), true);
@@ -160,13 +160,13 @@ namespace RiasBot.Modules.Help
                     {
                         string nextAlias = null;
                         if (x?.Aliases.Skip(1).FirstOrDefault() != null)
-                            nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
+                            nextAlias = $"[{_ch.GetPrefix(Context.Guild)}{x.Aliases.Skip(1).FirstOrDefault()}]";
 
-                        return $"{_ch.Prefix + x?.Aliases.First()} {nextAlias}";
+                        return $"{_ch.GetPrefix(Context.Guild) + x?.Aliases.First()} {nextAlias}";
                     });
                     embed.AddField(command.Name.Equals("CommandsCommands") ? "Commands" : command.Name.Replace("Commands", ""), string.Join("\n", commandsSb), true);
                 }
-                embed.WithFooter($"For a specific command info type {_ch.Prefix + "h <command>"}");
+                embed.WithFooter($"For a specific command info type {_ch.GetPrefix(Context.Guild) + "h <command>"}");
                 embed.WithCurrentTimestamp();
                 await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
@@ -178,13 +178,13 @@ namespace RiasBot.Modules.Help
                 {
                     string nextAlias = null;
                     if (x?.Aliases.Skip(1).FirstOrDefault() != null)
-                        nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
+                        nextAlias = $"[{_ch.GetPrefix(Context.Guild)}{x.Aliases.Skip(1).FirstOrDefault()}]";
 
-                    return $"{_ch.Prefix + x?.Aliases.First()} {nextAlias}";
+                    return $"{_ch.GetPrefix(Context.Guild) + x?.Aliases.First()} {nextAlias}";
                 });
                 embed.WithTitle($"All commands for submodule {module.Name.Replace("Commands", "")}");
                 embed.WithDescription(string.Join("\n", transformed));
-                embed.WithFooter($"For a specific command info type {_ch.Prefix + "h <command>"}");
+                embed.WithFooter($"For a specific command info type {_ch.GetPrefix(Context.Guild) + "h <command>"}");
                 embed.WithCurrentTimestamp();
                 await Context.Channel.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
             }
@@ -205,9 +205,9 @@ namespace RiasBot.Modules.Help
                 {
                     string nextAlias = null;
                     if (x?.Aliases.Skip(1).FirstOrDefault() != null)
-                        nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
+                        nextAlias = $"[{_ch.GetPrefix(Context.Guild)}{x.Aliases.Skip(1).FirstOrDefault()}]";
 
-                    return $"{_ch.Prefix + x?.Aliases.First()} {nextAlias}";
+                    return $"{_ch.GetPrefix(Context.Guild) + x?.Aliases.First()} {nextAlias}";
                 }).ToList();
                 embed.WithTitle($"All commands");
                 if (commands.Any())
@@ -220,15 +220,15 @@ namespace RiasBot.Modules.Help
                     {
                         string nextAlias = null;
                         if (x?.Aliases.Skip(1).FirstOrDefault() != null)
-                            nextAlias = $"[{_ch.Prefix}{x.Aliases.Skip(1).FirstOrDefault()}]";
+                            nextAlias = $"[{_ch.GetPrefix(Context.Guild)}{x.Aliases.Skip(1).FirstOrDefault()}]";
 
-                        return $"{_ch.Prefix + x?.Aliases.First()} {nextAlias}";
+                        return $"{_ch.GetPrefix(Context.Guild) + x?.Aliases.First()} {nextAlias}";
                     });
                     embed.AddField(submodule.Name == "CommandsCommands" ? "Commands" : submodule.Name.Replace("Commands", ""), string.Join("\n", commandsSb), true);
                 }
                 if (embed.Fields.Count > 20)
                 {
-                    embed.WithFooter($"For a specific command info type {_ch.Prefix + "h <command>"}");
+                    embed.WithFooter($"For a specific command info type {_ch.GetPrefix(Context.Guild) + "h <command>"}");
                     embed.WithCurrentTimestamp();
                     try
                     {
@@ -242,7 +242,7 @@ namespace RiasBot.Modules.Help
                     embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
                 }
             }
-            embed.WithFooter($"For a specific command info type {_ch.Prefix + "h <command>"}");
+            embed.WithFooter($"For a specific command info type {_ch.GetPrefix(Context.Guild) + "h <command>"}");
             embed.WithCurrentTimestamp();
             try
             {

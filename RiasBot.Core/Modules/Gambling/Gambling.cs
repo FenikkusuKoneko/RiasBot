@@ -101,7 +101,7 @@ namespace RiasBot.Modules.Gambling
                 }
                 else
                 {
-                    await Context.Channel.SendErrorMessageAsync($"You are already in a blackjack session! Type `{_ch.Prefix}bj resume` to continue the session in this channel.").ConfigureAwait(false);
+                    await Context.Channel.SendErrorMessageAsync($"You are already in a blackjack session! Type `{_ch.GetPrefix(Context.Guild)}bj resume` to continue the session in this channel.").ConfigureAwait(false);
                 } 
             }
             else

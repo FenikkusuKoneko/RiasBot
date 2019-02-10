@@ -21,8 +21,6 @@ namespace RiasBot.Services
         private readonly BotService _botService;
         private readonly LoggingService _loggingService;
 
-        public string Prefix;
-
         public CommandHandler(DiscordShardedClient discord, CommandService commands, IBotCredentials creds, IServiceProvider provider,
             DbService db, XpService xpService, BotService botService, LoggingService loggingService)
         {
@@ -52,7 +50,7 @@ namespace RiasBot.Services
                 var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == context.Guild.Id);
                 var userDb = db.Users.FirstOrDefault(x => x.UserId == msg.Author.Id);
 
-                Prefix = GetPrefix(context, guildDb);
+                var prefix = GetPrefix(guildDb, context.IsPrivate);
                 await GiveXp(context, msg, userDb);
 
                 if (userDb != null)
@@ -61,7 +59,7 @@ namespace RiasBot.Services
 
                 var argPos = 0;     // Check if the message has a valid command prefix
 
-                if (msg.HasStringPrefix(Prefix, ref argPos) ||
+                if (msg.HasStringPrefix(prefix, ref argPos) ||
                     msg.HasStringPrefix("rias ", ref argPos, StringComparison.InvariantCultureIgnoreCase) ||
                     msg.HasMentionPrefix(context.Client.CurrentUser, ref argPos))
                 {
@@ -88,23 +86,32 @@ namespace RiasBot.Services
             }
         }
 
-        private string GetPrefix(SocketCommandContext context, GuildConfig guildDb)
+        public string GetPrefix(IGuild guild, bool isPrivate = false)
         {
-            if (!context.IsPrivate)
+            if (isPrivate) return _creds.Prefix;
+            
+            using (var db = _db.GetDbContext())
             {
+                var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
                 if (guildDb != null)
                 {
                     return !string.IsNullOrEmpty(guildDb.Prefix) ? guildDb.Prefix : _creds.Prefix;
                 }
-                else
-                {
-                    return _creds.Prefix;
-                }
-            }
-            else
-            {
+
                 return _creds.Prefix;
             }
+        }
+        
+        public string GetPrefix(GuildConfig guildDb, bool isPrivate = false)
+        {
+            if (isPrivate) return _creds.Prefix;
+            
+            if (guildDb != null)
+            {
+                return !string.IsNullOrEmpty(guildDb.Prefix) ? guildDb.Prefix : _creds.Prefix;
+            }
+
+            return _creds.Prefix;
         }
 
         private async Task GiveXp(ShardedCommandContext context, SocketUserMessage msg, UserConfig userDb)
@@ -136,7 +143,6 @@ namespace RiasBot.Services
                         else
                             await _xpService.XpUserMessage((IGuildUser)msg.Author, (ITextChannel)context.Channel);
                         await _xpService.XpUserGuildMessage(context.Guild, (IGuildUser)msg.Author, (ITextChannel)context.Channel);
-                        return;
                     }
                 }
                 catch

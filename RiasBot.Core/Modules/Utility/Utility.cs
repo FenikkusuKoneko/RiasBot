@@ -41,11 +41,11 @@ namespace RiasBot.Modules.Utility
             var user = (IGuildUser)Context.User;
             if (newPrefix is null)
             {
-                await Context.Channel.SendConfirmationMessageAsync($"{user.Mention} the prefix on this server is {Format.Bold(_ch.Prefix)}").ConfigureAwait(false);
+                await Context.Channel.SendConfirmationMessageAsync($"{user.Mention} the prefix on this server is {Format.Bold(_ch.GetPrefix(Context.Guild))}").ConfigureAwait(false);
             }
             else if (user.GuildPermissions.Administrator)
             {
-                var oldPrefix = _ch.Prefix;
+                var oldPrefix = _ch.GetPrefix(Context.Guild);
 
                 using (var db = _db.GetDbContext())
                 {
@@ -114,7 +114,7 @@ namespace RiasBot.Modules.Utility
         public async Task ConvertList()
         {
             var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
-            embed.WithTitle($"All categories for converter. Type {_ch.Prefix}convertlist <category> to get the units from a category");
+            embed.WithTitle($"All categories for converter. Type {_ch.GetPrefix(Context.Guild)}convertlist <category> to get the units from a category");
             var unitCategories = "";
             var quantityTypes = Enum.GetValues(typeof(QuantityType)).Cast<QuantityType>().Skip(1).ToArray();
 
