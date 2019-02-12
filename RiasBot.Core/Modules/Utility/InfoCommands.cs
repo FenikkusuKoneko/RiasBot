@@ -69,7 +69,7 @@ namespace RiasBot.Modules.Utility
 
                 Context.Client.CurrentUser.GetAvatarUrl();
                 
-                embed.WithFooter("© 2018 Copyright: Koneko");
+                embed.WithFooter("© 2018-2019 Copyright: Koneko#0001");
 
                 await Context.Channel.SendMessageAsync("", false, embed.Build()).ConfigureAwait(false);
             }

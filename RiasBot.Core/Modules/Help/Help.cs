@@ -40,7 +40,7 @@ namespace RiasBot.Modules.Help
             embed.AddField("Links", $"[Invite me]({RiasBot.Invite}) • [Support server]({RiasBot.CreatorServer})\n" +
                                     $"[Website]({RiasBot.Website}) • [Support me]({RiasBot.Patreon})\n" +
                                     $"[Vote on DBL](https://discordbots.org/bot/{Context.Client.CurrentUser.Id})");
-            embed.WithFooter("© 2018 Copyright: Koneko");
+            embed.WithFooter("© 2018-2019 Copyright: Koneko#0001");
             await Context.Channel.SendMessageAsync(embed: embed.Build());
         }
 
