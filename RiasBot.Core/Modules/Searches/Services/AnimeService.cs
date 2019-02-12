@@ -55,6 +55,49 @@ namespace RiasBot.Modules.Searches.Services
                     ";
             return (await client.Query(query, new { anime })).Get("Media");
         }
+        
+        public async Task<dynamic> MangaSearch(string manga)
+        {
+          var client = new GraphQLClient("https://graphql.anilist.co");
+          var query = @"
+                    query ($manga: String) {
+                      Media(search: $manga, type: MANGA) {
+                        id
+                        siteUrl
+                        title {
+                          romaji
+                          english
+                          native
+                        }
+                        format
+                        chapters
+                        status
+                        startDate {
+                          year
+                          month
+                          day
+                        }
+                        endDate {
+                          year
+                          month
+                          day
+                        }
+                        averageScore
+                        meanScore
+                        popularity
+                        favourites
+                        genres
+                        isAdult
+                        description
+                        coverImage {
+                          large
+                        }
+                      }
+                    }
+                    ";
+          return (await client.Query(query, new { manga })).Get("Media");
+        }
+        
         public async Task<dynamic> AnimeListSearch(string anime)
         {
             var client = new GraphQLClient("https://graphql.anilist.co");

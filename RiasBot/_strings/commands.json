@@ -1089,6 +1089,14 @@
     ]
   },
 
+  "manga": {
+    "Command": "manga",
+    "Description": "Show info for a manga from AniList.",
+    "Remarks": [
+      "[prefix]manga High School DxD"
+    ]
+  },
+
   "character": {
     "Command": "character",
     "Description": "Show info for a character from AniList.",

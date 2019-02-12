@@ -96,6 +96,70 @@ namespace RiasBot.Modules.Searches
                     await Context.Channel.SendMessageAsync("", embed: embed.Build());
                 }
             }
+            
+            [RiasCommand] [@Alias] [Description] [@Remarks]
+            public async Task Manga([Remainder]string manga)
+            {
+                var obj = await _service.MangaSearch(manga);
+
+                if (obj is null)
+                    await Context.Channel.SendErrorMessageAsync("I couldn't find the manga.");
+                else
+                {
+                    var title = $"{(string)obj.title.romaji ?? (string)obj.title.english} (AniList URL)";
+                    var titleRomaji = (string)obj.title.romaji;
+                    var titleEnglish = (string)obj.title.english;
+                    var titleNative = (string)obj.title.native;
+
+                    if (String.IsNullOrEmpty(titleRomaji))
+                        titleRomaji = "-";
+                    if (String.IsNullOrEmpty(titleEnglish))
+                        titleEnglish = "-";
+                    if (String.IsNullOrEmpty(titleNative))
+                        titleNative = "-";
+
+                    var startDate = $"{(string)obj.startDate.day}.{(string)obj.startDate.month}.{(string)obj.startDate.year}";
+                    var endDate = $"{(string)obj.endDate.day}.{(string)obj.endDate.month}.{(string)obj.endDate.year}";
+                    if (startDate == "..")
+                        startDate = "-";
+                    if (endDate == "..")
+                        endDate = "-";
+                    var chapters = "-";
+                    var favorites = "-";
+                    var averageScore = "-";
+                    var meanScore = "-";
+                    var genres = String.Join("\n", (JArray)obj.genres);
+                    if (String.IsNullOrEmpty(genres))
+                        genres = "-";
+                    try
+                    {
+                        favorites = $"{(int)obj.favourites}";
+                        chapters = $"{(int)obj.chapters}";
+                        averageScore = $"{(int)obj.averageScore} %";
+                        meanScore = $"{(int)obj.meanScore} %";
+                    }
+                    catch
+                    {
+                        
+                    }
+                    var description = (string)obj.description;
+                    description = description.Replace("<br>", "");
+                    if (description.Length > 1024)
+                        description = $"{description.Substring(0, 950)}... [More]({(string)obj.siteUrl})";
+
+                    var embed = new EmbedBuilder().WithColor(RiasBot.GoodColor);
+
+                    embed.WithAuthor(title, null, (string)obj.siteUrl);
+                    embed.AddField("Romaji", titleRomaji, true).AddField("English", titleEnglish, true).AddField("Native", titleNative, true);
+                    embed.AddField("ID", (int)obj.id, true).AddField("Type", (string)obj.format, true).AddField("Chapters", chapters, true);
+                    embed.AddField("Status", (string)obj.status, true).AddField("Start", startDate, true).AddField("End", endDate, true);
+                    embed.AddField("Average Score", averageScore, true).AddField("Mean Score", meanScore, true).AddField("Popularity", (int)obj.popularity, true);
+                    embed.AddField("Favorites", favorites, true).AddField("Genres", genres, true).AddField("Is Adult", (bool) obj.isAdult, true);
+                    embed.AddField("Description", description);
+                    embed.WithImageUrl((string)obj.coverImage.large);
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
+                }
+            }
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
