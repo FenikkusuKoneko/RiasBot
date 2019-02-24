@@ -4,4 +4,5 @@ Administration, Entertainment, Anime and Waifu. For anime fans, with Rias you ca
 Made with love she is ready to help you in your server.
 
 ## Thank you very much to JetBrains for Rider license ❤️
-<img src="https://i.imgur.com/saO1IrM.png" alt="JetBrains" width="100" height="100"><img src="https://i.imgur.com/2ZcNHIF.png" alt="Rider" width="100" height="100">
+[![JetBrains](https://i.imgur.com/JqsnnjY.png)](https://www.jetbrains.com)
+[![Rider](https://i.imgur.com/oNPW4w7.png)](https://www.jetbrains.com/rider/)
