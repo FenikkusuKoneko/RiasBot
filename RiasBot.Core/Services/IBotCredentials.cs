@@ -14,9 +14,19 @@ namespace RiasBot.Services
         string PatreonAccessToken { get; }
         string DiscordBotsListApiKey { get; }
         string WeebServicesToken { get; }
+        DatabaseConfig DatabaseConfig { get; }
         LavalinkConfig LavalinkConfig { get; }
         VotesManagerConfig VotesManagerConfig { get; }
         bool IsBeta { get; }    //beta bool is too protect things to run only on the public version, like apis
+    }
+    
+    public class DatabaseConfig
+    {
+        public string Host { get; set; }
+        public ushort Port { get; set; }
+        public string Database { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
     
     public class LavalinkConfig

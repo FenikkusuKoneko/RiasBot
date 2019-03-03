@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
-        <RuntimeFrameworkVersion>2.2.0</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>2.2.2</RuntimeFrameworkVersion>
         <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <NoWarn>NU1701</NoWarn>
@@ -18,12 +18,11 @@
     <PackageReference Include="GoogleApi" Version="3.5.0" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.5.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.11.0-beta1-final" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1-beta1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
     <PackageReference Include="UnitsNet" Version="3.102.0" />
     <PackageReference Include="Urban.NET" Version="1.0.0" />
     <PackageReference Include="Victoria" Version="3.2.2" />

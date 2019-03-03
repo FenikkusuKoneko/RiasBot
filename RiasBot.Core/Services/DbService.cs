@@ -1,37 +1,51 @@
 ﻿using RiasBot.Services.Database;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace RiasBot.Services
 {
     public class DbService : IRService
     {
-        private readonly DbContextOptions<RiasContext> options;
-        private readonly DbContextOptions<RiasContext> migrateOptions;
+        private readonly DbContextOptions<RiasContext> _options;
 
-        public DbService()
+        public DbService(IBotCredentials creds)
         {
-            var builder = new SqliteConnectionStringBuilder("Data Source=data/RiasBot.db");
-            builder.DataSource = Path.Combine(Environment.CurrentDirectory, builder.DataSource);
+            if (creds.DatabaseConfig != null)
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<RiasContext>();
 
-            var optionsBuilder = new DbContextOptionsBuilder<RiasContext>();
-            optionsBuilder.UseSqlite(builder.ToString());
-            options = optionsBuilder.Options;
+                var connectionString = new StringBuilder();
+                connectionString.Append("Host=").Append(creds.DatabaseConfig.Host).Append(";");
 
-            optionsBuilder = new DbContextOptionsBuilder<RiasContext>();
-            optionsBuilder.UseSqlite(builder.ToString(), x => x.SuppressForeignKeyEnforcement());
-            migrateOptions = optionsBuilder.Options;
+                if (creds.DatabaseConfig.Port > 0)
+                    connectionString.Append("Port=").Append(creds.DatabaseConfig.Port).Append(";");
+
+                connectionString.Append("Database=").Append(creds.DatabaseConfig.Database).Append(";")
+                    .Append("Username=").Append(creds.DatabaseConfig.Username).Append(";")
+                    .Append("Password=").Append(creds.DatabaseConfig.Password);
+
+                optionsBuilder.UseNpgsql(connectionString.ToString());
+                _options = optionsBuilder.Options;
+                Console.WriteLine("Connected to database PostreSQL");
+            }
+            else
+            {
+                Console.WriteLine("The database connection is not defined in credentials.json");
+            }
         }
 
         public RiasContext GetDbContext()
         {
-            var context = new RiasContext(options);
+            if (_options is null)
+                return null;
+
+            var context = new RiasContext(_options);
             if (context.Database.GetPendingMigrations().Any())
             {
-                var mContext = new RiasContext(migrateOptions);
+                var mContext = new RiasContext(_options);
                 mContext.Database.Migrate();
                 mContext.SaveChanges();
                 mContext.Dispose();

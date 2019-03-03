@@ -17,6 +17,7 @@ namespace RiasBot.Services.Implementation
         public string PatreonAccessToken { get; }
         public string DiscordBotsListApiKey { get; }
         public string WeebServicesToken { get; }
+        public DatabaseConfig DatabaseConfig { get; }
         public LavalinkConfig LavalinkConfig { get; }
         public VotesManagerConfig VotesManagerConfig { get; }
         public bool IsBeta { get; }    //beta bool is too protect things to run only on the public version, like apis
@@ -36,6 +37,16 @@ namespace RiasBot.Services.Implementation
             PatreonAccessToken = config[nameof(PatreonAccessToken)];
             DiscordBotsListApiKey = config[nameof(DiscordBotsListApiKey)];
             WeebServicesToken = config[nameof(WeebServicesToken)];
+            
+            var databaseConfig = config.GetSection(nameof(DatabaseConfig));
+            DatabaseConfig = new DatabaseConfig
+            {
+                Host = databaseConfig.GetValue<string>("Host"),
+                Port = databaseConfig.GetValue<ushort>("Port"),
+                Database = databaseConfig.GetValue<string>("Database"),
+                Username = databaseConfig.GetValue<string>("Username"),
+                Password = databaseConfig.GetValue<string>("Password")
+            };
 
             var lavalinkConfig = config.GetSection(nameof(LavalinkConfig));
             LavalinkConfig = new LavalinkConfig

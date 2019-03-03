@@ -1,24 +1,26 @@
-﻿using RiasBot.Services.Database.Models;
-using Microsoft.Data.Sqlite;
+﻿using System;
+using System.IO;
+using RiasBot.Services.Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using System;
-using System.IO;
 
 namespace RiasBot.Services.Database
 {
-    public class RiasContextFactory : IDesignTimeDbContextFactory<RiasContext>
-    {
-        public RiasContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<RiasContext>();
-            var builder = new SqliteConnectionStringBuilder("Data Source=data/RiasBot.db");
-            builder.DataSource = Path.Combine(Environment.CurrentDirectory, builder.DataSource);
-            optionsBuilder.UseSqlite(builder.ToString());
-            var ctx = new RiasContext(optionsBuilder.Options);
-            return ctx;
-        }
-    }
+//    if you want to make a migration with changes made and be applied to the database you must uncomment the following lines
+//    and set the string connection in UseNpgsql without getting them from the credentials.json
+//    because you will use dotnet ef migrations add <MigrationName> in the console to create a migration that will be applied at the next run of the bot
+//
+//    public class RiasContextFactory : IDesignTimeDbContextFactory<RiasContext>
+//    {
+//        public RiasContext CreateDbContext(string[] args)
+//        {
+//            var optionsBuilder = new DbContextOptionsBuilder<RiasContext>();
+//            optionsBuilder.UseNpgsql("");
+//            var ctx = new RiasContext(optionsBuilder.Options);
+//            return ctx;
+//        }
+//    }
+
     public class RiasContext : DbContext
     {
         public DbSet<GuildConfig> Guilds { get; set; }
@@ -41,7 +43,6 @@ namespace RiasBot.Services.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             #region GuildConfig
 
             var guildEntity = modelBuilder.Entity<GuildConfig>();

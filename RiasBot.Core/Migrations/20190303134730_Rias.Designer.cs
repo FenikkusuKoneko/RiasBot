@@ -4,19 +4,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RiasBot.Services.Database;
 
-namespace RiasBot.Migrations
+namespace RiasBot.Core.Migrations
 {
     [DbContext(typeof(RiasContext))]
-    [Migration("20180909021004_Dailies")]
-    partial class Dailies
+    [Migration("20190303134730_Rias")]
+    partial class Rias
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846");
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("RiasBot.Services.Database.Models.Dailies", b =>
                 {
@@ -27,7 +30,8 @@ namespace RiasBot.Migrations
 
                     b.Property<DateTime>("NextDaily");
 
-                    b.Property<ulong>("UserId");
+                    b.Property<decimal>("UserId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.HasKey("Id");
 
@@ -39,11 +43,13 @@ namespace RiasBot.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<ulong>("AutoAssignableRole");
+                    b.Property<decimal>("AutoAssignableRole")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<bool>("Bye");
 
-                    b.Property<ulong>("ByeChannel");
+                    b.Property<decimal>("ByeChannel")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<string>("ByeMessage");
 
@@ -53,15 +59,19 @@ namespace RiasBot.Migrations
 
                     b.Property<bool>("Greet");
 
-                    b.Property<ulong>("GreetChannel");
+                    b.Property<decimal>("GreetChannel")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<string>("GreetMessage");
 
-                    b.Property<ulong>("GuildId");
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
-                    b.Property<ulong>("ModLogChannel");
+                    b.Property<decimal>("ModLogChannel")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
-                    b.Property<ulong>("MuteRole");
+                    b.Property<decimal>("MuteRole")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<string>("Prefix");
 
@@ -86,15 +96,19 @@ namespace RiasBot.Migrations
 
                     b.Property<DateTime?>("DateAdded");
 
-                    b.Property<ulong>("GuildId");
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
-                    b.Property<ulong>("Moderator");
+                    b.Property<decimal>("Moderator")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
-                    b.Property<ulong>("MuteChannelSource");
+                    b.Property<decimal>("MuteChannelSource")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<DateTime>("MutedUntil");
 
-                    b.Property<ulong>("UserId");
+                    b.Property<decimal>("UserId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.HasKey("Id");
 
@@ -112,7 +126,8 @@ namespace RiasBot.Migrations
 
                     b.Property<int>("Reward");
 
-                    b.Property<ulong>("UserId");
+                    b.Property<decimal>("UserId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.HasKey("Id");
 
@@ -135,9 +150,11 @@ namespace RiasBot.Migrations
 
                     b.Property<DateTime?>("DateAdded");
 
-                    b.Property<ulong>("MarriedUser");
+                    b.Property<decimal>("MarriedUser")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
-                    b.Property<ulong>("UserId");
+                    b.Property<decimal>("UserId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.HasKey("Id");
 
@@ -154,9 +171,11 @@ namespace RiasBot.Migrations
 
                     b.Property<DateTime?>("DateAdded");
 
-                    b.Property<ulong>("GuildId");
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
-                    b.Property<ulong>("RoleId");
+                    b.Property<decimal>("RoleId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<string>("RoleName");
 
@@ -182,7 +201,8 @@ namespace RiasBot.Migrations
 
                     b.Property<DateTime>("MessageDateTime");
 
-                    b.Property<ulong>("UserId");
+                    b.Property<decimal>("UserId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<int>("Xp");
 
@@ -201,13 +221,15 @@ namespace RiasBot.Migrations
 
                     b.Property<DateTime?>("DateAdded");
 
-                    b.Property<ulong>("GuildId");
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<bool>("IsMuted");
 
                     b.Property<DateTime>("MuteUntil");
 
-                    b.Property<ulong>("UserId");
+                    b.Property<decimal>("UserId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.HasKey("Id");
 
@@ -225,7 +247,8 @@ namespace RiasBot.Migrations
 
                     b.Property<bool>("IsPrimary");
 
-                    b.Property<ulong>("UserId");
+                    b.Property<decimal>("UserId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<int>("WaifuId");
 
@@ -249,13 +272,16 @@ namespace RiasBot.Migrations
 
                     b.Property<DateTime?>("DateAdded");
 
-                    b.Property<ulong>("GuildId");
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
-                    b.Property<ulong>("Moderator");
+                    b.Property<decimal>("Moderator")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<string>("Reason");
 
-                    b.Property<ulong>("UserId");
+                    b.Property<decimal>("UserId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.HasKey("Id");
 
@@ -269,11 +295,13 @@ namespace RiasBot.Migrations
 
                     b.Property<DateTime?>("DateAdded");
 
-                    b.Property<ulong>("GuildId");
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<int>("Level");
 
-                    b.Property<ulong>("RoleId");
+                    b.Property<decimal>("RoleId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.HasKey("Id");
 
@@ -287,13 +315,15 @@ namespace RiasBot.Migrations
 
                     b.Property<DateTime?>("DateAdded");
 
-                    b.Property<ulong>("GuildId");
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<int>("Level");
 
                     b.Property<DateTime>("MessageDateTime");
 
-                    b.Property<ulong>("UserId");
+                    b.Property<decimal>("UserId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<int>("Xp");
 
