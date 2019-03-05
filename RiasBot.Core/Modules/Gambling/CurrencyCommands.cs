@@ -19,11 +19,11 @@ namespace RiasBot.Modules.Gambling
 
             private readonly string _dblVote;
 
-            public CurrencyCommands(DiscordShardedClient client, DbService db)
+            public CurrencyCommands(DbService db)
             {
                 _db = db;
                 
-                _dblVote = $"https://discordbots.org/bot/{client.CurrentUser.Id}/vote";
+                _dblVote = $"https://discordbots.org/bot/{RiasBot.BotId}/vote";
             }
 
             [RiasCommand][@Alias]
