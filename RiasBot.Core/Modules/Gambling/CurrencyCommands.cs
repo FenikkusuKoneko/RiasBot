@@ -3,14 +3,11 @@ using Discord.Commands;
 using RiasBot.Commons.Attributes;
 using RiasBot.Services;
 using RiasBot.Services.Database.Models;
-using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 using RiasBot.Extensions;
-using Discord.Rest;
 
 namespace RiasBot.Modules.Gambling
 {
@@ -18,15 +15,15 @@ namespace RiasBot.Modules.Gambling
     {
         public class CurrencyCommands : RiasSubmodule
         {
-            private readonly CommandHandler _ch;
-            private readonly CommandService _service;
             private readonly DbService _db;
 
-            public CurrencyCommands(CommandHandler ch, CommandService service, DbService db)
+            private readonly string _dblVote;
+
+            public CurrencyCommands(DiscordShardedClient client, DbService db)
             {
-                _ch = ch;
-                _service = service;
                 _db = db;
+                
+                _dblVote = $"https://discordbots.org/bot/{client.CurrentUser.Id}/vote";
             }
 
             [RiasCommand][@Alias]
@@ -37,13 +34,13 @@ namespace RiasBot.Modules.Gambling
             {
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
-                    try
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
+                    if (userDb != null)
                     {
                         userDb.Currency += amount;
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
-                    catch
+                    else
                     {
                         var currency = new UserConfig { UserId = user.Id, Currency = amount };
                         await db.Users.AddAsync(currency).ConfigureAwait(false);
@@ -61,13 +58,13 @@ namespace RiasBot.Modules.Gambling
             {
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
-                    try
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == id);
+                    if (userDb != null)
                     {
                         userDb.Currency += amount;
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
-                    catch
+                    else
                     {
                         var currency = new UserConfig { UserId = id, Currency = amount };
                         await db.Users.AddAsync(currency).ConfigureAwait(false);
@@ -88,20 +85,20 @@ namespace RiasBot.Modules.Gambling
                 var getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
-                    try
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == getUser.Id);
+                    if (userDb != null)
                     {
                         userDb.Currency += amount;
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
-                    catch
+                    else
                     {
                         var currency = new UserConfig { UserId = getUser.Id, Currency = amount };
                         await db.Users.AddAsync(currency).ConfigureAwait(false);
                         await db.SaveChangesAsync().ConfigureAwait(false);
                     }
                 }
-                await Context.Channel.SendConfirmationMessageAsync($"{Format.Bold(user.ToString())} has been awarded with {amount} {RiasBot.Currency}");
+                await Context.Channel.SendConfirmationMessageAsync($"{Format.Bold(user)} has been awarded with {amount} {RiasBot.Currency}");
             }
 
             [RiasCommand][@Alias]
@@ -112,8 +109,8 @@ namespace RiasBot.Modules.Gambling
             {
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
-                    try
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
+                    if (userDb != null)
                     {
                         if (userDb.Currency - amount < 0)
                         {
@@ -126,7 +123,7 @@ namespace RiasBot.Modules.Gambling
                         await db.SaveChangesAsync().ConfigureAwait(false);
                         await Context.Channel.SendConfirmationMessageAsync($"Took {amount} {RiasBot.Currency} from {Format.Bold(user.ToString())}").ConfigureAwait(false);
                     }
-                    catch
+                    else
                     {
                         await Context.Channel.SendErrorMessageAsync("The user doesn't exists in the database");
                     }
@@ -141,7 +138,7 @@ namespace RiasBot.Modules.Gambling
             {
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == id).FirstOrDefault();
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == id);
                     if (userDb != null)
                     {
                         try
@@ -181,8 +178,8 @@ namespace RiasBot.Modules.Gambling
                 var getUser = await Context.Client.GetUserAsync(userSplit[0], userSplit[1]).ConfigureAwait(false);
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == getUser.Id).FirstOrDefault();
-                    try
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == getUser.Id);
+                    if (userDb != null)
                     {
                         if (userDb.Currency - amount < 0)
                         {
@@ -193,65 +190,14 @@ namespace RiasBot.Modules.Gambling
                             userDb.Currency -= amount;
                         }
                         await db.SaveChangesAsync().ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationMessageAsync($"Took {amount} {RiasBot.Currency} from {Format.Bold(user.ToString())}").ConfigureAwait(false);
+                        await Context.Channel.SendConfirmationMessageAsync($"Took {amount} {RiasBot.Currency} from {Format.Bold(user)}").ConfigureAwait(false);
                     }
-                    catch
+                    else
                     {
                         await Context.Channel.SendErrorMessageAsync("The user doesn't exists in the database");
                     }
                 }
             }
-
-            /*[RiasCommand][Discord.Commands.Alias]
-            [Description][@Remarks]
-            [RequireContext(ContextType.Guild)]
-            public async Task Give(int amount, [Remainder]IGuildUser user)
-            {
-                if (amount < 1)
-                {
-                    await Context.Channel.SendErrorMessageAsync($"You cannot give less than 1 {RiasBot.Currency}").ConfigureAwait(false);
-                    return;
-                }
-                using (var db = _db.GetDbContext())
-                {
-                    var firstUser = db.Users.Where(x => x.UserId == Context.User.Id).FirstOrDefault();
-                    var secondUser = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
-                    if (firstUser != null)
-                    {
-                        if (firstUser.Currency - amount >= 0)
-                        {
-                            firstUser.Currency -= amount;
-                            if (secondUser != null)
-                            {
-                                if (!secondUser.IsBlacklisted)
-                                {
-                                    secondUser.Currency += amount;
-                                }
-                                else
-                                {
-                                    await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you cannot give {RiasBot.Currency} to this user.").ConfigureAwait(false);
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                var userDb = new UserConfig { UserId = user.Id, Currency = amount };
-                                await db.AddAsync(userDb).ConfigureAwait(false);
-                            }
-                            await Context.Channel.SendConfirmationMessageAsync($"{user.Mention} you received {amount} {RiasBot.Currency} from {Format.Bold(Context.User.ToString())}");
-                            await db.SaveChangesAsync().ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.").ConfigureAwait(false);
-                        }
-                    }
-                    else
-                    {
-                        await Context.Channel.SendErrorMessageAsync($"{Context.User.Mention} you don't have enough {RiasBot.Currency}.").ConfigureAwait(false);
-                    }
-                }
-            }*/
 
             [RiasCommand][@Alias]
             [Description][@Remarks]
@@ -260,25 +206,27 @@ namespace RiasBot.Modules.Gambling
             {
                 user = user ?? Context.User;
 
+                var voteInfo = $"Do you want more? You can vote me [here]({_dblVote}) to get extra {RiasBot.Currency}";
+                
                 using (var db = _db.GetDbContext())
                 {
-                    var userDb = db.Users.Where(x => x.UserId == user.Id).FirstOrDefault();
-                    try
+                    var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
+                    if (userDb != null)
                     {
                         if (user == Context.User)
-                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} you have {userDb.Currency} {RiasBot.Currency}").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} you have {userDb.Currency} {RiasBot.Currency}\n{voteInfo}").ConfigureAwait(false);
                         else
-                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} {user} has {userDb.Currency} {RiasBot.Currency}");
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} {user} has {userDb.Currency} {RiasBot.Currency}").ConfigureAwait(false);
                     }
-                    catch
+                    else
                     {
                         var currency = new UserConfig { UserId = user.Id, Currency = 0 };
                         await db.Users.AddAsync(currency);
                         await db.SaveChangesAsync();
                         if (user == Context.User)
-                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} you have 0 {RiasBot.Currency}").ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} you have 0 {RiasBot.Currency}\n{voteInfo}").ConfigureAwait(false);
                         else
-                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} {user} has 0 {RiasBot.Currency}");
+                            await Context.Channel.SendConfirmationMessageAsync($"{Context.User.Mention} {user} has 0 {RiasBot.Currency}").ConfigureAwait(false);
                     }
                 }
             }
@@ -317,6 +265,9 @@ namespace RiasBot.Modules.Gambling
             [RequireContext(ContextType.Guild)]
             public async Task DailyAsync()
             {
+                var voteInfo = $"Do you want more? You can vote me [here]({_dblVote}) to get extra {RiasBot.Currency}";
+                var voteInfoWait = $"In the mean time you can vote me [here]({_dblVote}), if you haven't already, to get extra {RiasBot.Currency}";
+                
                 using (var db = _db.GetDbContext())
                 {
                     var userDb = db.Users.FirstOrDefault(x => x.UserId == Context.User.Id);
@@ -333,7 +284,7 @@ namespace RiasBot.Modules.Gambling
                         else
                         {
                             var timeLeft = dailyDb.NextDaily.Subtract(DateTime.UtcNow);
-                            await Context.Channel.SendErrorMessageAsync($"You can get your next daily in {timeLeft.StringTimeSpan()}.").ConfigureAwait(false);;
+                            await Context.Channel.SendErrorMessageAsync($"You can get your next daily in {timeLeft.StringTimeSpan()}.\n{voteInfoWait}").ConfigureAwait(false);
                             return;
                         }
                     }
@@ -353,7 +304,7 @@ namespace RiasBot.Modules.Gambling
                         await db.AddAsync(newUserDb).ConfigureAwait(false);
                     }
                     await db.SaveChangesAsync().ConfigureAwait(false);
-                    await Context.Channel.SendConfirmationMessageAsync($"You received your daily 100 {RiasBot.Currency}.").ConfigureAwait(false);;
+                    await Context.Channel.SendConfirmationMessageAsync($"You received your daily 100 {RiasBot.Currency}.\n{voteInfo}").ConfigureAwait(false);
                 }
             }
         }
