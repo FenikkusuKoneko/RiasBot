@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord;
@@ -18,7 +19,7 @@ namespace RiasBot.Commons.Attributes
         private readonly bool _noLimitForAdmins;
         private readonly bool _applyPerGuild;
         private readonly TimeSpan _invokeLimitPeriod;
-        private readonly Dictionary<(ulong, ulong?), CommandTimeout> _invokeTracker = new Dictionary<(ulong, ulong?), CommandTimeout>();
+        private readonly ConcurrentDictionary<(ulong, ulong?), CommandTimeout> _invokeTracker = new ConcurrentDictionary<(ulong, ulong?), CommandTimeout>();
 
         /// <summary> Sets how often a user is allowed to use this command. </summary>
         /// <param name="times">The number of times a user may use the command within a certain period.</param>
@@ -96,7 +97,7 @@ namespace RiasBot.Commons.Attributes
             else
             {
                 //just for seconds
-                return Task.FromResult(PreconditionResult.FromError($"You are currently in timeout. Please calm down {(_invokeLimitPeriod.Subtract(now - t.FirstInvoke)).Seconds} seconds."));
+                return Task.FromResult(PreconditionResult.FromError($"Hey, calm down! Take a breath and try again in {(_invokeLimitPeriod.Subtract(now - t.FirstInvoke)).Seconds} seconds."));
             }
         }
 
