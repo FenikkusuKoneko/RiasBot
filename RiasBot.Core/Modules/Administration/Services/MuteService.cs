@@ -187,6 +187,10 @@ namespace RiasBot.Modules.Administration.Services
         private async Task UnmuteTimerUser(IGuild guild, IGuildUser moderator, IGuildUser user, IMessageChannel channel,
             string reason)
         {
+            guild = _client.GetGuild(guild.Id);
+            if (guild is null)
+                return;
+            
             using (var db = _db.GetDbContext())
             {
                 var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
