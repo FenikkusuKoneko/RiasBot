@@ -1,5 +1,5 @@
 {
-  "h": {
+  "help": {
     "Command": "help h",
     "Description": "Show a help info for a single command, or DMs you if no parameters are specified.",
     "Remarks": [
