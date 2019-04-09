@@ -67,7 +67,7 @@ namespace RiasBot.Modules.Utility.Services
                     var input = await _is.NextMessageAsync(context, timeout: TimeSpan.FromSeconds(30)).ConfigureAwait(false);
                     if (input != null)
                     {
-                        if (input.Content != "confirm")
+                        if (input.Content.ToLowerInvariant() != "confirm")
                         {
                             await channel.SendErrorMessageAsync("Claim waifu canceled!").ConfigureAwait(false);
                             return;
