@@ -1,7 +1,6 @@
 ﻿using RiasBot.Services;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Net.Http;
@@ -10,7 +9,6 @@ using System.Linq;
 using RiasBot.Services.Database.Models;
 using ImageMagick;
 using RiasBot.Extensions;
-using System.Net;
 using RiasBot.Modules.Searches.Services;
 
 namespace RiasBot.Modules.Utility.Services
@@ -26,8 +24,13 @@ namespace RiasBot.Modules.Utility.Services
             _db = db;
         }
 
-        private readonly string DefaultProfileBackground = "https://i.imgur.com/CeazwG7.png";
-        private readonly string DefaultProfileBio = "Nothing here, just dust.";
+        private const string DefaultProfileBackground = "https://i.imgur.com/CeazwG7.png";
+        private const string DefaultProfileBio = "Nothing here, just dust.";
+        
+        private readonly string _diamondHeartPath = Path.Combine(Environment.CurrentDirectory, "assets/images/diamond_heart.png");
+        private readonly string _arialFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/ArialBold.ttf");
+        private readonly string _aweryFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/Awery.ttf");
+        private readonly string _meiryoFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/Meiryo.ttf");
 
         public async Task<MemoryStream> GenerateBackgroundPreview(IGuildUser user, string url)
         {
@@ -39,9 +42,6 @@ namespace RiasBot.Modules.Utility.Services
                     //Init
                     var avatarUrl = user.GetRealAvatarUrl();
                     var nickname = user.Nickname;
-
-                    var aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
-                    var meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
 
                     //Background
                     using (var bg = await http.GetAsync(url))
@@ -91,22 +91,22 @@ namespace RiasBot.Modules.Utility.Services
                     {
                         BackgroundColor = MagickColors.Transparent,
                         FillColor = MagickColors.White,
-                        Font = meiryoFont,
+                        Font = _meiryoFontPath,
                         Width = 150,
                         Height = 40
                     };
 
-                    using (var username = new MagickImage("caption:" + user.ToString(), usernameSettings))
+                    using (var username = new MagickImage("caption:" + user, usernameSettings))
                     {
                         img.Draw(new DrawableComposite(120, usernameYPosition, username));
                     }
-                    if (!String.IsNullOrEmpty(nickname))
+                    if (!string.IsNullOrEmpty(nickname))
                     {
                         var nicknameSettings = new MagickReadSettings()
                         {
                             BackgroundColor = MagickColors.Transparent,
                             FillColor = MagickColors.White,
-                            Font = meiryoFont,
+                            Font = _meiryoFontPath,
                             Width = 150,
                             Height = 40
                         };
@@ -126,27 +126,27 @@ namespace RiasBot.Modules.Utility.Services
 
                     // Global Level
                     img.Draw(new Drawables().FontPointSize(18)
-                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                        .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
                         .FillColor(MagickColors.White)
                         .TextAlignment(TextAlignment.Center)
                         .Text(170, 165, "Level"));
 
                     // Heart Diamonds
                     img.Draw(new Drawables().FontPointSize(13)
-                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                        .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
                         .FillColor(MagickColors.White)
                         .TextAlignment(TextAlignment.Left)
                         .Text(210, 165, "Currency"));
                     
                     // Total XP
                     img.Draw(new Drawables().FontPointSize(13)
-                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                        .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
                         .FillColor(MagickColors.White)
                         .TextAlignment(TextAlignment.Left)
                         .Text(210, 180, "Total XP"));
                     // Rank
                     img.Draw(new Drawables().FontPointSize(13)
-                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                        .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
                         .FillColor(MagickColors.White)
                         .TextAlignment(TextAlignment.Left)
                         .Text(210, 195, "Rank"));
@@ -154,14 +154,6 @@ namespace RiasBot.Modules.Utility.Services
                     // Bio
                     img.Draw(new Drawables().RoundRectangle(147, 207, 355, 275, 5, 5)
                         .FillColor(MagickColors.White));
-                    var bioBoxsettings = new MagickReadSettings()
-                    {
-                        BackgroundColor = MagickColors.Transparent,
-                        FillColor = MagickColors.Black,
-                        Font = meiryoFont,
-                        FontPointsize = 9,
-                        Width = 198
-                    };
 
                     var imageStream = new MemoryStream();
                     img.Write(imageStream, MagickFormat.Png);
@@ -176,203 +168,440 @@ namespace RiasBot.Modules.Utility.Services
             }
         }
 
-        public async Task<MemoryStream> GenerateProfileImage(IGuildUser user, IRole highestRole)
+        public async Task<MemoryStream> GenerateProfileImageAsync(IGuildUser user, IRole highestRole)
         {
-            var heartDiamondPath = "/assets/images/heart_diamond.png";
-            
             using (var http = new HttpClient())
-            using (var img = new MagickImage(MagickColors.White, 500, 300))
+            using (var image = new MagickImage(MagickColors.White, 500, 300))
+            {
+                http.Timeout = TimeSpan.FromSeconds(10);
+                
+                //Init
+                var accentColor = GetUserHighRoleColor(highestRole);
+                var profileInfo = GetProfileInfo(user);
+                
+                //Background
+                await AddBackgroundAsync(http, user, image).ConfigureAwait(false);
+                
+                //Avatar
+                await AddAvatarAsync(http, user, image).ConfigureAwait(false);
+                
+                //Username & Nickname
+                AddUsernameAndNickname(user, image);
+                
+                //Waifus box
+                image.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(15, 120, 127, 284));
+                //Info box
+                image.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(375, 120, 485, 285));
+                //Beloved waifu box
+                image.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(137, 100, 365, 285));
+                
+                //XP bar
+                image.Draw(new Drawables().StrokeWidth(1).StrokeColor(accentColor).FillColor(MagickColors.Transparent).Rectangle(147, 110, 355, 130));
+                
+                //AddInfo + Fill XP bar
+                AddInfo(profileInfo, image, accentColor);
+                
+                //Waifus
+                await AddWaifusAsync(http, profileInfo, user, image).ConfigureAwait(false);
+                
+                //Beloved waifu
+                await AddBelovedWaifuAsync(http, profileInfo, user, image).ConfigureAwait(false);
+                
+                //Write
+                var imageStream = new MemoryStream();
+                image.Write(imageStream, MagickFormat.Png);
+                imageStream.Position = 0;
+                return imageStream;
+            }
+        }
+
+        private async Task AddBackgroundAsync(HttpClient http, IGuildUser user, IMagickImage image)
+        {
+            var profileSettings = GetProfileSettings(user);
+            var addDefaultBackground = false;
+            
+            try
+            {
+                using (var bg = await http.GetAsync(profileSettings.BackgroundUrl).ConfigureAwait(false))
+                {
+                    if (bg.IsSuccessStatusCode)
+                    {
+                        using (var tempBg = new MagickImage(await bg.Content.ReadAsStreamAsync().ConfigureAwait(false)))
+                        {
+                            var size = new MagickGeometry(image.Width, image.Height)
+                            {
+                                IgnoreAspectRatio = false,
+                                FillArea = true
+                            };
+                            
+                            tempBg.Resize(size);
+                            image.Draw(new DrawableComposite(0, 0, tempBg));
+                        }
+                    }
+                    else
+                    {
+                        addDefaultBackground = true;
+                    }
+                }
+            }
+            catch
+            {
+                addDefaultBackground = true;
+            }
+
+            if (addDefaultBackground)
             {
                 try
                 {
-                    var accentColor = GetUserHighRoleColor(highestRole);
-                    var profileInfo = GetProfieInfo(user.Id);
-                    var profileSettings = GetProfileSettings(user.Id);
-                    //Init
-                    var avatarUrl = user.GetRealAvatarUrl();
-                    var nickname = user.Nickname;
-
-                    var arialFont = Environment.CurrentDirectory + "/assets/fonts/ArialBold.ttf";
-                    var aweryFont = Environment.CurrentDirectory + "/assets/fonts/Awery.ttf";
-                    var meiryoFont = Environment.CurrentDirectory + "/assets/fonts/Meiryo.ttf";
-
-                    //Background
-                    using (var bg = await http.GetAsync(profileSettings.BackgroundUrl))
+                    using (var defaultBg = await http.GetAsync(DefaultProfileBackground).ConfigureAwait(false))
                     {
-                        if (bg.IsSuccessStatusCode)
+                        if (defaultBg.IsSuccessStatusCode)
                         {
-                            using (var tempBg = new MagickImage(await bg.Content.ReadAsStreamAsync()))
+                            using (var tempBg = new MagickImage(await defaultBg.Content.ReadAsStreamAsync().ConfigureAwait(false)))
                             {
-                                var size = new MagickGeometry(img.Width, img.Height)
+                                var size = new MagickGeometry(image.Width, image.Height)
                                 {
                                     IgnoreAspectRatio = false,
                                     FillArea = true
                                 };
                                 tempBg.Resize(size);
 
-                                img.Draw(new DrawableComposite(0, 0, tempBg));
+                                image.Draw(new DrawableComposite(0, 0, tempBg));
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    //ignored
+                }
+            }
+            
+            //Background dim
+            var dim = ((float)profileSettings.BackgroundDim / 100) * 255;
+            image.Draw(new Drawables().FillColor(MagickColor.FromRgba(0, 0, 0, (byte)dim)).Rectangle(0, 0, 500, 300));
+        }
+
+        private async Task AddAvatarAsync(HttpClient http, IGuildUser user, IMagickImage image)
+        {
+            using (var avatarStream = await http.GetStreamAsync(user.GetRealAvatarUrl()).ConfigureAwait(false))
+            using (var tempAvatar = new MagickImage(avatarStream))
+            {
+                var size = new MagickGeometry(70, 70)
+                {
+                    IgnoreAspectRatio = false,
+                };
+                tempAvatar.Resize(size);
+                tempAvatar.Border(2);
+                tempAvatar.BorderColor = MagickColors.White;
+                image.Draw(new DrawableComposite(30, 20, tempAvatar));
+            }
+        }
+
+        private void AddUsernameAndNickname(IGuildUser user, IMagickImage image)
+        {
+            var nickname = user.Nickname;
+            
+            var nameSettings = new MagickReadSettings
+            {
+                BackgroundColor = MagickColors.Transparent,
+                FillColor = MagickColors.White,
+                Font = _meiryoFontPath,
+                Width = 150,
+                Height = 40
+            };
+
+            var usernameYPosition = !string.IsNullOrEmpty(nickname) ? 20 : 40;
+            using (var tempUsername = new MagickImage($"caption:{user}", nameSettings))
+            {
+                image.Draw(new DrawableComposite(120, usernameYPosition, tempUsername));
+            }
+            if (!string.IsNullOrEmpty(nickname))
+            {
+                using (var tempNickname = new MagickImage($"caption:{nickname}", nameSettings))
+                {
+                    image.Draw(new DrawableComposite(130, 60, tempNickname));
+                }
+            }
+        }
+
+        private void AddInfo(ProfileInfo profileInfo, IMagickImage image, MagickColor accentColor)
+        {
+            var globalLevel = profileInfo.GlobalLevel;
+            var globalCurrentXp = profileInfo.GlobalXp - (30 + globalLevel * 30) * globalLevel / 2;
+            var globalNextLevelXp = (globalLevel + 1) * 30;
+            
+            
+            image.Draw(new Drawables().FillColor(accentColor).Rectangle(147, 110,
+                147 + 208 * ((double)globalCurrentXp / globalNextLevelXp), 130));
+            
+            //XP texts
+            image.Draw(new Drawables().FontPointSize(12)
+                .Font(_arialFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Left)
+                .Text(147, 145, globalCurrentXp.ToString()));
+            image.Draw(new Drawables().FontPointSize(12)
+                .Font(_arialFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Right)
+                .Text(355, 145, globalNextLevelXp.ToString()));
+            
+            // Global Level
+            image.Draw(new Drawables().FontPointSize(18)
+                .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Center)
+                .Text(170, 165, "Level"));
+            image.Draw(new Drawables().FontPointSize(25)
+                .Font(_arialFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Center)
+                .Text(170, 195, profileInfo.GlobalLevel.ToString()));
+
+            // Heart Diamonds
+            image.Draw(new Drawables().FontPointSize(13)
+                .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Left)
+                .Text(210, 165, "Currency"));
+            using (var tempHeartDiamond = new MagickImage(_diamondHeartPath))
+            {
+                var size = new MagickGeometry(20, 20)
+                {
+                    IgnoreAspectRatio = false,
+                };
+                tempHeartDiamond.Resize(size);
+                image.Draw(new DrawableComposite(345, 153, tempHeartDiamond));
+            }
+            image.Draw(new Drawables().FontPointSize(13)
+                .Font(_arialFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Right)
+                .Text(343, 165, profileInfo.Currency.ToString()));
+            
+            // Total XP
+            image.Draw(new Drawables().FontPointSize(13)
+                .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Left)
+                .Text(210, 180, "Total XP"));
+            image.Draw(new Drawables().FontPointSize(13)
+                .Font(_arialFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Right)
+                .Text(343, 180, profileInfo.GlobalXp.ToString()));
+            // Rank
+            image.Draw(new Drawables().FontPointSize(13)
+                .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Left)
+                .Text(210, 195, "Rank"));
+            image.Draw(new Drawables().FontPointSize(13)
+                .Font(_arialFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Right)
+                .Text(343, 195, $"#{profileInfo.Rank}"));
+            
+            // Bio
+            image.Draw(new Drawables().RoundRectangle(147, 207, 355, 275, 5, 5)
+                .FillColor(MagickColors.White));
+            var bioBoxSettings = new MagickReadSettings
+            {
+                BackgroundColor = MagickColors.Transparent,
+                FillColor = MagickColors.Black,
+                Font = _meiryoFontPath,
+                FontPointsize = 9,
+                Width = 198
+            };
+
+            var caption = $"caption:{profileInfo.Bio}";
+
+            using (var tempBioBox = new MagickImage(caption, bioBoxSettings))
+            {
+                image.Draw(new DrawableComposite(152, 212, tempBioBox));
+            }
+        }
+
+        private async Task AddWaifusAsync(HttpClient http, ProfileInfo profileInfo, IGuildUser user, IMagickImage image)
+        {
+            image.Draw(new Drawables().FontPointSize(17)
+                .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
+                .FillColor(MagickColors.White)
+                .TextAlignment(TextAlignment.Center)
+                .Text(70, 115, "Top Waifus"));
+            
+            var x = 20;
+            var nextH = false; //second waifu
+            var y = 125;
+            var nextV = true; //fourth waifu
+
+            foreach (var waifu in profileInfo.Waifus.Take(4).OrderBy(w => w.Id))
+            {
+                //if the waifu image url is not working
+                //replace the old CDN url from AniList with the new one
+                var getWaifuPicture = false;
+                try
+                {
+                    using (var waifuStream = await http.GetAsync(waifu.WaifuPicture).ConfigureAwait(false))
+                    {
+                        if (waifuStream.IsSuccessStatusCode)
+                        {
+                            using (var tempWaifu = new MagickImage(await waifuStream.Content.ReadAsStreamAsync().ConfigureAwait(false)))
+                            {
+                                var size = new MagickGeometry(46, 72)
+                                {
+                                    IgnoreAspectRatio = false,
+                                };
+                                tempWaifu.Resize(size);
+                                image.Draw(new DrawableComposite(x, y, tempWaifu));
                             }
                         }
                         else
                         {
-                            using (var dbg = await http.GetStreamAsync(DefaultProfileBackground))
-                            using (var tempBg = new MagickImage(dbg))
+                            getWaifuPicture = true;
+                        }
+                    }
+                }
+                catch
+                {
+                    getWaifuPicture = true;
+                }
+                
+                if (getWaifuPicture)
+                {
+                    //if it's a custom waifu
+                    if (waifu.WaifuId == 0) return;
+                    
+                    var obj = await _animeService.CharacterSearch(waifu.WaifuId);
+                    waifu.WaifuPicture = (string)obj.image.large;
+                    await Task.Run(async () => await SaveNewWaifuPicture(user, waifu)).ConfigureAwait(false);
+
+                    using (var waifuStreamUpdate = await http.GetAsync(waifu.WaifuPicture))
+                    {
+                        if (waifuStreamUpdate.IsSuccessStatusCode)
+                        {
+                            using (var tempWaifu = new MagickImage(await waifuStreamUpdate.Content.ReadAsStreamAsync().ConfigureAwait(false)))
                             {
-                                var size = new MagickGeometry(img.Width, img.Height)
+                                var size = new MagickGeometry(46, 72)
                                 {
                                     IgnoreAspectRatio = false,
                                     FillArea = true
                                 };
-                                tempBg.Resize(size);
-
-                                img.Draw(new DrawableComposite(0, 0, tempBg));
+                                tempWaifu.Resize(size);
+                                image.Draw(new DrawableComposite(x, y, tempWaifu));
                             }
                         }
                     }
-                    
-                    var dim = ((float)profileSettings.BackgroundDim / 100) * 255;
-                    img.Draw(new Drawables().FillColor(MagickColor.FromRgba(0, 0, 0, (byte)dim)).Rectangle(0, 0, 500, 300));
-                    //Avatar
-                    using (var temp = await http.GetStreamAsync(avatarUrl))
-                    using (var tempDraw = new MagickImage(temp))
-                    {
-                        var size = new MagickGeometry(70, 70)
-                        {
-                            IgnoreAspectRatio = false,
-                        };
-                        tempDraw.Resize(size);
-                        tempDraw.Border(2);
-                        tempDraw.BorderColor = MagickColors.White;
-                        img.Draw(new DrawableComposite(30, 20, tempDraw));
-                    }
-                    var usernameYPosition = (!String.IsNullOrEmpty(nickname)) ? 20 : 40;
-                    var usernameSettings = new MagickReadSettings()
-                    {
-                        BackgroundColor = MagickColors.Transparent,
-                        FillColor = MagickColors.White,
-                        Font = meiryoFont,
-                        Width = 150,
-                        Height = 40
-                    };
+                }
+                
+                //Change the X and Y position to draw the next waifu
+                if (!nextH)
+                {
+                    x += 56;
+                    nextH = true;
+                }
+                else
+                {
+                    x = 20;
+                    nextH = false;
+                }
+                if (!nextV)
+                {
+                    y += 82;
+                    nextV = true;
+                }
+                else
+                {
+                    nextV = false;
+                }
+            }
+        }
 
-                    using (var username = new MagickImage("caption:" + user.ToString(), usernameSettings))
-                    {
-                        img.Draw(new DrawableComposite(120, usernameYPosition, username));
-                    }
-                    if (!String.IsNullOrEmpty(nickname))
-                    {
-                        var nicknameSettings = new MagickReadSettings()
-                        {
-                            BackgroundColor = MagickColors.Transparent,
-                            FillColor = MagickColors.White,
-                            Font = meiryoFont,
-                            Width = 150,
-                            Height = 40
-                        };
+        private async Task SaveNewWaifuPicture(IGuildUser user, Waifus waifu)
+        {
+            using (var db = _db.GetDbContext())
+            {
+                var getWaifu = db.Waifus.FirstOrDefault(w => w.UserId == user.Id && w.WaifuId == waifu.WaifuId);
+                if (getWaifu != null)
+                {
+                    getWaifu.WaifuPicture = waifu.WaifuPicture;
+                    await db.SaveChangesAsync().ConfigureAwait(false);
+                }
+            }
+        }
 
-                        using (var nicknameWrap = new MagickImage("caption:" + nickname, nicknameSettings))
-                        {
-                            img.Draw(new DrawableComposite(130, 60, nicknameWrap));
-                        }
-                    }
-                    img.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(15, 120, 127, 284));
-                    if (profileInfo.Waifus != null)
-                    {
-                        img.Draw(new Drawables().FontPointSize(17)
-                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Center)
-                        .Text(70, 115, "Top Waifus"));
+        private async Task AddBelovedWaifuAsync(HttpClient http, ProfileInfo profileInfo, IGuildUser user, IMagickImage image)
+        {
+            if (profileInfo.BelovedWaifu != null)
+            {
+                var belovedWaifuSettings = new MagickReadSettings()
+                {
+                    BackgroundColor = MagickColors.Transparent,
+                    FillColor = MagickColors.White,
+                    Font = _aweryFontPath,
+                    TextGravity = Gravity.Center,
+                    Width = 110,
+                    Height = 20
+                };
+                
+                using (var tempBelovedWaifuText = new MagickImage("caption:" + profileInfo.BelovedWaifu.WaifuName, belovedWaifuSettings))
+                {
+                    image.Draw(new DrawableComposite(375, 100, tempBelovedWaifuText));
+                }
+                
+                //if the custom waifu image cannot be downloaded then add the waifu image
+                var addWaifuPicture = false;
+                
+                //if the waifu image url is not working
+                //replace the old CDN url from AniList with the new one
+                var getWaifuPicture = false;
 
-                        var x = 20;
-                        var nextH = false; //second waifu
-                        var y = 125;
-                        var nextV = true; //fourth waifu
-                        foreach (var waifu in profileInfo.Waifus.Take(4))
+                var waifuPicture = profileInfo.BelovedWaifu.BelovedWaifuPicture;
+                if (string.IsNullOrEmpty(waifuPicture))
+                {
+                    waifuPicture = profileInfo.BelovedWaifu.WaifuPicture;
+                    getWaifuPicture = true;
+                }
+
+                try
+                {
+                    using (var belovedWaifu = await http.GetAsync(waifuPicture).ConfigureAwait(false))
+                    {
+                        if (belovedWaifu.IsSuccessStatusCode)
                         {
-                            using (var waifuStream = await http.GetAsync(waifu.WaifuPicture))
+                            using (var tempBelovedWaifu = new MagickImage(await belovedWaifu.Content.ReadAsStreamAsync().ConfigureAwait(false)))
                             {
-                                if (waifuStream.IsSuccessStatusCode)
+                                var size = new MagickGeometry(100, 155)
                                 {
-                                    using (var tempWaifu = new MagickImage(await waifuStream.Content.ReadAsStreamAsync()))
-                                    {
-                                        var size = new MagickGeometry(46, 72)
-                                        {
-                                            IgnoreAspectRatio = false,
-                                        };
-                                        tempWaifu.Resize(size);
-                                        img.Draw(new DrawableComposite(x, y, tempWaifu));
-                                    }
-                                }
-                                else
-                                {
-                                    using (var db = _db.GetDbContext())
-                                    {
-                                        var obj = await _animeService.CharacterSearch(waifu.WaifuId);
-                                        waifu.WaifuPicture = (string)obj.image.large;
-                                        using (var waifuStreamUpdate = await http.GetStreamAsync(waifu.WaifuPicture))
-                                        using (var tempWaifu = new MagickImage(waifuStreamUpdate))
-                                        {
-                                            var size = new MagickGeometry(46, 72)
-                                            {
-                                                IgnoreAspectRatio = false,
-                                            };
-                                            tempWaifu.Resize(size);
-                                            img.Draw(new DrawableComposite(x, y, tempWaifu));
-                                        }
-                                        await db.SaveChangesAsync();
-                                    }
-                                }
+                                    IgnoreAspectRatio = false,
+                                    FillArea = true
+                                };
+                                tempBelovedWaifu.Resize(size);
+                                tempBelovedWaifu.Crop(100, 155);
+                                image.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
                             }
-                            if (!nextH)
-                            {
-                                x += 56;
-                                nextH = true;
-                            }
-                            else
-                            {
-                                x = 20;
-                                nextH = false;
-                            }
-                            if (!nextV)
-                            {
-                                y += 82;
-                                nextV = true;
-                            }
-                            else
-                            {
-                                nextV = false;
-                            }
+                        }
+                        else
+                        {
+                            addWaifuPicture = true;
                         }
                     }
-                    img.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(137, 100, 365, 285));
-                    
-                    if (profileInfo.BelovedWaifu != null)
+                }
+                catch
+                {
+                    addWaifuPicture = true;
+                }
+
+                if (addWaifuPicture && !getWaifuPicture)
+                {
+                    try
                     {
-                        var belovedWaifuSettings = new MagickReadSettings()
-                        {
-                            BackgroundColor = MagickColors.Transparent,
-                            FillColor = MagickColors.White,
-                            Font = aweryFont,
-                            TextGravity = Gravity.Center,
-                            Width = 110,
-                            Height = 20
-                        };
-
-                        using (var belovedWaifu = new MagickImage("caption:" + profileInfo.BelovedWaifu.WaifuName, belovedWaifuSettings))
-                        {
-                            img.Draw(new DrawableComposite(375, 100, belovedWaifu));
-                        }
-
-                        var waifuPicture = profileInfo.BelovedWaifu.WaifuPicture;
-                        if (!String.IsNullOrEmpty(profileInfo.BelovedWaifu.BelovedWaifuPicture))
-                            waifuPicture = profileInfo.BelovedWaifu.BelovedWaifuPicture;
-
-                        using (var belovedWaifu = await http.GetAsync(waifuPicture))
+                        using (var belovedWaifu = await http.GetAsync(profileInfo.BelovedWaifu.WaifuPicture).ConfigureAwait(false))
                         {
                             if (belovedWaifu.IsSuccessStatusCode)
                             {
-                                using (var tempBelovedWaifu = new MagickImage(await belovedWaifu.Content.ReadAsStreamAsync()))
+                                using (var tempBelovedWaifu = new MagickImage(await belovedWaifu.Content.ReadAsStreamAsync().ConfigureAwait(false)))
                                 {
                                     var size = new MagickGeometry(100, 155)
                                     {
@@ -381,226 +610,106 @@ namespace RiasBot.Modules.Utility.Services
                                     };
                                     tempBelovedWaifu.Resize(size);
                                     tempBelovedWaifu.Crop(100, 155);
-                                    img.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
+                                    image.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
                                 }
                             }
                             else
                             {
-                                using (var belovedWaifuDefault = await http.GetAsync(profileInfo.BelovedWaifu.WaifuPicture))
+                                getWaifuPicture = true;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        getWaifuPicture = true;
+                    }
+                }
+
+                if (getWaifuPicture)
+                {
+                    var waifu = profileInfo.BelovedWaifu;
+                    //if it's a custom waifu
+                    if (waifu.WaifuId == 0) return;
+                    
+                    var obj = await _animeService.CharacterSearch(waifu.WaifuId);
+                    waifu.WaifuPicture = (string)obj.image.large;
+                    await Task.Run(async () => await SaveNewWaifuPicture(user, waifu)).ConfigureAwait(false);
+                    
+                    try
+                    {
+                        using (var belovedWaifu = await http.GetAsync(waifu.WaifuPicture).ConfigureAwait(false))
+                        {
+                            if (belovedWaifu.IsSuccessStatusCode)
+                            {
+                                using (var tempBelovedWaifu = new MagickImage(await belovedWaifu.Content.ReadAsStreamAsync().ConfigureAwait(false)))
                                 {
-                                    if (belovedWaifuDefault.IsSuccessStatusCode)
+                                    var size = new MagickGeometry(100, 155)
                                     {
-                                        using (var tempBelovedWaifu = new MagickImage(await belovedWaifuDefault.Content.ReadAsStreamAsync()))
-                                        {
-                                            var size = new MagickGeometry(100, 155)
-                                            {
-                                                IgnoreAspectRatio = false,
-                                            };
-                                            tempBelovedWaifu.Resize(size);
-                                            img.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        using (var db = _db.GetDbContext())
-                                        {
-                                            var obj = await _animeService.CharacterSearch(profileInfo.BelovedWaifu.WaifuId);
-                                            profileInfo.BelovedWaifu.WaifuPicture = (string)obj.image.large;
-                                            using (var belovedWaifuDefaultUpdate = await http.GetStreamAsync(profileInfo.BelovedWaifu.WaifuPicture))
-                                            using (var tempBelovedWaifu = new MagickImage(belovedWaifuDefaultUpdate))
-                                            {
-                                                var size = new MagickGeometry(100, 155)
-                                                {
-                                                    IgnoreAspectRatio = false,
-                                                };
-                                                tempBelovedWaifu.Resize(size);
-                                                img.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
-                                            }
-                                            await db.SaveChangesAsync();
-                                        }
-                                    }
+                                        IgnoreAspectRatio = false,
+                                        FillArea = true
+                                    };
+                                    tempBelovedWaifu.Resize(size);
+                                    tempBelovedWaifu.Crop(100, 155);
+                                    image.Draw(new DrawableComposite(380, 125, tempBelovedWaifu));
                                 }
                             }
                         }
                     }
-                    else
+                    catch
                     {
-                        img.Draw(new Drawables().FontPointSize(17)
-                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Center)
-                        .Text(430, 110, "Beloved Waifu"));
+                        //ignored
                     }
-                    img.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(375, 120, 485, 285));
-
-                    // XP bar
-                    img.Draw(new Drawables().StrokeWidth(1).StrokeColor(accentColor).FillColor(MagickColors.Transparent).Rectangle(147, 110, 355, 130));
-
-                    var globalCurrentXp = profileInfo.GlobalXp;
-                    var globalRequiredXp = 0;
-                    while (globalCurrentXp >= 0)
-                    {
-                        globalRequiredXp += 30;
-                        globalCurrentXp -= globalRequiredXp;
-                    }
-                    img.Draw(new Drawables().FillColor(accentColor).Rectangle(147, 110, 147 + (208 * ((globalCurrentXp + globalRequiredXp) / (float)globalRequiredXp)), 130));
-                    img.Draw(new Drawables().FontPointSize(12)
-                        .Font(arialFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Left)
-                        .Text(147, 145, (globalCurrentXp + globalRequiredXp).ToString()));
-                    img.Draw(new Drawables().FontPointSize(12)
-                        .Font(arialFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Right)
-                        .Text(355, 145, globalRequiredXp.ToString()));
-
-                    // Global Level
-                    img.Draw(new Drawables().FontPointSize(18)
-                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Center)
-                        .Text(170, 165, "Level"));
-                    img.Draw(new Drawables().FontPointSize(25)
-                        .Font(arialFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Center)
-                        .Text(170, 195, profileInfo.GlobalLevel.ToString()));
-
-                    // Heart Diamonds
-                    img.Draw(new Drawables().FontPointSize(13)
-                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Left)
-                        .Text(210, 165, "Currency"));
-                    using (var tempHeartDiamond = new MagickImage(Environment.CurrentDirectory + heartDiamondPath))
-                    {
-                        var size = new MagickGeometry(20, 20)
-                        {
-                            IgnoreAspectRatio = false,
-                        };
-                        tempHeartDiamond.Resize(size);
-                        img.Draw(new DrawableComposite(345, 153, tempHeartDiamond));
-                    }
-                    img.Draw(new Drawables().FontPointSize(13)
-                        .Font(arialFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Right)
-                        .Text(343, 165, profileInfo.Currency.ToString()));
-                    // Total XP
-                    img.Draw(new Drawables().FontPointSize(13)
-                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Left)
-                        .Text(210, 180, "Total XP"));
-                    img.Draw(new Drawables().FontPointSize(13)
-                        .Font(arialFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Right)
-                        .Text(343, 180, profileInfo.GlobalXp.ToString()));
-                    // Rank
-                    img.Draw(new Drawables().FontPointSize(13)
-                        .Font(aweryFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Left)
-                        .Text(210, 195, "Rank"));
-                    img.Draw(new Drawables().FontPointSize(13)
-                        .Font(arialFont, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
-                        .FillColor(MagickColors.White)
-                        .TextAlignment(TextAlignment.Right)
-                        .Text(343, 195, "#" + profileInfo.Rank.ToString()));
-
-                    // Bio
-                    img.Draw(new Drawables().RoundRectangle(147, 207, 355, 275, 5, 5)
-                        .FillColor(MagickColors.White));
-                    var bioBoxsettings = new MagickReadSettings()
-                    {
-                        BackgroundColor = MagickColors.Transparent,
-                        FillColor = MagickColors.Black,
-                        Font = meiryoFont,
-                        FontPointsize = 9,
-                        Width = 198
-                    };
-
-                    var caption = $"caption:{profileInfo.Bio}";
-
-                    using (var image = new MagickImage(caption, bioBoxsettings))
-                    {
-                        img.Draw(new DrawableComposite(152, 212, image));
-                    }
-
-                    var imageStream = new MemoryStream();
-                    img.Write(imageStream, MagickFormat.Png);
-                    imageStream.Position = 0;
-                    return imageStream;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    return null;
                 }
             }
         }
 
-        public ProfileInfo GetProfieInfo(ulong userID)
+        private ProfileInfo GetProfileInfo(IGuildUser user)
         {
             using (var db = _db.GetDbContext())
             {
                 var profileInfo = new ProfileInfo();
-                var waifus = db.Waifus.Where(x => x.UserId == userID);
-
-                if (waifus != null)
+                var waifus = db.Waifus.Where(x => x.UserId == user.Id);
+                 
+                if (waifus.Any())
                 {
-                    profileInfo.Waifus = waifus.Except(waifus.Where(x => x.IsPrimary == true)).ToList();
-                    var belovedWaifu = waifus.Where(x => x.IsPrimary == true).FirstOrDefault();
-
-                    if (belovedWaifu != null)
-                    {
-                        profileInfo.BelovedWaifu = belovedWaifu;
-                    }
+                    profileInfo.Waifus = waifus.Except(waifus.Where(waifu => waifu.IsPrimary)).ToList();
+                    profileInfo.BelovedWaifu = waifus.FirstOrDefault(waifu => waifu.IsPrimary);
                 }
-                var userDb = db.Users.Where(x => x.UserId == userID).FirstOrDefault();
+                
+                var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
                 if (userDb != null)
                 {
-                    var globalRanks = db.Users.OrderByDescending(x => x.Xp).Select(y => y.Xp).ToList();
-                    var globalRank = globalRanks.IndexOf(userDb?.Xp ?? -1) + 1;
+                    var globalRank = db.Users.OrderByDescending(x => x.Xp).ToList().IndexOf(userDb) + 1;
 
                     profileInfo.Currency = userDb.Currency;
                     profileInfo.GlobalXp = userDb.Xp;
                     profileInfo.GlobalLevel = userDb.Level;
                     profileInfo.Rank = globalRank;
                 }
-                var profileDb = db.Profile.Where(x => x.UserId == userID).FirstOrDefault();
+                
+                var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
                 if (profileDb != null)
                 {
-                    profileInfo.MarriedUser = profileDb.MarriedUser;
-
-                    if (!String.IsNullOrEmpty(profileDb.Bio))
-                        profileInfo.Bio = profileDb.Bio;
-                    else
-                        profileInfo.Bio = DefaultProfileBio;
+                    profileInfo.Bio = !string.IsNullOrEmpty(profileDb.Bio) ? profileDb.Bio : DefaultProfileBio;
                 }
                 else
                 {
                     profileInfo.Bio = DefaultProfileBio;
                 }
+                
                 return profileInfo;
             }
         }
 
-        public ProfileSettings GetProfileSettings(ulong userID)
+        private ProfileSettings GetProfileSettings(IGuildUser user)
         {
             using (var db = _db.GetDbContext())
             {
                 var profileSettings = new ProfileSettings();
-                var profileDb = db.Profile.Where(x => x.UserId == userID).FirstOrDefault();
+                var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
                 if (profileDb != null)
                 {
-                    if (!String.IsNullOrEmpty(profileDb.BackgroundUrl))
-                        profileSettings.BackgroundUrl = profileDb.BackgroundUrl;
-                    else
-                        profileSettings.BackgroundUrl = DefaultProfileBackground;
-
+                    profileSettings.BackgroundUrl = !string.IsNullOrEmpty(profileDb.BackgroundUrl) ? profileDb.BackgroundUrl : DefaultProfileBackground;
                     profileSettings.BackgroundDim = profileDb.BackgroundDim;
                 }
                 else
@@ -608,31 +717,17 @@ namespace RiasBot.Modules.Utility.Services
                     profileSettings.BackgroundUrl = DefaultProfileBackground;
                     profileSettings.BackgroundDim = 50;
                 }
+                
                 return profileSettings;
             }
         }
 
-        private MagickColor GetUserHighRoleColor(IRole role)
+        private static MagickColor GetUserHighRoleColor(IRole role)
         {
-            if (role.Name != "@everyone")
-            {
-                if (!role.Color.Equals(Color.Default))
-                {
-                    var r = role.Color.R;
-                    var g = role.Color.G;
-                    var b = role.Color.B;
-
-                    return MagickColor.FromRgb(r, g, b);
-                }
-                else
-                {
-                    return MagickColor.FromRgb(255, 255, 255);
-                }
-            }
-            else
-            {
+            if (string.Equals(role.Name, "@everyone") || role.Color.Equals(Color.Default))
                 return MagickColor.FromRgb(255, 255, 255);
-            }
+
+            return MagickColor.FromRgb(role.Color.R, role.Color.G, role.Color.B);
         }
     }
 
@@ -643,8 +738,7 @@ namespace RiasBot.Modules.Utility.Services
         public int GlobalLevel { get; set; }
         public int Rank { get; set; }
         public Waifus BelovedWaifu { get; set; }
-        public List<Waifus> Waifus { get; set; }
-        public ulong MarriedUser { get; set; }
+        public IList<Waifus> Waifus { get; set; }
         public string Bio { get; set; }
     }
 

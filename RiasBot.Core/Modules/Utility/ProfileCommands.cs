@@ -44,7 +44,7 @@ namespace RiasBot.Modules.Utility
                 }
                 var highestRole = roles.OrderByDescending(x => x.Position).Select(y => y).FirstOrDefault();
 
-                using (var img = await _service.GenerateProfileImage((IGuildUser)user, highestRole))
+                using (var img = await _service.GenerateProfileImageAsync((IGuildUser)user, highestRole))
                 {
                     if (img != null)
                         await Context.Channel.SendFileAsync(img, $"{user.Id}_profile.png").ConfigureAwait(false);
