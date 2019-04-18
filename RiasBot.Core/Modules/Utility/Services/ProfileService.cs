@@ -436,7 +436,10 @@ namespace RiasBot.Modules.Utility.Services
             var y = 125;
             var nextV = true; //fourth waifu
 
-            foreach (var waifu in profileInfo.Waifus.Take(4).OrderBy(w => w.Id))
+            var waifus = profileInfo.Waifus;
+            if (!waifus.Any()) return;
+            
+            foreach (var waifu in waifus.OrderBy(w => w.Id).Take(4))
             {
                 //if the waifu image url is not working
                 //replace the old CDN url from AniList with the new one
