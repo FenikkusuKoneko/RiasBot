@@ -75,7 +75,7 @@ namespace RiasBot.Modules.Administration
                             var user = await Context.Guild.GetUserAsync(warnings[index].UserId).ConfigureAwait(false);
                             if (user != null)
                             {
-                                warnUsers.Add($"{index + 1}. {user}");
+                                warnUsers.Add($"{index + 1}. {user} ({user.Id})");
                                 index++;
                             }
                             else
@@ -162,26 +162,33 @@ namespace RiasBot.Modules.Administration
             [Priority(1)]
             public async Task WarningClearAsync(IGuildUser user, int index)
             {
-                if (user is null)
-                {
-                    await Context.Channel.SendErrorMessageAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
-                    return;
-                }
-
                 using (var db = _db.GetDbContext())
                 {
                     var warnings = db.Warnings.Where(x => x.GuildId == Context.Guild.Id).Where(y => y.UserId == user.Id).ToList();
 
-                    if (warnings.Count == 0)
+                    if (!warnings.Any())
                     {
                         await Context.Channel.SendConfirmationMessageAsync("The user doesn't have any warning.");
                         return;
                     }
-                    if ((index - 1) < warnings.Count)
+
+                    index--;
+                    if (index > 0)
                     {
-                        db.Remove(warnings[index - 1]);
-                        await db.SaveChangesAsync().ConfigureAwait(false);
-                        await Context.Channel.SendConfirmationMessageAsync("Warning removed!");
+                        if (index < warnings.Count)
+                        {
+                            db.Remove(warnings[index]);
+                            await db.SaveChangesAsync().ConfigureAwait(false);
+                            await Context.Channel.SendConfirmationMessageAsync("Warning removed!");
+                        }
+                        else
+                        {
+                            await Context.Channel.SendErrorMessageAsync("I couldn't find the warning!").ConfigureAwait(false);
+                        }
+                    }
+                    else
+                    {
+                        await Context.Channel.SendErrorMessageAsync("The index must be higher than 0!").ConfigureAwait(false);
                     }
                 }
             }
@@ -193,28 +200,19 @@ namespace RiasBot.Modules.Administration
             [Priority(0)]
             public async Task WarningClearAsync(IGuildUser user, string all)
             {
-                if (user is null)
-                {
-                    await Context.Channel.SendErrorMessageAsync($"{Context.Message.Author.Mention} I couldn't find the user.");
-                    return;
-                }
-
                 using (var db = _db.GetDbContext())
                 {
                     var warnings = db.Warnings.Where(x => x.GuildId == Context.Guild.Id).Where(y => y.UserId == user.Id).ToList();
 
-                    if (warnings.Count == 0)
+                    if (!warnings.Any())
                     {
                         await Context.Channel.SendConfirmationMessageAsync("The user doesn't have any warning.");
                     }
                     else
                     {
-                        if (all == "all")
+                        if (string.Equals(all, "all", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            foreach (var warning in warnings)
-                            {
-                                db.Remove(warning);
-                            }
+                            db.RemoveRange(warnings);
                             await db.SaveChangesAsync().ConfigureAwait(false);
                             await Context.Channel.SendConfirmationMessageAsync("All warnings removed!");
                         }

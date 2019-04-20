@@ -30,6 +30,13 @@ namespace RiasBot.Modules.Administration.Services
                 var warnings = db.Warnings.Where(x => x.GuildId == guild.Id).Where(y => y.UserId == user.Id).ToList();
 
                 var nrWarnings = warnings.Count;
+
+                if (nrWarnings >= 10)
+                {
+                    await channel.SendErrorMessageAsync("The user has 10 warnings. Limit reached!").ConfigureAwait(false);
+                    return;
+                }
+                
                 var warning = new Warnings { GuildId = guild.Id, UserId = user.Id, Reason = reason, Moderator = moderator.Id };
 
                 var embed = new EmbedBuilder().WithColor(0xffff00);
@@ -45,8 +52,17 @@ namespace RiasBot.Modules.Administration.Services
                     var modlog = await guild.GetTextChannelAsync(guildDb.ModLogChannel).ConfigureAwait(false);
                     if (modlog != null)
                     {
-                        await message.AddReactionAsync(new Emoji("✅")).ConfigureAwait(false);
-                        await modlog.SendMessageAsync("", embed: embed.Build()).ConfigureAwait(false);
+                        var currentUser = await guild.GetCurrentUserAsync();
+                        var preconditions = currentUser.GetPermissions(modlog);
+                        if (preconditions.ViewChannel && preconditions.SendMessages)
+                        {
+                            await message.AddReactionAsync(new Emoji("✅")).ConfigureAwait(false);
+                            await modlog.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+                        }
                     }
                     else
                     {
