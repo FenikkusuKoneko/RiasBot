@@ -11,7 +11,7 @@ namespace RiasBot.Commons.Attributes
     /// or any command in this module. </summary>
     /// <remarks>This is backed by an in-memory collection
     /// and will not persist with restarts.</remarks>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = false)]
     public sealed class RatelimitAttribute : PreconditionAttribute
     {
         private readonly uint _invokeLimit;
@@ -69,36 +69,32 @@ namespace RiasBot.Commons.Attributes
         }
 
         /// <inheritdoc />
-        public override Task<PreconditionResult> CheckPermissionsAsync(
+        public override async Task<PreconditionResult> CheckPermissionsAsync(
             ICommandContext context,
             CommandInfo command,
             IServiceProvider services)
         {
             if (_noLimitInDMs && context.Channel is IPrivateChannel)
-                return Task.FromResult(PreconditionResult.FromSuccess());
+                return await Task.FromResult(PreconditionResult.FromSuccess());
 
-            if (_noLimitForAdmins && context.User is IGuildUser gu && gu.GuildPermissions.Administrator)
-                return Task.FromResult(PreconditionResult.FromSuccess());
+            if (_noLimitForAdmins && context.User is IGuildUser guild && guild.GuildPermissions.Administrator)
+                return await Task.FromResult(PreconditionResult.FromSuccess());
 
             var now = DateTime.UtcNow;
             var key = _applyPerGuild ? (context.User.Id, context.Guild?.Id) : (context.User.Id, null);
 
-            var timeout = (_invokeTracker.TryGetValue(key, out var t)
-                && ((now - t.FirstInvoke) < _invokeLimitPeriod))
-                    ? t : new CommandTimeout(now);
+            var timeout = _invokeTracker.TryGetValue(key, out var t) && now - t.FirstInvoke < _invokeLimitPeriod ? t : new CommandTimeout(now);
 
             timeout.TimesInvoked++;
 
             if (timeout.TimesInvoked <= _invokeLimit)
             {
                 _invokeTracker[key] = timeout;
-                return Task.FromResult(PreconditionResult.FromSuccess());
+                return await Task.FromResult(PreconditionResult.FromSuccess());
             }
-            else
-            {
-                //just for seconds
-                return Task.FromResult(PreconditionResult.FromError($"Hey, calm down! Take a breath and try again in {(_invokeLimitPeriod.Subtract(now - t.FirstInvoke)).Seconds} seconds."));
-            }
+
+            //just for seconds
+            return await Task.FromResult(PreconditionResult.FromError($"Hey, calm down! Take a breath and try again in {_invokeLimitPeriod.Subtract(now - t?.FirstInvoke ?? TimeSpan.Zero).Seconds} seconds."));
         }
 
         private class CommandTimeout
