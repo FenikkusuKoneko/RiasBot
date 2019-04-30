@@ -26,7 +26,7 @@ namespace RiasBot.Modules.Utility.Services
 
         private const string DefaultProfileBackground = "https://i.imgur.com/CeazwG7.png";
         private const string DefaultProfileBio = "Nothing here, just dust.";
-        
+
         private readonly string _diamondHeartPath = Path.Combine(Environment.CurrentDirectory, "assets/images/diamond_heart.png");
         private readonly string _arialFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/ArialBold.ttf");
         private readonly string _aweryFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/Awery.ttf");
@@ -137,7 +137,7 @@ namespace RiasBot.Modules.Utility.Services
                         .FillColor(MagickColors.White)
                         .TextAlignment(TextAlignment.Left)
                         .Text(210, 165, "Currency"));
-                    
+
                     // Total XP
                     img.Draw(new Drawables().FontPointSize(13)
                         .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
@@ -174,39 +174,39 @@ namespace RiasBot.Modules.Utility.Services
             using (var image = new MagickImage(MagickColors.White, 500, 300))
             {
                 http.Timeout = TimeSpan.FromSeconds(10);
-                
+
                 //Init
                 var accentColor = GetUserHighRoleColor(highestRole);
                 var profileInfo = GetProfileInfo(user);
-                
+
                 //Background
                 await AddBackgroundAsync(http, user, image).ConfigureAwait(false);
-                
+
                 //Avatar
                 await AddAvatarAsync(http, user, image).ConfigureAwait(false);
-                
+
                 //Username & Nickname
                 AddUsernameAndNickname(user, image);
-                
+
                 //Waifus box
                 image.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(15, 120, 127, 284));
                 //Info box
                 image.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(375, 120, 485, 285));
                 //Beloved waifu box
                 image.Draw(new Drawables().StrokeWidth(2).StrokeColor(MagickColors.White).FillColor(MagickColors.Transparent).Rectangle(137, 100, 365, 285));
-                
+
                 //XP bar
                 image.Draw(new Drawables().StrokeWidth(1).StrokeColor(accentColor).FillColor(MagickColors.Transparent).Rectangle(147, 110, 355, 130));
-                
+
                 //AddInfo + Fill XP bar
                 AddInfo(profileInfo, image, accentColor);
-                
+
                 //Waifus
                 await AddWaifusAsync(http, profileInfo, user, image).ConfigureAwait(false);
-                
+
                 //Beloved waifu
                 await AddBelovedWaifuAsync(http, profileInfo, user, image).ConfigureAwait(false);
-                
+
                 //Write
                 var imageStream = new MemoryStream();
                 image.Write(imageStream, MagickFormat.Png);
@@ -219,7 +219,7 @@ namespace RiasBot.Modules.Utility.Services
         {
             var profileSettings = GetProfileSettings(user);
             var addDefaultBackground = false;
-            
+
             try
             {
                 using (var bg = await http.GetAsync(profileSettings.BackgroundUrl).ConfigureAwait(false))
@@ -233,7 +233,7 @@ namespace RiasBot.Modules.Utility.Services
                                 IgnoreAspectRatio = false,
                                 FillArea = true
                             };
-                            
+
                             tempBg.Resize(size);
                             image.Draw(new DrawableComposite(0, 0, tempBg));
                         }
@@ -276,7 +276,7 @@ namespace RiasBot.Modules.Utility.Services
                     //ignored
                 }
             }
-            
+
             //Background dim
             var dim = ((float)profileSettings.BackgroundDim / 100) * 255;
             image.Draw(new Drawables().FillColor(MagickColor.FromRgba(0, 0, 0, (byte)dim)).Rectangle(0, 0, 500, 300));
@@ -301,7 +301,7 @@ namespace RiasBot.Modules.Utility.Services
         private void AddUsernameAndNickname(IGuildUser user, IMagickImage image)
         {
             var nickname = user.Nickname;
-            
+
             var nameSettings = new MagickReadSettings
             {
                 BackgroundColor = MagickColors.Transparent,
@@ -330,11 +330,11 @@ namespace RiasBot.Modules.Utility.Services
             var globalLevel = profileInfo.GlobalLevel;
             var globalCurrentXp = profileInfo.GlobalXp - (30 + globalLevel * 30) * globalLevel / 2;
             var globalNextLevelXp = (globalLevel + 1) * 30;
-            
-            
+
+
             image.Draw(new Drawables().FillColor(accentColor).Rectangle(147, 110,
                 147 + 208 * ((double)globalCurrentXp / globalNextLevelXp), 130));
-            
+
             //XP texts
             image.Draw(new Drawables().FontPointSize(12)
                 .Font(_arialFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
@@ -346,7 +346,7 @@ namespace RiasBot.Modules.Utility.Services
                 .FillColor(MagickColors.White)
                 .TextAlignment(TextAlignment.Right)
                 .Text(355, 145, globalNextLevelXp.ToString()));
-            
+
             // Global Level
             image.Draw(new Drawables().FontPointSize(18)
                 .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
@@ -379,7 +379,7 @@ namespace RiasBot.Modules.Utility.Services
                 .FillColor(MagickColors.White)
                 .TextAlignment(TextAlignment.Right)
                 .Text(343, 165, profileInfo.Currency.ToString()));
-            
+
             // Total XP
             image.Draw(new Drawables().FontPointSize(13)
                 .Font(_aweryFontPath, FontStyleType.Normal, FontWeight.Normal, FontStretch.Normal)
@@ -402,7 +402,7 @@ namespace RiasBot.Modules.Utility.Services
                 .FillColor(MagickColors.White)
                 .TextAlignment(TextAlignment.Right)
                 .Text(343, 195, $"#{profileInfo.Rank}"));
-            
+
             // Bio
             image.Draw(new Drawables().RoundRectangle(147, 207, 355, 275, 5, 5)
                 .FillColor(MagickColors.White));
@@ -430,7 +430,7 @@ namespace RiasBot.Modules.Utility.Services
                 .FillColor(MagickColors.White)
                 .TextAlignment(TextAlignment.Center)
                 .Text(70, 115, "Top Waifus"));
-            
+
             var x = 20;
             var nextH = false; //second waifu
             var y = 125;
@@ -438,7 +438,7 @@ namespace RiasBot.Modules.Utility.Services
 
             var waifus = profileInfo.Waifus;
             if (!waifus.Any()) return;
-            
+
             foreach (var waifu in waifus.OrderBy(w => w.Id).Take(4))
             {
                 //if the waifu image url is not working
@@ -470,12 +470,12 @@ namespace RiasBot.Modules.Utility.Services
                 {
                     getWaifuPicture = true;
                 }
-                
+
                 if (getWaifuPicture)
                 {
                     //if it's a custom waifu
                     if (waifu.WaifuId == 0) return;
-                    
+
                     var obj = await _animeService.CharacterSearch(waifu.WaifuId);
                     waifu.WaifuPicture = (string)obj.image.large;
                     await Task.Run(async () => await SaveNewWaifuPicture(user, waifu)).ConfigureAwait(false);
@@ -497,7 +497,7 @@ namespace RiasBot.Modules.Utility.Services
                         }
                     }
                 }
-                
+
                 //Change the X and Y position to draw the next waifu
                 if (!nextH)
                 {
@@ -547,15 +547,15 @@ namespace RiasBot.Modules.Utility.Services
                     Width = 110,
                     Height = 20
                 };
-                
+
                 using (var tempBelovedWaifuText = new MagickImage("caption:" + profileInfo.BelovedWaifu.WaifuName, belovedWaifuSettings))
                 {
                     image.Draw(new DrawableComposite(375, 100, tempBelovedWaifuText));
                 }
-                
+
                 //if the custom waifu image cannot be downloaded then add the waifu image
                 var addWaifuPicture = false;
-                
+
                 //if the waifu image url is not working
                 //replace the old CDN url from AniList with the new one
                 var getWaifuPicture = false;
@@ -633,11 +633,11 @@ namespace RiasBot.Modules.Utility.Services
                     var waifu = profileInfo.BelovedWaifu;
                     //if it's a custom waifu
                     if (waifu.WaifuId == 0) return;
-                    
+
                     var obj = await _animeService.CharacterSearch(waifu.WaifuId);
                     waifu.WaifuPicture = (string)obj.image.large;
                     await Task.Run(async () => await SaveNewWaifuPicture(user, waifu)).ConfigureAwait(false);
-                    
+
                     try
                     {
                         using (var belovedWaifu = await http.GetAsync(waifu.WaifuPicture).ConfigureAwait(false))
@@ -672,13 +672,10 @@ namespace RiasBot.Modules.Utility.Services
             {
                 var profileInfo = new ProfileInfo();
                 var waifus = db.Waifus.Where(x => x.UserId == user.Id);
-                 
-                if (waifus.Any())
-                {
-                    profileInfo.Waifus = waifus.Except(waifus.Where(waifu => waifu.IsPrimary)).ToList();
-                    profileInfo.BelovedWaifu = waifus.FirstOrDefault(waifu => waifu.IsPrimary);
-                }
-                
+
+                profileInfo.Waifus = waifus.Except(waifus.Where(waifu => waifu.IsPrimary)).ToList();
+                profileInfo.BelovedWaifu = waifus.FirstOrDefault(waifu => waifu.IsPrimary);
+
                 var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
                 if (userDb != null)
                 {
@@ -689,7 +686,7 @@ namespace RiasBot.Modules.Utility.Services
                     profileInfo.GlobalLevel = userDb.Level;
                     profileInfo.Rank = globalRank;
                 }
-                
+
                 var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
                 if (profileDb != null)
                 {
@@ -699,7 +696,7 @@ namespace RiasBot.Modules.Utility.Services
                 {
                     profileInfo.Bio = DefaultProfileBio;
                 }
-                
+
                 return profileInfo;
             }
         }
@@ -720,7 +717,7 @@ namespace RiasBot.Modules.Utility.Services
                     profileSettings.BackgroundUrl = DefaultProfileBackground;
                     profileSettings.BackgroundDim = 50;
                 }
-                
+
                 return profileSettings;
             }
         }
