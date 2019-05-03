@@ -130,7 +130,7 @@ namespace RiasBot.Modules.Administration
                     }
                     await db.SaveChangesAsync().ConfigureAwait(false);
                     await Context.Channel.SendConfirmationMessageAsync("New mute role set.");
-                    await Task.Factory.StartNew(() => _service.AddMuteRoleToChannels(role, Context.Guild));
+                    await Task.Factory.StartNew(() => _service.AddMuteRoleToChannelsAsync(role, Context.Guild));
                 }
             }
         }

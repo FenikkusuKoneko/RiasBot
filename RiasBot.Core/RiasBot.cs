@@ -15,7 +15,7 @@ namespace RiasBot
 {
     public class RiasBot
     {
-        public const string Version = "1.22.4";
+        public const string Version = "1.22.5";
         public const uint GoodColor = 0x009688;
         public const uint BadColor = 0xff0000;
         public const string Currency = "<a:diamond_heart:546102072861392902>";
