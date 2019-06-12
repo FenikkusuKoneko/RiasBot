@@ -23,7 +23,7 @@ namespace RiasBot
         public const string Author = "Koneko#0001";
         public const ulong KonekoId = 327927038360944640;
         public const ulong BotId = 381387277764395008;
-        public const string CreatorServer = "https://discord.gg/VPfBvBt";
+        public const string CreatorServer = "https://discord.gg/gFq4teC";
         public const ulong SupportServer = 416492045859946507;
         public const string Patreon = "https://www.patreon.com/riasbot";
         public const string Website = "https://riasbot.me/";
