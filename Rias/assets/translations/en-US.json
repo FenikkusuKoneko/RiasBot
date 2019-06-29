@@ -1,0 +1,4 @@
+{
+  "attribute_owner_only": "This command can be ran only by master.",
+  "service_command_not_executed": "The command couldn't be executed"
+}

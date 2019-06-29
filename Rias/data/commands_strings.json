@@ -1,0 +1,8 @@
+{  
+  "test": {
+    "Description": "Test.",
+    "Remarks": [
+      "[prefix]test"
+    ]
+  }
+}

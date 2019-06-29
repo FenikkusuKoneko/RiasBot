@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <LangVersion>7.3</LangVersion>
+        <NoWarn>NU1701</NoWarn>        
+        <PackageVersion>2.0.0-alpha</PackageVersion>
+        <Copyright>2018-2019 Koneko</Copyright>
+        <PackageProjectUrl>https://riasbot.me</PackageProjectUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Rias.Core\Rias.Core.csproj" />
+    </ItemGroup>
+
+</Project>

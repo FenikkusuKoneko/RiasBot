@@ -1,0 +1,7 @@
+.git/
+.idea/
+.vs/
+bin/
+obj/
+Rias/data/credentials.json
+Rias/logs/
