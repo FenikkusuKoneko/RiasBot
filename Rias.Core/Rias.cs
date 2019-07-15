@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Database;
@@ -38,6 +39,7 @@ namespace Rias.Core
             await StartAsync();
 
             var provider = InitializeServices();
+            ApplyDatabaseMigrations(provider.GetRequiredService<RiasDbContext>());
             provider.GetRequiredService<LoggingService>();
             provider.GetRequiredService<CommandHandlerService>();
 
@@ -50,7 +52,8 @@ namespace Rias.Core
                 .AddSingleton(_client)
                 .AddSingleton(_commandService)
                 .AddSingleton(_creds)
-                .AddSingleton<Translations>();
+                .AddSingleton<Translations>()
+                .AddTransient<RiasDbContext>();
 
             var assembly = Assembly.GetAssembly(typeof(Rias));
 
@@ -66,6 +69,13 @@ namespace Rias.Core
             }
             
             return services.BuildServiceProvider();
+        }
+
+        private static void ApplyDatabaseMigrations(DbContext dbContext)
+        {
+            if (!dbContext.Database.GetPendingMigrations().Any()) return;
+            dbContext.Database.Migrate();
+            dbContext.SaveChanges();
         }
 
         private async Task StartAsync()
@@ -84,13 +94,10 @@ namespace Rias.Core
                 return false;
             }
 
-            if (string.IsNullOrEmpty(_creds.Prefix))
-            {
-                Log.Error("You must set the default prefix in credentials.json!");
-                return false;
-            }
-
-            return true;
+            if (!string.IsNullOrEmpty(_creds.Prefix)) return true;
+            
+            Log.Error("You must set the default prefix in credentials.json!");
+            return false;
         }
     }
 }

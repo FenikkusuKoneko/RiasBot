@@ -1,17 +1,19 @@
+using System;
 using System.Threading.Tasks;
 using Discord;
 using Qmmands;
+using Rias.Core.Database;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
 using RiasBot.Extensions;
 
 namespace Rias.Core.Modules
 {
-    public abstract class RiasModule : ModuleBase<RiasCommandContext>
+    public abstract class RiasModule : ModuleBase<RiasCommandContext>, IDisposable
     {
         public Credentials Creds { get; set; }
         public Translations Translations { get; set; }
-        public DbService Db { get; set; }
+        public RiasDbContext Db { get; set; }
 
         /// <summary>
         /// Send a confirmation message. The form is an embed with the confirm color.<br/>
@@ -71,6 +73,11 @@ namespace Rias.Core.Modules
         protected string GetText(string key, params object[] args)
         {
             return Translations.GetText(Context.Guild.Id, Context.Command.Module.Name.ToLowerInvariant(), key, args);
+        }
+
+        public void Dispose()
+        {
+            Db?.Dispose();
         }
     }
     

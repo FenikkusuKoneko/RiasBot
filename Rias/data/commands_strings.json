@@ -1,8 +1,13 @@
-{  
-  "test": {
-    "Description": "Test.",
-    "Remarks": [
-      "[prefix]test"
+{
+  "utility": {
+    "utility": [
+      {
+        "aliases": "test",
+        "description": "Test.",
+        "remarks": [
+          "{0}test"
+        ]
+      }
     ]
   }
 }
