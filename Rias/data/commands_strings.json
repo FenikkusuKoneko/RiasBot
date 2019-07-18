@@ -1,4 +1,16 @@
 {
+  "help": {
+    "help": [
+      {
+        "aliases": "help h",
+        "description": "Shows a help info for a command, or shows the general help info if no arguments are given.",
+        "remarks": [
+          "{0}h",
+          "{0}h anime"
+        ]
+      }
+    ]
+  },
   "utility": {
     "utility": [
       {

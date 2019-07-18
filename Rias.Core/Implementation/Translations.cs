@@ -47,13 +47,16 @@ namespace Rias.Core.Implementation
             _guildLocales.TryRemove(guildId, out _);
         }
 
-        private string GetText(ulong guildId, string key)
+        private string GetText(ulong? guildId, string key)
         {
-            var locale = GetGuildLocale(guildId);
-            if (!_translations.TryGetValue(locale, out var strings))
-                throw new InvalidOperationException("The locale of the guild is invalid.");
+            if (guildId.HasValue)
+            {
+                var locale = GetGuildLocale(guildId.Value);
+                if (!_translations.TryGetValue(locale, out var strings))
+                    throw new InvalidOperationException("The locale of the guild is invalid.");
 
-            if (strings.TryGetValue(key, out var translation)) return translation;
+                if (strings.TryGetValue(key, out var translation)) return translation;
+            }
 
             if (!_translations.TryGetValue("en-US", out var enStrings))
                 throw new InvalidOperationException("The translation strings for the english locale couldn't be found.");
@@ -66,7 +69,7 @@ namespace Rias.Core.Implementation
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation and <paramref name="prefix"/> will be ignored.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is <paramref name="prefix"/>.
         /// </summary>
-        public string GetText(ulong guildId, string prefix, string key)
+        public string GetText(ulong? guildId, string prefix, string key)
         {
             return key.StartsWith("#") ? GetText(guildId, key.Remove(0, 1)) : GetText(guildId, prefix + "_" + key);
         }
@@ -76,7 +79,7 @@ namespace Rias.Core.Implementation
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation and <paramref name="prefix"/> will be ignored.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is <paramref name="prefix"/>.
         /// </summary>
-        public string GetText(ulong guildId, string prefix, string key, params object[] args)
+        public string GetText(ulong? guildId, string prefix, string key, params object[] args)
         {
             return string.Format(key.StartsWith("#") ? GetText(guildId, key.Remove(0, 1)) : GetText(guildId, prefix + "_" + key), args);
         }

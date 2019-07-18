@@ -10,6 +10,6 @@ namespace Rias.Core.Attributes
         public override ValueTask<CheckResult> CheckAsync(CommandContext context, IServiceProvider provider)
             => CheckAsync((RiasCommandContext) context, provider);
 
-        public abstract ValueTask<CheckResult> CheckAsync(RiasCommandContext context, IServiceProvider provider);
+        protected abstract ValueTask<CheckResult> CheckAsync(RiasCommandContext context, IServiceProvider provider);
     }
 }

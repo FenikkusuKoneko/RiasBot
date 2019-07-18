@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Qmmands;
@@ -22,7 +23,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected async Task<IUserMessage> ReplyConfirmationAsync(string key)
         {
-            return await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild.Id, Context.Command.Module.Name.ToLowerInvariant(), key));
+            return await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key));
         }
         
         /// <summary>
@@ -32,7 +33,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected async Task<IUserMessage> ReplyConfirmationAsync(string key, params object[] args)
         {
-            return await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild.Id, Context.Command.Module.Name.ToLowerInvariant(), key, args));
+            return await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key, args));
         }
         
         /// <summary>
@@ -42,7 +43,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected async Task<IUserMessage> ReplyErrorAsync(string key)
         {
-            return await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild.Id, Context.Command.Module.Name.ToLowerInvariant(), key));
+            return await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key));
         }
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected async Task<IUserMessage> ReplyErrorAsync(string key, params object[] args)
         {
-            return await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild.Id, Context.Command.Module.Name.ToLowerInvariant(), key, args));
+            return await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key, args));
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected string GetText(string key)
         {
-            return Translations.GetText(Context.Guild.Id, Context.Command.Module.Name.ToLowerInvariant(), key);
+            return Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key);
         }
 
         /// <summary>
@@ -72,7 +73,12 @@ namespace Rias.Core.Modules
         /// </summary>
         protected string GetText(string key, params object[] args)
         {
-            return Translations.GetText(Context.Guild.Id, Context.Command.Module.Name.ToLowerInvariant(), key, args);
+            return Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key, args);
+        }
+
+        protected string GetPrefix()
+        {
+            return Context.Guild is null ? Creds.Prefix : Db.Guilds.FirstOrDefault(g => g.GuildId == Context.Guild.Id)?.Prefix;
         }
 
         public void Dispose()

@@ -4,7 +4,7 @@ using Qmmands;
 
 namespace Rias.Core.Implementation
 {
-    public sealed class RiasCommandContext : CommandContext
+    public class RiasCommandContext : CommandContext
     {
         public DiscordSocketClient Client { get; }
         public SocketGuild Guild { get; }

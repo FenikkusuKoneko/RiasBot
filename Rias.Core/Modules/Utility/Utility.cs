@@ -1,10 +1,10 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using Microsoft.Extensions.DependencyInjection;
+using Discord.WebSocket;
 using Qmmands;
-using Rias.Core.Database;
+using Rias.Core.Attributes;
+using Rias.Core.Commons;
 
 namespace Rias.Core.Modules.Utility
 {
@@ -14,8 +14,9 @@ namespace Rias.Core.Modules.Utility
         public IServiceProvider Services { get; set; }
         
         [Command("test")]
-        public async Task TestAsync([Remainder]IGuildUser user)
+        public async Task TestAsync(SocketGuildUser user)
         {
+            new PerformanceCounter
             await Context.Channel.SendMessageAsync(user.ToString());
         }
     }
