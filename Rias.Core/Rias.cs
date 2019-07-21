@@ -7,6 +7,7 @@ using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
+using Rias.Core.Commons;
 using Rias.Core.Database;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
@@ -33,7 +34,9 @@ namespace Rias.Core
             });
             _commandService = new CommandService(new CommandServiceConfiguration
             {
-                DefaultRunMode = RunMode.Parallel
+                DefaultRunMode = RunMode.Parallel,
+                StringComparison = StringComparison.InvariantCultureIgnoreCase,
+                CooldownBucketKeyGenerator = CooldownBucketKeyGenerator
             });
 
             await StartAsync();
@@ -44,6 +47,24 @@ namespace Rias.Core
             provider.GetRequiredService<CommandHandlerService>();
 
             await Task.Delay(-1);
+        }
+
+        private object CooldownBucketKeyGenerator(object bucketType, CommandContext context, IServiceProvider provider)
+        {
+            var riasContext = (RiasCommandContext) context;
+            switch ((BucketType)bucketType)
+            {
+//                case BucketType.Guild:
+//                    return riasContext.Guild.Id;
+                case BucketType.User:
+                    return riasContext.User.Id;
+                case BucketType.GuildUser:
+                    return riasContext.Guild.Id + "_" + riasContext.User.Id;
+//                case BucketType.Channel:
+//                    return riasContext.Channel.Id;
+                default:
+                    return riasContext.User.Id;
+            }
         }
 
         private IServiceProvider InitializeServices()

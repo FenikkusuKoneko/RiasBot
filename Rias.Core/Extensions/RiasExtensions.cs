@@ -36,26 +36,6 @@ namespace Rias.Core.Extensions
                 }
             }
         }
-        
-        /// <summary>
-        ///     Convert a TimeSpan to a fancy string format: 1d23h59m59s.
-        /// </summary>
-        /// <param name="timeSpan"></param>
-        public static string FancyTimeSpanString(this TimeSpan timeSpan)
-        {
-            var formatBuilder = new StringBuilder();
-
-            if (timeSpan.Days > 0)
-                formatBuilder.Append($"{timeSpan.Days}d");
-            if (timeSpan.Hours > 0)
-                formatBuilder.Append($" {timeSpan.Hours}h");
-            if (timeSpan.Minutes > 0)
-                formatBuilder.Append($" {timeSpan.Minutes}m");
-            if (timeSpan.Hours > 0)
-                formatBuilder.Append($" {timeSpan.Seconds}s");
-
-            return formatBuilder.ToString();
-        }
 
         /// <summary>
         ///     Convert a TimeSpan to a digital string format: HH:mm:ss.

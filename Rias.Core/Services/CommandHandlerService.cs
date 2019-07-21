@@ -1,15 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Humanizer;
 using Newtonsoft.Json;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Implementation;
+using RiasBot.Extensions;
 using CommandService = Qmmands.CommandService;
 
 namespace Rias.Core.Services
@@ -108,9 +111,14 @@ namespace Rias.Core.Services
             var context = new RiasCommandContext(_client, userMessage);
             var result = await _service.ExecuteAsync(output, context, _services);
 
-            if (result is ChecksFailedResult failedResult)
+            switch (result)
             {
-                RunTask(async () => await SendErrorResultMessageAsync(context, userMessage, failedResult));
+                case ChecksFailedResult failedResult:
+                    RunTask(async () => await SendErrorResultMessageAsync(context, userMessage, failedResult));
+                    break;
+                case CommandOnCooldownResult commandOnCooldownResult:
+                    RunTask(async () => await SendCommandOnCooldownMessageAsync(context, commandOnCooldownResult));
+                    break;
             }
         }
 
@@ -134,6 +142,12 @@ namespace Rias.Core.Services
                 ? $"**{description}**:\n{string.Join("\n", failedChecks.Select(x => x.Result.Reason))}"
                 : $"**{description}**:\n{checkResult.Reason}");
             await userMessage.Channel.SendMessageAsync(embed: embed.Build());
+        }
+
+        private async Task SendCommandOnCooldownMessageAsync(RiasCommandContext context, CommandOnCooldownResult result)
+        {
+            await context.Channel.SendErrorMessageAsync(_tr.GetText(context.Guild.Id, null, "#service_command_cooldown",
+                result.Cooldowns.First().RetryAfter.Humanize(culture: CultureInfo.GetCultureInfo(_tr.GetGuildLocale(context.Guild.Id)))));
         }
 
         private class CommandData

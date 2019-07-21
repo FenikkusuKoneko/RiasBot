@@ -9,19 +9,33 @@
   "help_info_4": "Example: `{0}commands Administration`, `{0}commands Server`\n\n",
   "help_info_5": "Type `{0}allcommands` to get a list with all commands.",
   "help_links": "Links",
-  "help_invite_me": "[Invite me]({0})",
   "help_support_server": "[Join to {0}]({1})",
+  "help_invite_me": "[Invite me]({0})",
   "help_website": "[Website]({0})",
   "help_donate": "[Become a Patron]({0})",
   "help_command_not_found": "I couldn't find that command. For help type `{0}help`",
   "help_module": "Module",
   "help_example": "Example",
+  "help_modules_list": "The list with all modules (left side) and submodules (right side)",
+  "help_modules_info": "To get all commands for a module or submodule, type {0}cmds <module> or {0}cmds <submodule>",
+  "help_module_not_found": "I couldn't find the module or submodule. Type `{0}modules` to see all modules and submodules.",
+  "help_all_commands_for_module": "All commands for module {0}",
+  "help_all_commands_for_submodule": "All commands for submodule {0}",
+  "help_command_info": "For a specific command info type {0}h <command>",
+  "help_all_commands": "All commands",
+  "help_commands_not_sent": "I couldn't send you the list with all commands via DM. Please verify if you disabled receiving DMs from this server.",
 
   "common_and": "And",
   "common_or": "Or",
   "common_guild": "Guild",
   "common_dm": "DM",
   "common_group": "Group",
+  "common_user": "User",
+  "common_guilduser": "Guild user",
+  "common_cooldown": "Cooldown",
+  "common_amount": "Amount",
+  "common_period": "Period",
+  "common_per": "Per",
 
   "attribute_permission": "permission",
   "attribute_permissions": "Permissions",
@@ -31,6 +45,7 @@
   "attribute_bot_perm_guild": "I must have the {0} guild {1}.",
   "attribute_bot_perm_not_guild": "The `BotPermissionAttribute` requires this command to be used in a guild channel.",
   "attribute_context": "The command must be used in a {0}.",
-  
-  "service_command_not_executed": "The command couldn't be executed"
+
+  "service_command_not_executed": "The command couldn't be executed",
+  "service_command_cooldown": "Hey, calm down! Take a breath and try again in **{0}**."
 }

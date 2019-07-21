@@ -8,6 +8,28 @@
           "{0}h",
           "{0}h anime"
         ]
+      },
+      {
+        "aliases": "modules mdls",
+        "description": "Shows a list with all modules and submodules.",
+        "remarks": [
+          "{0}mdls"
+        ]
+      },
+      {
+        "aliases": "commands cmds",
+        "description": "Shows a list with all commands of a module or submodule.",
+        "remarks": [
+          "{0}cmds Administration",
+          "{0}cmds Moderation"
+        ]
+      },
+      {
+        "aliases": "allcommands allcmds",
+        "description": "I will DM you with all commands.",
+        "remarks": [
+          "{0}allcmds"
+        ]
       }
     ]
   },
