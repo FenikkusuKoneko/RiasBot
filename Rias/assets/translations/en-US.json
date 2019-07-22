@@ -1,7 +1,4 @@
 {
-  "administration_reason": "Reason",
-  "administration_reasons": "Reasons",
-
   "help_title": "{0} Bot v{1} help page",
   "help_info_1": "I'm based on modules and submodules. Each module has submodules and each submodule has commands.\n\n",
   "help_info_2": "Type `{0}modules` to get a list with all modules and submodules.\n\n",
@@ -15,6 +12,9 @@
   "help_donate": "[Become a Patron]({0})",
   "help_command_not_found": "I couldn't find that command. For help type `{0}help`",
   "help_module": "Module",
+  "help_requires_user_perm": "Requires User Permission",
+  "help_requires_bot_perm": "Requires Bot Permission",
+  "help_requires_owner": "Owner Only",
   "help_example": "Example",
   "help_modules_list": "The list with all modules (left side) and submodules (right side)",
   "help_modules_info": "To get all commands for a module or submodule, type {0}cmds <module> or {0}cmds <submodule>",
@@ -24,14 +24,17 @@
   "help_command_info": "For a specific command info type {0}h <command>",
   "help_all_commands": "All commands",
   "help_commands_not_sent": "I couldn't send you the list with all commands via DM. Please verify if you disabled receiving DMs from this server.",
-
+  
+  "common_yes": "Yes",
   "common_and": "And",
   "common_or": "Or",
+  "common_reason": "Reason",
+  "common_reasons": "Reasons",
   "common_guild": "Guild",
   "common_dm": "DM",
   "common_group": "Group",
   "common_user": "User",
-  "common_guilduser": "Guild user",
+  "common_guilduser": "Guild User",
   "common_cooldown": "Cooldown",
   "common_amount": "Amount",
   "common_period": "Period",

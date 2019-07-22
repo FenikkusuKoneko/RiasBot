@@ -13,7 +13,7 @@ namespace Rias.Core.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
     public class UserPermissionAttribute : RiasCheckAttribute
     {
-        private readonly GuildPermission? _guildPermission;
+        public readonly GuildPermission? GuildPermission;
 
         /// <summary>
         ///     Requires that the user invoking the command to have a specific <see cref="Discord.GuildPermission"/>.
@@ -27,12 +27,12 @@ namespace Rias.Core.Attributes
         /// </param>
         public UserPermissionAttribute(GuildPermission permission)
         {
-            _guildPermission = permission;
+            GuildPermission = permission;
         }
 
         protected override ValueTask<CheckResult> CheckAsync(RiasCommandContext context, IServiceProvider provider)
         {
-            if (!_guildPermission.HasValue)
+            if (!GuildPermission.HasValue)
                 return CheckResult.Successful;
             
             var tr = provider.GetRequiredService<Translations>();
@@ -40,11 +40,11 @@ namespace Rias.Core.Attributes
             if (!(context.User is SocketGuildUser guildUser))
                 return CheckResult.Unsuccessful(tr.GetText(null, null, "#attribute_user_perm_not_guild"));
 
-            if (guildUser.GuildPermissions.Has(_guildPermission.Value))
+            if (guildUser.GuildPermissions.Has(GuildPermission.Value))
                 return CheckResult.Successful;
             
             var userPerms = (GuildPermission) guildUser.GuildPermissions.RawValue;
-            var requiredPerms = _guildPermission ^ (_guildPermission & userPerms);
+            var requiredPerms = GuildPermission ^ (GuildPermission & userPerms);
             
             var requiredPermsList = requiredPerms
                 .ToString()

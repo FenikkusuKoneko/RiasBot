@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 using Discord;
 using Humanizer;
 using Qmmands;
+using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using RiasBot.Extensions;
 
 namespace Rias.Core.Modules.Help
 {
@@ -85,6 +85,22 @@ namespace Rias.Core.Modules.Help
             description = description.Replace("[currency]", Creds.Currency);
             embed.WithDescription(description);
 
+            foreach (var attribute in command.Checks)
+            {
+                switch (attribute)
+                {
+                    case UserPermissionAttribute userPermissionAttribute:
+                        embed.AddField(GetText("requires_user_perm"), userPermissionAttribute.GuildPermission.ToString().Replace(", ", "\n"), true);
+                        break;
+                    case BotPermissionAttribute botPermissionAttribute:
+                        embed.AddField(GetText("requires_bot_perm"), botPermissionAttribute.GuildPermission.ToString().Replace(", ", "\n"), true);
+                        break;
+                    case OwnerOnlyAttribute _:
+                        embed.AddField(GetText("requires_owner"), GetText("#common_yes"), true);
+                        break;
+                }
+            }
+            
             var moduleName = command.Module.Name;
             if (command.Module.Parent != null)
                 moduleName = $"{command.Module.Parent.Name} -> {moduleName}";
@@ -96,7 +112,7 @@ namespace Rias.Core.Modules.Help
                 var culture = CultureInfo.GetCultureInfo(Translations.GetGuildLocale(Context.Guild.Id));
                 embed.AddField(GetText("#common_cooldown"), $"{GetText("#common_amount")}: **{commandCooldown.Amount}**\n" +
                                                             $"{GetText("#common_period")}: **{commandCooldown.Per.Humanize(culture: culture)}**\n" +
-                                                            $"{GetText("#common_per")}: **{GetText($"#common_{commandCooldown.BucketType.ToString().ToLower()}").Titleize()}**", true);
+                                                            $"{GetText("#common_per")}: **{GetText($"#common_{commandCooldown.BucketType.ToString().ToLower()}")}**", true);
             }
 
             embed.AddField(GetText("example"), string.Format(command.Remarks, prefix), true);
@@ -188,7 +204,9 @@ namespace Rias.Core.Modules.Help
             var prefix = GetPrefix();
             var embed = new EmbedBuilder()
                 .WithColor(RiasUtils.ConfirmColor)
-                .WithTitle(GetText("all_commands"));
+                .WithTitle(GetText("all_commands"))
+                .WithFooter(GetText("command_info", prefix))
+                .WithCurrentTimestamp();
             
             foreach (var module in modules)
             {
@@ -208,15 +226,13 @@ namespace Rias.Core.Modules.Help
                 
                 if (embed.Fields.Count <= 20) continue;
                 
-                var received = await SendAllCommandsMessageAsync(embed, prefix);
+                var received = await SendAllCommandsMessageAsync(embed.Build());
                 if (!received) return;
 
-                embed = new EmbedBuilder()
-                    .WithColor(RiasUtils.ConfirmColor)
-                    .WithTitle(GetText("all_commands"));
+                embed.Fields = new List<EmbedFieldBuilder>();
             }
             
-            await SendAllCommandsMessageAsync(embed, prefix);
+            await SendAllCommandsMessageAsync(embed.Build());
         }
 
         /// <summary>
@@ -238,13 +254,11 @@ namespace Rias.Core.Modules.Help
                 return $"{prefix + x.Aliases.First()} {nextAlias}";
             }).ToImmutableList();
 
-        private async Task<bool> SendAllCommandsMessageAsync(EmbedBuilder embed, string prefix)
+        private async Task<bool> SendAllCommandsMessageAsync(Embed embed)
         {
-            embed.WithFooter(GetText("command_info", prefix));
-            embed.WithCurrentTimestamp();
             try
             {
-                await Context.User.SendMessageAsync(embed: embed.Build());
+                await Context.User.SendMessageAsync(embed: embed);
             }
             catch
             {

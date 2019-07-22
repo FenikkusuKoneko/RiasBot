@@ -131,10 +131,10 @@ namespace Rias.Core.Services
             var failedChecks = result.FailedChecks;
             (CheckAttribute check, CheckResult checkResult) = (null, null);
 
-            var description = _tr.GetText(guildId, null, "#administration_reason");
+            var description = _tr.GetText(guildId, null, "#common_reason");
             if (failedChecks.Count > 1)
             {
-                description = _tr.GetText(guildId, null, "#administration_reasons");
+                description = _tr.GetText(guildId, null, "#common_reasons");
                 (check, checkResult) = failedChecks.FirstOrDefault(x => x.Check is ContextAttribute);
             }
 
