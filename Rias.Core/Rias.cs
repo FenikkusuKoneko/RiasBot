@@ -18,7 +18,7 @@ namespace Rias.Core
     public class Rias
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "2.0.0-alpha";
+        public const string Version = "2.0.0";
 
         private DiscordShardedClient _client;
         private CommandService _commandService;

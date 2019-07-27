@@ -18,7 +18,7 @@ namespace Rias.Core.Services
 
         protected void RunTask(Func<Task> func)
         {
-            _ = Task.Run(async () =>
+            Task.Run(async () =>
             {
                 try
                 {

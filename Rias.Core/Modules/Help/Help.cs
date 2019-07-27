@@ -100,7 +100,7 @@ namespace Rias.Core.Modules.Help
                         break;
                 }
             }
-            
+
             var moduleName = command.Module.Name;
             if (command.Module.Parent != null)
                 moduleName = $"{command.Module.Parent.Name} -> {moduleName}";
@@ -133,22 +133,26 @@ namespace Rias.Core.Modules.Help
             var modulesString = new StringBuilder();
             foreach (var module in modules)
             {
-                modulesString.Append(module.Name).Append(" -> ");
-                var length = module.Name.Length + 4;
+                modulesString.Append(module.Name);
 
-                var firstSubmoduleAdded = false;
+                var prefix = " -> ";
+                var firstModuleAdded = false;
+
                 foreach (var submodule in module.Submodules)
                 {
-                    if (!firstSubmoduleAdded)
+                    if (!firstModuleAdded)
                     {
-                        modulesString.Append(submodule.Name);
-                        firstSubmoduleAdded = true;
+                        modulesString.Append(prefix).Append(submodule.Name);
+                        prefix = new string(' ', module.Name.Length) + prefix;
+                        firstModuleAdded = true;
+                        continue;
                     }
-                    else
-                        modulesString.Append(' ', length).Append(submodule.Name).Append("\n");
+
+                    modulesString.Append("\n").Append(prefix).Append(submodule.Name);
                 }
 
-                modulesString.Append("\n");
+                if (!firstModuleAdded)
+                    modulesString.Append("\n");
             }
 
             var embed = new EmbedBuilder()
@@ -179,7 +183,7 @@ namespace Rias.Core.Modules.Help
                 .WithColor(RiasUtils.ConfirmColor)
                 .WithTitle(GetText(isSubmodule ? "all_commands_for_submodule" : "all_commands_for_module", module.Name))
                 .AddField(module.Name, string.Join("\n", commandsAliases), true);
-            
+
             if (!isSubmodule)
             {
                 foreach (var submodule in module.Submodules)
@@ -190,7 +194,7 @@ namespace Rias.Core.Modules.Help
                     embed.AddField(submodule.Name, string.Join("\n", submoduleCommandsAliases), true);
                 }
             }
-            
+
             embed.WithFooter(GetText("command_info", prefix));
             embed.WithCurrentTimestamp();
             await Context.Channel.SendMessageAsync(embed: embed.Build());
@@ -207,12 +211,12 @@ namespace Rias.Core.Modules.Help
                 .WithTitle(GetText("all_commands"))
                 .WithFooter(GetText("command_info", prefix))
                 .WithCurrentTimestamp();
-            
+
             foreach (var module in modules)
             {
                 var moduleCommands = GetModuleCommands(module);
                 var commandsAliases = GetCommandsAliases(moduleCommands, prefix);
-                
+
                 if (commandsAliases.Any())
                     embed.AddField(module.Name, string.Join("\n", commandsAliases), true);
 
@@ -223,15 +227,15 @@ namespace Rias.Core.Modules.Help
                     if (submoduleCommandsAliases.Any())
                         embed.AddField(module.Name, string.Join("\n", submoduleCommandsAliases), true);
                 }
-                
+
                 if (embed.Fields.Count <= 20) continue;
-                
+
                 var received = await SendAllCommandsMessageAsync(embed.Build());
                 if (!received) return;
 
                 embed.Fields = new List<EmbedFieldBuilder>();
             }
-            
+
             await SendAllCommandsMessageAsync(embed.Build());
         }
 

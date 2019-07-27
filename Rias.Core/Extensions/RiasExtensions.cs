@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Rias.Core.Attributes;
 
 namespace Rias.Core.Extensions
@@ -23,7 +22,7 @@ namespace Rias.Core.Extensions
             {
                 switch (member)
                 {
-                    case FieldInfo fieldInfo:
+                    case { } fieldInfo:
                         var type = fieldInfo.FieldType;
 
                         var value = services.GetService(type);

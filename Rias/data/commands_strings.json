@@ -1,4 +1,43 @@
 {
+  "administration": {
+    "administration": [
+      {
+        "aliases": "setgreet greet",
+        "description": "Toggles the announcements in the current channel when someone joins the server.",
+        "remarks": [
+          "{0}greet"
+        ]
+      },
+      {
+        "aliases": "greetmessage greetmsg",
+        "description": "Sets the announcement message when someone joins the server.\nPlaceholders:\n`%mention%` - will mention the user\n`%user%` - will write the user's username\n`%server%` or `%guild%` - will put the name of the server\nEmbeds are supported, json form.",
+        "remarks": [
+          "{0}greetmsg Welcome %mention% to %guild%..."
+        ]
+      },
+      {
+        "aliases": "setbye bye",
+        "description": "Toggles the announcements in the current channel when someone leaves the server.",
+        "remarks": [
+          "{0}bye"
+        ]
+      },
+      {
+        "aliases": "byemessage byemsg",
+        "description": "Sets the announcement message when someone leaves the server.\nPlaceholders:\n`%mention%` - will mention the user\n`%user%` - will write the user's username\n`%server%` or `%guild%` - will put the name of the server\nEmbeds are supported, json form.",
+        "remarks": [
+          "{0}byemsg %user% left %guild%..."
+        ]
+      },
+      {
+        "aliases": "setmodlog modlog",
+        "description": "Sets the current channel as \"mod-log\" channel where I will post notifications about warn, mute, unmute, kick, ban, softban, pruneban. Provide no arguments to disable it from the current channel.",
+        "remarks": [
+          "{0}modlog"
+        ]
+      }
+    ]
+  },
   "help": {
     "help": [
       {

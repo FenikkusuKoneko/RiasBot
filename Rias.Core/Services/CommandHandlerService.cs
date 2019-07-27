@@ -13,6 +13,7 @@ using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Implementation;
 using RiasBot.Extensions;
+using Serilog;
 using CommandService = Qmmands.CommandService;
 
 namespace Rias.Core.Services
@@ -45,15 +46,18 @@ namespace Rias.Core.Services
             var assembly = Assembly.GetAssembly(typeof(Rias));
             _service.AddModules(assembly, null, module =>
             {
-                if (!commandDataJson.TryGetValue(module.Parent?.Name.ToLowerInvariant() ?? module.Name.ToLowerInvariant(), out var moduleCommands)) return;
-                if (!moduleCommands.TryGetValue(module.Name.ToLowerInvariant(), out var submoduleCommands)) return;
+                if (!commandDataJson.TryGetValue(module.Parent?.Name.ToLowerInvariant() ?? module.Name?.ToLowerInvariant(), out var moduleCommands)) return;
+                if (!moduleCommands.TryGetValue(module.Name?.ToLowerInvariant(), out var submoduleCommands)) return;
 
                 foreach (var command in module.Commands)
                 {
                     var name = command.Aliases.FirstOrDefault();
                     if (string.IsNullOrEmpty(name)) continue;
 
-                    var commandData = submoduleCommands.Find(c => c.Aliases.Split(" ").Any(a => string.Equals(a, name, StringComparison.InvariantCultureIgnoreCase)));
+                    var commandData = submoduleCommands
+                        .Find(c => c.Aliases
+                            .Split(" ")
+                            .Any(a => string.Equals(a, name, StringComparison.InvariantCultureIgnoreCase)));
                     if (commandData is null) continue;
 
                     if (!string.IsNullOrEmpty(commandData.Aliases))

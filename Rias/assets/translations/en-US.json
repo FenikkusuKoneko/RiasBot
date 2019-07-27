@@ -1,4 +1,17 @@
 {
+  "administration_greet_enabled": "The announcements for users who join the server are **enabled** in this channel.\nThe greet message is: **{0}**",
+  "administration_greet_disabled": "The announcements for users who join the server are **disabled**.",
+  "administration_greet_message_not_set": "The announcements for users who join the server cannot be enabled because the greet message is not set.",
+  "administration_greet_message_length_limit": "The greet message's length cannot be larger than {0} characters.",
+  "administration_greet_message_set": "New announcement message set for users who join the server.",
+  "administration_bye_enabled": "The announcements for users who leave the server are **enabled** in this channel.\nThe bye message is: **{0}**",
+  "administration_bye_disabled": "The announcements for users who leave the server are **disabled**.",
+  "administration_bye_message_not_set": "The announcements for users who leave the server cannot be enabled because the bye message is not set.",
+  "administration_bye_message_length_limit": "The bye message's length cannot be larger than {0} characters.",
+  "administration_bye_message_set": "New announcement message set for users who leave the server.",
+  "administration_modlog_enabled": "Notifications about warn, mute, unmute, kick, ban, unban, softban and pruneban will be posted in this channel.",
+  "administration_modlog_disabled": "The notifications about warn, mute, unmute, kick, ban, unban, softban and pruneban are **disabled**.",
+
   "help_title": "{0} Bot v{1} help page",
   "help_info_1": "I'm based on modules and submodules. Each module has submodules and each submodule has commands.\n\n",
   "help_info_2": "Type `{0}modules` to get a list with all modules and submodules.\n\n",
@@ -24,7 +37,7 @@
   "help_command_info": "For a specific command info type {0}h <command>",
   "help_all_commands": "All commands",
   "help_commands_not_sent": "I couldn't send you the list with all commands via DM. Please verify if you disabled receiving DMs from this server.",
-  
+
   "common_yes": "Yes",
   "common_and": "And",
   "common_or": "Or",
