@@ -38,7 +38,7 @@ namespace Rias.Core.Attributes
             if (context.Guild is null)
                 return CheckResult.Unsuccessful(tr.GetText(null, null, "#attribute_bot_perm_not_guild"));
 
-            var botUser = context.Guild.CurrentUser;
+            var botUser = context.CurrentGuildUser;
             if (botUser.GuildPermissions.Has(GuildPermission.Value))
                 return CheckResult.Successful;
             

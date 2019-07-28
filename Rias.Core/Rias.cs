@@ -52,19 +52,13 @@ namespace Rias.Core
         private object CooldownBucketKeyGenerator(object bucketType, CommandContext context, IServiceProvider provider)
         {
             var riasContext = (RiasCommandContext) context;
-            switch ((BucketType)bucketType)
+            return (BucketType) bucketType switch
             {
-//                case BucketType.Guild:
-//                    return riasContext.Guild.Id;
-                case BucketType.User:
-                    return riasContext.User.Id;
-                case BucketType.GuildUser:
-                    return riasContext.Guild.Id + "_" + riasContext.User.Id;
-//                case BucketType.Channel:
-//                    return riasContext.Channel.Id;
-                default:
-                    return riasContext.User.Id;
-            }
+                BucketType.Guild => (object) riasContext.Guild.Id,
+                BucketType.User => riasContext.User.Id,
+                BucketType.GuildUser => riasContext.Guild.Id + "_" + riasContext.User.Id,
+                _ => riasContext.User.Id
+            };
         }
 
         private IServiceProvider InitializeServices()

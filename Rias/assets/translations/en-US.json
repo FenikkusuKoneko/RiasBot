@@ -11,6 +11,19 @@
   "administration_bye_message_set": "New announcement message set for users who leave the server.",
   "administration_modlog_enabled": "Notifications about warn, mute, unmute, kick, ban, unban, softban and pruneban will be posted in this channel.",
   "administration_modlog_disabled": "The notifications about warn, mute, unmute, kick, ban, unban, softban and pruneban are **disabled**.",
+  "administration_category_created": "The category channel **{0}** was created successfully.",
+  "administration_category_deleted": "The category channel **{0}** was deleted successfully.",
+  "administration_category_renamed": "The name of the category channel **{0}** was renamed to **{1}** successfully.",
+  "administration_channel_name_length_limit": "The name's length must be between 1 and 100 characters.",
+  "administration_category_not_found": "I couldn't find the category channel.",
+  "administration_text_channel_not_found": "I couldn't find the text channel.",
+  "administration_voice_channel_not_found": "I couldn't find the voice channel.",
+  "administration_category_no_permission_view": "I don't have the permission to view that category channel.",
+  "administration_text_channel_no_permission_view": "I don't have the permission to view that text channel.",
+  "administration_voice_channel_no_permission_view": "I don't have the permission to view that voice channel.",
+  "administration_text_channel_added_to_category": "The text channel **{0}** was added to category **{1}** successfully.",
+  "administration_voice_channel_added_to_category": "The voice channel **{0}** was added to category **{1}** successfully.",
+  "administration_user_not_found": "I couldn't find the user.",
 
   "help_title": "{0} Bot v{1} help page",
   "help_info_1": "I'm based on modules and submodules. Each module has submodules and each submodule has commands.\n\n",
@@ -61,6 +74,9 @@
   "attribute_bot_perm_guild": "I must have the {0} guild {1}.",
   "attribute_bot_perm_not_guild": "The `BotPermissionAttribute` requires this command to be used in a guild channel.",
   "attribute_context": "The command must be used in a {0}.",
+  
+  "typeparser_socket_category_channel_not_guild": "The SocketCategoryChannel TypeParser cannot be used in a context without a guild!",
+  "typeparser_socket_guild_user_not_guild": "The SocketGuildUser TypeParser cannot be used in a context without a guild!",
 
   "service_command_not_executed": "The command couldn't be executed",
   "service_command_cooldown": "Hey, calm down! Take a breath and try again in **{0}**."

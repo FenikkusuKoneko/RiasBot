@@ -16,6 +16,9 @@ namespace Rias.Core.Modules
         public Translations Translations { get; set; }
         public RiasDbContext Db { get; set; }
 
+        public string ParentModuleName => Context.Command.Module.Parent?.Name ?? Context.Command.Module.Name;
+        public string LowerParentModuleName => ParentModuleName.ToLower();
+
         /// <summary>
         /// Send a confirmation message. The form is an embed with the confirm color.<br/>
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
@@ -23,7 +26,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected async Task<IUserMessage> ReplyConfirmationAsync(string key)
         {
-            return await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key));
+            return await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key));
         }
         
         /// <summary>
@@ -33,7 +36,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected async Task<IUserMessage> ReplyConfirmationAsync(string key, params object[] args)
         {
-            return await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key, args));
+            return await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key, args));
         }
         
         /// <summary>
@@ -43,7 +46,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected async Task<IUserMessage> ReplyErrorAsync(string key)
         {
-            return await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key));
+            return await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key));
         }
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected async Task<IUserMessage> ReplyErrorAsync(string key, params object[] args)
         {
-            return await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key, args));
+            return await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key, args));
         }
 
         /// <summary>
@@ -63,7 +66,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected string GetText(string key)
         {
-            return Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key);
+            return Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key);
         }
 
         /// <summary>
@@ -73,7 +76,7 @@ namespace Rias.Core.Modules
         /// </summary>
         protected string GetText(string key, params object[] args)
         {
-            return Translations.GetText(Context.Guild?.Id, Context.Command.Module.Name.ToLowerInvariant(), key, args);
+            return Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key, args);
         }
 
         protected string GetPrefix()

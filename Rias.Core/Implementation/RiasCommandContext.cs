@@ -10,6 +10,7 @@ namespace Rias.Core.Implementation
         public SocketGuild Guild { get; }
         public IMessageChannel Channel { get; }
         public SocketUser User { get; }
+        public SocketGuildUser CurrentGuildUser { get; }
         public SocketUserMessage Message { get; }
 
         public RiasCommandContext(DiscordShardedClient client, SocketUserMessage msg)
@@ -18,6 +19,7 @@ namespace Rias.Core.Implementation
             Client = client.GetShard(GetShardId(client, Guild));
             Channel = msg.Channel;
             User = msg.Author;
+            CurrentGuildUser = Guild?.CurrentUser;
             Message = msg;
         }
 

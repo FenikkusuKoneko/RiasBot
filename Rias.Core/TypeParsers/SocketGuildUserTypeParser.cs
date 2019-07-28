@@ -8,12 +8,12 @@ using Rias.Core.Implementation;
 
 namespace Rias.Core.TypeParsers
 {
-    public class IGuildUserTypeParser : RiasTypeParser<IGuildUser>
+    public class SocketGuildUserTypeParser : RiasTypeParser<SocketGuildUser>
     {
-        public override ValueTask<TypeParserResult<IGuildUser>> ParseAsync(Parameter parameter, string value, RiasCommandContext context, IServiceProvider provider)
+        public override ValueTask<TypeParserResult<SocketGuildUser>> ParseAsync(Parameter parameter, string value, RiasCommandContext context, IServiceProvider provider)
         {
             if (context.Guild is null)
-                return TypeParserResult<IGuildUser>.Unsuccessful("The IGuildUser TypeParser cannot be used in a context without a guild!");
+                return TypeParserResult<SocketGuildUser>.Unsuccessful("The SocketGuildUser TypeParser cannot be used in a context without a guild!");
 
             SocketGuildUser user;
 
@@ -21,14 +21,14 @@ namespace Rias.Core.TypeParsers
             {
                 user = context.Guild.GetUser(userId);
                 if (user != null)
-                    return TypeParserResult<IGuildUser>.Successful(user);
+                    return TypeParserResult<SocketGuildUser>.Successful(user);
             }
             
             if (ulong.TryParse(value, out var id))
             {
                 user = context.Guild.GetUser(id);
                 if (user != null)
-                    return TypeParserResult<IGuildUser>.Successful(user);
+                    return TypeParserResult<SocketGuildUser>.Successful(user);
             }
 
             var users = context.Guild.Users;
@@ -41,19 +41,19 @@ namespace Rias.Core.TypeParsers
                 {
                     user = users.FirstOrDefault(u => u.DiscriminatorValue == discriminator && string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
                     if (user != null)
-                        return TypeParserResult<IGuildUser>.Successful(user);
+                        return TypeParserResult<SocketGuildUser>.Successful(user);
                 }
             }
             
             user = users.FirstOrDefault(u => string.Equals(u.Username, value, StringComparison.OrdinalIgnoreCase));
             if (user != null)
-                return TypeParserResult<IGuildUser>.Successful(user);
+                return TypeParserResult<SocketGuildUser>.Successful(user);
             
             user = users.FirstOrDefault(u => string.Equals(u.Nickname, value, StringComparison.OrdinalIgnoreCase));
             if (user != null)
-                return TypeParserResult<IGuildUser>.Successful(user);
+                return TypeParserResult<SocketGuildUser>.Successful(user);
             
-            return TypeParserResult<IGuildUser>.Unsuccessful("The user couldn't be found in the guild!");
+            return TypeParserResult<SocketGuildUser>.Unsuccessful("#administration_user_not_found");
         }
     }
 }

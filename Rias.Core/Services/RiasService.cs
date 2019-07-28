@@ -16,13 +16,17 @@ namespace Rias.Core.Services
             services.Inject(this);
         }
 
-        protected void RunTask(Func<Task> func)
+        /// <summary>
+        /// Run a task in an async way.
+        /// </summary>
+        /// <param name="func"></param>
+        protected void RunAsyncTask(Task func)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    await func();
+                    await func;
                 }
                 catch (Exception ex)
                 {

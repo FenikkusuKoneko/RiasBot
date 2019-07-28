@@ -71,7 +71,7 @@ namespace Rias.Core.Implementation
         /// </summary>
         public string GetText(ulong? guildId, string prefix, string key)
         {
-            return key.StartsWith("#") ? GetText(guildId, key.Remove(0, 1)) : GetText(guildId, prefix + "_" + key);
+            return key.StartsWith("#") ? GetText(guildId, key.Remove(0, 1)) : GetText(guildId, $"{prefix}_{key}");
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Rias.Core.Implementation
         /// </summary>
         public string GetText(ulong? guildId, string prefix, string key, params object[] args)
         {
-            return string.Format(key.StartsWith("#") ? GetText(guildId, key.Remove(0, 1)) : GetText(guildId, prefix + "_" + key), args);
+            return string.Format(key.StartsWith("#") ? GetText(guildId, key.Remove(0, 1)) : GetText(guildId, $"{prefix}_{key}"), args);
         }
     }
 }

@@ -13,8 +13,6 @@ using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Implementation;
 using RiasBot.Extensions;
-using Serilog;
-using CommandService = Qmmands.CommandService;
 
 namespace Rias.Core.Services
 {
@@ -25,9 +23,7 @@ namespace Rias.Core.Services
         [Inject] private readonly Credentials _creds;
         [Inject] private readonly Translations _tr;
         [Inject] private readonly IServiceProvider _services;
-
-
-
+        
         public CommandHandlerService(IServiceProvider services) : base(services)
         {
             _services = services;
@@ -46,32 +42,43 @@ namespace Rias.Core.Services
             var assembly = Assembly.GetAssembly(typeof(Rias));
             _service.AddModules(assembly, null, module =>
             {
-                if (!commandDataJson.TryGetValue(module.Parent?.Name.ToLowerInvariant() ?? module.Name?.ToLowerInvariant(), out var moduleCommands)) return;
-                if (!moduleCommands.TryGetValue(module.Name?.ToLowerInvariant(), out var submoduleCommands)) return;
+                if (!commandDataJson.TryGetValue(module.Name.ToLowerInvariant(), out var commandsDictionary)) return;
+                if (!commandsDictionary.TryGetValue(module.Name.ToLowerInvariant(), out var commandsData)) return;
 
-                foreach (var command in module.Commands)
+                SetupCommand(module, commandsData);
+
+                foreach (var submodule in module.Submodules)
                 {
-                    var name = command.Aliases.FirstOrDefault();
-                    if (string.IsNullOrEmpty(name)) continue;
-
-                    var commandData = submoduleCommands
-                        .Find(c => c.Aliases
-                            .Split(" ")
-                            .Any(a => string.Equals(a, name, StringComparison.InvariantCultureIgnoreCase)));
-                    if (commandData is null) continue;
-
-                    if (!string.IsNullOrEmpty(commandData.Aliases))
-                    {
-                        foreach (var alias in commandData.Aliases.Split(" ").Skip(1))
-                        {
-                            command.AddAlias(alias);
-                        }
-                    }
-
-                    command.Description = commandData.Description;
-                    command.Remarks = string.Join("\n", commandData.Remarks);
+                    if (!commandsDictionary.TryGetValue(submodule.Name.ToLowerInvariant(), out var submoduleCommandsData)) continue;
+                    SetupCommand(submodule, submoduleCommandsData);
                 }
             });
+        }
+
+        private void SetupCommand(ModuleBuilder module, List<CommandData> commandsData)
+        {
+            foreach (var command in module.Commands)
+            {
+                var name = command.Aliases.FirstOrDefault();
+                if (string.IsNullOrEmpty(name)) continue;
+
+                var commandData = commandsData
+                    .Find(c => c.Aliases
+                        .Split(" ")
+                        .Any(a => string.Equals(a, name, StringComparison.InvariantCultureIgnoreCase)));
+                if (commandData is null) continue;
+
+                if (!string.IsNullOrEmpty(commandData.Aliases))
+                {
+                    foreach (var alias in commandData.Aliases.Split(" ").Skip(1))
+                    {
+                        command.AddAlias(alias);
+                    }
+                }
+
+                command.Description = commandData.Description;
+                command.Remarks = string.Join("\n", commandData.Remarks);
+            }
         }
 
         private void LoadTypeParsers()
@@ -114,14 +121,17 @@ namespace Rias.Core.Services
 
             var context = new RiasCommandContext(_client, userMessage);
             var result = await _service.ExecuteAsync(output, context, _services);
-
+            
             switch (result)
             {
                 case ChecksFailedResult failedResult:
-                    RunTask(async () => await SendErrorResultMessageAsync(context, userMessage, failedResult));
+                    RunAsyncTask(SendErrorResultMessageAsync(context, userMessage, failedResult));
                     break;
                 case CommandOnCooldownResult commandOnCooldownResult:
-                    RunTask(async () => await SendCommandOnCooldownMessageAsync(context, commandOnCooldownResult));
+                    RunAsyncTask(SendCommandOnCooldownMessageAsync(context, commandOnCooldownResult));
+                    break;
+                case TypeParseFailedResult typeParseFailedResult:
+                    RunAsyncTask(SendTypeParseFailedResult(context, typeParseFailedResult));
                     break;
             }
         }
@@ -152,6 +162,11 @@ namespace Rias.Core.Services
         {
             await context.Channel.SendErrorMessageAsync(_tr.GetText(context.Guild.Id, null, "#service_command_cooldown",
                 result.Cooldowns.First().RetryAfter.Humanize(culture: CultureInfo.GetCultureInfo(_tr.GetGuildLocale(context.Guild.Id)))));
+        }
+        
+        private async Task SendTypeParseFailedResult(RiasCommandContext context, TypeParseFailedResult result)
+        {
+            await context.Channel.SendErrorMessageAsync(_tr.GetText(context.Guild.Id, null, result.Reason));
         }
 
         private class CommandData

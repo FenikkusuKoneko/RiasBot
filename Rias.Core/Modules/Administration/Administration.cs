@@ -9,7 +9,7 @@ using Rias.Core.Database.Models;
 namespace Rias.Core.Modules.Administration
 {
     [Name("Administration")]
-    public class Administration : RiasModule
+    public partial class Administration : RiasModule
     {
         [Command("setgreet"), Context(ContextType.Guild), UserPermission(GuildPermission.Administrator)]
         public async Task SetGreetAsync()

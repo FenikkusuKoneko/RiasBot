@@ -36,6 +36,50 @@
           "{0}modlog"
         ]
       }
+    ],
+    "category channels": [
+      {
+        "aliases": "createcategory ccat",
+        "description": "Creates a category channel.",
+        "remarks": [
+          "{0}ccat MEDIA"
+        ]
+      },
+      {
+        "aliases": "deletecategory dcat",
+        "description": "Deletes a category channel. The category's ID is supported.",
+        "remarks": [
+          "{0}dcat MEDIA",
+          "{0}dcat 416510975286444032"
+        ]
+      },
+      {
+        "aliases": "renamecategory rncat",
+        "description": "Renames a category channel. Separate the old name from the new name with '->'. The category's ID is supported.",
+        "remarks": [
+          "{0}rncat 416510975286444032 -> MUSIC"
+        ]
+      },
+      {
+        "aliases": "addtextchanneltocategory atchtocat",
+        "description": "Adds a text channel to a category channel. Separate the channel name from the category name with '->'. The category's ID and text channel's ID are supported.",
+        "remarks": [
+          "{0}atchtocat music -> MEDIA",
+          "{0}atchtocat 476708100930273280 -> 416510975286444032",
+          "{0}atchtocat 476708100930273280 -> MEDIA",
+          "{0}atchtocat music -> 416510975286444032"
+        ]
+      },
+      {
+        "aliases": "addvoicechanneltocategory avchtocat",
+        "description": "Adds a voice channel to a category channel. Separate the channel name from the category name with '->'. The category's ID and voice channel's ID are supported.",
+        "remarks": [
+          "{0}avchtocat Music -> MEDIA",
+          "{0}avchtocat 467279437105463315 -> 416510975286444032",
+          "{0}avchtocat 467279437105463315 -> MEDIA",
+          "{0}avchtocat Music -> 416510975286444032"
+        ]
+      }
     ]
   },
   "help": {
