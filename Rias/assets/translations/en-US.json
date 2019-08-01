@@ -23,6 +23,15 @@
   "administration_voice_channel_no_permission_view": "I don't have the permission to view that voice channel.",
   "administration_text_channel_added_to_category": "The text channel **{0}** was added to category **{1}** successfully.",
   "administration_voice_channel_added_to_category": "The voice channel **{0}** was added to category **{1}** successfully.",
+  "administration_emote_created": "The emote **{0}** was created successfully.",
+  "administration_emote_deleted": "The emote **{0}** was deleted successfully.",
+  "administration_emote_renamed": "The emote **{0}** was renamed to **{1}** successfully.",
+  "administration_animated_emotes_limit": "The server reached the limit of {0} animated emotes.",
+  "administration_static_emotes_limit": "The server reached the limit of {0} non-animated emotes.",
+  "administration_emote_size_limit": "The image is bigger than 256 KB.",
+  "administration_emote_not_found": "I couldn't find the emote.",
+  "administration_emote_not_deleted": "I couldn't delete the emote.",
+  "administration_emote_not_renamed": "I couldn't rename the emote.",
   "administration_user_not_found": "I couldn't find the user.",
 
   "help_title": "{0} Bot v{1} help page",
@@ -51,6 +60,12 @@
   "help_all_commands": "All commands",
   "help_commands_not_sent": "I couldn't send you the list with all commands via DM. Please verify if you disabled receiving DMs from this server.",
 
+  "utility_url_not_valid": "The url is not valid.",
+  "utility_url_not_https": "The url must be https.",
+  "utility_url_not_png_jpg": "The url is not a direct link for a png, jpg or jpeg image.",
+  "utility_url_not_png_jpg_gif": "The url is not a direct link for a png, jpg, jpeg or gif image.",
+  "utility_image_or_url_not_good": "The image or the URL is not good.",
+
   "common_yes": "Yes",
   "common_and": "And",
   "common_or": "Or",
@@ -74,7 +89,7 @@
   "attribute_bot_perm_guild": "I must have the {0} guild {1}.",
   "attribute_bot_perm_not_guild": "The `BotPermissionAttribute` requires this command to be used in a guild channel.",
   "attribute_context": "The command must be used in a {0}.",
-  
+
   "typeparser_socket_category_channel_not_guild": "The SocketCategoryChannel TypeParser cannot be used in a context without a guild!",
   "typeparser_socket_guild_user_not_guild": "The SocketGuildUser TypeParser cannot be used in a context without a guild!",
 

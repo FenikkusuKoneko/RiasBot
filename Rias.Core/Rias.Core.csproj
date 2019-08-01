@@ -8,7 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="CoreCLR-NCalc" Version="2.2.51" />
-        <PackageReference Include="Discord.Net" Version="2.2.0-dev-20190629.2" />
+        <PackageReference Include="Discord.Net" Version="2.2.0-dev-20190722.9" />
         <PackageReference Include="Humanizer" Version="2.6.2" />
         <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.9.0.2" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.3.0-beta2-19365-06" />

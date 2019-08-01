@@ -80,6 +80,34 @@
           "{0}avchtocat Music -> 416510975286444032"
         ]
       }
+    ],
+    "emotes": [
+      {
+        "aliases": "addemote",
+        "description": "Adds an emote in this server. PNG, JPG or GIF supported. The image's size must be under 256 KB.",
+        "remarks": [
+          "{0}addemote https://i.imgur.com/fobETCs.png diamond_heart"
+        ]
+      },
+      {
+        "aliases": "deleteemote delemote",
+        "description": "Deletes an emote from this server. 'Mentioning' the emote is supported.",
+        "remarks": [
+          "{0}delemote diamond_heart",
+          "{0}delemote :diamond_heart:"
+
+        ]
+      },
+      {
+        "aliases": "renameemote rnemote",
+        "description": "Renames an emote on this server. Separate the old name by the new name with '->'. 'Mentioning' the emotes are supported.",
+        "remarks": [
+          "[prefix]rnemote heart -> heart_diamond",
+          "[prefix]rnemote :heart: -> heart_diamond",
+          "[prefix]rnemote heart -> :heart_diamond:",
+          "[prefix]rnemote :heart: -> :heart_diamond:"
+        ]
+      }
     ]
   },
   "help": {

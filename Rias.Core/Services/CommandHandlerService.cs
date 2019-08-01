@@ -23,7 +23,7 @@ namespace Rias.Core.Services
         [Inject] private readonly Credentials _creds;
         [Inject] private readonly Translations _tr;
         [Inject] private readonly IServiceProvider _services;
-        
+
         public CommandHandlerService(IServiceProvider services) : base(services)
         {
             _services = services;
@@ -42,6 +42,9 @@ namespace Rias.Core.Services
             var assembly = Assembly.GetAssembly(typeof(Rias));
             _service.AddModules(assembly, null, module =>
             {
+                if (string.IsNullOrWhiteSpace(module.Name))
+                    return;
+
                 if (!commandDataJson.TryGetValue(module.Name.ToLowerInvariant(), out var commandsDictionary)) return;
                 if (!commandsDictionary.TryGetValue(module.Name.ToLowerInvariant(), out var commandsData)) return;
 
@@ -49,6 +52,9 @@ namespace Rias.Core.Services
 
                 foreach (var submodule in module.Submodules)
                 {
+                    if (string.IsNullOrWhiteSpace(submodule.Name))
+                        return;
+
                     if (!commandsDictionary.TryGetValue(submodule.Name.ToLowerInvariant(), out var submoduleCommandsData)) continue;
                     SetupCommand(submodule, submoduleCommandsData);
                 }
@@ -121,7 +127,7 @@ namespace Rias.Core.Services
 
             var context = new RiasCommandContext(_client, userMessage);
             var result = await _service.ExecuteAsync(output, context, _services);
-            
+
             switch (result)
             {
                 case ChecksFailedResult failedResult:
@@ -131,7 +137,7 @@ namespace Rias.Core.Services
                     RunAsyncTask(SendCommandOnCooldownMessageAsync(context, commandOnCooldownResult));
                     break;
                 case TypeParseFailedResult typeParseFailedResult:
-                    RunAsyncTask(SendTypeParseFailedResult(context, typeParseFailedResult));
+                    RunAsyncTask(SendTypeParseFailedResultAsync(context, typeParseFailedResult));
                     break;
             }
         }
@@ -163,8 +169,8 @@ namespace Rias.Core.Services
             await context.Channel.SendErrorMessageAsync(_tr.GetText(context.Guild.Id, null, "#service_command_cooldown",
                 result.Cooldowns.First().RetryAfter.Humanize(culture: CultureInfo.GetCultureInfo(_tr.GetGuildLocale(context.Guild.Id)))));
         }
-        
-        private async Task SendTypeParseFailedResult(RiasCommandContext context, TypeParseFailedResult result)
+
+        private async Task SendTypeParseFailedResultAsync(RiasCommandContext context, TypeParseFailedResult result)
         {
             await context.Channel.SendErrorMessageAsync(_tr.GetText(context.Guild.Id, null, result.Reason));
         }
