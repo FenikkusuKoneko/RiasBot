@@ -12,6 +12,7 @@ using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
+using RiasBot.Extensions;
 
 namespace Rias.Core.Modules.Help
 {
@@ -23,9 +24,15 @@ namespace Rias.Core.Modules.Help
         [Command("help")]
         public async Task HelpAsync()
         {
-            var embed = new EmbedBuilder()
-                .WithColor(RiasUtils.ConfirmColor)
-                .WithAuthor(GetText("title", Context.Client.CurrentUser.Username, Rias.Version), Context.Client.CurrentUser.GetRealAvatarUrl());
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ConfirmColor,
+                Author = new EmbedAuthorBuilder
+                {
+                    Name = GetText("title", Context.Client.CurrentUser.Username, Rias.Version),
+                    IconUrl = Context.Client.CurrentUser.GetRealAvatarUrl()
+                }
+            };
 
             var prefix = GetPrefix();
             if (string.IsNullOrWhiteSpace(prefix))
@@ -60,7 +67,7 @@ namespace Rias.Core.Modules.Help
 
             embed.AddField(GetText("links"), links.ToString());
             embed.WithFooter("© 2018-2019 Copyright: Koneko#0001");
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Channel.SendMessageAsync(embed);
         }
 
         [Command("help")]
@@ -76,9 +83,11 @@ namespace Rias.Core.Modules.Help
                 return;
             }
 
-            var embed = new EmbedBuilder()
-                .WithColor(RiasUtils.ConfirmColor)
-                .WithTitle(string.Join("/ ", command.Aliases.Select(a => prefix + a)));
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ConfirmColor,
+                Title = string.Join("/ ", command.Aliases.Select(a => prefix + a))
+            };
 
             var description = command.Description;
             description = description.Replace("[prefix]", prefix);
@@ -118,7 +127,7 @@ namespace Rias.Core.Modules.Help
             embed.AddField(GetText("example"), string.Format(command.Remarks, prefix), true);
             embed.WithCurrentTimestamp();
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Channel.SendMessageAsync(embed);
         }
 
         [Command("modules")]
@@ -155,13 +164,18 @@ namespace Rias.Core.Modules.Help
                     modulesString.Append("\n");
             }
 
-            var embed = new EmbedBuilder()
-                .WithColor(RiasUtils.ConfirmColor)
-                .WithTitle(GetText("modules_list"))
-                .WithDescription(modulesString.ToString())
-                .WithFooter(GetText("modules_info"));
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ConfirmColor,
+                Title = GetText("modules_list"),
+                Description = modulesString.ToString(),
+                Footer = new EmbedFooterBuilder
+                {
+                    Text = GetText("modules_info")
+                }
+            };
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Channel.SendMessageAsync(embed);
         }
 
         [Command("commands")]
@@ -179,10 +193,11 @@ namespace Rias.Core.Modules.Help
             var commandsAliases = GetCommandsAliases(moduleCommands, prefix);
             var isSubmodule = module.Parent != null;
 
-            var embed = new EmbedBuilder()
-                .WithColor(RiasUtils.ConfirmColor)
-                .WithTitle(GetText(isSubmodule ? "all_commands_for_submodule" : "all_commands_for_module", module.Name))
-                .AddField(module.Name, string.Join("\n", commandsAliases), true);
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ConfirmColor,
+                Title = GetText(isSubmodule ? "all_commands_for_submodule" : "all_commands_for_module", module.Name)
+            }.AddField(module.Name, string.Join("\n", commandsAliases), true);
 
             if (!isSubmodule)
             {
@@ -197,7 +212,7 @@ namespace Rias.Core.Modules.Help
 
             embed.WithFooter(GetText("command_info", prefix));
             embed.WithCurrentTimestamp();
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Channel.SendMessageAsync(embed);
         }
 
         [Command("allcommands"), Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
@@ -206,11 +221,16 @@ namespace Rias.Core.Modules.Help
             var modules = CommandService.GetAllModules().Where(m => m.Parent is null).OrderBy(mo => mo.Name);
 
             var prefix = GetPrefix();
-            var embed = new EmbedBuilder()
-                .WithColor(RiasUtils.ConfirmColor)
-                .WithTitle(GetText("all_commands"))
-                .WithFooter(GetText("command_info", prefix))
-                .WithCurrentTimestamp();
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ConfirmColor,
+                Title = GetText("all_commands"),
+                Footer = new EmbedFooterBuilder
+                {
+                    Text = GetText("command_info", prefix)
+                },
+                Timestamp = DateTimeOffset.UtcNow
+            };
 
             foreach (var module in modules)
             {

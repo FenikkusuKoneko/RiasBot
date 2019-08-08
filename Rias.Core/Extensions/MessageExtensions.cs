@@ -6,19 +6,24 @@ namespace RiasBot.Extensions
 {
     public static class MessageExtensions
     {
-        public static async Task<IUserMessage> SendConfirmationMessageAsync(this IMessageChannel channel, string message, string title = null, uint color = 0)
-            => await SendMessageAsync(channel, message, title, color > 0 ? color : RiasUtils.ConfirmColor);
+        public static async Task<IUserMessage> SendMessageAsync(this IMessageChannel channel, EmbedBuilder embed)
+            => await channel.SendMessageAsync(embed: embed.Build());
 
-        public static async Task<IUserMessage> SendErrorMessageAsync(this IMessageChannel channel, string message, string title = null, uint color = 0)
-            => await SendMessageAsync(channel, message, title, color > 0 ? color : RiasUtils.ErrorColor);
+        public static async Task<IUserMessage> SendConfirmationMessageAsync(this IMessageChannel channel, string message, string title = null, Color color = default)
+            => await SendMessageAsync(channel, message, title, color != default ? color : RiasUtils.ConfirmColor);
 
-        private static async Task<IUserMessage> SendMessageAsync(IMessageChannel channel, string message, string title = null, uint color = 0)
+        public static async Task<IUserMessage> SendErrorMessageAsync(this IMessageChannel channel, string message, string title = null, Color color = default)
+            => await SendMessageAsync(channel, message, title, color != default ? color : RiasUtils.ErrorColor);
+
+        private static async Task<IUserMessage> SendMessageAsync(IMessageChannel channel, string message, string title, Color color)
         {
-            var embed = new EmbedBuilder()
-                .WithColor(color)
-                .WithDescription(message);
-            if (title != null)
-                embed.WithTitle(title);
+            var embed = new EmbedBuilder
+            {
+                Color = color,
+                Title = title,
+                Description = message
+            };
+
             return await channel.SendMessageAsync(embed: embed.Build());
         }
     }

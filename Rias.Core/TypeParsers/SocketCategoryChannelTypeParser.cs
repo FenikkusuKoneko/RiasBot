@@ -34,7 +34,10 @@ namespace Rias.Core.TypeParsers
             channel = context.Guild.CategoryChannels.FirstOrDefault(c => string.Equals(c.Name, value, StringComparison.OrdinalIgnoreCase));
             if (channel != null)
                 return TypeParserResult<SocketCategoryChannel>.Successful(channel);
-            
+
+            if (parameter.IsOptional)
+                return TypeParserResult<SocketCategoryChannel>.Successful((SocketCategoryChannel) parameter.DefaultValue);
+
             return TypeParserResult<SocketCategoryChannel>.Unsuccessful("#administration_category_not_found");
         }
     }

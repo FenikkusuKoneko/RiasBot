@@ -145,8 +145,11 @@ namespace Rias.Core.Services
         private async Task SendErrorResultMessageAsync(RiasCommandContext context, SocketUserMessage userMessage, ChecksFailedResult result)
         {
             var guildId = context.Guild?.Id;
-            var embed = new EmbedBuilder().WithColor(RiasUtils.ErrorColor)
-                .WithTitle(_tr.GetText(guildId, null, "#service_command_not_executed"));
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ErrorColor,
+                Title = _tr.GetText(guildId, null, "#service_command_not_executed")
+            };
 
             var failedChecks = result.FailedChecks;
             (CheckAttribute check, CheckResult checkResult) = (null, null);
@@ -161,7 +164,7 @@ namespace Rias.Core.Services
             embed.WithDescription(check is null
                 ? $"**{description}**:\n{string.Join("\n", failedChecks.Select(x => x.Result.Reason))}"
                 : $"**{description}**:\n{checkResult.Reason}");
-            await userMessage.Channel.SendMessageAsync(embed: embed.Build());
+            await userMessage.Channel.SendMessageAsync(embed);
         }
 
         private async Task SendCommandOnCooldownMessageAsync(RiasCommandContext context, CommandOnCooldownResult result)

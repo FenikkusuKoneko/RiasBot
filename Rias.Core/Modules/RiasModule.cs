@@ -25,29 +25,23 @@ namespace Rias.Core.Modules
         /// If the key doesn't start with "#", the prefix of the translation is the lower module name of this class.
         /// </summary>
         protected async Task<IUserMessage> ReplyConfirmationAsync(string key)
-        {
-            return await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key));
-        }
-        
+            => await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key));
+
         /// <summary>
         /// Send a confirmation message with arguments. The form is an embed with the confirm color.<br/>
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module name of this class.
         /// </summary>
         protected async Task<IUserMessage> ReplyConfirmationAsync(string key, params object[] args)
-        {
-            return await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key, args));
-        }
-        
+            => await Context.Channel.SendConfirmationMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key, args));
+
         /// <summary>
         /// Send an error message. The form is an embed with the error color.<br/>
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
         protected async Task<IUserMessage> ReplyErrorAsync(string key)
-        {
-            return await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key));
-        }
+            => await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key));
 
         /// <summary>
         /// Send an error message with arguments. The form is an embed with the error color.<br/>
@@ -55,9 +49,10 @@ namespace Rias.Core.Modules
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
         protected async Task<IUserMessage> ReplyErrorAsync(string key, params object[] args)
-        {
-            return await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key, args));
-        }
+            => await Context.Channel.SendErrorMessageAsync(Translations.GetText(Context.Guild?.Id, LowerParentModuleName, key, args));
+
+        protected async Task<IUserMessage> ReplyAsync(EmbedBuilder embed)
+            => await Context.Channel.SendMessageAsync(embed);
 
         /// <summary>
         /// Get a translation text.<br/>
@@ -89,7 +84,7 @@ namespace Rias.Core.Modules
             Db?.Dispose();
         }
     }
-    
+
     public abstract class RiasModule<TService> : RiasModule where TService : RiasService
     {
         public TService Service { get; set; }

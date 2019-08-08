@@ -23,7 +23,7 @@ namespace Rias.Core.TypeParsers
                 if (user != null)
                     return TypeParserResult<SocketGuildUser>.Successful(user);
             }
-            
+
             if (ulong.TryParse(value, out var id))
             {
                 user = context.Guild.GetUser(id);
@@ -44,15 +44,18 @@ namespace Rias.Core.TypeParsers
                         return TypeParserResult<SocketGuildUser>.Successful(user);
                 }
             }
-            
+
             user = users.FirstOrDefault(u => string.Equals(u.Username, value, StringComparison.OrdinalIgnoreCase));
             if (user != null)
                 return TypeParserResult<SocketGuildUser>.Successful(user);
-            
+
             user = users.FirstOrDefault(u => string.Equals(u.Nickname, value, StringComparison.OrdinalIgnoreCase));
             if (user != null)
                 return TypeParserResult<SocketGuildUser>.Successful(user);
-            
+
+            if (parameter.IsOptional)
+                return TypeParserResult<SocketGuildUser>.Successful((SocketGuildUser)parameter.DefaultValue);
+
             return TypeParserResult<SocketGuildUser>.Unsuccessful("#administration_user_not_found");
         }
     }

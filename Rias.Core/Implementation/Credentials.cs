@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Discord;
 using Microsoft.Extensions.Configuration;
 using Rias.Core.Commons.Configs;
 
@@ -25,7 +26,7 @@ namespace Rias.Core.Implementation
         public string PatreonAccessToken { get; }
         public string DiscordBotsListApiKey { get; }
         public string WeebServicesToken { get; }
-        
+
         public DatabaseConfig DatabaseConfig { get; }
         public LavalinkConfig LavalinkConfig { get; }
         public VotesManagerConfig VotesManagerConfig { get; }
@@ -49,11 +50,11 @@ namespace Rias.Core.Implementation
 
             var confirmColor = RiasUtils.HexToUint(config[nameof(RiasUtils.ConfirmColor)]);
             if (confirmColor != 0xFFFFFF)
-                RiasUtils.ConfirmColor = confirmColor;
+                RiasUtils.ConfirmColor = new Color(confirmColor);
 
             var errorColor = RiasUtils.HexToUint(config[nameof(RiasUtils.ErrorColor)]);
             if (errorColor != 0xFFFFFF)
-                RiasUtils.ErrorColor = errorColor;
+                RiasUtils.ErrorColor = new Color(errorColor);
 
             Patreon = config[nameof(Patreon)];
             Website = config[nameof(Website)];
@@ -64,7 +65,7 @@ namespace Rias.Core.Implementation
             PatreonAccessToken = config[nameof(PatreonAccessToken)];
             DiscordBotsListApiKey = config[nameof(DiscordBotsListApiKey)];
             WeebServicesToken = config[nameof(WeebServicesToken)];
-            
+
             var databaseConfig = config.GetSection(nameof(DatabaseConfig));
             DatabaseConfig = new DatabaseConfig
             {
@@ -92,7 +93,7 @@ namespace Rias.Core.Implementation
                 UrlParameters = votesManagerConfig.GetValue<string>("UrlParameters"),
                 Authorization = votesManagerConfig.GetValue<string>("Authorization")
             };
-            
+
             IsBeta = config.GetValue<bool>(nameof(IsBeta));
         }
     }

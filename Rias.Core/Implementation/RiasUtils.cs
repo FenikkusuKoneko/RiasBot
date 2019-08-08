@@ -12,10 +12,10 @@ namespace Rias.Core.Implementation
     {
         // these are the color used by the confirmation message embed and error message embed
         // these are modified from the Credentials class
-        
-        public static uint ConfirmColor = 0x00ff00;
-        public static uint ErrorColor = 0xff0000;
-        
+
+        public static Color ConfirmColor = new Color(0x00ff00);
+        public static Color ErrorColor = new Color(0xff0000);
+
         /// <summary>
         ///     Convert a string to TimeSpan.<br/>
         ///     Example 1mo2w3d4h5m6s to TimeSpan.<br/>
@@ -49,14 +49,14 @@ namespace Rias.Core.Implementation
             return new TimeSpan(30 * timeValues["months"] + 7 * timeValues["weeks"] + timeValues["days"],
                 timeValues["hours"], timeValues["minutes"], timeValues["seconds"]);
         }
-        
+
         public static uint HexToUint(string hex)
         {
             hex = hex?.Replace("#", "");
             if (string.IsNullOrWhiteSpace(hex)) return 0xFFFFFF;
             return uint.TryParse(hex, NumberStyles.HexNumber, null, out var result) ? result : 0xFFFFFF;
         }
-        
+
         public static bool TryParseEmbed(string json, out EmbedBuilder embed, Credentials creds = null)
         {
             embed = new EmbedBuilder();
