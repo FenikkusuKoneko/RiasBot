@@ -41,7 +41,7 @@ namespace Rias.Core.Modules.Administration
 
             [Command("ban"), Context(ContextType.Guild),
              UserPermission(GuildPermission.BanMembers), BotPermission(GuildPermission.BanMembers)]
-            public async Task BanAsync(SocketGuildUser user, [Discord.Commands.Remainder] string reason = null)
+            public async Task BanAsync(SocketGuildUser user, [Remainder] string reason = null)
             {
                 if (user.Id == Context.User.Id)
                     return;
@@ -64,7 +64,7 @@ namespace Rias.Core.Modules.Administration
 
             [Command("softban"), Context(ContextType.Guild),
              UserPermission(GuildPermission.KickMembers), BotPermission(GuildPermission.KickMembers | GuildPermission.BanMembers)]
-            public async Task SoftBanAsync(SocketGuildUser user, [Discord.Commands.Remainder] string reason = null)
+            public async Task SoftBanAsync(SocketGuildUser user, [Remainder] string reason = null)
             {
                 if (user.Id == Context.User.Id)
                     return;
@@ -88,7 +88,7 @@ namespace Rias.Core.Modules.Administration
 
             [Command("pruneban"), Context(ContextType.Guild),
              UserPermission(GuildPermission.BanMembers), BotPermission(GuildPermission.BanMembers)]
-            public async Task PruneBanAsync(SocketGuildUser user, [Discord.Commands.Remainder] string reason = null)
+            public async Task PruneBanAsync(SocketGuildUser user, [Remainder] string reason = null)
             {
                 if (user.Id == Context.User.Id)
                     return;
