@@ -12,7 +12,6 @@ using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using RiasBot.Extensions;
 
 namespace Rias.Core.Modules.Help
 {
@@ -99,10 +98,18 @@ namespace Rias.Core.Modules.Help
                 switch (attribute)
                 {
                     case UserPermissionAttribute userPermissionAttribute:
-                        embed.AddField(GetText("requires_user_perm"), userPermissionAttribute.GuildPermission.ToString().Replace(", ", "\n"), true);
+                        var userPermissions = userPermissionAttribute.GuildPermission.ToString()
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Humanize(LetterCasing.Title))
+                            .ToList();
+                        embed.AddField(GetText("requires_user_perm"), string.Join("\n", userPermissions), true);
                         break;
                     case BotPermissionAttribute botPermissionAttribute:
-                        embed.AddField(GetText("requires_bot_perm"), botPermissionAttribute.GuildPermission.ToString().Replace(", ", "\n"), true);
+                        var botPermissions = botPermissionAttribute.GuildPermission.ToString()
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Humanize(LetterCasing.Title))
+                            .ToList();
+                        embed.AddField(GetText("requires_bot_perm"), string.Join("\n", botPermissions), true);
                         break;
                     case OwnerOnlyAttribute _:
                         embed.AddField(GetText("requires_owner"), GetText("#common_yes"), true);

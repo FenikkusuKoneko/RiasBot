@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Discord;
 using Qmmands;
 using Rias.Core.Database;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
-using RiasBot.Extensions;
 
 namespace Rias.Core.Modules
 {

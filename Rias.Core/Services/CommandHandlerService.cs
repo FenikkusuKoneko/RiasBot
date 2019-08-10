@@ -11,8 +11,8 @@ using Humanizer;
 using Newtonsoft.Json;
 using Qmmands;
 using Rias.Core.Attributes;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using RiasBot.Extensions;
 
 namespace Rias.Core.Services
 {

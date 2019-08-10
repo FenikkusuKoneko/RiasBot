@@ -27,10 +27,11 @@ namespace Rias.Core
         public async Task InitializeAsync()
         {
             _creds = new Credentials();
-            
+
             _client = new DiscordShardedClient(new DiscordSocketConfig
             {
-                LogLevel = _creds.IsBeta ? LogSeverity.Verbose : LogSeverity.Info
+                LogLevel = _creds.IsBeta ? LogSeverity.Verbose : LogSeverity.Info,
+                ExclusiveBulkDelete = true
             });
             _commandService = new CommandService(new CommandServiceConfiguration
             {
@@ -82,7 +83,7 @@ namespace Rias.Core
             {
                 services.AddSingleton(serviceType);
             }
-            
+
             return services.BuildServiceProvider();
         }
 
@@ -96,11 +97,11 @@ namespace Rias.Core
         private async Task StartAsync()
         {
             if (!VerifyCredentials()) return;
-            
+
             await _client.LoginAsync(TokenType.Bot, _creds.Token);
             await _client.StartAsync();
         }
-        
+
         private bool VerifyCredentials()
         {
             if (string.IsNullOrEmpty(_creds.Token))
@@ -110,7 +111,7 @@ namespace Rias.Core
             }
 
             if (!string.IsNullOrEmpty(_creds.Prefix)) return true;
-            
+
             Log.Error("You must set the default prefix in credentials.json!");
             return false;
         }

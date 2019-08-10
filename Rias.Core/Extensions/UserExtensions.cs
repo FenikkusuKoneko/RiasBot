@@ -1,4 +1,4 @@
-using System;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 
@@ -18,17 +18,8 @@ namespace Rias.Core.Extensions
         /// A value equal with 0 if both users are in the highest role<br/>
         /// A value greater than 0 if current user is above the other user<br/>
         /// The value returned is the difference between their highest role position</returns>
-        /// <exception cref="InvalidCastException">It is thrown if the <see cref="IGuildUser"/> is not <see cref="SocketGuildUser"/></exception>
-        public static int CheckHierarchy(this IGuildUser userOne, IGuildUser userTwo)
-        {
-            if (!(userOne is SocketGuildUser socketGuildUserOne))
-                throw new InvalidCastException("The current IGuildUser user is not SocketGuildUser.");
-
-            if (!(userTwo is SocketGuildUser socketGuildUserTwo))
-                throw new InvalidCastException("The IGuildUser user to check is not SocketGuildUser.");
-
-            return socketGuildUserOne.Hierarchy - socketGuildUserTwo.Hierarchy;
-        }
+        public static int CheckHierarchy(this SocketGuildUser userOne, SocketGuildUser userTwo)
+            => userOne.Hierarchy - userTwo.Hierarchy;
 
         /// <summary>
         /// Check the hierarchy between the current user and a role in the roles hierarchy
@@ -37,13 +28,10 @@ namespace Rias.Core.Extensions
         /// A value equal with 0 if the current user's highest role is the role that is checked<br/>
         /// A value greater than 0 if current user's highest role is above the role<br/>
         /// The value returned is the difference between the user's highest role position and the role's position</returns>
-        /// <exception cref="InvalidCastException">It is thrown if the <see cref="IGuildUser"/> is not <see cref="SocketGuildUser"/></exception>
-        public static int CheckRoleHierarchy(this IGuildUser user, IRole role)
-        {
-            if (!(user is SocketGuildUser socketGuildUser))
-                throw new InvalidCastException("The IGuildUser user is not SocketGuildUser.");
+        public static int CheckRoleHierarchy(this SocketGuildUser user, SocketRole role)
+            => user.Hierarchy - role.Position;
 
-            return socketGuildUser.Hierarchy - role.Position;
-        }
+        public static async Task<IUserMessage> SendMessageAsync(this IUser user, EmbedBuilder embed)
+            => await user.SendMessageAsync(embed: embed.Build());
     }
 }

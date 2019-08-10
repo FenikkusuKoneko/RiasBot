@@ -102,10 +102,54 @@
         "aliases": "renameemote rnemote",
         "description": "Renames an emote on this server. Separate the old name by the new name with '->'. 'Mentioning' the emotes are supported.",
         "remarks": [
-          "[prefix]rnemote heart -> heart_diamond",
-          "[prefix]rnemote :heart: -> heart_diamond",
-          "[prefix]rnemote heart -> :heart_diamond:",
-          "[prefix]rnemote :heart: -> :heart_diamond:"
+          "{0}rnemote heart -> heart_diamond",
+          "{0}rnemote :heart: -> heart_diamond",
+          "{0}rnemote heart -> :heart_diamond:",
+          "{0}rnemote :heart: -> :heart_diamond:"
+        ]
+      }
+    ],
+    "moderation": [
+      {
+        "aliases": "kick k",
+        "description": "I will kick an user. If you provide a reason message I will DM the user with the reason.",
+        "remarks": [
+          "{0}k @User",
+          "{0}k @User Your behavior is bad!"
+        ]
+      },
+      {
+        "aliases": "ban b",
+        "description": "I will ban an user. If you provide a reason message I will DM the user with the reason.",
+        "remarks": [
+          "{0}b @User",
+          "{0}b @User You've violated many rules!"
+        ]
+      },
+      {
+        "aliases": "softban sb",
+        "description": "I will ban an user with the option to remove his messages from last 7 days, and then unban it. The result is a kick.",
+        "remarks": [
+          "{0}sb @User",
+          "{0}sb @User Don't spam here!"
+        ]
+      },
+      {
+        "aliases": "pruneban pb",
+        "description": "I will ban an user with the option to remove his messages from last 7 days. Different from \"softban\" where the user is unbanned.",
+        "remarks": [
+          "{0}pb @User",
+          "{0}pb @User DO NOT SPAM HERE!"
+        ]
+      },
+      {
+        "aliases": "prune purge",
+        "description": "`[prefix]prune x` removes last x number of messages from the channel (up to 100).\n`[prefix]prune @User` removes all User's messages in the last 100 messages.",
+        "remarks": [
+          "{0}prune x",
+          "{0}prune @User",
+          "{0}prune @User x",
+          "{0}prune x @User"
         ]
       }
     ]

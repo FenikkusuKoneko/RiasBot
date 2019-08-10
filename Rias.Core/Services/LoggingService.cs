@@ -19,36 +19,21 @@ namespace Rias.Core.Services
         {
             _client.Log += DiscordLogAsync;
             _commandService.CommandExecuted += CommandExecutedAsync;
-            _commandService.CommandErrored += CommandErroredAsync;
+            _commandService.CommandExecutionFailed += CommandExecutionFailedAsync;
         }
 
         private Task DiscordLogAsync(LogMessage msg)
         {
-            LogEventLevel logEventLevel;
-            switch (msg.Severity)
+            var logEventLevel = msg.Severity switch
             {
-                case LogSeverity.Verbose:
-                    logEventLevel = LogEventLevel.Verbose;
-                    break;
-                case LogSeverity.Info:
-                    logEventLevel = LogEventLevel.Information;
-                    break;
-                case LogSeverity.Debug:
-                    logEventLevel = LogEventLevel.Debug;
-                    break;
-                case LogSeverity.Warning:
-                    logEventLevel = LogEventLevel.Warning;
-                    break;
-                case LogSeverity.Error:
-                    logEventLevel = LogEventLevel.Error;
-                    break;
-                case LogSeverity.Critical:
-                    logEventLevel = LogEventLevel.Fatal;
-                    break;
-                default:
-                    logEventLevel = LogEventLevel.Verbose;
-                    break;
-            }
+                LogSeverity.Verbose => LogEventLevel.Verbose,
+                LogSeverity.Info => LogEventLevel.Information,
+                LogSeverity.Debug => LogEventLevel.Debug,
+                LogSeverity.Warning => LogEventLevel.Warning,
+                LogSeverity.Error => LogEventLevel.Error,
+                LogSeverity.Critical => LogEventLevel.Fatal,
+                _ => LogEventLevel.Verbose
+            };
 
             Log.Logger.Write(logEventLevel, $"{msg.Source}: {msg.Exception?.ToString() ?? msg.Message}");
 
@@ -69,7 +54,7 @@ namespace Rias.Core.Services
             return Task.CompletedTask;
         }
 
-        private Task CommandErroredAsync(CommandErroredEventArgs args)
+        private Task CommandExecutionFailedAsync(CommandExecutionFailedEventArgs args)
         {
             var context = (RiasCommandContext) args.Context;
             var command = context.Command;
