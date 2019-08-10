@@ -8,18 +8,17 @@ using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using ContextType = Rias.Core.Commons.ContextType;
 
 namespace Rias.Core.Modules.Administration
 {
     public partial class Administration
     {
-        [Qmmands.Name("Moderation")]
+        [Name("Moderation")]
         public class Moderation : RiasModule
         {
-            [Qmmands.Command("kick"), Context(ContextType.Guild),
+            [Command("kick"), Context(ContextType.Guild),
              UserPermission(GuildPermission.KickMembers), BotPermission(GuildPermission.KickMembers)]
-            public async Task KickAsync(SocketGuildUser user, [Qmmands.Remainder] string reason = null)
+            public async Task KickAsync(SocketGuildUser user, [Remainder] string reason = null)
             {
                 if (user.Id == Context.User.Id)
                     return;
@@ -40,7 +39,7 @@ namespace Rias.Core.Modules.Administration
                 await user.KickAsync();
             }
 
-            [Qmmands.Command("ban"), Context(ContextType.Guild),
+            [Command("ban"), Context(ContextType.Guild),
              UserPermission(GuildPermission.BanMembers), BotPermission(GuildPermission.BanMembers)]
             public async Task BanAsync(SocketGuildUser user, [Discord.Commands.Remainder] string reason = null)
             {
@@ -63,7 +62,7 @@ namespace Rias.Core.Modules.Administration
                 await Context.Guild.AddBanAsync(user);
             }
 
-            [Qmmands.Command("softban"), Context(ContextType.Guild),
+            [Command("softban"), Context(ContextType.Guild),
              UserPermission(GuildPermission.KickMembers), BotPermission(GuildPermission.KickMembers | GuildPermission.BanMembers)]
             public async Task SoftBanAsync(SocketGuildUser user, [Discord.Commands.Remainder] string reason = null)
             {
@@ -87,7 +86,7 @@ namespace Rias.Core.Modules.Administration
                 await Context.Guild.RemoveBanAsync(user);
             }
 
-            [Qmmands.Command("pruneban"), Context(ContextType.Guild),
+            [Command("pruneban"), Context(ContextType.Guild),
              UserPermission(GuildPermission.BanMembers), BotPermission(GuildPermission.BanMembers)]
             public async Task PruneBanAsync(SocketGuildUser user, [Discord.Commands.Remainder] string reason = null)
             {
