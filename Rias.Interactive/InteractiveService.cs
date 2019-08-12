@@ -25,10 +25,8 @@ namespace Rias.Interactive
 
         private Task ReactionAddedAsync(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            if (reaction.UserId == _client.CurrentUser.Id)
-                return Task.CompletedTask;
-
-            _ = Task.Run(() => _paginatorService.HandlePaginatedMessageAsync(reaction));
+            if (reaction.UserId != _client.CurrentUser.Id)
+                _ = _paginatorService.HandlePaginatedMessageAsync(reaction);
 
             return Task.CompletedTask;
         }
@@ -49,7 +47,7 @@ namespace Rias.Interactive
                     ret = ret && x.Channel.Id == y.Channel.Id;
 
                 return ret;
-            }, timeout);
+            }, timeout); 
 
         public async Task<SocketMessage> NextMessageAsync(IUserMessage userMessage,
             Func<IUserMessage, SocketMessage, bool> predicate,
@@ -70,19 +68,20 @@ namespace Rias.Interactive
 
             var messageTask = mtcs.Task;
             var delay = Task.Delay(timeout.Value);
-            var task = await Task.WhenAny(messageTask, delay).ConfigureAwait(false);
+            var task = await Task.WhenAny(messageTask, delay);
 
             _client.MessageReceived -= MessageReceivedAsync;
 
             if (task == messageTask)
-                return await messageTask.ConfigureAwait(false);
+                return messageTask.Result;
 
             return null;
         }
-
+        
+        // Why not just make this return void? Or return the task directly and let the customer decide to discard or not
         public Task SendPaginatedMessageAsync(IUserMessage userMessage, PaginatedMessage message, TimeSpan? timeout = null)
         {
-            _ = Task.Run(() => _paginatorService.CreatePaginatedMessage(userMessage, message, timeout));
+            _ = _paginatorService.CreatePaginatedMessage(userMessage, message, timeout);
             return Task.CompletedTask;
         }
     }
