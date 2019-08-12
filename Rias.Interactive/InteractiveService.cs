@@ -81,7 +81,7 @@ namespace Rias.Interactive
         // Why not just make this return void? Or return the task directly and let the customer decide to discard or not
         public Task SendPaginatedMessageAsync(IUserMessage userMessage, PaginatedMessage message, TimeSpan? timeout = null)
         {
-            _ = _paginatorService.CreatePaginatedMessage(userMessage, message, timeout);
+            _ = Task.Run(() => _paginatorService.CreatePaginatedMessage(userMessage, message, timeout));
             return Task.CompletedTask;
         }
     }
