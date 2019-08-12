@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using Rias.Interactive.Criteria;
 
 namespace Rias.Interactive.Paginator
 {
@@ -15,7 +12,6 @@ namespace Rias.Interactive.Paginator
         private readonly InteractiveService _interactive;
 
         private readonly ConcurrentDictionary<ulong, PaginatedMessage> _messages = new ConcurrentDictionary<ulong, PaginatedMessage>();
-        private readonly ConcurrentDictionary<ulong, Timer> _timeouts = new ConcurrentDictionary<ulong, Timer>();
 
         public PaginatorService(InteractiveService interactive)
         {
@@ -30,55 +26,56 @@ namespace Rias.Interactive.Paginator
             if (!paginatedMessage.Pages.Any())
                 throw new ArgumentException("The pages collection cannot be empty");
 
-            paginatedMessage.SourceUser = userMessage.Author;
+            paginatedMessage.SourceUserMessage = userMessage;
 
             var message = await RenderPageAsync(paginatedMessage, 0, userMessage.Channel);
             paginatedMessage.Message = message;
-
-            if (timeout.HasValue && timeout.Value > TimeSpan.Zero)
-                paginatedMessage.Timeout = timeout.Value;
 
             var paginatedConfig = paginatedMessage.Config;
 
             _ = Task.Run(async () =>
             {
-                var emotes = new List<IEmote>
-                {
-                    paginatedConfig.First,
-                    paginatedConfig.Back,
-                    paginatedConfig.Next,
-                    paginatedConfig.Last
-                };
+                await message.AddReactionAsync(paginatedConfig.First);
+                await message.AddReactionAsync(paginatedConfig.Back);
+                await message.AddReactionAsync(paginatedConfig.Next);
+                await message.AddReactionAsync(paginatedConfig.Last);
 
                 if (paginatedConfig.UseStop)
-                    emotes.Add(paginatedConfig.Stop);
+                    await message.AddReactionAsync(paginatedConfig.Stop);
 
                 if (paginatedConfig.UseJump)
-                    emotes.Add(paginatedConfig.Jump);
-
-                await message.AddReactionsAsync(emotes.ToArray());
+                    await message.AddReactionAsync(paginatedConfig.Jump);
             });
 
+            var cancelMessage = new TaskCompletionSource<bool>();
+            var token = paginatedMessage.Cts.Token;
+            token.Register(() => cancelMessage.SetResult(true));
+
             AddPaginatedMessage(message.Id, paginatedMessage);
+
+            var delay = Task.Delay(timeout ?? _interactive.DefaultTimeout);
+            var task = await Task.WhenAny(delay, cancelMessage.Task);
+
+            if (task == delay)
+                await RemovePaginatedMessageAsync(message.Id);
+            await userMessage.Channel.SendMessageAsync("Pagination canceled");
         }
 
         public void AddPaginatedMessage(ulong messageId, PaginatedMessage message)
         {
             _messages[messageId] = message;
-            _timeouts[messageId] = new Timer(async _ => await RemovePaginatedMessageAsync(messageId),
-                null, message.Timeout, TimeSpan.Zero);
         }
 
-        public async Task RemovePaginatedMessageAsync(ulong messageId, bool messageDeleted = false)
+        public Task RemovePaginatedMessageAsync(ulong messageId, bool deleted = false)
         {
-            _messages.TryRemove(messageId, out var paginatedMessage);
-            _timeouts.TryRemove(messageId, out var timer);
+            Console.WriteLine("Pagination removed");
+            if (!_messages.TryRemove(messageId, out var paginatedMessage))
+                return Task.CompletedTask;
 
-            if (timer != null)
-                await timer.DisposeAsync();
+            if (!deleted) return paginatedMessage.Message.RemoveAllReactionsAsync();
 
-            if (!messageDeleted)
-                await paginatedMessage.Message.RemoveAllReactionsAsync();
+            paginatedMessage.Cts.Cancel();
+            return Task.CompletedTask;
         }
 
         public async Task HandlePaginatedMessageAsync(SocketReaction reaction)
@@ -92,127 +89,103 @@ namespace Rias.Interactive.Paginator
             var page = paginatedMessage.CurrentPage;
             var pagesCount = paginatedMessage.Pages.Count();
 
-            if (emote.Equals(paginatedConfig.First))
+            if (emote.Equals(paginatedConfig.First) && page > 0)
             {
                 if (page > 0)
                 {
                     page = 0;
-                    await RenderPageAsync(paginatedMessage, page);
-                    await RemoveReactionAsync(message, reaction);
-                    return;
                 }
             }
 
-            if (emote.Equals(paginatedConfig.Back))
+            if (emote.Equals(paginatedConfig.Back) && page > 0)
             {
-                if (page > 0)
-                {
-                    page--;
-                    await RenderPageAsync(paginatedMessage, page);
-                    await RemoveReactionAsync(message, reaction);
-                    return;
-                }
+                page--;
             }
 
-            if (emote.Equals(paginatedConfig.Next))
+            if (emote.Equals(paginatedConfig.Next) && page < pagesCount - 1)
             {
-                if (page < pagesCount - 1)
-                {
-                    page++;
-                    await RenderPageAsync(paginatedMessage, page);
-                    await RemoveReactionAsync(message, reaction);
-                    return;
-                }
+                page++;
             }
 
-            if (emote.Equals(paginatedConfig.Last))
+            if (emote.Equals(paginatedConfig.Last) && page < pagesCount - 1)
             {
-                if (page < pagesCount - 1)
-                {
-                    page = pagesCount - 1;
-                    await RenderPageAsync(paginatedMessage, page);
-                    await RemoveReactionAsync(message, reaction);
-                    return;
-                }
+                page = pagesCount - 1;
             }
 
             if (emote.Equals(paginatedConfig.Stop))
             {
                 if (paginatedConfig.StopOptions == StopOptions.None
                     || paginatedConfig.StopOptions == StopOptions.SourceUser
-                    && reaction.UserId == paginatedMessage.SourceUser.Id)
+                    && reaction.UserId == paginatedMessage.SourceUserMessage.Author.Id)
                 {
-                    await message.DeleteAsync();
-                    await RemovePaginatedMessageAsync(message.Id, true);
+                    await paginatedMessage.Message.DeleteAsync();
                     return;
                 }
             }
 
             if (emote.Equals(paginatedConfig.Jump) && !paginatedMessage.JumpActivated)
             {
-                _ = Task.Run(async () =>
+                var input = await _interactive.NextMessageAsync(paginatedMessage.SourceUserMessage, timeout: TimeSpan.FromSeconds(15));
+                paginatedMessage.JumpActivated = true;
+                if (!(input is null))
                 {
-                    var criterion = new Criterion<SocketMessage>()
-                        .AddCriterion(new FromUserCriterion(reaction.UserId))
-                        .AddCriterion(new SourceChannelCriterion())
-                        .AddCriterion(new IsIntegerCriterion());
-
-                    var input = await _interactive.NextMessageAsync(paginatedMessage.Message, criterion, TimeSpan.FromSeconds(15));
-                    paginatedMessage.JumpActivated = true;
-                    if (!(input is null))
+                    if (int.TryParse(input.Content, out var number))
                     {
-                        page = int.Parse(input.Content) - 1;
+                        page = number - 1;
                         await input.DeleteAsync();
-
-                        if (page < 0)
-                            page = 0;
-
-                        if (page > pagesCount)
-                            page = pagesCount - 1;
-
-                        await RenderPageAsync(paginatedMessage, page);
-                        await RemoveReactionAsync(message, reaction);
-
-                        paginatedMessage.JumpActivated = false;
                     }
 
-                    if (input is null)
-                    {
-                        paginatedMessage.JumpActivated = false;
-                    }
-                });
+                    if (page < 0)
+                        page = 0;
 
-                return;
+                    if (page > pagesCount)
+                        page = pagesCount - 1;
+                }
+
+                paginatedMessage.JumpActivated = false;
             }
 
+            if (paginatedMessage.CurrentPage != page)
+                await RenderPageAsync(paginatedMessage, page);
             await RemoveReactionAsync(message, reaction);
         }
 
-        private async Task RemoveReactionAsync(IUserMessage message, SocketReaction reaction)
-        => await message.RemoveReactionAsync(reaction.Emote, reaction.UserId);
+        private Task RemoveReactionAsync(IUserMessage message, SocketReaction reaction)
+        => message.RemoveReactionAsync(reaction.Emote, reaction.UserId);
 
         private async Task<IUserMessage> RenderPageAsync(PaginatedMessage message, int pagePosition, IMessageChannel channel = null)
         {
             message.CurrentPage = pagePosition;
 
             var page = message.Pages.ElementAt(pagePosition);
+            var embed = page.EmbedBuilder;
 
             var footer = string.Format(message.Config.FooterFormat, pagePosition + 1, message.Pages.Count());
-            if (!string.IsNullOrWhiteSpace(page.Footer?.Text))
-                footer = $"{footer} | {page.Footer.Text}";
+            if (embed != null && !string.IsNullOrEmpty(embed.Footer?.Text))
+                footer = $"{footer} | {embed.Footer.Text}";
 
-            page.WithFooter(new EmbedFooterBuilder
+            if (embed is null)
             {
-                IconUrl = page.Footer?.IconUrl,
-                Text = footer
-            });
+                page.EmbedBuilder = embed = new EmbedBuilder();
+            }
+
+            if (!page.EmbedFooterSet)
+            {
+                embed.WithFooter(footer);
+                page.EmbedFooterSet = true;
+            }
 
             if (channel != null)
             {
-                return await channel.SendMessageAsync(embed: page.Build());
+                return await channel.SendMessageAsync(page.Content, embed: embed.Build());
             }
 
-            await message.Message.ModifyAsync(x => x.Embed = page.Build());
+            await message.Message.ModifyAsync(x =>
+            {
+                x.Content = page.Content;
+                x.Embed = embed.Build();
+            });
+
             return message.Message;
         }
     }

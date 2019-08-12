@@ -6,12 +6,12 @@ namespace Rias.Interactive.Paginator
     {
         public static readonly PaginatorConfig Default = new PaginatorConfig();
 
-        public readonly IEmote First = new Emoji("⏮");
-        public readonly IEmote Back = new Emoji("◀");
-        public readonly IEmote Next = new Emoji("▶");
-        public readonly IEmote Last = new Emoji("⏭");
-        public readonly IEmote Stop = new Emoji("⏹");
-        public readonly IEmote Jump = new Emoji("🔢");
+        public IEmote First { get; set; } = new Emoji("⏮");
+        public IEmote Back { get; set; } = new Emoji("◀");
+        public IEmote Next { get; set; } = new Emoji("▶");
+        public IEmote Last { get; set; } = new Emoji("⏭");
+        public IEmote Stop { get; set; } = new Emoji("⏹");
+        public IEmote Jump { get; set; } = new Emoji("🔢");
 
         public bool UseStop { get; set; }
         public bool UseJump { get; set; }

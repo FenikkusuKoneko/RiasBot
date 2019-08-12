@@ -2,19 +2,16 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using Rias.Interactive.Criteria;
 using Rias.Interactive.Paginator;
 
 namespace Rias.Interactive
 {
     public class InteractiveService
     {
-        public string Version = "1.0.0";
-
         private readonly BaseSocketClient _client;
         private readonly PaginatorService _paginatorService;
 
-        private readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(1);
+        public readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(1);
 
         public InteractiveService(BaseSocketClient client)
         {
@@ -26,55 +23,54 @@ namespace Rias.Interactive
             _paginatorService = new PaginatorService(this);
         }
 
-        private async Task ReactionAddedAsync(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+        private Task ReactionAddedAsync(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
         {
             if (reaction.UserId == _client.CurrentUser.Id)
-                return;
+                return Task.CompletedTask;
 
-            await _paginatorService.HandlePaginatedMessageAsync(reaction);
+            _ = Task.Run(() => _paginatorService.HandlePaginatedMessageAsync(reaction));
+
+            return Task.CompletedTask;
         }
 
-        private async Task MessageDeletedAsync(Cacheable<IMessage, ulong> message, ISocketMessageChannel channel)
-        {
-            await _paginatorService.RemovePaginatedMessageAsync(message.Id, true);
-        }
+        private Task MessageDeletedAsync(Cacheable<IMessage, ulong> message, ISocketMessageChannel channel)
+            => _paginatorService.RemovePaginatedMessageAsync(message.Id, true);
 
-        public async Task<SocketMessage> NextMessageAsync(IUserMessage userMessage,
-            TimeSpan? timeout = null,
+        public Task<SocketMessage> NextMessageAsync(IUserMessage userMessage,
             bool fromSourceUser = true,
-            bool fromSourceChannel = true)
-        {
-            var criterion = new Criterion<SocketMessage>();
+            bool fromSourceChannel = true,
+            TimeSpan? timeout = null)
+            => NextMessageAsync(userMessage, (x, y) =>
+            {
+                var ret = true;
+                if (fromSourceUser)
+                    ret = x.Author.Id == y.Author.Id;
+                if (fromSourceChannel)
+                    ret = ret && x.Channel.Id == y.Channel.Id;
 
-            if (fromSourceUser)
-                criterion.AddCriterion(new FromUserCriterion(userMessage.Author.Id));
-            if (fromSourceChannel)
-                criterion.AddCriterion(new SourceChannelCriterion());
-
-            return await NextMessageAsync(userMessage, criterion, timeout);
-        }
+                return ret;
+            }, timeout);
 
         public async Task<SocketMessage> NextMessageAsync(IUserMessage userMessage,
-            ICriterion<SocketMessage> criterion,
+            Func<IUserMessage, SocketMessage, bool> predicate,
             TimeSpan? timeout = null)
         {
-            timeout ??= _defaultTimeout;
+            timeout ??= DefaultTimeout;
 
             var mtcs = new TaskCompletionSource<SocketMessage>();
-            var ctcs = new TaskCompletionSource<bool>();
-
-            async Task MessageReceivedAsync(SocketMessage message)
+            Task MessageReceivedAsync(SocketMessage message)
             {
-                var result = await criterion.CheckAsync(userMessage, message);
-                if (result) mtcs.SetResult(message);
+                if (predicate.Invoke(userMessage, message))
+                    mtcs.SetResult(message);
+
+                return Task.CompletedTask;
             }
 
             _client.MessageReceived += MessageReceivedAsync;
 
             var messageTask = mtcs.Task;
-            var cancelTask = ctcs.Task;
             var delay = Task.Delay(timeout.Value);
-            var task = await Task.WhenAny(messageTask, delay, cancelTask).ConfigureAwait(false);
+            var task = await Task.WhenAny(messageTask, delay).ConfigureAwait(false);
 
             _client.MessageReceived -= MessageReceivedAsync;
 
@@ -84,7 +80,10 @@ namespace Rias.Interactive
             return null;
         }
 
-        public async Task SendPaginatedMessageAsync(IUserMessage userMessage, PaginatedMessage message, TimeSpan? timeout = null)
-            => await _paginatorService.CreatePaginatedMessage(userMessage, message, timeout);
+        public Task SendPaginatedMessageAsync(IUserMessage userMessage, PaginatedMessage message, TimeSpan? timeout = null)
+        {
+            _ = Task.Run(() => _paginatorService.CreatePaginatedMessage(userMessage, message, timeout));
+            return Task.CompletedTask;
+        }
     }
 }

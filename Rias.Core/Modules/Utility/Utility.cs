@@ -15,27 +15,30 @@ namespace Rias.Core.Modules.Utility
         [Command("test")]
         public async Task Test()
         {
-            var pages = new List<EmbedBuilder>();
+            var pages = new List<InteractiveMessage>();
             for (var i = 0; i < 5; i++)
             {
-                pages.Add(new EmbedBuilder
+                pages.Add(new InteractiveMessage(new EmbedBuilder
                 {
                     Color = new Color(0xd40000),
                     Title = "Paginator",
                     Description = $"Page #{i+1}"
-                });
+                }.WithFooter($"Footer {i+1}")));
             }
 
+            pages.Add(new InteractiveMessage("Page 6"));
+
             await InteractiveService.SendPaginatedMessageAsync(Context.Message, new PaginatedMessage
-            {
-                Pages = pages,
-                Config = new PaginatorConfig
+            (
+                pages,
+                new PaginatorConfig
                 {
                     UseStop = true,
                     StopOptions = StopOptions.SourceUser,
                     UseJump = true
                 }
-            });
+            ));
+            await Context.Channel.SendMessageAsync("test");
         }
     }
 }
