@@ -152,6 +152,15 @@
           "{0}prune x @User"
         ]
       }
+    ],
+    "mute": [
+      {
+        "aliases": "mute",
+        "description": "I will mute an user from text and voice channels.",
+        "remarks": [
+          "{0}mute @User"
+        ]
+      }
     ]
   },
   "help": {

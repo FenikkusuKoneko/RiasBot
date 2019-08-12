@@ -11,6 +11,7 @@ using Rias.Core.Commons;
 using Rias.Core.Database;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
+using Rias.Interactive;
 using Serilog;
 
 namespace Rias.Core
@@ -69,6 +70,7 @@ namespace Rias.Core
                 .AddSingleton(_commandService)
                 .AddSingleton(_creds)
                 .AddSingleton<Translations>()
+                .AddSingleton(new InteractiveService(_client))
                 .AddTransient<RiasDbContext>();
 
             var assembly = Assembly.GetAssembly(typeof(Rias));
