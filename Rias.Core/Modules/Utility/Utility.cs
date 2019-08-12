@@ -38,7 +38,6 @@ namespace Rias.Core.Modules.Utility
                     UseJump = true
                 }
             ));
-            await Context.Channel.SendMessageAsync("test");
         }
     }
 }

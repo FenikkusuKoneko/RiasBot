@@ -58,7 +58,6 @@ namespace Rias.Interactive.Paginator
 
             if (task == delay)
                 await RemovePaginatedMessageAsync(message.Id);
-            await userMessage.Channel.SendMessageAsync("Pagination canceled");
         }
 
         public void AddPaginatedMessage(ulong messageId, PaginatedMessage message)
@@ -68,7 +67,6 @@ namespace Rias.Interactive.Paginator
 
         public Task RemovePaginatedMessageAsync(ulong messageId, bool deleted = false)
         {
-            Console.WriteLine("Pagination removed");
             if (!_messages.TryRemove(messageId, out var paginatedMessage))
                 return Task.CompletedTask;
 
