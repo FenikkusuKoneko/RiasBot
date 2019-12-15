@@ -1112,8 +1112,8 @@ For a custom one you must have the Patreon Tier 2. Check it here: [Patreon]({0})
     <data name="Reactions_PokeYou" xml:space="preserve">
         <value>*Poke poke {0}*</value>
     </data>
-    <data name="Reactions_PockedBy" xml:space="preserve">
-        <value>{0} you have been pocked by **{1}**.</value>
+    <data name="Reactions_PokedBy" xml:space="preserve">
+        <value>{0} you have been poked by **{1}**.</value>
     </data>
     
     <data name="Searches_Source" xml:space="preserve">

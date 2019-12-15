@@ -3506,11 +3506,11 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} you have been pocked by **{1}**..
+        ///   Looks up a localized string similar to {0} you have been poked by **{1}**..
         /// </summary>
-        public static string Reactions_PockedBy {
+        public static string Reactions_PokedBy {
             get {
-                return ResourceManager.GetString("Reactions_PockedBy", resourceCulture);
+                return ResourceManager.GetString("Reactions_PokedBy", resourceCulture);
             }
         }
         

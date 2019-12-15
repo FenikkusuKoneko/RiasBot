@@ -447,7 +447,7 @@ namespace Rias.Core.Modules.Reactions
             var embed = new EmbedBuilder
             {
                 Color = RiasUtils.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("grope"),
+                ImageUrl = await Service.GetGropeUrlAsync(),
                 Footer = new EmbedFooterBuilder
                 {
                     Text = $"{GetText("PoweredBy")} riasbot.me"
@@ -561,7 +561,7 @@ namespace Rias.Core.Modules.Reactions
             if (user.Id == Context.User.Id)
                 await Context.Channel.SendMessageAsync(GetText("PokeYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("PockedBy", user.Mention, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("PokedBy", user.Mention, Context.User), embed: embed.Build());
         }
         
         [Command("poke"), Context(ContextType.Guild),
@@ -588,7 +588,7 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("PokeYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("PockedBy", value, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("PokedBy", value, Context.User), embed: embed.Build());
         }
     }
 }

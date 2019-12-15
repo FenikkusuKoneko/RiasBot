@@ -28,7 +28,7 @@ namespace Rias.Core.Modules.Searches
                     ImageUrl = await Service.GetNekoImageAsync(),
                     Footer = new EmbedFooterBuilder
                     {
-                        Text = $"{GetText("PoweredBy")} riasbot.me"
+                        Text = $"{GetText("#Reactions_PoweredBy")} riasbot.me"
                     }
                 };
 
@@ -46,7 +46,7 @@ namespace Rias.Core.Modules.Searches
                     ImageUrl = await Service.GetNekoImageAsync(),
                     Footer = new EmbedFooterBuilder
                     {
-                        Text = $"{GetText("PoweredBy")} riasbot.me"
+                        Text = $"{GetText("#Reactions_PoweredBy")} riasbot.me"
                     }
                 };
 

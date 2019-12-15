@@ -144,7 +144,7 @@ namespace Rias.Core.Modules.Profile
             if (index < 0)
                 index = 0;
 
-            if (Creds.PatreonConfig != null)
+            if (Creds.PatreonConfig != null && Context.User.Id != Creds.MasterId)
             {
                 var patreonTier = _patreonService.GetPatreonTier(Context.User);
                 switch (index)
