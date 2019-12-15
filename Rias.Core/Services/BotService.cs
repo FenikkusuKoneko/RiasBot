@@ -36,7 +36,7 @@ namespace Rias.Core.Services
             _client.UserLeft += UserLeftAsync;
             _client.GuildMemberUpdated += GuildMemberUpdatedAsync;
 
-            _client.ShardReady += ShardReadyAsync;
+            _client.ShardConnected += ShardConnectedAsync;
             _client.ShardDisconnected += ShardDisconnectedAsync;
         }
 
@@ -257,14 +257,14 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
         }
 
-        private async Task ShardReadyAsync(DiscordSocketClient shard)
+        private async Task ShardConnectedAsync(DiscordSocketClient shard)
         {
             _shardsReady.AddOrUpdate(shard, true, (shardKey, value) => true);
 
             if (_shardsReady.Count == _client.Shards.Count && _shardsReady.All(x => x.Value))
             {
-                _client.ShardReady -= ShardReadyAsync;
-                Log.Information("All shards are ready");
+                _client.ShardConnected -= ShardConnectedAsync;
+                Log.Information("All shards are connected");
 
                 Services.GetRequiredService<MuteService>();
                 await _lavalink.ConnectAsync();
