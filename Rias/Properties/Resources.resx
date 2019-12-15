@@ -1,0 +1,1709 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Administration_GreetEnabled" xml:space="preserve">
+        <value>The announcements for users who join the server are **enabled** in this channel.
+The greet message is: **{0}**</value>
+    </data>
+    <data name="Administration_GreetDisabled" xml:space="preserve">
+        <value>The announcements for users who join the server are **disabled**.</value>
+    </data>
+    <data name="Administration_GreetMessageNotSet" xml:space="preserve">
+        <value>The announcements for users that join the server cannot be enabled because the greet message is not set.</value>
+    </data>
+    <data name="Administration_GreetMessageLengthLimit" xml:space="preserve">
+        <value>The greet message's length cannot be longer than {0} characters.</value>
+    </data>
+    <data name="Administration_GreetMessageSet" xml:space="preserve">
+        <value>New announcement message set for users that join the server.</value>
+    </data>
+    <data name="Administration_ByeEnabled" xml:space="preserve">
+        <value>The announcements for users who leave the server are **enabled** in this channel.
+The bye message is: **{0}**</value>
+    </data>
+    <data name="Administration_ByeDisabled" xml:space="preserve">
+        <value>The announcements for users who leave the server are **disabled**.</value>
+    </data>
+    <data name="Administration_ByeMessageNotSet" xml:space="preserve">
+        <value>The announcements for users that leave the server cannot be enabled because the bye message is not set.</value>
+    </data>
+    <data name="Administration_ByeMessageLengthLimit" xml:space="preserve">
+        <value>The bye message's length cannot be larger than {0} characters.</value>
+    </data>
+    <data name="Administration_ByeMessageSet" xml:space="preserve">
+        <value>New announcement message set for users that leave the server.</value>
+    </data>
+    <data name="Administration_ModLogEnabled" xml:space="preserve">
+        <value>Notifications about warn, mute, unmute, kick, ban, unban, softban and pruneban will be posted in this channel.</value>
+    </data>
+    <data name="Administration_ModLogDisabled" xml:space="preserve">
+        <value>The notifications about warn, mute, unmute, kick, ban, unban, softban and pruneban are **disabled**.</value>
+    </data>
+    <data name="Administration_CategoryChannelCreated" xml:space="preserve">
+        <value>The category channel **{0}** was created successfully.</value>
+    </data>
+    <data name="Administration_CategoryChannelDeleted" xml:space="preserve">
+        <value>The category channel **{0}** was deleted successfully.</value>
+    </data>
+    <data name="Administration_CategoryChannelRenamed" xml:space="preserve">
+        <value>The name of the category channel **{0}** was renamed to **{1}** successfully.</value>
+    </data>
+    <data name="Administration_ChannelNameLengthLimit" xml:space="preserve">
+        <value>The name's length must be between {0} and {1} characters.</value>
+    </data>
+    <data name="Administration_CategoryChannelNotFound" xml:space="preserve">
+        <value>I couldn't find the category channel.</value>
+    </data>
+    <data name="Administration_TextChannelNotFound" xml:space="preserve">
+        <value>I couldn't find the text channel.</value>
+    </data>
+    <data name="Administration_VoiceChannelNotFound" xml:space="preserve">
+        <value>I couldn't find the voice channel.</value>
+    </data>
+    <data name="Administration_CategoryChannelNoViewPermission" xml:space="preserve">
+        <value>I don't have the permission to view that category channel.</value>
+    </data>
+    <data name="Administration_TextChannelNoViewPermission" xml:space="preserve">
+        <value>I don't have the permission to view that text channel.</value>
+    </data>
+    <data name="Administration_VoiceChannelNoViewPermission" xml:space="preserve">
+        <value>I don't have the permission to view that voice channel.</value>
+    </data>
+    <data name="Administration_TextChannelAddedToCategory" xml:space="preserve">
+        <value>The text channel **{0}** was added to category **{1}** successfully.</value>
+    </data>
+    <data name="Administration_VoiceChannelAddedToCategory" xml:space="preserve">
+        <value>The voice channel **{0}** was added to category **{1}** successfully.</value>
+    </data>
+    <data name="Administration_EmoteCreated" xml:space="preserve">
+        <value>The emote **{0}** was created successfully.</value>
+    </data>
+    <data name="Administration_EmoteDeleted" xml:space="preserve">
+        <value>The emote **{0}** was deleted successfully.</value>
+    </data>
+    <data name="Administration_EmoteRenamed" xml:space="preserve">
+        <value>The emote **{0}** was renamed to **{1}** successfully.</value>
+    </data>
+    <data name="Administration_AnimatedEmotesLimit" xml:space="preserve">
+        <value>The server reached the limit of {0} animated emotes.</value>
+    </data>
+    <data name="Administration_StaticEmotesLimit" xml:space="preserve">
+        <value>The server reached the limit of {0} static emotes.</value>
+    </data>
+    <data name="Administration_EmoteSizeLimit" xml:space="preserve">
+        <value>The image must be under 256 Kb.</value>
+    </data>
+    <data name="Administration_EmoteNotFound" xml:space="preserve">
+        <value>I couldn't find the emote.</value>
+    </data>
+    <data name="Administration_EmoteNotDeleted" xml:space="preserve">
+        <value>I couldn't delete the emote.</value>
+    </data>
+    <data name="Administration_EmoteNotRenamed" xml:space="preserve">
+        <value>I couldn't rename the emote.</value>
+    </data>
+    <data name="Administration_CannotKickOwner" xml:space="preserve">
+        <value>I cannot kick the owner of the server.</value>
+    </data>
+    <data name="Administration_CannotBanOwner" xml:space="preserve">
+        <value>I cannot ban the owner of the server.</value>
+    </data>
+    <data name="Administration_CannotSoftbanOwner" xml:space="preserve">
+        <value>I cannot softban the owner of the server.</value>
+    </data>
+    <data name="Administration_CannotPrunebanOwner" xml:space="preserve">
+        <value>I cannot pruneban the owner of the server.</value>
+    </data>
+    <data name="Administration_UserAbove" xml:space="preserve">
+        <value>The user is above me or besides me in the roles hierarchy.</value>
+    </data>
+    <data name="Administration_YouAreAbove" xml:space="preserve">
+        <value>You are above me or beside me in the roles hierarchy.</value>
+    </data>
+    <data name="Administration_UserKicked" xml:space="preserve">
+        <value>User kicked</value>
+    </data>
+    <data name="Administration_KickedFrom" xml:space="preserve">
+        <value>You have been kicked from **{0}** server!</value>
+    </data>
+    <data name="Administration_UserBanned" xml:space="preserve">
+        <value>User banned</value>
+    </data>
+    <data name="Administration_BannedFrom" xml:space="preserve">
+        <value>You have been banned from **{0}** server!</value>
+    </data>
+    <data name="Administration_UserSoftBanned" xml:space="preserve">
+        <value>User soft-banned</value>
+    </data>
+    <data name="Administration_PruneLimit" xml:space="preserve">
+        <value>I couldn't delete any message because they are older than 14 days.</value>
+    </data>
+    <data name="Administration_CannotMuteOwner" xml:space="preserve">
+        <value>I cannot mute the owner of the server.</value>
+    </data>
+    <data name="Administration_MuteTimeoutLowest" xml:space="preserve">
+        <value>The timeout cannot be lower than **{0}**.</value>
+    </data>
+    <data name="Administration_MuteTimeoutHighest" xml:space="preserve">
+        <value>The timeout cannot be higher than **{0}**.</value>
+    </data>
+    <data name="Administration_UserAlreadyMuted" xml:space="preserve">
+        <value>**{0}** is already muted from text and voice channels.</value>
+    </data>
+    <data name="Administration_UserNotMuted" xml:space="preserve">
+        <value>**{0}** is not muted from text and voice channels.</value>
+    </data>
+    <data name="Administration_UserMuted" xml:space="preserve">
+        <value>User muted</value>
+    </data>
+    <data name="Administration_UserUnmuted" xml:space="preserve">
+        <value>User unmuted</value>
+    </data>
+    <data name="Administration_MuteRoleNotFound" xml:space="preserve">
+        <value>I couldn't find the mute role, nor the default mute role **rias-mute**.
+Set a new mute role using `{0}setmute` or mute an user and I will create it automatically.</value>
+    </data>
+    <data name="Administration_NewMuteRoleSet" xml:space="preserve">
+        <value>New mute role set.</value>
+    </data>
+    <data name="Administration_MuteRoleNotSet" xml:space="preserve">
+        <value>This role cannot be set as mute role because is managed by Discord.</value>
+    </data>
+    <data name="Administration_MuteRoleAbove" xml:space="preserve">
+        <value>The mute role **{0}** is above my highest role. Move it below my highest role or set a new mute role.</value>
+    </data>
+    <data name="Administration_MutedFor" xml:space="preserve">
+        <value>Muted For</value>
+    </data>
+    <data name="Administration_UserNotFound" xml:space="preserve">
+        <value>I couldn't find the user.</value>
+    </data>
+    <data name="Administration_RoleNotFound" xml:space="preserve">
+        <value>I couldn't find the role.</value>
+    </data>
+    <data name="Administration_RoleAbove" xml:space="preserve">
+        <value>The role is above my highest role or it is my highest role.</value>
+    </data>
+    <data name="Administration_NoRoles" xml:space="preserve">
+        <value>No roles on this server.</value>
+    </data>
+    <data name="Administration_ListRoles" xml:space="preserve">
+        <value>The roles on this server</value>
+    </data>
+    <data name="Administration_RoleCreated" xml:space="preserve">
+        <value>The role **{0}** was created successfully.</value>
+    </data>
+    <data name="Administration_RoleDeleted" xml:space="preserve">
+        <value>The role **{0}** was deleted successfully.</value>
+    </data>
+    <data name="Administration_RoleNotDeleted" xml:space="preserve">
+        <value>The role **{0}** cannot be deleted because is automatically managed by Discord.</value>
+    </data>
+    <data name="Administration_RoleColorChanged" xml:space="preserve">
+        <value>The color of the role **{0}** was changed successfully.</value>
+    </data>
+    <data name="Administration_RoleRenamed" xml:space="preserve">
+        <value>The name of the role **{0}** was renamed to **{1}** successfully.</value>
+    </data>
+    <data name="Administration_RoleDisplayed" xml:space="preserve">
+        <value>The role **{0}** is now displayed independently in the users list.</value>
+    </data>
+    <data name="Administration_RoleNotDisplayed" xml:space="preserve">
+        <value>The role **{0}** is not displayed independently in the users list.</value>
+    </data>
+    <data name="Administration_RoleMentionable" xml:space="preserve">
+        <value>The role **{0}** is now mentionable.</value>
+    </data>
+    <data name="Administration_RoleNotMentionable" xml:space="preserve">
+        <value>The role **{0}** is not mentionable anymore.</value>
+    </data>
+    <data name="Administration_UserHasRole" xml:space="preserve">
+        <value>**{0}** already has this role.</value>
+    </data>
+    <data name="Administration_UserNoRole" xml:space="preserve">
+        <value>**{0}** doesn't have this role.</value>
+    </data>
+    <data name="Administration_RoleAdded" xml:space="preserve">
+        <value>The role **{0}** was added to **{1}** successfully.</value>
+    </data>
+    <data name="Administration_RoleNotAdded" xml:space="preserve">
+        <value>The role **{0}** cannot be added manually to users because is automatically managed by Discord.</value>
+    </data>
+    <data name="Administration_RoleRemoved" xml:space="preserve">
+        <value>The role **{0}** was removed from **{1}** successfully.</value>
+    </data>
+    <data name="Administration_RoleNotRemoved" xml:space="preserve">
+        <value>The role **{0}** cannot be removed manually from users because is automatically managed by Discord.</value>
+    </data>
+    <data name="Administration_AarDisabled" xml:space="preserve">
+        <value>Auto-assignable role disabled.</value>
+    </data>
+    <data name="Administration_AarSet" xml:space="preserve">
+        <value>The role **{0}** will be auto-assigned to the new users.</value>
+    </data>
+    <data name="Administration_AarNotSet" xml:space="preserve">
+        <value>The role **{0}** cannot be assigned manually to users because is automatically managed by Discord.</value>
+    </data>
+    <data name="Administration_RoleNotSelfAssignable" xml:space="preserve">
+        <value>The role **{0}** is not self assignable.</value>
+    </data>
+    <data name="Administration_YouAre" xml:space="preserve">
+        <value>You are now **{0}**.</value>
+    </data>
+    <data name="Administration_YouAlreadyAre" xml:space="preserve">
+        <value>You already are **{0}**.</value>
+    </data>
+    <data name="Administration_YouAreNot" xml:space="preserve">
+        <value>You are not **{0}** anymore.</value>
+    </data>
+    <data name="Administration_SarAdded" xml:space="preserve">
+        <value>The role **{0}** was added in the self assignable roles list successfully.</value>
+    </data>
+    <data name="Administration_SarNotAdded" xml:space="preserve">
+        <value>The role **{0}** cannot be added in the self assignable roles list because is automatically managed by Discord.</value>
+    </data>
+    <data name="Administration_SarRemoved" xml:space="preserve">
+        <value>The role **{0}** was removed from the self assignable roles list successfully.</value>
+    </data>
+    <data name="Administration_SarInList" xml:space="preserve">
+        <value>The role **{0}** is already in the self assignable roles list.</value>
+    </data>
+    <data name="Administration_SarNotInList" xml:space="preserve">
+        <value>The role **{0}** is not in the self assignable roles list.</value>
+    </data>
+    <data name="Administration_NoSar" xml:space="preserve">
+        <value>No self assignable roles on this server.</value>
+    </data>
+    <data name="Administration_SarList" xml:space="preserve">
+        <value>Self assignable roles on this server</value>
+    </data>
+    <data name="Administration_NicknameOwner" xml:space="preserve">
+        <value>You cannot change the server's owner nickname.</value>
+    </data>
+    <data name="Administration_NicknameRemoved" xml:space="preserve">
+        <value>{0}'s nickname was removed successfully.</value>
+    </data>
+    <data name="Administration_NicknameChanged" xml:space="preserve">
+        <value>{0}'s nickname was changed to **{1}** successfully.</value>
+    </data>
+    <data name="Administration_ServerNameLengthLimit" xml:space="preserve">
+        <value>The server name must be between 2-100 characters length.</value>
+    </data>
+    <data name="Administration_ServerNameChanged" xml:space="preserve">
+        <value>Server's name was changed to **{0}** successfully.</value>
+    </data>
+    <data name="Administration_ServerIconChanged" xml:space="preserve">
+        <value>Server's icon was changed successfully.</value>
+    </data>
+    <data name="Administration_TextChannelCreated" xml:space="preserve">
+        <value>The text channel **{0}** was created successfully.</value>
+    </data>
+    <data name="Administration_TextChannelDeleted" xml:space="preserve">
+        <value>The text channel **{0}** was deleted successfully.</value>
+    </data>
+    <data name="Administration_TextChannelRenamed" xml:space="preserve">
+        <value>The name of the text channel **{0}** was renamed to **{1}** successfully.</value>
+    </data>
+    <data name="Administration_ChannelNotTopic" xml:space="preserve">
+        <value>No topic set on this channel.</value>
+    </data>
+    <data name="Administration_ChannelTopicTitle" xml:space="preserve">
+        <value>This channel's topic</value>
+    </data>
+    <data name="Administration_ChannelTopicLengthLimit" xml:space="preserve">
+        <value>The topic must be less than 1024 characters.</value>
+    </data>
+    <data name="Administration_ChannelTopicSet" xml:space="preserve">
+        <value>Channel topic set</value>
+    </data>
+    <data name="Administration_ChannelTopicRemoved" xml:space="preserve">
+        <value>The topic of this channel was removed.</value>
+    </data>
+    <data name="Administration_CurrentChannelNsfwEnabled" xml:space="preserve">
+        <value>This channel is now NSFW.</value>
+    </data>
+    <data name="Administration_CurrentChannelNsfwDisabled" xml:space="preserve">
+        <value>This channel is not NSFW anymore.</value>
+    </data>
+    <data name="Administration_ChannelNsfwEnabled" xml:space="preserve">
+        <value>**{0}** channel is now NSFW.</value>
+    </data>
+    <data name="Administration_ChannelNsfwDisabled" xml:space="preserve">
+        <value>**{0}** channel is not NSFW anymore.</value>
+    </data>
+    <data name="Administration_VoiceChannelCreated" xml:space="preserve">
+        <value>The voice channel **{0}** was created successfully.</value>
+    </data>
+    <data name="Administration_VoiceChannelDeleted" xml:space="preserve">
+        <value>The voice channel **{0}** was deleted successfully.</value>
+    </data>
+    <data name="Administration_VoiceChannelRenamed" xml:space="preserve">
+        <value>The name of the voice channel **{0}** was renamed to **{1}** successfully.</value>
+    </data>
+    <data name="Administration_WarningUserNoPermissionsDefault" xml:space="preserve">
+        <value>This server doesn't have a warning punishment set so you must be a moderator to use the `warn` command.
+You must have the **{0}** server {1}.</value>
+    </data>
+    <data name="Administration_WarningUserNoPermissionsPunishment" xml:space="preserve">
+        <value>This server has **{0}** warning punishment set so you must have the **{1}** server {2} to use the `warn` command.</value>
+    </data>
+    <data name="Administration_WarningBotNoPermissionsDefault" xml:space="preserve">
+        <value>This server doesn't have a warning punishment set so I must be a moderator to execute the `warn` command.
+I must have the **{0}** server {1}.</value>
+    </data>
+    <data name="Administration_WarningBotNoPermissionsPunishment" xml:space="preserve">
+        <value>This server has **{0}** warning punishment set so I must have the **{1}** server {2} to execute the `warn` command.</value>
+    </data>
+    <data name="Administration_CannotWarnOwner" xml:space="preserve">
+        <value>You cannot warn the owner of the server.</value>
+    </data>
+    <data name="Administration_UserWarningsLimit" xml:space="preserve">
+        <value>The user has {0} warnings. The limit has been reached.</value>
+    </data>
+    <data name="Administration_Warn" xml:space="preserve">
+        <value>Warn</value>
+    </data>
+    <data name="Administration_WarningNumber" xml:space="preserve">
+        <value>Warning number</value>
+    </data>
+    <data name="Administration_WarningMute" xml:space="preserve">
+        <value>Mute punishment applied!</value>
+    </data>
+    <data name="Administration_WarningKick" xml:space="preserve">
+        <value>Kick punishment applied!</value>
+    </data>
+    <data name="Administration_WarningBan" xml:space="preserve">
+        <value>Ban punishment applied!</value>
+    </data>
+    <data name="Administration_WarnedUsers" xml:space="preserve">
+        <value>All warned users</value>
+    </data>
+    <data name="Administration_NoWarnedUsers" xml:space="preserve">
+        <value>No warned users.</value>
+    </data>
+    <data name="Administration_WarningListFooter" xml:space="preserve">
+        <value>Use `{0}warnings &lt;user&gt;` to get the warnings for an user.</value>
+    </data>
+    <data name="Administration_UserWarnings" xml:space="preserve">
+        <value>All warnings for {0}</value>
+    </data>
+    <data name="Administration_UserNoWarnings" xml:space="preserve">
+        <value>**{0}** doesn't have any warning.</value>
+    </data>
+    <data name="Administration_ClearWarningUserNoPermissions" xml:space="preserve">
+        <value>You must be a moderator to use the `clearwarning` command.
+You must have the **{0}** server permissions.</value>
+    </data>
+    <data name="Administration_ClearWarningIndexAbove" xml:space="preserve">
+        <value>The index is bigger than the number of {0}'s warnings.</value>
+    </data>
+    <data name="Administration_ClearWarningNotUserWarning" xml:space="preserve">
+        <value>This warning wasn't added by you to {0}. Only administrators or the warning's moderator owner can remove it.</value>
+    </data>
+    <data name="Administration_ClearWarningNotModWarnings" xml:space="preserve">
+        <value>{0} doesn't have any warning from you to be cleared.</value>
+    </data>
+    <data name="Administration_WarningCleared" xml:space="preserve">
+        <value>The warning from **{0}** was removed.</value>
+    </data>
+    <data name="Administration_WarningsCleared" xml:space="preserve">
+        <value>Cleared {0} {1} from **{2}** that were yours.</value>
+    </data>
+    <data name="Administration_AllWarningsCleared" xml:space="preserve">
+        <value>All **{0}**'s warnings have been cleared.</value>
+    </data>
+    <data name="Administration_WarningPunishment" xml:space="preserve">
+        <value>Current warning punishment</value>
+    </data>
+    <data name="Administration_NoWarningPunishment" xml:space="preserve">
+        <value>No warning punishment set in this server.</value>
+    </data>
+    <data name="Administration_WarningsLimit" xml:space="preserve">
+        <value>The limit of warnings is {0}.</value>
+    </data>
+    <data name="Administration_WarningPunishmentRemoved" xml:space="preserve">
+        <value>The warning punishment has been removed.</value>
+    </data>
+    <data name="Administration_WarningInvalidPunishment" xml:space="preserve">
+        <value>The warning punishment must be mute, kick, ban, softban or pruneban.</value>
+    </data>
+    <data name="Administration_WarningPunishmentSet" xml:space="preserve">
+        <value>Warning punishment set</value>
+    </data>
+    <data name="Administration_MutePermission" xml:space="preserve">
+        <value>Mute Members</value>
+    </data>
+    <data name="Administration_KickPermission" xml:space="preserve">
+        <value>Kick Members</value>
+    </data>
+    <data name="Administration_BanPermission" xml:space="preserve">
+        <value>Ban Members</value>
+    </data>
+    <data name="Administration_Moderator" xml:space="preserve">
+        <value>Moderator</value>
+    </data>
+    <data name="Administration_Warning" xml:space="preserve">
+        <value>Warning</value>
+    </data>
+    <data name="Administration_Warnings" xml:space="preserve">
+        <value>Warnings</value>
+    </data>
+    <data name="Administration_Punishment" xml:space="preserve">
+        <value>Punishment</value>
+    </data>
+
+    <data name="Bot_GuildNotFound" xml:space="preserve">
+        <value>I couldn't find the guild</value>
+    </data>
+    <data name="Bot_LeftGuild" xml:space="preserve">
+        <value>Left **{0}**</value>
+    </data>
+    <data name="Bot_Update" xml:space="preserve">
+        <value>Update</value>
+    </data>
+    <data name="Bot_ChannelNotTextChannel" xml:space="preserve">
+        <value>The channel is not a text channel.</value>
+    </data>
+    <data name="Bot_TextChannelNoSendMessagesPermission" xml:space="preserve">
+        <value>I don't have the permission to send messages in that text channel.</value>
+    </data>
+    <data name="Bot_UserIsBot" xml:space="preserve">
+        <value>The user is a bot.</value>
+    </data>
+    <data name="Bot_UserMessageNotSent" xml:space="preserve">
+        <value>I couldn't send the message to the user.</value>
+    </data>
+    <data name="Bot_MessageSent" xml:space="preserve">
+        <value>Message sent.</value>
+    </data>
+    <data name="Bot_ChannelMessageIdsBadFormat" xml:space="preserve">
+        <value>The format of the ids is not correct. It must be `&lt;channelId&gt;|&lt;messageId&gt;`.</value>
+    </data>
+    <data name="Bot_MessageNotFound" xml:space="preserve">
+        <value>I couldn't find the message.</value>
+    </data>
+    <data name="Bot_MessageNotUserMessage" xml:space="preserve">
+        <value>The message doesn't belong to an user.</value>
+    </data>
+    <data name="Bot_MessageNotSelf" xml:space="preserve">
+        <value>The message doesn't belong to me.</value>
+    </data>
+    <data name="Bot_MessageEdited" xml:space="preserve">
+        <value>Message edited.</value>
+    </data>
+    <data name="Bot_MutualGuilds" xml:space="preserve">
+        <value>Mutual guilds</value>
+    </data>
+    <data name="Bot_RoslynCompiler" xml:space="preserve">
+        <value>Roslyn compiler</value>
+    </data>
+    <data name="Bot_EvaluatingCode" xml:space="preserve">
+        <value>Evaluating the C# code.</value>
+    </data>
+    <data name="Bot_CodeEvaluated" xml:space="preserve">
+        <value>Code evaluated.</value>
+    </data>
+    <data name="Bot_CodeEvaluatedWithError" xml:space="preserve">
+        <value>Code threw an error on compilation.</value>
+    </data>
+    <data name="Bot_CodeCompiledWithError" xml:space="preserve">
+        <value>Code compiled but threw an error on execution.</value>
+    </data>
+    <data name="Bot_CompilationTime" xml:space="preserve">
+        <value>Compilation time</value>
+    </data>
+    <data name="Bot_ExecutionTime" xml:space="preserve">
+        <value>Execution time</value>
+    </data>
+    <data name="Bot_Code" xml:space="preserve">
+        <value>Code</value>
+    </data>
+    <data name="Bot_Exception" xml:space="preserve">
+        <value>Exception</value>
+    </data>
+    <data name="Bot_GuildUsersDownloaded" xml:space="preserve">
+        <value>All users downloaded from **{0}**.</value>
+    </data>
+    <data name="Bot_ActivitySet" xml:space="preserve">
+        <value>I am **{0}**.</value>
+    </data>
+    <data name="Bot_ActivityRemoved" xml:space="preserve">
+        <value>Activity removed.</value>
+    </data>
+    <data name="Bot_ActivityPlaying" xml:space="preserve">
+        <value>Playing {0}</value>
+    </data>
+    <data name="Bot_ActivityListening" xml:space="preserve">
+        <value>Listening to {0}</value>
+    </data>
+    <data name="Bot_ActivityWatching" xml:space="preserve">
+        <value>Watching {0}</value>
+    </data>
+    <data name="Bot_ActivityStreaming" xml:space="preserve">
+        <value>Streaming {0}</value>
+    </data>
+    <data name="Bot_ActivityRotationSet" xml:space="preserve">
+        <value>Activity rotation set: {0} seconds
+{1}</value>
+    </data>
+    <data name="Bot_ActivityRotationLimit" xml:space="preserve">
+        <value>The activity rotation period cannot be lower than {0} seconds.</value>
+    </data>
+    <data name="Bot_StatusSet" xml:space="preserve">
+        <value>I am now **{0}**.</value>
+    </data>
+    <data name="Bot_StatusOnline" xml:space="preserve">
+        <value>Online</value>
+    </data>
+    <data name="Bot_StatusIdle" xml:space="preserve">
+        <value>Idle</value>
+    </data>
+    <data name="Bot_StatusAFK" xml:space="preserve">
+        <value>AFK</value>
+    </data>
+    <data name="Bot_StatusDoNotDisturb" xml:space="preserve">
+        <value>Do Not Disturb</value>
+    </data>
+    <data name="Bot_StatusInvisible" xml:space="preserve">
+        <value>Invisible</value>
+    </data>
+    <data name="Bot_UsernameLengthLimit" xml:space="preserve">
+        <value>The username length must be between 2 and 32 characters.</value>
+    </data>
+    <data name="Bot_SetUsernameDialog" xml:space="preserve">
+        <value>Are you sure you want to change my username?</value>
+    </data>
+    <data name="Bot_SetUsernameCanceled" xml:space="preserve">
+        <value>Set username canceled!</value>
+    </data>
+    <data name="Bot_UsernameSet" xml:space="preserve">
+        <value>My username was changed to **{0}** successfully.</value>
+    </data>
+    <data name="Bot_SetUsernameError" xml:space="preserve">
+        <value>My username couldn't be changed. Keep in mind that it can be changed twice per hour. If you already did it, then try again later.</value>
+    </data>
+    <data name="Bot_AvatarSet" xml:space="preserve">
+        <value>My avatar was changed successfully.</value>
+    </data>
+    <data name="Bot_SetAvatarError" xml:space="preserve">
+        <value>My avatar couldn't be changed. Keep in mind that it can be changed twice per 10 minutes. If you already did it, then try again later.</value>
+    </data>
+    <data name="Bot_DeleteDialog" xml:space="preserve">
+        <value>Are you sure you want to delete this user from the database?</value>
+    </data>
+    <data name="Bot_DeleteCanceled" xml:space="preserve">
+        <value>Delete canceled!</value>
+    </data>
+    <data name="Bot_UserDeleted" xml:space="preserve">
+        <value>The user **{0}** has been deleted from the database.</value>
+    </data>
+    <data name="Bot_UserNotInDatabase" xml:space="preserve">
+        <value>The user is not in the database.</value>
+    </data>
+    <data name="Bot_IsBlacklisted" xml:space="preserve">
+        <value>Is blacklisted</value>
+    </data>
+    <data name="Bot_IsBanned" xml:space="preserve">
+        <value>Is banned</value>
+    </data>
+    <data name="Bot_BlacklistDialog" xml:space="preserve">
+        <value>Are you sure you want to add this user to the blacklist?</value>
+    </data>
+    <data name="Bot_BlacklistCanceled" xml:space="preserve">
+        <value>Blacklist canceled!</value>
+    </data>
+    <data name="Bot_UserBlacklisted" xml:space="preserve">
+        <value>The user **{0}** has been added to the blacklist.</value>
+    </data>
+    <data name="Bot_UserBlacklistRemoved" xml:space="preserve">
+        <value>The user **{0}** has been removed from the blacklist.</value>
+    </data>
+    <data name="Bot_BotBanDialog" xml:space="preserve">
+        <value>Are you sure you want to ban this user to use me?</value>
+    </data>
+    <data name="Bot_BotBanCanceled" xml:space="preserve">
+        <value>BotBan canceled!</value>
+    </data>
+    <data name="Bot_UserBotBanned" xml:space="preserve">
+        <value>The user **{0}** has been banned from using me.</value>
+    </data>
+    <data name="Bot_UserBotBanRemoved" xml:space="preserve">
+        <value>The user **{0}** is allowed to use me.</value>
+    </data>
+    <data name="Bot_Database" xml:space="preserve">
+        <value>Database</value>
+    </data>
+    
+    <data name="Commands_DeleteCommandMessageEnabled" xml:space="preserve">
+        <value>Automatically delete user's command message **enabled**.</value>
+    </data>
+    <data name="Commands_DeleteCommandMessageDisabled" xml:space="preserve">
+        <value>Automatically delete user's command message **disabled**.</value>
+    </data>
+    
+    <data name="Gambling_BetLessThan" xml:space="preserve">
+        <value>You cannot bet less than {0} {1}.</value>
+    </data>
+    <data name="Gambling_BetMoreThan" xml:space="preserve">
+        <value>You cannot bet more than {0} {1}.</value>
+    </data>
+    <data name="Gambling_CurrencyNotEnough" xml:space="preserve">
+        <value>You don't have enough {0}.</value>
+    </data>
+    <data name="Gambling_YouWon" xml:space="preserve">
+        <value>You won {0} {1}</value>
+    </data>
+    <data name="Gambling_YouLost" xml:space="preserve">
+        <value>You lost {0} {1}</value>
+    </data>
+    <data name="Gambling_BlackjackDraw" xml:space="preserve">
+        <value>You didn't win but neither lost {0}</value>
+    </data>
+    <data name="Gambling_Blackjack" xml:space="preserve">
+        <value>Blackjack</value>
+    </data>
+    <data name="Gambling_BlackjackSession" xml:space="preserve">
+        <value>You are already in a blackjack session! Type `{0}blackjack resume` to continue the session in this channel.</value>
+    </data>
+    <data name="Gambling_BlackjackNoSession" xml:space="preserve">
+        <value>You are not in a blackjack session.</value>
+    </data>
+    <data name="Gambling_BlackjackStopped" xml:space="preserve">
+        <value>Blackjack stopped.</value>
+    </data>
+    <data name="Gambling_Bet" xml:space="preserve">
+        <value>Bet</value>
+    </data>
+    <data name="Gambling_Currency" xml:space="preserve">
+        <value>Currency</value>
+    </data>
+    <data name="Gambling_Hearts" xml:space="preserve">
+        <value>Hearts</value>
+    </data>
+    <data name="Gambling_CurrencyYou" xml:space="preserve">
+        <value>You have {0} {1}.</value>
+    </data>
+    <data name="Gambling_CurrencyUser" xml:space="preserve">
+        <value>**{0}** has {1} {2}.</value>
+    </data>
+    <data name="Gambling_UserRewarded" xml:space="preserve">
+        <value>I gave {0} {1} to **{2}**. Now he/she has {3} {1}.</value>
+    </data>
+    <data name="Gambling_UserTook" xml:space="preserve">
+        <value>I took {0} {1} from **{2}**.</value>
+    </data>
+    <data name="Gambling_CurrencyLeaderboard" xml:space="preserve">
+        <value>{0} Leaderboard</value>
+    </data>
+    <data name="Gambling_LeaderboardNoUsers" xml:space="preserve">
+        <value>No users on this page.</value>
+    </data>
+    <data name="Gambling_DailyWait" xml:space="preserve">
+        <value>You can get your next daily in {0}.</value>
+    </data>
+    <data name="Gambling_DailyReceived" xml:space="preserve">
+        <value>You received your daily {0} {1}.</value>
+    </data>
+    
+    <data name="Games_RpsWon" xml:space="preserve">
+        <value>I chose {0}, you won!</value>
+    </data>
+    <data name="Games_RpsLost" xml:space="preserve">
+        <value>I chose {0}, you lost!</value>
+    </data>
+    <data name="Games_RpsDraw" xml:space="preserve">
+        <value>I chose {0}, draw!</value>
+    </data>
+
+    <data name="Help_Title" xml:space="preserve">
+        <value>{0} Bot v{1} help page</value>
+    </data>
+    <data name="Help_Info" xml:space="preserve">
+        <value>I'm based on modules and submodules. Each module has submodules and each submodule has commands.
+
+Type `{0}modules` to get a list with all modules and submodules.
+
+Type `{0}commands &lt;moduleName&gt;` or `{0}commands &lt;submoduleName&gt;` to get a list with all commands from the module or submodule.
+Example: `{0}commands Administration`, `{0}commands Server`
+
+Type `{0}allcommands` to get a list with all commands.</value>
+    </data>
+    <data name="Help_Links" xml:space="preserve">
+        <value>Links</value>
+    </data>
+    <data name="Help_SupportServer" xml:space="preserve">
+        <value>[**Join to {0}** - Beautiful and cool community]({1})</value>
+    </data>
+    <data name="Help_InviteMe" xml:space="preserve">
+        <value>[**Invite me** - I would like to be in your server]({0})</value>
+    </data>
+    <data name="Help_Website" xml:space="preserve">
+        <value>[**Website** - Still in development]({0})</value>
+    </data>
+    <data name="Help_Donate" xml:space="preserve">
+        <value>[**Become a Patron** - Support this project]({0})</value>
+    </data>
+    <data name="Help_CommandNotFound" xml:space="preserve">
+        <value>I couldn't find that command. For help type `{0}help`</value>
+    </data>
+    <data name="Help_RequiresUserPermission" xml:space="preserve">
+        <value>Requires User Permission</value>
+    </data>
+    <data name="Help_RequiresBotPermission" xml:space="preserve">
+        <value>Requires Bot Permission</value>
+    </data>
+    <data name="Help_RequiresOwner" xml:space="preserve">
+        <value>Owner Only</value>
+    </data>
+    <data name="Help_Module" xml:space="preserve">
+        <value>Module</value>
+    </data>
+    <data name="Help_ModulesListTitle" xml:space="preserve">
+        <value>The list with all modules (field title) and submodules (field value)</value>
+    </data>
+    <data name="Help_ModulesListFooter" xml:space="preserve">
+        <value>To get all commands for a module or submodule, type {0}cmds &lt;module&gt; or {0}cmds &lt;submodule&gt;</value>
+    </data>
+    <data name="Help_ModuleNotFound" xml:space="preserve">
+        <value>I couldn't find the module or submodule. Type `{0}modules` to see all modules and submodules.</value>
+    </data>
+    <data name="Help_AllCommandsForModule" xml:space="preserve">
+        <value>All commands for module {0}</value>
+    </data>
+    <data name="Help_AllCommandsForSubmodule" xml:space="preserve">
+        <value>All commands for submodule {0}</value>
+    </data>
+    <data name="Help_CommandInfo" xml:space="preserve">
+        <value>For a specific command info type {0}h &lt;command&gt;</value>
+    </data>
+    <data name="Help_AllCommands" xml:space="preserve">
+        <value>All commands</value>
+    </data>
+    <data name="Help_CommandsNotSent" xml:space="preserve">
+        <value>I couldn't send you the list with all commands via DM. Please verify if you disabled receiving DMs from this server.</value>
+    </data>
+    
+    <data name="Music_LavalinkNotConfigured" xml:space="preserve">
+        <value>The Lavalink connection is not configured in commands.json. The music commands are disabled.</value>
+    </data>
+    <data name="Music_LavalinkNotConnected" xml:space="preserve">
+        <value>Lavalink is not connected, please wait a moment or contact my owner if this doesn't get solved after some minutes.</value>
+    </data>
+    <data name="Music_UserNotInVoiceChannel" xml:space="preserve">\
+    <value>You are not in a voice channel.</value>
+    </data>
+    <data name="Music_NotSameVoiceChannel" xml:space="preserve">
+        <value>You are not in the same voice channel with me.</value>
+    </data>
+    <data name="Music_NoConnectPermission" xml:space="preserve">
+        <value>I don't have the permission to connect in the **{0}** channel.</value>
+    </data>
+    <data name="Music_NullOutputChannel" xml:space="preserve">
+        <value>I cannot find the music output channel.</value>
+    </data>
+    <data name="Music_OutputChannelNoViewPermission" xml:space="preserve">
+        <value>I cannot view the music output channel **{0}**.</value>
+    </data>
+    <data name="Music_OutputChannelNoSendPermission" xml:space="preserve">
+        <value>I cannot send messages in music output channel **{0}**.</value>
+    </data>
+    <data name="Music_NewOutputChannel" xml:space="preserve">
+        <value>This channel is now the new music output channel.</value>
+    </data>
+    <data name="Music_OutputChannelCommands" xml:space="preserve">
+        <value>The music commands can be used only from the output channel {0}.</value>
+    </data>
+
+    <data name="Music_ChannelConnected" xml:space="preserve">
+        <value>Connected to **{0}**.</value>
+    </data>
+    <data name="Music_ChannelDisconnected" xml:space="preserve">
+        <value>Disconnected from **{0}**</value>
+    </data>
+    <data name="Music_NoYouTubeUrl" xml:space="preserve">
+        <value>Only YouTube URLs are supported for now, or YouTube search.</value>
+    </data>
+    <data name="Music_TrackLoadNoMatches" xml:space="preserve">
+        <value>I couldn't find any track.</value>
+    </data>
+    <data name="Music_TrackLoadFailed" xml:space="preserve">
+        <value>An error occured on loading the track/s. Either the track/s is/are private, unavailable or the playlist is private.
+This also can have multiple reasons, you can report it in the [Support Server]({0}).</value>
+    </data>
+    <data name="Music_EnqueuingTracks" xml:space="preserve">
+        <value>Enqueuing the tracks, please wait.</value>
+    </data>
+    <data name="Music_TracksEnqueued" xml:space="preserve">
+        <value>Enqueued {0} tracks from {1}.</value>
+    </data>
+    <data name="Music_ChooseTrack" xml:space="preserve">
+        <value>Choose a track by typing the index. You have 1 minute</value>
+    </data>
+    <data name="Music_TrackEnqueued" xml:space="preserve">
+        <value>Track enqueued</value>
+    </data>
+    <data name="Music_NowPlaying" xml:space="preserve">
+        <value>Now playing</value>
+    </data>
+    <data name="Music_TrackChannel" xml:space="preserve">
+        <value>Channel</value>
+    </data>
+    <data name="Music_TrackDuration" xml:space="preserve">
+        <value>Duration</value>
+    </data>
+    <data name="Music_Livestream" xml:space="preserve">
+        <value>Livestream</value>
+    </data>
+    <data name="Music_TrackEtp" xml:space="preserve">
+        <value>Estimated time until playing</value>
+    </data>
+    <data name="Music_RequestedBy" xml:space="preserve">
+        <value>Requested by</value>
+    </data>
+    <data name="Music_Repeat" xml:space="preserve">
+        <value>Repeat</value>
+    </data>
+    <data name="Music_PlayerNotPlaying" xml:space="preserve">
+        <value>The music player is not playing.</value>
+    </data>
+    <data name="Music_PlayerIsPlaying" xml:space="preserve">
+        <value>The music player is playing.</value>
+    </data>
+    <data name="Music_PlayerIsPaused" xml:space="preserve">
+        <value>The music player is paused.</value>
+    </data>
+    <data name="Music_PlayerPaused" xml:space="preserve">
+        <value>The music player has been paused.</value>
+    </data>
+    <data name="Music_PlayerResumed" xml:space="preserve">
+        <value>The music player has been resumed.</value>
+    </data>
+    <data name="Music_Queue" xml:space="preserve">
+        <value>Queue</value>
+    </data>
+    <data name="Music_QueueEmpty" xml:space="preserve">
+        <value>The queue is empty.</value>
+    </data>
+    <data name="Music_TrackIndexLessThan" xml:space="preserve">
+        <value>The index of the track cannot be less than {0}.</value>
+    </data>
+    <data name="Music_TrackIndexAbove" xml:space="preserve">
+        <value>The index of the track above the queue's length.</value>
+    </data>
+    <data name="Music_CurrentVolume" xml:space="preserve">
+        <value>The current volume is **{0}%**.</value>
+    </data>
+    <data name="Music_VolumeBetween" xml:space="preserve">
+        <value>The volume must be between {0} and {1}.</value>
+    </data>
+    <data name="Music_VolumeSet" xml:space="preserve">
+        <value>Volume set to **{0}%**.</value>
+    </data>
+    <data name="Music_TrackNotFound" xml:space="preserve">
+        <value>I couldn't find any track in the queue matching your title.</value>
+    </data>
+    <data name="Music_TotalDuration" xml:space="preserve">
+        <value>Total duration: {0}</value>
+    </data>
+    <data name="Music_SeekPositionAbove" xml:space="preserve">
+        <value>The time is greater than the track's duration.</value>
+    </data>
+    <data name="Music_Seek" xml:space="preserve">
+        <value>Seek</value>
+    </data>
+    <data name="Music_SeekFrom" xml:space="preserve">
+        <value>From</value>
+    </data>
+    <data name="Music_SeekTo" xml:space="preserve">
+        <value>To</value>
+    </data>
+    <data name="Music_QueueShuffled" xml:space="preserve">
+        <value>Queue shuffled.</value>
+    </data>
+    <data name="Music_QueueCleared" xml:space="preserve">
+        <value>Queue cleared.</value>
+    </data>
+    <data name="Music_TrackRemoved" xml:space="preserve">
+        <value>**{0}** has been removed from the queue.</value>
+    </data>
+    <data name="Music_RepeatEnabled" xml:space="preserve">
+        <value>Repeat enabled.</value>
+    </data>
+    <data name="Music_RepeatDisabled" xml:space="preserve">
+        <value>Repeat disabled.</value>
+    </data>
+    <data name="Music_TrackException" xml:space="preserve">
+        <value>Error encountered on playing **{0}**. Playing the next track.</value>
+    </data>
+    <data name="Music_TrackStuck" xml:space="preserve">
+        <value>**{0}** got stuck. Playing the next track.</value>
+    </data>
+    <data name="Music_PlayerFeatureVolume" xml:space="preserve">
+        <value>Changing the volume requires the owner of this server to have the Patreon Tier 2. Check it here: [Patreon]({0})</value>
+    </data>
+    <data name="Music_PlayerFeatureLongTracks" xml:space="preserve">
+        <value>Playing tracks longer than {0} hours requires the owner of this server to have the Patreon Tier 4. Check it here: [Patreon]({1})</value>
+    </data>
+    <data name="Music_PlayerFeatureLivestream" xml:space="preserve">
+        <value>Playing livestreams requires the owner of this server to have the Patreon Tier 4. Check it here: [Patreon]({0})</value>
+    </data>
+    <data name="Music_StopAfter" xml:space="preserve">
+        <value>The music player has been paused. All users left the voice channel and I'll leave in 2 minutes if nobody joins back.</value>
+    </data>
+    
+    <data name="Nsfw_ChannelNotNsfw" xml:space="preserve">
+        <value>The NSFW commands can be executed only in NSFW channels.</value>
+    </data>
+    <data name="Nsfw_CacheNotInitialized" xml:space="preserve">
+        <value>The cache did not finish downloading the nsfw images. Please wait a moment.</value>
+    </data>
+    <data name="Nsfw_NoHentai" xml:space="preserve">
+        <value>I couldn't find any hentai.</value>
+    </data>
+    <data name="Nsfw_Danbooru" xml:space="preserve">
+        <value>Danbooru</value>
+    </data>
+    <data name="Nsfw_Konachan" xml:space="preserve">
+        <value>Konachan</value>
+    </data>
+    <data name="Nsfw_Yandere" xml:space="preserve">
+        <value>Yandere</value>
+    </data>
+    <data name="Nsfw_Gelbooru" xml:space="preserve">
+        <value>Gelbooru</value>
+    </data>
+    
+    <data name="Profile_DefaultBiography" xml:space="preserve">
+        <value>Nothing here, just dust.</value>
+    </data>`
+    <data name="Profile_BackgroundPreview" xml:space="preserve">
+        <value>Your profile background image will look like this. Do you like it? Type `yes` to confirm or something else to cancel.</value>
+    </data>
+    <data name="Profile_BackgroundSet" xml:space="preserve">
+        <value>New profile background set.</value>
+    </data>
+    <data name="Profile_BackgroundCanceled" xml:space="preserve">
+        <value>Profile background canceled.</value>
+    </data>
+    <data name="Profile_BackgroundDimBetween" xml:space="preserve">
+        <value>The profile background dim must be between {0}% and {1}%.</value>
+    </data>
+    <data name="Profile_BackgroundDimSet" xml:space="preserve">
+        <value>Profile background dim set to {0}.</value>
+    </data>
+    <data name="Profile_BiographyLimit" xml:space="preserve">
+        <value>The profile biography length must be lower than {0} characters.</value>
+    </data>
+    <data name="Profile_BiographySet" xml:space="preserve">
+        <value>Profile biography set.</value>
+    </data>
+    <data name="Profile_ColorSet" xml:space="preserve">
+        <value>Profile color set.</value>
+    </data>
+    <data name="Profile_InvalidColor" xml:space="preserve">
+        <value>Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available.
+For a custom one you must have the Patreon Tier 2. Check it here: [Patreon]({0})</value>
+    </data>
+    <data name="Profile_FirstBadgeNoPatreon" xml:space="preserve">
+        <value>To change the first badge you must have Patreon Tier 3. Check it here: [Patreon]({0})</value>
+    </data>
+    <data name="Profile_SecondBadgeNoPatreon" xml:space="preserve">
+        <value>To change the second badge you must have Patreon Tier 5. Check it here: [Patreon]({0})</value>
+    </data>
+    <data name="Profile_ThirdBadgeNoPatreon" xml:space="preserve">
+        <value>To change the third badge you must have Patreon Tier 6. Check it here: [Patreon]({0})</value>
+    </data>
+    <data name="Profile_BadgeError" xml:space="preserve">
+        <value>You can set only the first, second or third badge, no more.</value>
+    </data>
+    <data name="Profile_BadgeNotAvailable" xml:space="preserve">
+        <value>I am sorry, you cannot set that text in a badge, please use something else.</value>
+    </data>
+    <data name="Profile_BadgeTextLimit" xml:space="preserve">
+        <value>The badge's text length must be lower than {0} characters.</value>
+    </data>
+    <data name="Profile_BadgeSet" xml:space="preserve">
+        <value>Profile badge set.</value>
+    </data>
+    
+    <data name="Reactions_NoWeebApi" xml:space="preserve">
+        <value>The Weeb Services API has to be set in order to use this reaction command.</value>
+    </data>
+    <data name="Reactions_PoweredBy" xml:space="preserve">
+        <value>Powered by</value>
+    </data>
+    <data name="Reactions_PatYou" xml:space="preserve">
+        <value>*Pat pat {0} &lt;3*</value>
+    </data>
+    <data name="Reactions_PattedBy" xml:space="preserve">
+        <value>{0} you have been patted by **{1}** &lt;3.</value>
+    </data>
+    <data name="Reactions_HugYou" xml:space="preserve">
+        <value>*Hugs {0} &lt;3*</value>
+    </data>
+    <data name="Reactions_HuggedBy" xml:space="preserve">
+        <value>{0} you have been hugged by **{1}** &lt;3.</value>
+    </data>
+    <data name="Reactions_KissYou" xml:space="preserve">
+        <value>*Kisses {0} &lt;3*</value>
+    </data>
+    <data name="Reactions_KissedBy" xml:space="preserve">
+        <value>{0} you have been kissed by **{1}** ❤.</value>
+    </data>
+    <data name="Reactions_LickYou" xml:space="preserve">
+        <value>*Licks {0}, lewd*</value>
+    </data>
+    <data name="Reactions_LickedBy" xml:space="preserve">
+        <value>{0} you have been licked by **{1}**, lewd.</value>
+    </data>
+    <data name="Reactions_CuddleYou" xml:space="preserve">
+        <value>*Cuddles {0} &lt;3*</value>
+    </data>
+    <data name="Reactions_CuddledBy" xml:space="preserve">
+        <value>{0} you have been cuddled by **{1}** &lt;3.</value>
+    </data>
+    <data name="Reactions_BiteYou" xml:space="preserve">
+        <value>*Bites {0}*</value>
+    </data>
+    <data name="Reactions_BittenBy" xml:space="preserve">
+        <value>{0} you have been bitten by **{1}**.</value>
+    </data>
+    <data name="Reactions_SlapYou" xml:space="preserve">
+        <value>*Slaps {0}*</value>
+    </data>
+    <data name="Reactions_SlappedBy" xml:space="preserve">
+        <value>{0} you have been slapped by **{1}**.</value>
+    </data>
+    <data name="Reactions_DontCry" xml:space="preserve">
+        <value>Aww don't cry {0}. I will *pat* and *hug* you &lt;3.</value>
+    </data>
+    <data name="Reactions_GropeYou" xml:space="preserve">
+        <value>*Gropes {0}, lewd*</value>
+    </data>
+    <data name="Reactions_GropedBy" xml:space="preserve">
+        <value>{0} you have been groped by **{1}**, lewd.</value>
+    </data>
+    <data name="Reactions_Blush" xml:space="preserve">
+        <value>{0} is blushing.</value>
+    </data>
+    <data name="Reactions_Dance" xml:space="preserve">
+        <value>{0} is dancing.</value>
+    </data>
+    <data name="Reactions_DanceTogether" xml:space="preserve">
+        <value>{0} and **{1}** are dancing together.</value>
+    </data>
+    <data name="Reactions_PokeYou" xml:space="preserve">
+        <value>*Poke poke {0}*</value>
+    </data>
+    <data name="Reactions_PockedBy" xml:space="preserve">
+        <value>{0} you have been pocked by **{1}**.</value>
+    </data>
+    
+    <data name="Searches_Source" xml:space="preserve">
+        <value>Source</value>
+    </data>
+    <data name="Searches_NotFound" xml:space="preserve">
+        <value>I couldn't find anything.</value>
+    </data>
+    <data name="Searches_UrbanDictionaryNoApiKey" xml:space="preserve">
+        <value>The Urban Dictionary API key has to be set in order to use this command.</value>
+    </data>
+    <data name="Searches_DefinitionNotFound" xml:space="preserve">
+        <value>No definition found.</value>
+    </data>
+    <data name="Searches_AnimeNotFound" xml:space="preserve">
+        <value>I couldn't find the anime.</value>
+    </data>
+    <data name="Searches_MangaNotFound" xml:space="preserve">
+        <value>I couldn't find the manga.</value>
+    </data>
+    <data name="Searches_CharacterNotFound" xml:space="preserve">
+        <value>I couldn't find the character.</value>
+    </data>
+    <data name="Searches_AnimeListNotFound" xml:space="preserve">
+        <value>I couldn't find any anime.</value>
+    </data>
+    <data name="Searches_MangaListNotFound" xml:space="preserve">
+        <value>I couldn't find any manga.</value>
+    </data>
+    <data name="Searches_CharactersNotFound" xml:space="preserve">
+        <value>I couldn't find any character.</value>
+    </data>
+    <data name="Searches_TitleRomaji" xml:space="preserve">
+        <value>Romaji</value>
+    </data>
+    <data name="Searches_TitleEnglish" xml:space="preserve">
+        <value>English</value>
+    </data>
+    <data name="Searches_TitleNative" xml:space="preserve">
+        <value>Native</value>
+    </data>
+    <data name="Searches_Format" xml:space="preserve">
+        <value>Format</value>
+    </data>
+    <data name="Searches_Episodes" xml:space="preserve">
+        <value>Episodes</value>
+    </data>
+    <data name="Searches_EpisodeDuration" xml:space="preserve">
+        <value>Episode duration</value>
+    </data>
+    <data name="Searches_Chapters" xml:space="preserve">
+        <value>Chapters</value>
+    </data>
+    <data name="Searches_Volumes" xml:space="preserve">
+        <value>Volumes</value>
+    </data>
+    <data name="Searches_StartDate" xml:space="preserve">
+        <value>Start date</value>
+    </data>
+    <data name="Searches_EndDate" xml:space="preserve">
+        <value>End date</value>
+    </data>
+    <data name="Searches_Season" xml:space="preserve">
+        <value>Season</value>
+    </data>
+    <data name="Searches_AverageScore" xml:space="preserve">
+        <value>Average score</value>
+    </data>
+    <data name="Searches_MeanScore" xml:space="preserve">
+        <value>Mean score</value>
+    </data>
+    <data name="Searches_Popularity" xml:space="preserve">
+        <value>Popularity</value>
+    </data>
+    <data name="Searches_Favourites" xml:space="preserve">
+        <value>Favourites</value>
+    </data>
+    <data name="Searches_Genres" xml:space="preserve">
+        <value>Genres</value>
+    </data>
+    <data name="Searches_Synonyms" xml:space="preserve">
+        <value>Synonyms</value>
+    </data>
+    <data name="Searches_IsAdult" xml:space="preserve">
+        <value>Genres</value>
+    </data>
+    <data name="Searches_Description" xml:space="preserve">
+        <value>Description</value>
+    </data>
+    <data name="Searches_FirstName" xml:space="preserve">
+        <value>First name</value>
+    </data>
+    <data name="Searches_LastName" xml:space="preserve">
+        <value>Last name</value>
+    </data>
+    <data name="Searches_NativeName" xml:space="preserve">
+        <value>Native name</value>
+    </data>
+    <data name="Searches_Alternative" xml:space="preserve">
+        <value>Alternative</value>
+    </data>
+    <data name="Searches_FromManga" xml:space="preserve">
+        <value>From manga</value>
+    </data>
+    <data name="Searches_FromAnime" xml:space="preserve">
+        <value>From anime</value>
+    </data>
+    <data name="Searches_AnimeList" xml:space="preserve">
+        <value>Anime list for {0}. Use \"{1}anime &lt;id&gt;\" to show info about an anime</value>
+    </data>
+    <data name="Searches_MangaList" xml:space="preserve">
+        <value>Manga list for {0}. Use \"{1}manga &lt;id&gt;\" to show info about a manga</value>
+    </data>
+    <data name="Searches_CharacterList" xml:space="preserve">
+        <value>Characters for {0}. Use \"{1}character &lt;id&gt;\" to show info about a character</value>
+    </data>
+    <data name="Searches_Neko" xml:space="preserve">
+        <value>Neko &lt;3</value>
+    </data>
+    <data name="Searches_Kitsune" xml:space="preserve">
+        <value>Kitsune &lt;3</value>
+    </data>
+    
+    <data name="Utility_UrlNotValid" xml:space="preserve">
+        <value>The url is not valid.</value>
+    </data>
+    <data name="Utility_UrlNotHttps" xml:space="preserve">
+        <value>The url must be https.</value>
+    </data>
+    <data name="Utility_UrlNotPngJpg" xml:space="preserve">
+        <value>The url is not a direct link for a png, jpg/jpeg image.</value>
+    </data>
+    <data name="Utility_UrlNotPngJpgGif" xml:space="preserve">
+        <value>The url is not a direct link for a png, jpg/jpeg or gif image.</value>
+    </data>
+    <data name="Utility_ImageOrUrlNotGood" xml:space="preserve">
+        <value>The image or the URL is not good.</value>
+    </data>
+    <data name="Utility_Enabled" xml:space="preserve">
+        <value>Enabled</value>
+    </data>
+    <data name="Utility_Status" xml:space="preserve">
+        <value>Status</value>
+    </data>
+    <data name="Utility_PrefixIs" xml:space="preserve">
+        <value>The prefix on this server is **{0}**.</value>
+    </data>
+    <data name="Utility_PrefixLimit" xml:space="preserve">
+        <value>The prefix length must be lower than {0} characters.</value>
+    </data>
+    <data name="Utility_PrefixChanged" xml:space="preserve">
+        <value>The prefix on this server has been changed from **{0}** to **{1}**.</value>
+    </data>
+    <data name="Utility_InviteInfo" xml:space="preserve">
+        <value>Invite me to your server: [link]({0}).</value>
+    </data>
+    <data name="Utility_PatreonInfo" xml:space="preserve">
+        <value>Support me! Support this project on [Patreon]({0}). You will receive {1} and access to features.</value>
+    </data>
+    <data name="Utility_NoPatrons" xml:space="preserve">
+        <value>Sadly no patrons at the moment. But you can be one, support this project on [Patreon]({0}). You will receive {1} and access to features.</value>
+    </data>
+    <data name="Utility_AllPatrons" xml:space="preserve">
+        <value>All users that support this project &lt;3</value>
+    </data>
+    <data name="Utility_VoteInfo" xml:space="preserve">
+        <value>Vote me on [Discord Bot List]({0}) to become more popular. You will receive {1}.</value>
+    </data>
+    <data name="Utility_NoVotes" xml:space="preserve">
+        <value>No vote could be retrieved.</value>
+    </data>
+    <data name="Utility_AllVotes" xml:space="preserve">
+        <value>All votes from the last {0}</value>
+    </data>
+    <data name="Utility_Votes" xml:space="preserve">
+        <value>Votes</value>
+    </data>
+    <data name="Utility_PingInfo" xml:space="preserve">
+        <value>Websocket latency: {0} ms
+Rest latency: {1} ms</value>
+    </data>
+    <data name="Utility_Chose" xml:space="preserve">
+        <value>I chose: **{0}**.</value>
+    </data>
+    <data name="Utility_Calculator" xml:space="preserve">
+        <value>Calculator</value>
+    </data>
+    <data name="Utility_Expression" xml:space="preserve">
+        <value>Expression</value>
+    </data>
+    <data name="Utility_ExpressionFailed" xml:space="preserve">
+        <value>The expression couldn't be evaluated.</value>
+    </data>
+    <data name="Utility_Result" xml:space="preserve">
+        <value>Result</value>
+    </data>
+    <data name="Utility_Author" xml:space="preserve">
+        <value>Author</value>
+    </data>
+    <data name="Utility_BotId" xml:space="preserve">
+        <value>Bot ID</value>
+    </data>
+    <data name="Utility_MasterId" xml:space="preserve">
+        <value>Master ID</value>
+    </data>
+    <data name="Utility_Shard" xml:space="preserve">
+        <value>Shard</value>
+    </data>
+    <data name="Utility_InServer" xml:space="preserve">
+        <value>In server</value>
+    </data>
+    <data name="Utility_CommandsExecuted" xml:space="preserve">
+        <value>Commands executed</value>
+    </data>
+    <data name="Utility_Uptime" xml:space="preserve">
+        <value>Uptime</value>
+    </data>
+    <data name="Utility_Presence" xml:space="preserve">
+        <value>Presence</value>
+    </data>
+    <data name="Utility_Guilds" xml:space="preserve">
+        <value>Guilds</value>
+    </data>
+    <data name="Utility_TextChannels" xml:space="preserve">
+        <value>Text channels</value>
+    </data>
+    <data name="Utility_VoiceChannels" xml:space="preserve">
+        <value>Voice channels</value>
+    </data>
+    <data name="Utility_Music" xml:space="preserve">
+        <value>Music</value>
+    </data>
+    <data name="Utility_MusicPlaying" xml:space="preserve">
+        <value>Playing in {0} servers</value>
+    </data>
+    <data name="Utility_MusicIdle" xml:space="preserve">
+        <value>Idle in {0} servers</value>
+    </data>
+    <data name="Utility_Username" xml:space="preserve">
+        <value>Username</value>
+    </data>
+    <data name="Utility_Nickname" xml:space="preserve">
+        <value>Nickname</value>
+    </data>
+    <data name="Utility_Activity" xml:space="preserve">
+        <value>Activity</value>
+    </data>
+    <data name="Utility_JoinedServer" xml:space="preserve">
+        <value>Joined server</value>
+    </data>
+    <data name="Utility_JoinedDiscord" xml:space="preserve">
+        <value>Joined Discord</value>
+    </data>
+    <data name="Utility_Roles" xml:space="preserve">
+        <value>Roles</value>
+    </data>
+    <data name="Utility_Owner" xml:space="preserve">
+        <value>Owner</value>
+    </data>
+    <data name="Utility_CurrentlyOnline" xml:space="preserve">
+        <value>Currently online</value>
+    </data>
+    <data name="Utility_Bots" xml:space="preserve">
+        <value>Bots</value>
+    </data>
+    <data name="Utility_CreatedAt" xml:space="preserve">
+        <value>Created at</value>
+    </data>
+    <data name="Utility_SystemChannel" xml:space="preserve">
+        <value>System channel</value>
+    </data>
+    <data name="Utility_AFKChannel" xml:space="preserve">
+        <value>AFK voice channel</value>
+    </data>
+    <data name="Utility_Region" xml:space="preserve">
+        <value>Region</value>
+    </data>
+    <data name="Utility_VerificationLevel" xml:space="preserve">
+        <value>Verification level</value>
+    </data>
+    <data name="Utility_PremiumTier" xml:space="preserve">
+        <value>Premium tier</value>
+    </data>
+    <data name="Utility_Boosts" xml:space="preserve">
+        <value>Boosts</value>
+    </data>
+    <data name="Utility_VanityUrl" xml:space="preserve">
+        <value>Vanity URL</value>
+    </data>
+    <data name="Utility_Features" xml:space="preserve">
+        <value>Features</value>
+    </data>
+    <data name="Utility_Emotes" xml:space="preserve">
+        <value>Emotes</value>
+    </data>
+    <data name="Utility_ShardsInfo" xml:space="preserve">
+        <value>Shards info: {0} shards connected from {1} shards</value>
+    </data>
+    <data name="Utility_ShardState" xml:space="preserve">
+        <value>Shard #{0} is {1}</value>
+    </data>
+    <data name="Utility_UsersPlay" xml:space="preserve">
+        <value>The users who play {0}</value>
+    </data>
+    <data name="Utility_NoUserIsPlaying" xml:space="preserve">
+        <value>No user is playing {0}.</value>
+    </data>
+    <data name="Utility_Price" xml:space="preserve">
+        <value>Price</value>
+    </data>
+    
+    <data name="Waifu_HasWaifu" xml:space="preserve">
+        <value>You already have this waifu. The claim has been canceled.</value>
+    </data>
+    <data name="Waifu_ClaimCurrencyNotEnough" xml:space="preserve">
+        <value>Unfortunately you don't have enough {0} to claim this waifu. The claim has been canceled.</value>
+    </data>
+    <data name="Waifu_ClaimConfirmation" xml:space="preserve">
+        <value>Do you want to claim this waifu? Type `yes` to confirm or something else to cancel.</value>
+    </data>
+    <data name="Waifu_ClaimedBy" xml:space="preserve">
+        <value>Claimed by</value>
+    </data>
+    <data name="Waifu_ClaimNote" xml:space="preserve">
+        <value>Note: If this is not the waifu you're looking for then use `{0}characters &lt;waifu_name&gt;` to show a list with characters and use its id to claim.</value>
+    </data>
+    <data name="Waifu_ClaimCanceled" xml:space="preserve">
+        <value>Claim canceled!</value>
+    </data>
+    <data name="Waifu_WaifuClaimed" xml:space="preserve">
+        <value>Congratulations!
+You successfully claimed **{0}** for {1} {2}.</value>
+    </data>
+    <data name="Waifu_NotFound" xml:space="preserve">
+        <value>I couldn't find your waifu.</value>
+    </data>
+    <data name="Waifu_DivorceConfirmation" xml:space="preserve">
+        <value>Do you want to divorce from **{0}**? Type `yes` to confirm or something else to cancel.</value>
+    </data>
+    <data name="Waifu_DivorceCanceled" xml:space="preserve">
+        <value>Waifu divorce canceled!</value>
+    </data>
+    <data name="Waifu_Divorced" xml:space="preserve">
+        <value>You divorced from **{0}**.</value>
+    </data>
+    <data name="Waifu_NoWaifus" xml:space="preserve">
+        <value>You don't have any waifu.</value>
+    </data>
+    <data name="Waifu_UserNoWaifus" xml:space="preserve">
+        <value>{0} doesn't have any waifu.</value>
+    </data>
+    <data name="Waifu_AllWaifus" xml:space="preserve">
+        <value>All your waifus</value>
+    </data>
+    <data name="Waifu_AllUserWaifus" xml:space="preserve">
+        <value>All {0} waifus</value>
+    </data>
+    <data name="Waifu_Position" xml:space="preserve">
+        <value>Position</value>
+    </data>
+    <data name="Waifu_AlreadySpecial" xml:space="preserve">
+        <value>**{0}** is already your special waifu.</value>
+    </data>
+    <data name="Waifu_SpecialConfirmation" xml:space="preserve">
+        <value>Do you want to make **{0}** special? Type `yes` to confirm or something else to cancel.</value>
+    </data>
+    <data name="Waifu_SpecialCanceled" xml:space="preserve">
+        <value>It seems like **{0}** is not worth it to be special.</value>
+    </data>
+    <data name="Waifu_Special" xml:space="preserve">
+        <value>**{0}** is now your special waifu.</value>
+    </data>
+    <data name="Waifu_ImageSetError" xml:space="preserve">
+        <value>A custom image can be set only to your special waifu or to a custom waifu.</value>
+    </data>
+    <data name="Waifu_ImageSet" xml:space="preserve">
+        <value>New image set for **{0}**.</value>
+    </data>
+    <data name="Waifu_PositionLowerLimit" xml:space="preserve">
+        <value>The position of the waifu cannot be lower than 1.</value>
+    </data>
+    <data name="Waifu_PositionHigherLimit" xml:space="preserve">
+        <value>The position of the waifu cannot be higher than {1}.</value>
+    </data>
+    <data name="Waifu_HasPosition" xml:space="preserve">
+        <value>**{0}** is already on position {1}.</value>
+    </data>
+    <data name="Waifu_PositionSet" xml:space="preserve">
+        <value>**{0}** is now on position {1}.</value>
+    </data>
+    <data name="Waifu_CreationConfirmation" xml:space="preserve">
+        <value>Do you want to create **{0}**? Type `yes` to confirm or something else to cancel.</value>
+    </data>
+    <data name="Waifu_CreationCanceled" xml:space="preserve">
+        <value>Waifu creation canceled!</value>
+    </data>
+    <data name="Waifu_Created" xml:space="preserve">
+        <value>Congratulations! You successfully created **{0}**.</value>
+    </data>
+    
+    <data name="Xp_GlobalLevel" xml:space="preserve">
+        <value>Global level</value>
+    </data>
+    <data name="Xp_GlobalXp" xml:space="preserve">
+        <value>Global xp</value>
+    </data>
+    <data name="Xp_Level" xml:space="preserve">
+        <value>Level</value>
+    </data>
+    <data name="Xp_LevelX" xml:space="preserve">
+        <value>Level {0}</value>
+    </data>
+    <data name="Xp_Xp" xml:space="preserve">
+        <value>Xp</value>
+    </data>
+    <data name="Xp_TotalXp" xml:space="preserve">
+        <value>Total XP</value>
+    </data>
+    <data name="Xp_Lvl" xml:space="preserve">
+        <value>Lvl {0}</value>
+    </data>
+    <data name="Xp_LeaderboardEmpty" xml:space="preserve">
+        <value>No global xp on this page.</value>
+    </data>
+    <data name="Xp_GuildLeaderboardEmpty" xml:space="preserve">
+        <value>No server xp on this page.</value>
+    </data>
+    <data name="Xp_Leaderboard" xml:space="preserve">
+        <value>Global XP leaderboard</value>
+    </data>
+    <data name="Xp_GuildLeaderboard" xml:space="preserve">
+        <value>Server XP leaderboard</value>
+    </data>
+    <data name="Xp_NotificationEnabled" xml:space="preserve">
+        <value>Server xp notifications enabled.</value>
+    </data>
+    <data name="Xp_NotificationDisabled" xml:space="preserve">
+        <value>Server xp notifications disabled.</value>
+    </data>
+    <data name="Xp_LevelUpRoleRewardLimit" xml:space="preserve">
+        <value>You cannot set a role reward for a level less than 1.</value>
+    </data>
+    <data name="Xp_LevelUpRoleRewardRemoved" xml:space="preserve">
+        <value>No role will be rewarded for level {0}.</value>
+    </data>
+    <data name="Xp_LevelUpRoleRewardNotSet" xml:space="preserve">
+        <value>The role **{0}** cannot be set in the level up role reward list because it is automatically managed by Discord.</value>
+    </data>
+    <data name="Xp_LevelUpRoleRewardSet" xml:space="preserve">
+        <value>The role **{0}** will be rewarded at level {1}.</value>
+    </data>
+    <data name="Xp_NoLevelUpRoleReward" xml:space="preserve">
+        <value>No level up roles reward on this server.</value>
+    </data>
+    <data name="Xp_LevelUpRoleRewardList" xml:space="preserve">
+        <value>All level up roles reward on this server</value>
+    </data>
+    <data name="Xp_ResetGuildXpConfirmation" xml:space="preserve">
+        <value>Are you sure you want to erase all users xp on this server? Type `yes` to confirm or something else to cancel.</value>
+    </data>
+    <data name="Xp_ResetGuildXpCanceled" xml:space="preserve">
+        <value>Server xp reset canceled!</value>
+    </data>
+    <data name="Xp_GuildXpReset" xml:space="preserve">
+        <value>All users xp on this server has been erased.</value>
+    </data>
+    <data name="Xp_GuildLevelUp" xml:space="preserve">
+        <value>Congratulations **{0}**, you have reached server level {1}.</value>
+    </data>
+    <data name="Xp_GuildLevelUpRoleReward" xml:space="preserve">
+        <value>Congratulations **{0}**, you have reached server level {1}. You are now **{2}**.</value>
+    </data>
+
+    <data name="Common_Yes" xml:space="preserve">
+        <value>Yes</value>
+    </data>
+    <data name="Common_And" xml:space="preserve">
+        <value>And</value>
+    </data>
+    <data name="Common_Or" xml:space="preserve">
+        <value>Or</value>
+    </data>
+    <data name="Common_Reason" xml:space="preserve">
+        <value>Reason</value>
+    </data>
+    <data name="Common_Reasons" xml:space="preserve">
+        <value>Reasons</value>
+    </data>
+    <data name="Common_Guild" xml:space="preserve">
+        <value>Guild</value>
+    </data>
+    <data name="Common_GuildUser" xml:space="preserve">
+        <value>Guild User</value>
+    </data>
+    <data name="Common_DM" xml:space="preserve">
+        <value>DM</value>
+    </data>
+    <data name="Common_Channel" xml:space="preserve">
+        <value>Channel</value>
+    </data>
+    <data name="Common_User" xml:space="preserve">
+        <value>User</value>
+    </data>
+    <data name="Common_Users" xml:space="preserve">
+        <value>Users</value>
+    </data>
+    <data name="Common_Id" xml:space="preserve">
+        <value>Id</value>
+    </data>
+    <data name="Common_TimesUp" xml:space="preserve">
+        <value>Time's Up</value>
+    </data>
+    <data name="Common_Example" xml:space="preserve">
+        <value>Example</value>
+    </data>
+    <data name="Common_Cooldown" xml:space="preserve">
+        <value>Cooldown</value>
+    </data>
+    <data name="Common_Amount" xml:space="preserve">
+        <value>Amount</value>
+    </data>
+    <data name="Common_Period" xml:space="preserve">
+        <value>Period</value>
+    </data>
+    <data name="Common_Per" xml:space="preserve">
+        <value>Per</value>
+    </data>
+    <data name="Common_Rank" xml:space="preserve">
+        <value>Rank</value>
+    </data>
+    <data name="Common_Global" xml:space="preserve">
+        <value>Global</value>
+    </data>
+    <data name="Common_Server" xml:space="preserve">
+        <value>Server</value>
+    </data>
+
+    <data name="Attribute_Permission" xml:space="preserve">
+        <value>Permission</value>
+    </data>
+    <data name="Attribute_Permissions" xml:space="preserve">
+        <value>Permissions</value>
+    </data>
+    <data name="Attribute_OwnerOnly" xml:space="preserve">
+        <value>This command can be ran only by master.</value>
+    </data>
+    <data name="Attribute_UserPermissionGuild" xml:space="preserve">
+        <value>You must have the {0} guild {1}.</value>
+    </data>
+    <data name="Attribute_UserPermissionNotGuild" xml:space="preserve">
+        <value>The `UserPermissionAttribute` requires this command to be used in a guild channel.</value>
+    </data>
+    <data name="Attribute_BotPermissionGuild" xml:space="preserve">
+        <value>I must have the {0} guild {1}.</value>
+    </data>
+    <data name="Attribute_BotPermissionNotGuild" xml:space="preserve">
+        <value>The `BotPermissionAttribute` requires this command to be used in a guild channel.</value>
+    </data>
+    <data name="Attribute_Context" xml:space="preserve">
+        <value>The command must be used in a {0}.</value>
+    </data>
+
+    <data name="TypeParser_SocketCategoryChannelNotGuild" xml:space="preserve">
+        <value>The `SocketCategoryChannel TypeParser` cannot be used in a context without a guild!</value>
+    </data>
+    <data name="TypeParser_SocketGuildUserNotGuild" xml:space="preserve">
+        <value>The `SocketGuildUser TypeParser` cannot be used in a context without a guild!</value>
+    </data>
+    <data name="TypeParser_SocketRoleNotGuild" xml:space="preserve">
+        <value>The `SocketRole TypeParser` cannot be used in a context without a guild!</value>
+    </data>
+    <data name="TypeParser_SocketTextChannelNotGuild" xml:space="preserve">
+        <value>The SocketTextChannel TypeParser cannot be used in a context without a guild!</value>
+    </data>
+    <data name="TypeParser_SocketVoiceChannelNotGuild" xml:space="preserve">
+        <value>The SocketVoiceChannel TypeParser cannot be used in a context without a guild!</value>
+    </data>
+    <data name="TypeParser_TimeSpanUnsuccessful" xml:space="preserve">
+        <value>The time provided is not valid.
+Format mo(nths) w(eeks) d(ays) h(ours) m(inutes) s(econds).
+Examples 1mo2d3h4m5s, 1w2d3h4m5s, 1h2m, 1m2s.</value>
+    </data>
+    <data name="TypeParser_InvalidColor" xml:space="preserve">
+        <value>The color is not valid. You can use a hex value (#dc143c) or a html color name (red, green, blue, etc.).</value>
+    </data>
+
+    <data name="Service_CommandNotExecuted" xml:space="preserve">
+        <value>The command couldn't be executed</value>
+    </data>
+    <data name="Service_CommandCooldown" xml:space="preserve">
+        <value>Hey, calm down! Take a breath and try again in **{0}**.</value>
+    </data>
+</root>
