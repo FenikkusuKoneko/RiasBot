@@ -47,7 +47,7 @@ namespace Rias.Core.Modules.Utility
                         Color = RiasUtils.ConfirmColor,
                         Author = new EmbedAuthorBuilder
                         {
-                            Name = Context.Client.CurrentUser.Username,
+                            Name = GetText("Stats", Context.Client.CurrentUser.Username, Rias.Version),
                             IconUrl = Context.Client.CurrentUser.GetRealAvatarUrl()
                         },
                         ThumbnailUrl = Context.Client.CurrentUser.GetRealAvatarUrl(),

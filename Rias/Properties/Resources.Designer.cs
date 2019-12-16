@@ -4418,6 +4418,15 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} Bot v{1}.
+        /// </summary>
+        public static string Utility_Stats {
+            get {
+                return ResourceManager.GetString("Utility_Stats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Status.
         /// </summary>
         public static string Utility_Status {

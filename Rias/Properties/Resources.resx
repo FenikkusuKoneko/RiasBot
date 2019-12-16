@@ -1310,6 +1310,9 @@ Rest latency: {1} ms</value>
     <data name="Utility_Result" xml:space="preserve">
         <value>Result</value>
     </data>
+    <data name="Utility_Stats" xml:space="preserve">
+        <value>{0} Bot v{1}</value>
+    </data>
     <data name="Utility_Author" xml:space="preserve">
         <value>Author</value>
     </data>
