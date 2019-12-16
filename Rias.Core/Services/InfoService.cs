@@ -55,8 +55,8 @@ namespace Rias.Core.Services
                 return;
             
             var processStats = processInfo.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            double.TryParse(processStats[9], out var cpuUsage);
-            double.TryParse(processStats[10], out var ramUsage);
+            double.TryParse(processStats[8], out var cpuUsage);
+            double.TryParse(processStats[9], out var ramUsage);
 
             if (cpuUsage > 0)
                 CpuUsage = cpuUsage;
