@@ -167,7 +167,7 @@ namespace Rias.Core.Modules.Profile
                 return;
             }
 
-            if (string.Equals(text, "master", StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(text, "master", StringComparison.InvariantCultureIgnoreCase) && Context.User.Id != Creds.MasterId)
             {
                 await ReplyErrorAsync("BadgeNotAvailable");
                 return;
