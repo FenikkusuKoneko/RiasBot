@@ -1334,6 +1334,12 @@ Rest latency: {1} ms</value>
     <data name="Utility_Uptime" xml:space="preserve">
         <value>Uptime</value>
     </data>
+    <data name="Utility_CpuUsage" xml:space="preserve">
+        <value>CPU usage</value>
+    </data>
+    <data name="Utility_RamUsage" xml:space="preserve">
+        <value>RAM usage</value>
+    </data>
     <data name="Utility_Presence" xml:space="preserve">
         <value>Presence</value>
     </data>

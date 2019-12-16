@@ -4093,6 +4093,15 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CPU usage.
+        /// </summary>
+        public static string Utility_CpuUsage {
+            get {
+                return ResourceManager.GetString("Utility_CpuUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Created at.
         /// </summary>
         public static string Utility_CreatedAt {
@@ -4360,6 +4369,15 @@ namespace Rias.Properties {
         public static string Utility_Price {
             get {
                 return ResourceManager.GetString("Utility_Price", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RAM usage.
+        /// </summary>
+        public static string Utility_RamUsage {
+            get {
+                return ResourceManager.GetString("Utility_RamUsage", resourceCulture);
             }
         }
         

@@ -24,7 +24,7 @@ namespace Rias.Core.Modules.Utility
     public partial class Utility
     {
         [Name("Info")]
-        public class Info : RiasModule
+        public class Info : RiasModule<InfoService>
         {
             private readonly DiscordShardedClient _client;
             private readonly InteractiveService _interactive;
@@ -58,13 +58,20 @@ namespace Rias.Core.Modules.Utility
                     .AddField(GetText("Shard"), $"{_client.GetShardIdFor(Context.Guild)}/{_client.Shards.Count}", true)
                     .AddField(GetText("InServer"), Context.Guild?.Name ?? "-", true)
                     .AddField(GetText("CommandsExecuted"), CommandHandlerService.CommandsExecuted, true)
-                    .AddField(GetText("Uptime"), Rias.UpTime.Elapsed.Humanize(5, Resources.GetGuildCulture(Context.Guild?.Id), TimeUnit.Month, TimeUnit.Second), true)
-                    .AddField(GetText("Presence"), $"{_client.Guilds.Count} {GetText("Guilds")}\n" +
-                                                   $"{_client.Guilds.Sum(x => x.TextChannels.Count)} {GetText("TextChannels")}\n" +
-                                                   $"{_client.Guilds.Sum(x => x.VoiceChannels.Count)} {GetText("VoiceChannels")}\n" +
-                                                   $"{_client.Guilds.Sum(x => x.MemberCount)} {GetText("#Common_Users")}\n", true)
+                    .AddField(GetText("Uptime"), Rias.UpTime.Elapsed.Humanize(5, Resources.GetGuildCulture(Context.Guild?.Id), TimeUnit.Month, TimeUnit.Second), true);
+                
+                if (Service.CpuUsage > 0 || Service.RamUsage > 0)
+                {
+                    embed.AddField(GetText("CpuUsage"), $"{Service.CpuUsage}%", true)
+                        .AddField(GetText("RamUsage"), $"{Service.RamUsage}%", true);
+                }
+
+                embed.AddField(GetText("Presence"), $"{_client.Guilds.Count} {GetText("Guilds")}\n" +
+                                                    $"{_client.Guilds.Sum(x => x.TextChannels.Count)} {GetText("TextChannels")}\n" +
+                                                    $"{_client.Guilds.Sum(x => x.VoiceChannels.Count)} {GetText("VoiceChannels")}\n" +
+                                                    $"{_client.Guilds.Sum(x => x.MemberCount)} {GetText("#Common_Users")}\n", true)
                     .AddField(GetText("Music"), $"{GetText("MusicPlaying", players.Count(x => x.PlayerState == PlayerState.Playing))}\n" +
-                                                GetText("MusicIdle", players.Count(x => x.PlayerState != PlayerState.Playing)));
+                                                GetText("MusicIdle", players.Count(x => x.PlayerState != PlayerState.Playing)), true);
 
                 var links = new StringBuilder();
                 const string delimiter = " • ";
