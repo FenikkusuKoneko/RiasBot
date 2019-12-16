@@ -45,7 +45,7 @@ namespace Rias.Core.Services
 
         private async Task UserJoinedAsync(SocketGuildUser user)
         {
-            if (user.Id == _client.CurrentUser.Id)
+            if (_client.CurrentUser != null && user.Id == _client.CurrentUser.Id)
                 return;
 
             await RunTaskAsync(AddAssignableRoleAsync(user));
