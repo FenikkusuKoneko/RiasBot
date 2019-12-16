@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using Discord.WebSocket;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -18,10 +19,12 @@ namespace Rias.Core.Modules.Help
     [Name("Help")]
     public class Help : RiasModule<HelpService>
     {
+        private readonly DiscordShardedClient _client;
         private readonly CommandService _commandService;
 
         public Help(IServiceProvider services) : base(services)
         {
+            _client = services.GetRequiredService<DiscordShardedClient>();
             _commandService = services.GetRequiredService<CommandService>();
         }
 
@@ -48,7 +51,7 @@ namespace Rias.Core.Modules.Help
 
             if (!string.IsNullOrEmpty(Creds.OwnerServerInvite))
             {
-                var ownerServer = Context.Client.GetGuild(Creds.OwnerServerId);
+                var ownerServer = _client.GetGuild(Creds.OwnerServerId);
                 links.Append(delimiter)
                     .Append(GetText("SupportServer", ownerServer.Name, Creds.OwnerServerInvite))
                     .Append("\n");

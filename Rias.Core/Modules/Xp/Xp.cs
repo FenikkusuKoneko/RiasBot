@@ -19,10 +19,12 @@ namespace Rias.Core.Modules.Xp
     [Name("Xp")]
     public class Xp : RiasModule<XpService>
     {
+        private readonly DiscordShardedClient _client;
         private readonly InteractiveService _interactive;
         
         public Xp(IServiceProvider services) : base(services)
         {
+            _client = services.GetRequiredService<DiscordShardedClient>();
             _interactive = services.GetRequiredService<InteractiveService>();
         }
         
@@ -61,7 +63,7 @@ namespace Rias.Core.Modules.Xp
             var index = page * 9;
             foreach (var userDb in xpLeaderboard)
             {
-                var user = Context.Client.GetUser(userDb.UserId);
+                var user = _client.GetUser(userDb.UserId);
                 embed.AddField($"{++index}. {(user != null ? user.ToString() : userDb.UserId.ToString())}",
                     $"{GetText("LevelX", RiasUtils.XpToLevel(userDb.Xp, XpService.XpThreshold))} | {GetText("Xp")} {userDb.Xp}",
                     true);

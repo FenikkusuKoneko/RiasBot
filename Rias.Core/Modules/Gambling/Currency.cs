@@ -4,6 +4,7 @@ using Discord;
 using Discord.WebSocket;
 using Humanizer;
 using Humanizer.Localisation;
+using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
@@ -17,7 +18,12 @@ namespace Rias.Core.Modules.Gambling
         [Name("Currency")]
         public class Currency : RiasModule<GamblingService>
         {
-            public Currency(IServiceProvider services) : base(services) {}
+            private readonly DiscordShardedClient _client;
+
+            public Currency(IServiceProvider services) : base(services)
+            {
+                _client = services.GetRequiredService<DiscordShardedClient>();
+            }
 
             [Command("currency"), Context(ContextType.Guild)]
             public async Task CurrencyAsync([Remainder] SocketGuildUser? user = null)
@@ -80,7 +86,7 @@ namespace Rias.Core.Modules.Gambling
                 var index = 0;
                 foreach (var userCurrency in usersCurrency)
                 {
-                    var user = Context.Client.GetUser(userCurrency.UserId);
+                    var user = _client.GetUser(userCurrency.UserId);
                     embed.AddField($"#{++index + page * 9} {(user != null ? user.ToString() : userCurrency.UserId.ToString())}",
                         $"{userCurrency.Currency} {Creds.Currency}", true);
                 }

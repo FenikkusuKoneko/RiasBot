@@ -71,7 +71,7 @@ namespace Rias.Core.Modules.Utility
 
                 if (!string.IsNullOrEmpty(Creds.OwnerServerInvite))
                 {
-                    var ownerServer = Context.Client.GetGuild(Creds.OwnerServerId);
+                    var ownerServer = _client.GetGuild(Creds.OwnerServerId);
                     links.Append(delimiter)
                         .Append(GetText("#Help_SupportServer", ownerServer.Name, Creds.OwnerServerInvite))
                         .Append("\n");

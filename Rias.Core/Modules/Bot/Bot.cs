@@ -17,10 +17,12 @@ namespace Rias.Core.Modules.Bot
     [Name("Bot")]
     public partial class Bot : RiasModule<BotService>
     {
+        private readonly DiscordShardedClient _client;
         private readonly MusicService _musicService;
 
         public Bot(IServiceProvider services) : base(services)
         {
+            _client = services.GetRequiredService<DiscordShardedClient>();
             _musicService = services.GetRequiredService<MusicService>();
         }
 
@@ -29,8 +31,8 @@ namespace Rias.Core.Modules.Bot
         public async Task LeaveGuildAsync(string name)
         {
             var guild = ulong.TryParse(name, out var guildId)
-                ? Context.Client.GetGuild(guildId)
-                : Context.Client.Guilds.FirstOrDefault(x => string.Equals(x.Name, name));
+                ? _client.GetGuild(guildId)
+                : _client.Guilds.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (guild is null)
             {
@@ -79,7 +81,7 @@ namespace Rias.Core.Modules.Bot
                 SocketChannel channel;
                 if (ulong.TryParse(id[2..], out var channelId))
                 {
-                    channel = Context.Client.GetChannel(channelId);
+                    channel = _client.GetChannel(channelId);
                 }
                 else
                 {
@@ -126,7 +128,7 @@ namespace Rias.Core.Modules.Bot
                 SocketUser user;
                 if (ulong.TryParse(id[2..], out var userId))
                 {
-                    user = Context.Client.GetUser(userId);
+                    user = _client.GetUser(userId);
                 }
                 else
                 {
@@ -176,7 +178,7 @@ namespace Rias.Core.Modules.Bot
             SocketChannel channel;
             if (ulong.TryParse(ids[0], out var channelId))
             {
-                channel = Context.Client.GetChannel(channelId);
+                channel = _client.GetChannel(channelId);
             }
             else
             {
@@ -261,14 +263,14 @@ namespace Rias.Core.Modules.Bot
             IUser? user = null;
             if (ulong.TryParse(value, out var userId))
             {
-                user = Context.Client.GetUser(userId) ?? (IUser) await Context.Client.Rest.GetUserAsync(userId);
+                user = _client.GetUser(userId) ?? (IUser) await Context.Client.Rest.GetUserAsync(userId);
             }
             else
             {
                 var index = value.LastIndexOf("#", StringComparison.Ordinal);
                 if (index >= 0)
                 {
-                    user = Context.Client.GetUser(value[..index], value[(index + 1)..]);
+                    user = _client.GetUser(value[..index], value[(index + 1)..]);
                 }
             }
             
@@ -347,7 +349,7 @@ namespace Rias.Core.Modules.Bot
          OwnerOnly]
         public async Task DownloadUsersAsync(ulong? guildId = null)
         {
-            var guild = guildId.HasValue ? Context.Client.GetGuild(guildId.Value) : Context.Guild;
+            var guild = guildId.HasValue ? _client.GetGuild(guildId.Value) : Context.Guild;
             if (guild is null)
             {
                 await ReplyErrorAsync("GuildNotFound");

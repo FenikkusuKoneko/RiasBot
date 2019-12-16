@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using Discord.WebSocket;
 using Humanizer;
 using Humanizer.Localisation;
 using ImageMagick;
@@ -24,12 +25,14 @@ namespace Rias.Core.Modules.Utility
     [Name("Utility")]
     public partial class Utility : RiasModule<UtilityService>
     {
+        private readonly DiscordShardedClient _client;
         private readonly InteractiveService _interactive;
         private readonly VotesService _votesService;
         private readonly PatreonService _patreonService;
         
         public Utility(IServiceProvider services) : base(services)
         {
+            _client = services.GetRequiredService<DiscordShardedClient>();
             _interactive = services.GetRequiredService<InteractiveService>();
             _votesService = services.GetRequiredService<VotesService>();
             _patreonService = services.GetRequiredService<PatreonService>();
@@ -89,7 +92,7 @@ namespace Rias.Core.Modules.Utility
                 {
                     Color = RiasUtils.ConfirmColor,
                     Title = GetText("AllPatrons"),
-                    Description = string.Join('\n', x.Select(p => $"{++index}. {Context.Client.GetUser(p.UserId)?.ToString() ?? p.UserId.ToString()}"))
+                    Description = string.Join('\n', x.Select(p => $"{++index}. {_client.GetUser(p.UserId)?.ToString() ?? p.UserId.ToString()}"))
                 }
             ));
 
@@ -121,7 +124,7 @@ namespace Rias.Core.Modules.Utility
 
             var index = 0;
             var votesList = (from votes in votesGroup
-                let user = Context.Client.GetUser(votes.Key)
+                let user = _client.GetUser(votes.Key)
                 select $"{++index}. {(user != null ? user.ToString() : votes.Key.ToString())} | {GetText("Votes")}: {votes.Count()}").ToList();
 
             if (votesList.Count == 0)
