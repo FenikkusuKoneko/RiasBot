@@ -54,18 +54,18 @@ namespace Rias.Core.Modules.Bot
          OwnerOnly]
         public async Task UpdateAsync()
         {
-            foreach (var player in _musicService.Lavalink.Players)
+            try
             {
-                try
+                foreach (var player in _musicService.Lavalink.Players)
                 {
                     await player.LeaveAndDisposeAsync(false);
                 }
-                catch (Exception ex)
-                {
-                    Log.Error($"Error in disposing the player {player.GuildId}:\n{ex}");
-                }
             }
-
+            catch (Exception ex)
+            {
+                Log.Error($"Error in disposing a player:\n{ex}");
+            }
+            
             await Task.Delay(10000);
             await ReplyConfirmationAsync("Update");
             Environment.Exit(0);
