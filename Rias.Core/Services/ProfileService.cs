@@ -57,13 +57,14 @@ namespace Rias.Core.Services
         {
             var profileInfo = GetProfileInfo(user);
 
-            using var image = new MagickImage(_dark, 500, profileInfo.Waifus!.Count == 0 ? 500 : 750);
+            var height = profileInfo.Waifus!.Count == 0 && profileInfo.SpecialWaifu is null ? 500 : 750;
+            using var image = new MagickImage(_dark, 500, height);
 
             await AddBackgroundAsync(image, profileInfo);
             await AddAvatarAndUsernameAsync(image, user, profileInfo);
             AddInfo(image, profileInfo, user.Guild);
 
-            if (profileInfo.Waifus!.Count != 0)
+            if (profileInfo.Waifus!.Count != 0 || profileInfo.SpecialWaifu != null)
                 await AddWaifusAsync(image, profileInfo);
             
             var imageStream = new MemoryStream();
@@ -465,8 +466,9 @@ namespace Rias.Core.Services
             };
 
             var waifuY = 530;
-
-            await AddWaifu(image, profileInfo.Waifus![0], new Point(100, waifuY), waifuSize, settings);
+            
+            if (profileInfo.Waifus!.Count != 0)
+                await AddWaifu(image, profileInfo.Waifus![0], new Point(100, waifuY), waifuSize, settings);
 
             if (profileInfo.SpecialWaifu is null)
             {
@@ -592,6 +594,9 @@ namespace Rias.Core.Services
             var color = profileDb?.Color != null ? new Color(RiasUtils.HexToUint(profileDb.Color[1..]).GetValueOrDefault()) : _colors[0];
             if (color != _colors[0] && !CheckColorAsync(user, color, patreonDb?.Tier ?? 0))
                 color = _colors[0];
+
+            var specialWaifu = waifus.FirstOrDefault(x => x.IsSpecial);
+            waifus.Remove(specialWaifu);
             
             return new ProfileInfo
             {
@@ -609,11 +614,11 @@ namespace Rias.Core.Services
                 Biography = profileDb?.Biography ?? DefaultBiography,
                 Color = new MagickColor(color.ToString()),
                 Badges = profileDb?.Badges,
-                Waifus = waifus.Where(x => x.Position != 0 && !x.IsSpecial)
+                Waifus = waifus.Where(x => x.Position != 0)
                     .OrderBy(x => x.Position)
                     .Concat(waifus.Where(x=> x.Position == 0))
                     .ToList(),
-                SpecialWaifu = waifus.FirstOrDefault(x => x.IsSpecial),
+                SpecialWaifu = specialWaifu,
                 PatreonTier = patreonDb?.Tier ?? 0
             };
         }

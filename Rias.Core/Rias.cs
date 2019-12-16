@@ -24,7 +24,7 @@ namespace Rias.Core
     public class Rias
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "2.0.1";
+        public const string Version = "2.0.2";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         private DiscordShardedClient? _client;
@@ -45,6 +45,8 @@ namespace Rias.Core
             {
                 LogLevel = LogSeverity.Verbose,
                 TotalShards = 6,
+                AlwaysDownloadUsers = false,
+                MessageCacheSize = 0,
                 ExclusiveBulkDelete = true
             });
             _commandService = new CommandService(new CommandServiceConfiguration

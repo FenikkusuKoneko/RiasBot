@@ -143,7 +143,7 @@ namespace Rias.Core.Modules.Waifu
         {
             user ??= (SocketGuildUser) Context.User;
 
-            var allWaifus = Service.GetUserWaifus(Context.User);
+            var allWaifus = Service.GetUserWaifus(user);
             if (allWaifus.Count == 0)
             {
                 if (user.Id == Context.User.Id)
@@ -162,7 +162,10 @@ namespace Rias.Core.Modules.Waifu
                 specialWaifuString = $"❤ {specialWaifuStringify[..specialWaifuStringify.IndexOf('\n')]}";
             }
 
-            var waifus = allWaifus.Where(x => !x.IsSpecial && x.Position != 0)
+            if (specialWaifu != null)
+                allWaifus.Remove(specialWaifu);
+
+            var waifus = allWaifus.Where(x => x.Position != 0)
                 .OrderBy(x => x.Position)
                 .Concat(allWaifus.Where(x => x.Position == 0))
                 .ToList();
@@ -172,7 +175,7 @@ namespace Rias.Core.Modules.Waifu
                 var embed = new EmbedBuilder
                 {
                     Color = RiasUtils.ConfirmColor,
-                    Title = user.Id == Context.User.Id ? GetText("AllWaifus") : GetText("AllUserWaifus"),
+                    Title = user.Id == Context.User.Id ? GetText("AllWaifus") : GetText("AllUserWaifus", user),
                     Description = specialWaifuString
                 };
 
@@ -185,7 +188,7 @@ namespace Rias.Core.Modules.Waifu
                 new EmbedBuilder
                 {
                     Color = RiasUtils.ConfirmColor,
-                    Title = user.Id == Context.User.Id ? GetText("AllWaifus") : GetText("AllUserWaifus"),
+                    Title = user.Id == Context.User.Id ? GetText("AllWaifus") : GetText("AllUserWaifus", user),
                     Description = $"{specialWaifuString}\n\n{string.Join("\n\n", x.Select(StringifyWaifu))}",
                     ThumbnailUrl = specialWaifu?.ImageUrl
                 }
