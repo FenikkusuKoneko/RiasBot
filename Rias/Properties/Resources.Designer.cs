@@ -2336,6 +2336,16 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You have {0} {1}.
+        ///Do you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}..
+        /// </summary>
+        public static string Gambling_CurrencyYouVote {
+            get {
+                return ResourceManager.GetString("Gambling_CurrencyYouVote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You received your daily {0} {1}..
         /// </summary>
         public static string Gambling_DailyReceived {
@@ -2345,11 +2355,31 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You received your daily {0} {1}.
+        ///Do you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}..
+        /// </summary>
+        public static string Gambling_DailyReceivedVote {
+            get {
+                return ResourceManager.GetString("Gambling_DailyReceivedVote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can get your next daily in {0}..
         /// </summary>
         public static string Gambling_DailyWait {
             get {
                 return ResourceManager.GetString("Gambling_DailyWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can get your next daily in {0}.
+        ///In the meantime you can vote me on [Discord Bot List]({1}) to receive extra {2}..
+        /// </summary>
+        public static string Gambling_DailyWaitVote {
+            get {
+                return ResourceManager.GetString("Gambling_DailyWaitVote", resourceCulture);
             }
         }
         
@@ -2654,6 +2684,15 @@ namespace Rias.Properties {
         public static string Music_CurrentVolume {
             get {
                 return ResourceManager.GetString("Music_CurrentVolume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The music commands are disabled because of the low YouTube rate-limits. The music module will be removed completely after January 1st 2020..
+        /// </summary>
+        public static string Music_Disabled {
+            get {
+                return ResourceManager.GetString("Music_Disabled", resourceCulture);
             }
         }
         
@@ -4093,15 +4132,6 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CPU usage.
-        /// </summary>
-        public static string Utility_CpuUsage {
-            get {
-                return ResourceManager.GetString("Utility_CpuUsage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Created at.
         /// </summary>
         public static string Utility_CreatedAt {
@@ -4369,15 +4399,6 @@ namespace Rias.Properties {
         public static string Utility_Price {
             get {
                 return ResourceManager.GetString("Utility_Price", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to RAM usage.
-        /// </summary>
-        public static string Utility_RamUsage {
-            get {
-                return ResourceManager.GetString("Utility_RamUsage", resourceCulture);
             }
         }
         

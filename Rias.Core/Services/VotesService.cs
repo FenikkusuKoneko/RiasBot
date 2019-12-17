@@ -146,6 +146,9 @@ namespace Rias.Core.Services
 
         private async Task PostDiscordBotListStats()
         {
+            if (_client.CurrentUser is null)
+                return;
+            
             try
             {
                 using var content = new FormUrlEncodedContent(
@@ -157,7 +160,7 @@ namespace Rias.Core.Services
                     });
                 content.Headers.Clear();
                 content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-                await _http.PostAsync($"https://top.gg/api/bots/{_client.CurrentUser.Id}/stats", content);
+                await _http.PostAsync($"{Creds.DiscordBotList}/stats", content);
             }
             catch (Exception ex)
             {

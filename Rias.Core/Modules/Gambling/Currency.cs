@@ -30,9 +30,16 @@ namespace Rias.Core.Modules.Gambling
             {
                 var currency = Service.GetUserCurrency(user ?? Context.User);
                 if (user is null || user == Context.User)
-                    await ReplyConfirmationAsync("CurrencyYou", currency, Creds.Currency);
+                {
+                    if (string.IsNullOrEmpty(Creds.DiscordBotList))
+                        await ReplyConfirmationAsync("CurrencyYou", currency, Creds.Currency);
+                    else
+                        await ReplyConfirmationAsync("CurrencyYouVote", currency, Creds.Currency, $"{Creds.DiscordBotList}/vote");
+                }
                 else
+                {
                     await ReplyConfirmationAsync("CurrencyUser", user, currency, Creds.Currency);
+                }
             }
 
             [Command("reward"), OwnerOnly]
@@ -105,15 +112,21 @@ namespace Rias.Core.Modules.Gambling
                     if (nextDaily > timeNow)
                     {
                         var timeLeftHumanized = (nextDaily - timeNow).Humanize(3, Resources.GetGuildCulture(Context.Guild!.Id), minUnit: TimeUnit.Second);
-                        await ReplyErrorAsync("DailyWait", timeLeftHumanized);
+                        if (string.IsNullOrEmpty(Creds.DiscordBotList))
+                            await ReplyErrorAsync("DailyWait", timeLeftHumanized);
+                        else
+                            await ReplyErrorAsync("DailyWaitVote", timeLeftHumanized, $"{Creds.DiscordBotList}/vote", Creds.Currency);
                         return;
                     }
                 }
 
                 await Service.AddUserCurrencyAsync(Context.User.Id, 100);
                 await Service.UpdateDailyAsync(Context.User, timeNow);
-
-                await ReplyConfirmationAsync("DailyReceived", 100, Creds.Currency);
+                
+                if (string.IsNullOrEmpty(Creds.DiscordBotList))
+                    await ReplyConfirmationAsync("DailyReceived", 100, Creds.Currency);
+                else
+                    await ReplyConfirmationAsync("DailyReceivedVote", 100, Creds.Currency, $"{Creds.DiscordBotList}/vote");
             }
         }
     }

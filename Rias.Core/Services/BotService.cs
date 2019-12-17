@@ -16,21 +16,17 @@ using Rias.Core.Database;
 using Rias.Core.Database.Models;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using Rias.Core.Services.Commons;
 using Serilog;
-using Victoria;
 
 namespace Rias.Core.Services
 {
     public class BotService : RiasService
     {
         private readonly DiscordShardedClient _client;
-        private readonly LavaNode<MusicPlayer> _lavalink;
 
         public BotService(IServiceProvider services) : base(services)
         {
             _client = services.GetRequiredService<DiscordShardedClient>();
-            _lavalink = services.GetRequiredService<LavaNode<MusicPlayer>>();
 
             _client.UserJoined += UserJoinedAsync;
             _client.UserLeft += UserLeftAsync;
@@ -135,14 +131,8 @@ namespace Rias.Core.Services
 
         private async Task UserLeftAsync(SocketGuildUser user)
         {
-            if (_client.CurrentUser != null && user.Id == _client.CurrentUser.Id && _lavalink.IsConnected)
-            {
-                if (!_lavalink.TryGetPlayer(user.Guild, out var player))
-                    return;
-
-                await player.LeaveAndDisposeAsync(false);
+            if (_client.CurrentUser != null && user.Id == _client.CurrentUser.Id)
                 return;
-            }
 
             await using var db = Services.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == user.Guild.Id);
@@ -257,28 +247,27 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
         }
 
-        private async Task ShardConnectedAsync(DiscordSocketClient shard)
+        private Task ShardConnectedAsync(DiscordSocketClient shard)
         {
             _shardsReady.AddOrUpdate(shard, true, (shardKey, value) => true);
 
             if (_shardsReady.Count == _client.Shards.Count && _shardsReady.All(x => x.Value))
             {
                 _client.ShardConnected -= ShardConnectedAsync;
+                _client.ShardDisconnected -= ShardDisconnectedAsync;
+                
                 Log.Information("All shards are connected");
 
                 Services.GetRequiredService<MuteService>();
-                await _lavalink.ConnectAsync();
             }
+
+            return Task.CompletedTask;
         }
 
-        private async Task ShardDisconnectedAsync(Exception ex, DiscordSocketClient shard)
+        private Task ShardDisconnectedAsync(Exception ex, DiscordSocketClient shard)
         {
             _shardsReady.TryUpdate(shard, false,  true);
-
-            foreach (var player in _lavalink.Players)
-            {
-                await player.LeaveAndDisposeAsync(false);
-            }
+            return Task.CompletedTask;
         }
 
         public async Task<EvaluationDetails?> EvaluateAsync(RiasCommandContext context, string code)

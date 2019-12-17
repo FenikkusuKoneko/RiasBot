@@ -102,7 +102,7 @@ namespace Rias.Core.Modules.Utility
         [Command("vote")]
         public async Task VoteAsync()
         {
-            await ReplyConfirmationAsync("VoteInfo", $"https://top.gg/bot/{Context.Client.CurrentUser.Id}", Creds.Currency);
+            await ReplyConfirmationAsync("VoteInfo", $"{Creds.DiscordBotList}/vote", Creds.Currency);
         }
         
         [Command("votes")]

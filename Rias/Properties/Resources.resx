@@ -700,6 +700,10 @@ You must have the **{0}** server permissions.</value>
     <data name="Gambling_CurrencyYou" xml:space="preserve">
         <value>You have {0} {1}.</value>
     </data>
+    <data name="Gambling_CurrencyYouVote" xml:space="preserve">
+        <value>You have {0} {1}.
+Do you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}.</value>
+    </data>
     <data name="Gambling_CurrencyUser" xml:space="preserve">
         <value>**{0}** has {1} {2}.</value>
     </data>
@@ -718,8 +722,16 @@ You must have the **{0}** server permissions.</value>
     <data name="Gambling_DailyWait" xml:space="preserve">
         <value>You can get your next daily in {0}.</value>
     </data>
+    <data name="Gambling_DailyWaitVote" xml:space="preserve">
+        <value>You can get your next daily in {0}.
+In the meantime you can vote me on [Discord Bot List]({1}) to receive extra {2}.</value>
+    </data>
     <data name="Gambling_DailyReceived" xml:space="preserve">
         <value>You received your daily {0} {1}.</value>
+    </data>
+    <data name="Gambling_DailyReceivedVote" xml:space="preserve">
+        <value>You received your daily {0} {1}.
+Do you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}.</value>
     </data>
     
     <data name="Games_RpsWon" xml:space="preserve">
@@ -800,6 +812,9 @@ Type `{0}allcommands` to get a list with all commands.</value>
         <value>I couldn't send you the list with all commands via DM. Please verify if you disabled receiving DMs from this server.</value>
     </data>
     
+    <data name="Music_Disabled" xml:space="preserve">
+        <value>The music commands are disabled because of the low YouTube rate-limits. The music module will be removed completely after January 1st 2020.</value>
+    </data>
     <data name="Music_LavalinkNotConfigured" xml:space="preserve">
         <value>The Lavalink connection is not configured in commands.json. The music commands are disabled.</value>
     </data>
@@ -1333,12 +1348,6 @@ Rest latency: {1} ms</value>
     </data>
     <data name="Utility_Uptime" xml:space="preserve">
         <value>Uptime</value>
-    </data>
-    <data name="Utility_CpuUsage" xml:space="preserve">
-        <value>CPU usage</value>
-    </data>
-    <data name="Utility_RamUsage" xml:space="preserve">
-        <value>RAM usage</value>
     </data>
     <data name="Utility_Presence" xml:space="preserve">
         <value>Presence</value>

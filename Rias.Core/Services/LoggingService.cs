@@ -6,9 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Qmmands;
 using Rias.Core.Implementation;
-using Rias.Core.Services.Commons;
 using Serilog.Events;
-using Victoria;
 
 namespace Rias.Core.Services
 {
@@ -18,12 +16,10 @@ namespace Rias.Core.Services
         {
             var client = services.GetRequiredService<DiscordShardedClient>();
             var commandService = services.GetRequiredService<CommandService>();
-            var lavalink = services.GetRequiredService<LavaNode<MusicPlayer>>();
 
             client.Log += DiscordLogAsync;
             commandService.CommandExecuted += CommandExecutedAsync;
             commandService.CommandExecutionFailed += CommandExecutionFailedAsync;
-            lavalink.OnLog += DiscordLogAsync;
         }
 
         private Task DiscordLogAsync(LogMessage msg)

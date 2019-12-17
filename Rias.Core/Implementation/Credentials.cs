@@ -20,6 +20,8 @@ namespace Rias.Core.Implementation
 
         public string Patreon { get; }
         public string Website { get; }
+        public string DiscordBotList { get; set; }
+        
         public string UrbanDictionaryApiKey { get; }
         public string DiscordBotListApiKey { get; }
         public string WeebServicesToken { get; }
@@ -55,6 +57,7 @@ namespace Rias.Core.Implementation
 
             Patreon = config.GetValue<string>(nameof(Patreon));
             Website = config.GetValue<string>(nameof(Website));
+            DiscordBotList = config.GetValue<string>(nameof(DiscordBotList));
 
             UrbanDictionaryApiKey = config.GetValue<string>(nameof(UrbanDictionaryApiKey));
             DiscordBotListApiKey = config.GetValue<string>(nameof(DiscordBotListApiKey));
