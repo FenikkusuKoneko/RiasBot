@@ -47,7 +47,7 @@ namespace Rias.Core.Modules.Profile
             var currency = _gamblingService.GetUserCurrency(Context.User);
             if (currency < 1000)
             {
-                await ReplyErrorAsync("Gambling_CurrencyNotEnough", Creds.Currency);
+                await ReplyErrorAsync("#Gambling_CurrencyNotEnough", Creds.Currency);
                 return;
             }
             
