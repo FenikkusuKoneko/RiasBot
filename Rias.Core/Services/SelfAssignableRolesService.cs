@@ -15,13 +15,17 @@ namespace Rias.Core.Services
         {
         }
 
-        public SelfAssignableRoles GetSelfAssignableRole(SocketRole role)
-        => Services.GetRequiredService<RiasDbContext>()
-            .SelfAssignableRoles.FirstOrDefault(x => x.GuildId == role.Guild.Id && x.RoleId == role.Id);
+        public SelfAssignableRoles? GetSelfAssignableRole(SocketRole role)
+        {
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            return db.SelfAssignableRoles.FirstOrDefault(x => x.GuildId == role.Guild.Id && x.RoleId == role.Id);
+        }
 
         public async Task AddSelfAssignableRoleAsync(SocketRole role)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var sarDb = new SelfAssignableRoles
             {
                 GuildId = role.Guild.Id,
@@ -35,14 +39,16 @@ namespace Rias.Core.Services
 
         public async Task RemoveSelfAssignableRoleAsync(SelfAssignableRoles sarDb)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             db.Remove(sarDb);
             await db.SaveChangesAsync();
         }
 
         public async Task<IDictionary<ulong, SelfAssignableRoles>> UpdateSelfAssignableRolesAsync(SocketGuild guild)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var sarDict = db.SelfAssignableRoles.Where(x => x.GuildId == guild.Id).ToDictionary(x => x.RoleId);
 
             foreach (var (sarKey, sarValue) in sarDict)

@@ -14,7 +14,8 @@ namespace Rias.Core.Services
 
         public async Task SetAutoAssignableRoleAsync(SocketGuild guild, SocketRole role)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
 
             if (guildDb != null)
@@ -36,7 +37,8 @@ namespace Rias.Core.Services
 
         public async Task RemoveAutoAssignableRoleAsync(SocketGuild guild)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             if (guildDb != null)
             {

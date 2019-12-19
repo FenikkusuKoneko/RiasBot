@@ -68,7 +68,8 @@ namespace Rias.Core.Modules
         {
             var guild = Context.Guild;
             if (guild == null) return Creds.Prefix;
-            using var db = _services.GetRequiredService<RiasDbContext>();
+            using var scope = _services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var prefix = db.Guilds.FirstOrDefault(g => g.GuildId == guild.Id)?.Prefix;
             return !string.IsNullOrEmpty(prefix) ? prefix : Creds.Prefix;
         }

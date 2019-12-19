@@ -102,7 +102,8 @@ namespace Rias.Core.Services
 
         public async Task SetProfileBackgroundAsync(SocketUser user, string url)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
             if (profileDb != null)
             {
@@ -119,7 +120,8 @@ namespace Rias.Core.Services
 
         public async Task SetProfileBackgroundDimAsync(SocketUser user, int dim)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
             if (profileDb != null)
             {
@@ -136,7 +138,8 @@ namespace Rias.Core.Services
         
         public async Task SetProfileColorAsync(SocketUser user, string color)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
             if (profileDb != null)
             {
@@ -153,7 +156,8 @@ namespace Rias.Core.Services
         
         public async Task SetProfileBiographyAsync(SocketUser user, string bio)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
             if (profileDb != null)
             {
@@ -170,7 +174,8 @@ namespace Rias.Core.Services
 
         public async Task SetProfileBadgeAsync(SocketUser user, int index, string text)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
             if (profileDb != null)
             {
@@ -574,7 +579,8 @@ namespace Rias.Core.Services
 
         private ProfileInfo GetProfileInfo(SocketUser user)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
             var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
             var patreonDb = Creds.PatreonConfig != null ? db.Patreon.FirstOrDefault(x => x.UserId == user.Id) : null;

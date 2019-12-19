@@ -295,19 +295,22 @@ namespace Rias.Core.Services
             if (channel is null)
                 return null;
             
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Guilds.FirstOrDefault(x => x.GuildId == channel.Guild.Id)?.Prefix;
         }
 
         private bool CheckGuildCommandMessageDeletion(SocketGuild guild)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id)?.DeleteCommandMessage ?? false;
         }
         
         private bool CheckUserBan(SocketUser user)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Users.FirstOrDefault(x => x.UserId == user.Id)?.IsBanned ?? false;
         }
         

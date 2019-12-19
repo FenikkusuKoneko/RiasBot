@@ -35,7 +35,8 @@ namespace Rias.Core.Services
 
         private void LoadTimersAsync()
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var muteTimersDb = db.MuteTimers.ToArray();
 
             var dateTime = DateTime.UtcNow.AddDays(7);
@@ -60,7 +61,8 @@ namespace Rias.Core.Services
         {
             var guild = user.Guild;
 
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
 
             var role = (guild.GetRole(guildDb?.MuteRoleId ?? 0)
@@ -128,7 +130,8 @@ namespace Rias.Core.Services
                 Log.Debug("Mute timer removed");
             }
 
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userGuildDb = db.GuildUsers.FirstOrDefault(x => x.GuildId == guild.Id && x.UserId == user.Id);
             if (userGuildDb != null)
             {
@@ -197,7 +200,8 @@ namespace Rias.Core.Services
                 return;
             }
 
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == context.Guild.Id);
 
             var role = context.Guild.GetRole(guildDb?.MuteRoleId ?? 0)
@@ -284,7 +288,8 @@ namespace Rias.Core.Services
                 Log.Debug("Mute timer removed");
             }
 
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userGuildDb = db.GuildUsers.FirstOrDefault(x => x.GuildId == context.GuildId && x.UserId == context.UserId);
             if (userGuildDb != null)
                 userGuildDb.IsMuted = false;
@@ -298,7 +303,8 @@ namespace Rias.Core.Services
 
         public async Task SetMuteRoleAsync(SocketGuild guild, IRole role)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             if (guildDb != null)
             {

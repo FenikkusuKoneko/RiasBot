@@ -55,7 +55,8 @@ namespace Rias.Core.Services
         
         public async Task CheckVotesAsync()
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var votes = db.Votes.Where(x => !x.Checked);
             foreach (var vote in votes)
             {
@@ -79,7 +80,8 @@ namespace Rias.Core.Services
 
         public IList<Votes> GetVotes(TimeSpan time)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var date = DateTimeOffset.UtcNow - time;
             return db.Votes.Where(x => x.DateAdded >= date).ToList();
         }
@@ -117,7 +119,8 @@ namespace Rias.Core.Services
         private async Task VoteReceivedAsync(string data)
         {
             var voteData = JsonConvert.DeserializeObject<VoteData>(data);
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var voteDb = db.Votes.FirstOrDefault(x => x.UserId == voteData.User && !x.Checked);
 
             var attempts = 0;

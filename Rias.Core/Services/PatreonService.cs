@@ -42,7 +42,8 @@ namespace Rias.Core.Services
 
         public async Task CheckPatronsAsync()
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var patrons = db.Patreon.Where(x => !x.Checked && x.PatronStatus == PatronStatus.ActivePatron);
             foreach (var patron in patrons)
             {
@@ -58,13 +59,15 @@ namespace Rias.Core.Services
 
         public int GetPatreonTier(SocketUser user)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Patreon.FirstOrDefault(x => x.UserId == user.Id)?.Tier ?? 0;
         }
         
         public IList<Patreon> GetPatrons()
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Patreon
                 .Where(x => x.PatronStatus == PatronStatus.ActivePatron)
                 .OrderByDescending(x => x.AmountCents)
@@ -104,7 +107,8 @@ namespace Rias.Core.Services
         private async Task PledgeReceivedAsync(string data)
         {
             var pledgeData = JsonConvert.DeserializeObject<PatreonPledgeData>(data);
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var pledgeDb = db.Patreon.FirstOrDefault(x => x.PatreonUserId == pledgeData.PatreonUserId);
 
             var attempts = 0;

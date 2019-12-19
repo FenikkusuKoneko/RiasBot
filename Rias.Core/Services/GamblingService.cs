@@ -22,25 +22,29 @@ namespace Rias.Core.Services
         
         public Users? GetUser(SocketUser user)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Users.FirstOrDefault(x => x.UserId == user.Id);
         }
 
         public int GetUserCurrency(SocketUser user)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Users.FirstOrDefault(x => x.UserId == user.Id)?.Currency ?? 0;
         }
 
         public IList<Users> GetUsersCurrency(int page, int amount)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Users.OrderByDescending(x => x.Currency).Skip(page * amount).Take(amount).ToList();
         }
 
         public async Task<int> AddUserCurrencyAsync(ulong userId, int currency)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = db.Users.FirstOrDefault(x => x.UserId == userId);
 
             int newCurrency;
@@ -61,7 +65,8 @@ namespace Rias.Core.Services
         
         public async Task<int> RemoveUserCurrencyAsync(IUser user, int currency)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
             
             if (userDb == null) return 0;
@@ -83,7 +88,8 @@ namespace Rias.Core.Services
 
         public async Task UpdateDailyAsync(IUser user, DateTime dateTime)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
             
             if (userDb != null)

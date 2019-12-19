@@ -22,7 +22,8 @@ namespace Rias.Core.Implementation
             var sw = new Stopwatch();
             sw.Start();
 
-            using var db = services.GetRequiredService<RiasDbContext>();
+            using var scope = services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildLocalesDb = db.Guilds.Where(guildDb => !string.IsNullOrEmpty(guildDb.Locale)).ToArray();
             foreach (var localeDb in guildLocalesDb)
             {

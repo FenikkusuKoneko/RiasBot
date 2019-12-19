@@ -20,7 +20,8 @@ namespace Rias.Core.Services
             if (user.Id == user.Guild.OwnerId || user.GuildPermissions.Administrator)
                 return PermissionRequired.NoPermission;
 
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == user.Guild.Id);
 
             var warnPunishment = guildDb?.WarningPunishment;
@@ -58,7 +59,8 @@ namespace Rias.Core.Services
 
         public Guilds? GetGuildDb(SocketGuild guild)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
         }
 
@@ -66,7 +68,8 @@ namespace Rias.Core.Services
         {
             var guild = user.Guild;
 
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             var userWarningsDb = db.Warnings.Where(x => x.GuildId == guild.Id && x.UserId == user.Id).ToArray();
 
@@ -104,33 +107,38 @@ namespace Rias.Core.Services
 
         public IList<Warnings> GetWarnings(SocketGuild guild)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Warnings.Where(x => x.GuildId == guild.Id).ToList();
         }
 
         public IList<Warnings> GetUserWarnings(SocketGuildUser user)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Warnings.Where(x => x.GuildId == user.Guild.Id && x.UserId == user.Id).ToList();
         }
 
         public async Task RemoveWarningAsync(Warnings warning)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             db.Remove(warning);
             await db.SaveChangesAsync();
         }
 
         public async Task RemoveWarningsAsync(IEnumerable<Warnings> warnings)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             db.RemoveRange(warnings);
             await db.SaveChangesAsync();
         }
 
         public async Task SetWarningPunishmentAsync(SocketGuild guild, int number, string? punishment)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             if (guildDb is null)
             {
@@ -148,7 +156,8 @@ namespace Rias.Core.Services
 
         public ulong? GetModLogChannelId(SocketGuild guild)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id)?.ModLogChannelId;
         }
 

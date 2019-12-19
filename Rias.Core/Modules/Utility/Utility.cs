@@ -37,7 +37,7 @@ namespace Rias.Core.Modules.Utility
             _votesService = services.GetRequiredService<VotesService>();
             _patreonService = services.GetRequiredService<PatreonService>();
         }
-        
+
         [Command("prefix"), Context(ContextType.Guild)]
         public async Task PrefixAsync()
         {

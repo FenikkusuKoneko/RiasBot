@@ -24,7 +24,7 @@ namespace Rias.Core
     public class Rias
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "2.2.1";
+        public const string Version = "2.3.0";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         private DiscordShardedClient? _client;
@@ -57,7 +57,7 @@ namespace Rias.Core
             });
 
             var provider = InitializeServices();
-            ApplyDatabaseMigrations(provider.GetRequiredService<RiasDbContext>());
+            ApplyDatabaseMigrations(provider);
             provider.GetRequiredService<LoggingService>();
 
             await StartAsync();
@@ -116,7 +116,7 @@ namespace Rias.Core
             if (connection is null)
                 throw new NullReferenceException("The database connection is not set in credentials.json");
 
-            services.AddDbContext<RiasDbContext>(x => x.UseNpgsql(connection).UseSnakeCaseNamingConvention(), ServiceLifetime.Transient);
+            services.AddDbContext<RiasDbContext>(x => x.UseNpgsql(connection).UseSnakeCaseNamingConvention());
 
             var attributeServices = typeof(Rias).Assembly!.GetTypes()
                 .Where(x => typeof(RiasService).IsAssignableFrom(x)
@@ -153,8 +153,10 @@ namespace Rias.Core
             return connectionString.ToString();
         }
 
-        private static void ApplyDatabaseMigrations(RiasDbContext dbContext)
+        private static void ApplyDatabaseMigrations(IServiceProvider services)
         {
+            using var scope = services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             if (!dbContext.Database.GetPendingMigrations().Any())
             {
                 return;

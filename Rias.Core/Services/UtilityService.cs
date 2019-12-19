@@ -19,7 +19,8 @@ namespace Rias.Core.Services
 
         public async Task SetPrefixAsync(SocketGuild guild, string prefix)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             if (guildDb != null)
             {

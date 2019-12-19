@@ -28,7 +28,8 @@ namespace Rias.Core.Services
             if (name.StartsWith("@") && int.TryParse(name[1..], out var id))
                 return GetCustomCharacterById(id);
             
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
 
             var characterDb = int.TryParse(name, out id)
                 ? db.Characters.FirstOrDefault(x => x.CharacterId == id)
@@ -101,13 +102,15 @@ namespace Rias.Core.Services
 
         public CustomCharacters? GetCustomCharacterById(int id)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.CustomCharacters.FirstOrDefault(x => x.CharacterId == id);
         }
         
         public CustomCharacters? GetCustomCharacterByName(string name)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.CustomCharacters
                 .AsEnumerable()
                 .FirstOrDefault(x =>
@@ -117,7 +120,8 @@ namespace Rias.Core.Services
 
         public Characters? GetCharacterByName(string name)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Characters
                 .AsEnumerable()
                 .FirstOrDefault(x =>
@@ -127,7 +131,8 @@ namespace Rias.Core.Services
 
         public async Task SetCharacterImageUrlAsync(int id, string url)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var character = db.Characters.FirstOrDefault(x => x.CharacterId == id);
             if (character != null)
             {

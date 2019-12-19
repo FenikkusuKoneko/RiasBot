@@ -14,7 +14,8 @@ namespace Rias.Core.Services
 
         public async Task DeleteUserAsync(IUser user)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
             if (userDb != null)
                 db.Remove(userDb);
@@ -32,13 +33,15 @@ namespace Rias.Core.Services
 
         public Users GetUserDb(IUser user)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Users.FirstOrDefault(x => x.UserId == user.Id);
         }
 
         public async Task AddBlacklistAsync(IUser user)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
             if (userDb != null)
             {
@@ -55,7 +58,8 @@ namespace Rias.Core.Services
         
         public async Task RemoveBlacklistAsync(IUser user)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
             if (userDb != null)
             {
@@ -72,7 +76,8 @@ namespace Rias.Core.Services
         
         public async Task AddBotBanAsync(IUser user)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
             if (userDb != null)
             {
@@ -90,7 +95,8 @@ namespace Rias.Core.Services
         
         public async Task RemoveBotBanAsync(IUser user)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
             if (userDb != null)
             {

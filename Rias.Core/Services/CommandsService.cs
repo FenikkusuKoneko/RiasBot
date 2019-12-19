@@ -14,7 +14,8 @@ namespace Rias.Core.Services
 
         public async Task<bool> ToggleCommandMessageDeletionAsync(SocketGuild guild)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             if (guildDb != null)
             {

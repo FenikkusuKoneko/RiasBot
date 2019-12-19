@@ -24,7 +24,8 @@ namespace Rias.Core.Services
 
         public IList<IWaifus> GetUserWaifus(SocketUser user)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var waifus = db.Waifus
                 .Include(x => x.Character)
                 .Include(x => x.CustomCharacter)
@@ -39,7 +40,8 @@ namespace Rias.Core.Services
 
         public IList<Waifus> GetWaifuUsers(int characterId, bool isCustom)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return isCustom
                 ? db.Waifus.Where(x => x.CustomCharacterId == characterId).ToList()
                 : db.Waifus.Where(x => x.CharacterId == characterId).ToList();
@@ -73,7 +75,8 @@ namespace Rias.Core.Services
 
         public async Task AddWaifuAsync(SocketUser user, ICharacter character, int price, int position)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var waifuDb = new Waifus
             {
                 UserId = user.Id,
@@ -92,7 +95,8 @@ namespace Rias.Core.Services
 
         public async Task RemoveWaifuAsync(SocketUser user, IWaifus waifu)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             if (waifu is CustomWaifus customWaifu)
                 db.Remove(customWaifu);
             else
@@ -103,7 +107,8 @@ namespace Rias.Core.Services
         
         public async Task SetSpecialWaifuAsync(SocketUser user, IWaifus waifu)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var currentSpecialWaifu = (IWaifus) db.Waifus.FirstOrDefault(x => x.UserId == user.Id && x.IsSpecial)
                                       ?? db.CustomWaifus.FirstOrDefault(x => x.UserId == user.Id && x.IsSpecial);
 
@@ -126,7 +131,8 @@ namespace Rias.Core.Services
 
         public async Task SetWaifuImageAsync(SocketUser user, IWaifus waifu, string url)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var waifuDb = waifu is CustomWaifus
                 ? db.CustomWaifus.FirstOrDefault(x => x.Id == waifu.Id)
                 : (IWaifus) db.Waifus.FirstOrDefault(x => x.Id == waifu.Id);
@@ -144,7 +150,8 @@ namespace Rias.Core.Services
 
         public async Task<int> SetWaifuPositionAsync(SocketUser user, IWaifus waifu, int position)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var waifus = db.Waifus
                 .Where(x => x.UserId == user.Id)
                 .AsEnumerable()
@@ -174,7 +181,8 @@ namespace Rias.Core.Services
 
         public async Task CreateWaifuAsync(SocketUser user, string name, string url)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
 
             var waifus = GetUserWaifus(user);
             var newCustomWaifuDb = new CustomWaifus

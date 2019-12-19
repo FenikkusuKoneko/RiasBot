@@ -24,7 +24,8 @@ namespace Rias.Core.Services
         public async Task<bool> SetGreetAsync(SocketTextChannel channel)
         {
             var guild = channel.Guild;
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
 
             if (guildDb is null)
@@ -53,13 +54,15 @@ namespace Rias.Core.Services
 
         public string? GetGreetMessage(SocketGuild guild)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id)?.GreetMessage;
         }
 
         public async Task SetGreetMessageAsync(SocketGuild guild, string message)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             if (guildDb != null)
             {
@@ -81,7 +84,8 @@ namespace Rias.Core.Services
         public async Task<bool> SetByeAsync(SocketTextChannel channel)
         {
             var guild = channel.Guild;
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
 
             if (guildDb is null)
@@ -110,13 +114,15 @@ namespace Rias.Core.Services
 
         public string? GetByeMessage(SocketGuild guild)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id)?.ByeMessage;
         }
 
         public async Task SetByeMessageAsync(SocketGuild guild, string message)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             if (guildDb != null)
             {
@@ -139,7 +145,8 @@ namespace Rias.Core.Services
         {
             var modlog = false;
 
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             if (guildDb != null)
             {
@@ -169,7 +176,8 @@ namespace Rias.Core.Services
 
         public ulong? GetModLogChannelId(SocketGuild guild)
         {
-            using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id)?.ModLogChannelId;
         }
 

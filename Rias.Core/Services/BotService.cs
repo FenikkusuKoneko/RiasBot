@@ -46,7 +46,8 @@ namespace Rias.Core.Services
 
             await RunTaskAsync(AddAssignableRoleAsync(user));
 
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == user.Guild.Id);
             await SendGreetMessageAsync(guildDb, user);
 
@@ -120,7 +121,8 @@ namespace Rias.Core.Services
 
         private async Task DisableGreetAsync(SocketGuild guild)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             if (guildDb is null)
                 return;
@@ -134,7 +136,8 @@ namespace Rias.Core.Services
             if (_client.CurrentUser != null && user.Id == _client.CurrentUser.Id)
                 return;
 
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == user.Guild.Id);
             await SendByeMessageAsync(guildDb, user);
         }
@@ -189,7 +192,8 @@ namespace Rias.Core.Services
         
         private async Task DisableByeAsync(SocketGuild guild)
         {
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
             if (guildDb is null)
                 return;
@@ -216,7 +220,8 @@ namespace Rias.Core.Services
 
             if (user.Roles.Count > 1) return;
 
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == user.Guild.Id);
             if (guildDb is null)
                 return;
@@ -235,7 +240,8 @@ namespace Rias.Core.Services
             if (oldUser.Roles.Count == newUser.Roles.Count)
                 return;
 
-            await using var db = Services.GetRequiredService<RiasDbContext>();
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == newUser.Guild.Id);
 
             if (guildDb is null) return;
