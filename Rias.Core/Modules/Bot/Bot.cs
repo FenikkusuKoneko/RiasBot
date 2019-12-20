@@ -313,6 +313,7 @@ namespace Rias.Core.Modules.Bot
             
             var message = await ReplyAsync(embed);
             var evaluation = await Service.EvaluateAsync(Context, code);
+            GC.Collect();
             
             if (evaluation is null)
             {

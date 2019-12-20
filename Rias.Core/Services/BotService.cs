@@ -10,6 +10,7 @@ using Discord.WebSocket;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.Scripting.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Commons;
 using Rias.Core.Database;
@@ -301,8 +302,9 @@ namespace Rias.Core.Services
             var scriptOptions = ScriptOptions.Default.WithReferences(references).AddImports(imports);
             code = SanitizeCode(code);
             
+            using var loader = new InteractiveAssemblyLoader();
             var sw = Stopwatch.StartNew();
-            var script = CSharpScript.Create(code, scriptOptions, typeof(RoslynGlobals));
+            var script = CSharpScript.Create(code, scriptOptions, typeof(RoslynGlobals), loader);
             var diagnostics = script.Compile();
             sw.Stop();
             
@@ -310,7 +312,6 @@ namespace Rias.Core.Services
             
             if (diagnostics.Any(x => x.Severity == DiagnosticSeverity.Error))
             {
-                GC.Collect();
                 return new EvaluationDetails
                 {
                     CompilationTime = compilationTime,
@@ -382,10 +383,6 @@ namespace Rias.Core.Services
                     Success = false,
                     Exception = ex.Message
                 };
-            }
-            finally
-            {
-                GC.Collect();
             }
         }
         
