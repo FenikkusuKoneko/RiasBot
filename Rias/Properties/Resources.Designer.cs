@@ -4439,7 +4439,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shards info: {0} shards connected from {1} shards.
+        ///   Looks up a localized string similar to Shards info: {0} shards connected of {1} shards.
         /// </summary>
         public static string Utility_ShardsInfo {
             get {

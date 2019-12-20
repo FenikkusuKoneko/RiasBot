@@ -310,6 +310,7 @@ namespace Rias.Core.Services
             
             if (diagnostics.Any(x => x.Severity == DiagnosticSeverity.Error))
             {
+                GC.Collect();
                 return new EvaluationDetails
                 {
                     CompilationTime = compilationTime,

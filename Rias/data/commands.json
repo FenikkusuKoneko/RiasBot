@@ -188,8 +188,8 @@
             },
             {
               "aliases": "setmute",
-              "Description": "Sets the mute role. If the role doesn't exist it will be created.",
-              "Remarks": [
+              "description": "Sets the mute role. If the role doesn't exist it will be created.",
+              "remarks": [
                 "{0}setmute role"
               ]
             }
@@ -901,9 +901,9 @@
           ]
         },
         {
-          "Command": "repeat",
-          "Description": "Toggles repeating of the current track.",
-          "Remarks": [
+          "aliases": "repeat",
+          "description": "Toggles repeating of the current track.",
+          "remarks": [
             "{0}repeat"
           ]
         }
@@ -1098,9 +1098,9 @@
           ]
         },
         {
-          "Command": "grope",
-          "Description": "Grope an user.",
-          "Remarks": [
+          "aliases": "grope",
+          "description": "Grope an user.",
+          "remarks": [
             "{0}grope",
             "{0}grope User",
             "{0}grope @User",

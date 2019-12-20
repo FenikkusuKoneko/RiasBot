@@ -1428,7 +1428,7 @@ Rest latency: {1} ms</value>
         <value>Emotes</value>
     </data>
     <data name="Utility_ShardsInfo" xml:space="preserve">
-        <value>Shards info: {0} shards connected from {1} shards</value>
+        <value>Shards info: {0} shards connected of {1} shards</value>
     </data>
     <data name="Utility_ShardState" xml:space="preserve">
         <value>Shard #{0} is {1}</value>
