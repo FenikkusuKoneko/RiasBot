@@ -168,8 +168,8 @@ namespace Rias.Core.Services
             }
             else
             {
-                var newGuildXpDb = new GuildsXp {UserId = guildUser.Id, LastMessageDate = now};
-                await db.AddAsync(newGuildXpDb);
+                var newUSerDb = new Users {UserId = guildUser.Id, LastMessageDate = now};
+                await db.AddAsync(newUSerDb);
             }
 
             await db.SaveChangesAsync();
