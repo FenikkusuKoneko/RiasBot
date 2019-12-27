@@ -51,16 +51,13 @@ namespace Rias.Core.Attributes
             var requiredPermsList = requiredPerms
                 .GetValueOrDefault()
                 .ToString()
-                .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                .ToArray();
+                .Split(",", StringSplitOptions.RemoveEmptyEntries);
 
             var guildId = context.Guild?.Id;
-            var permString = resources.GetText(guildId, "Attribute", "Permission");
-            if (requiredPermsList.Length > 1)
-                permString = resources.GetText(guildId, "Attribute", "Permissions");
-
             var permsHumanized = requiredPermsList.Humanize(x => $"**{x.Titleize()}**", resources.GetText(guildId, "Common", "And").ToLowerInvariant());
-            return CheckResult.Unsuccessful(resources.GetText(guildId, "Attribute", "BotPermissionGuild", permsHumanized, permString.ToLowerInvariant()));
+            
+            var permStringKey = requiredPermsList.Length > 1 ? "BotGuildPermissions" : "BotGuildPermission";
+            return CheckResult.Unsuccessful(resources.GetText(guildId, "Attribute", permStringKey, permsHumanized));
         }
     }
 }

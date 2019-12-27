@@ -6,6 +6,7 @@ using Discord;
 using Discord.WebSocket;
 using ImageMagick;
 using Microsoft.Extensions.DependencyInjection;
+using Rias.Core.Attributes;
 using Rias.Core.Database;
 using Rias.Core.Database.Models;
 

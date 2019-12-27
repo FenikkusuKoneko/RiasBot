@@ -1399,16 +1399,25 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to I must have the {0} guild {1}..
+        ///   Looks up a localized string similar to I must have the {0} server permission..
         /// </summary>
-        public static string Attribute_BotPermissionGuild {
+        public static string Attribute_BotGuildPermission {
             get {
-                return ResourceManager.GetString("Attribute_BotPermissionGuild", resourceCulture);
+                return ResourceManager.GetString("Attribute_BotGuildPermission", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The `BotPermissionAttribute` requires this command to be used in a guild channel..
+        ///   Looks up a localized string similar to I must have the {0} server permissions..
+        /// </summary>
+        public static string Attribute_BotGuildPermissions {
+            get {
+                return ResourceManager.GetString("Attribute_BotGuildPermissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The `BotPermissionAttribute` requires this command to be used in a server channel..
         /// </summary>
         public static string Attribute_BotPermissionNotGuild {
             get {
@@ -1453,16 +1462,25 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must have the {0} guild {1}..
+        ///   Looks up a localized string similar to You must have the {0} server permission..
         /// </summary>
-        public static string Attribute_UserPermissionGuild {
+        public static string Attribute_UserGuildPermission {
             get {
-                return ResourceManager.GetString("Attribute_UserPermissionGuild", resourceCulture);
+                return ResourceManager.GetString("Attribute_UserGuildPermission", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The `UserPermissionAttribute` requires this command to be used in a guild channel..
+        ///   Looks up a localized string similar to You must have the {0} server permissions..
+        /// </summary>
+        public static string Attribute_UserGuildPermissions {
+            get {
+                return ResourceManager.GetString("Attribute_UserGuildPermissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The `UserPermissionAttribute` requires this command to be used in a server channel..
         /// </summary>
         public static string Attribute_UserPermissionNotGuild {
             get {
@@ -1706,7 +1724,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to I couldn&apos;t find the guild.
+        ///   Looks up a localized string similar to I couldn&apos;t find the server.
         /// </summary>
         public static string Bot_GuildNotFound {
             get {
@@ -1796,7 +1814,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mutual guilds.
+        ///   Looks up a localized string similar to Mutual servers.
         /// </summary>
         public static string Bot_MutualGuilds {
             get {
@@ -2093,7 +2111,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Guild.
+        ///   Looks up a localized string similar to Server.
         /// </summary>
         public static string Common_Guild {
             get {
@@ -2102,7 +2120,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Guild User.
+        ///   Looks up a localized string similar to Server user.
         /// </summary>
         public static string Common_GuildUser {
             get {
@@ -2648,511 +2666,6 @@ namespace Rias.Properties {
         public static string Help_Website {
             get {
                 return ResourceManager.GetString("Help_Website", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connected to **{0}**..
-        /// </summary>
-        public static string Music_ChannelConnected {
-            get {
-                return ResourceManager.GetString("Music_ChannelConnected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disconnected from **{0}**.
-        /// </summary>
-        public static string Music_ChannelDisconnected {
-            get {
-                return ResourceManager.GetString("Music_ChannelDisconnected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Choose a track by typing the index. You have 1 minute.
-        /// </summary>
-        public static string Music_ChooseTrack {
-            get {
-                return ResourceManager.GetString("Music_ChooseTrack", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The current volume is **{0}%**..
-        /// </summary>
-        public static string Music_CurrentVolume {
-            get {
-                return ResourceManager.GetString("Music_CurrentVolume", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The music commands are disabled because of the low YouTube rate-limits. The music module will be removed completely after January 1st 2020..
-        /// </summary>
-        public static string Music_Disabled {
-            get {
-                return ResourceManager.GetString("Music_Disabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enqueuing the tracks, please wait..
-        /// </summary>
-        public static string Music_EnqueuingTracks {
-            get {
-                return ResourceManager.GetString("Music_EnqueuingTracks", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Lavalink connection is not configured in commands.json. The music commands are disabled..
-        /// </summary>
-        public static string Music_LavalinkNotConfigured {
-            get {
-                return ResourceManager.GetString("Music_LavalinkNotConfigured", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Lavalink is not connected, please wait a moment or contact my owner if this doesn&apos;t get solved after some minutes..
-        /// </summary>
-        public static string Music_LavalinkNotConnected {
-            get {
-                return ResourceManager.GetString("Music_LavalinkNotConnected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Livestream.
-        /// </summary>
-        public static string Music_Livestream {
-            get {
-                return ResourceManager.GetString("Music_Livestream", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This channel is now the new music output channel..
-        /// </summary>
-        public static string Music_NewOutputChannel {
-            get {
-                return ResourceManager.GetString("Music_NewOutputChannel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to I don&apos;t have the permission to connect in the **{0}** channel..
-        /// </summary>
-        public static string Music_NoConnectPermission {
-            get {
-                return ResourceManager.GetString("Music_NoConnectPermission", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You are not in the same voice channel with me..
-        /// </summary>
-        public static string Music_NotSameVoiceChannel {
-            get {
-                return ResourceManager.GetString("Music_NotSameVoiceChannel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Now playing.
-        /// </summary>
-        public static string Music_NowPlaying {
-            get {
-                return ResourceManager.GetString("Music_NowPlaying", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Only YouTube URLs are supported for now, or YouTube search..
-        /// </summary>
-        public static string Music_NoYouTubeUrl {
-            get {
-                return ResourceManager.GetString("Music_NoYouTubeUrl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to I cannot find the music output channel..
-        /// </summary>
-        public static string Music_NullOutputChannel {
-            get {
-                return ResourceManager.GetString("Music_NullOutputChannel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The music commands can be used only from the output channel {0}..
-        /// </summary>
-        public static string Music_OutputChannelCommands {
-            get {
-                return ResourceManager.GetString("Music_OutputChannelCommands", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to I cannot send messages in music output channel **{0}**..
-        /// </summary>
-        public static string Music_OutputChannelNoSendPermission {
-            get {
-                return ResourceManager.GetString("Music_OutputChannelNoSendPermission", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to I cannot view the music output channel **{0}**..
-        /// </summary>
-        public static string Music_OutputChannelNoViewPermission {
-            get {
-                return ResourceManager.GetString("Music_OutputChannelNoViewPermission", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Playing livestreams requires the owner of this server to have the Patreon Tier 4. Check it here: [Patreon]({0}).
-        /// </summary>
-        public static string Music_PlayerFeatureLivestream {
-            get {
-                return ResourceManager.GetString("Music_PlayerFeatureLivestream", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Playing tracks longer than {0} hours requires the owner of this server to have the Patreon Tier 4. Check it here: [Patreon]({1}).
-        /// </summary>
-        public static string Music_PlayerFeatureLongTracks {
-            get {
-                return ResourceManager.GetString("Music_PlayerFeatureLongTracks", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Changing the volume requires the owner of this server to have the Patreon Tier 2. Check it here: [Patreon]({0}).
-        /// </summary>
-        public static string Music_PlayerFeatureVolume {
-            get {
-                return ResourceManager.GetString("Music_PlayerFeatureVolume", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The music player is paused..
-        /// </summary>
-        public static string Music_PlayerIsPaused {
-            get {
-                return ResourceManager.GetString("Music_PlayerIsPaused", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The music player is playing..
-        /// </summary>
-        public static string Music_PlayerIsPlaying {
-            get {
-                return ResourceManager.GetString("Music_PlayerIsPlaying", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The music player is not playing..
-        /// </summary>
-        public static string Music_PlayerNotPlaying {
-            get {
-                return ResourceManager.GetString("Music_PlayerNotPlaying", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The music player has been paused..
-        /// </summary>
-        public static string Music_PlayerPaused {
-            get {
-                return ResourceManager.GetString("Music_PlayerPaused", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The music player has been resumed..
-        /// </summary>
-        public static string Music_PlayerResumed {
-            get {
-                return ResourceManager.GetString("Music_PlayerResumed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Queue.
-        /// </summary>
-        public static string Music_Queue {
-            get {
-                return ResourceManager.GetString("Music_Queue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Queue cleared..
-        /// </summary>
-        public static string Music_QueueCleared {
-            get {
-                return ResourceManager.GetString("Music_QueueCleared", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The queue is empty..
-        /// </summary>
-        public static string Music_QueueEmpty {
-            get {
-                return ResourceManager.GetString("Music_QueueEmpty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Queue shuffled..
-        /// </summary>
-        public static string Music_QueueShuffled {
-            get {
-                return ResourceManager.GetString("Music_QueueShuffled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Repeat.
-        /// </summary>
-        public static string Music_Repeat {
-            get {
-                return ResourceManager.GetString("Music_Repeat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Repeat disabled..
-        /// </summary>
-        public static string Music_RepeatDisabled {
-            get {
-                return ResourceManager.GetString("Music_RepeatDisabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Repeat enabled..
-        /// </summary>
-        public static string Music_RepeatEnabled {
-            get {
-                return ResourceManager.GetString("Music_RepeatEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Requested by.
-        /// </summary>
-        public static string Music_RequestedBy {
-            get {
-                return ResourceManager.GetString("Music_RequestedBy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Seek.
-        /// </summary>
-        public static string Music_Seek {
-            get {
-                return ResourceManager.GetString("Music_Seek", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to From.
-        /// </summary>
-        public static string Music_SeekFrom {
-            get {
-                return ResourceManager.GetString("Music_SeekFrom", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The time is greater than the track&apos;s duration..
-        /// </summary>
-        public static string Music_SeekPositionAbove {
-            get {
-                return ResourceManager.GetString("Music_SeekPositionAbove", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to To.
-        /// </summary>
-        public static string Music_SeekTo {
-            get {
-                return ResourceManager.GetString("Music_SeekTo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The music player has been paused. All users left the voice channel and I&apos;ll leave in 2 minutes if nobody joins back..
-        /// </summary>
-        public static string Music_StopAfter {
-            get {
-                return ResourceManager.GetString("Music_StopAfter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Total duration: {0}.
-        /// </summary>
-        public static string Music_TotalDuration {
-            get {
-                return ResourceManager.GetString("Music_TotalDuration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Channel.
-        /// </summary>
-        public static string Music_TrackChannel {
-            get {
-                return ResourceManager.GetString("Music_TrackChannel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Duration.
-        /// </summary>
-        public static string Music_TrackDuration {
-            get {
-                return ResourceManager.GetString("Music_TrackDuration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Track enqueued.
-        /// </summary>
-        public static string Music_TrackEnqueued {
-            get {
-                return ResourceManager.GetString("Music_TrackEnqueued", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Estimated time until playing.
-        /// </summary>
-        public static string Music_TrackEtp {
-            get {
-                return ResourceManager.GetString("Music_TrackEtp", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error encountered on playing **{0}**. Playing the next track..
-        /// </summary>
-        public static string Music_TrackException {
-            get {
-                return ResourceManager.GetString("Music_TrackException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The index of the track above the queue&apos;s length..
-        /// </summary>
-        public static string Music_TrackIndexAbove {
-            get {
-                return ResourceManager.GetString("Music_TrackIndexAbove", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The index of the track cannot be less than {0}..
-        /// </summary>
-        public static string Music_TrackIndexLessThan {
-            get {
-                return ResourceManager.GetString("Music_TrackIndexLessThan", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occured on loading the track/s. Either the track/s is/are private, unavailable or the playlist is private.
-        ///This also can have multiple reasons, you can report it in the [Support Server]({0})..
-        /// </summary>
-        public static string Music_TrackLoadFailed {
-            get {
-                return ResourceManager.GetString("Music_TrackLoadFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to I couldn&apos;t find any track..
-        /// </summary>
-        public static string Music_TrackLoadNoMatches {
-            get {
-                return ResourceManager.GetString("Music_TrackLoadNoMatches", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to I couldn&apos;t find any track in the queue matching your title..
-        /// </summary>
-        public static string Music_TrackNotFound {
-            get {
-                return ResourceManager.GetString("Music_TrackNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to **{0}** has been removed from the queue..
-        /// </summary>
-        public static string Music_TrackRemoved {
-            get {
-                return ResourceManager.GetString("Music_TrackRemoved", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enqueued {0} tracks from {1}..
-        /// </summary>
-        public static string Music_TracksEnqueued {
-            get {
-                return ResourceManager.GetString("Music_TracksEnqueued", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to **{0}** got stuck. Playing the next track..
-        /// </summary>
-        public static string Music_TrackStuck {
-            get {
-                return ResourceManager.GetString("Music_TrackStuck", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You are not in a voice channel..
-        /// </summary>
-        public static string Music_UserNotInVoiceChannel {
-            get {
-                return ResourceManager.GetString("Music_UserNotInVoiceChannel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The volume must be between {0} and {1}..
-        /// </summary>
-        public static string Music_VolumeBetween {
-            get {
-                return ResourceManager.GetString("Music_VolumeBetween", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Volume set to **{0}%**..
-        /// </summary>
-        public static string Music_VolumeSet {
-            get {
-                return ResourceManager.GetString("Music_VolumeSet", resourceCulture);
             }
         }
         
@@ -3977,7 +3490,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The `SocketCategoryChannel TypeParser` cannot be used in a context without a guild!.
+        ///   Looks up a localized string similar to The `SocketCategoryChannel TypeParser` cannot be used in a context without a server!.
         /// </summary>
         public static string TypeParser_SocketCategoryChannelNotGuild {
             get {
@@ -3986,7 +3499,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The `SocketGuildUser TypeParser` cannot be used in a context without a guild!.
+        ///   Looks up a localized string similar to The `SocketGuildUser TypeParser` cannot be used in a context without a server!.
         /// </summary>
         public static string TypeParser_SocketGuildUserNotGuild {
             get {
@@ -3995,7 +3508,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The `SocketRole TypeParser` cannot be used in a context without a guild!.
+        ///   Looks up a localized string similar to The `SocketRole TypeParser` cannot be used in a context without a server!.
         /// </summary>
         public static string TypeParser_SocketRoleNotGuild {
             get {
@@ -4004,7 +3517,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The SocketTextChannel TypeParser cannot be used in a context without a guild!.
+        ///   Looks up a localized string similar to The SocketTextChannel TypeParser cannot be used in a context without a server!.
         /// </summary>
         public static string TypeParser_SocketTextChannelNotGuild {
             get {
@@ -4013,7 +3526,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The SocketVoiceChannel TypeParser cannot be used in a context without a guild!.
+        ///   Looks up a localized string similar to The SocketVoiceChannel TypeParser cannot be used in a context without a server!.
         /// </summary>
         public static string TypeParser_SocketVoiceChannelNotGuild {
             get {
@@ -4195,15 +3708,6 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Guilds.
-        /// </summary>
-        public static string Utility_Guilds {
-            get {
-                return ResourceManager.GetString("Utility_Guilds", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The image or the URL is not good..
         /// </summary>
         public static string Utility_ImageOrUrlNotGood {
@@ -4254,33 +3758,6 @@ namespace Rias.Properties {
         public static string Utility_MasterId {
             get {
                 return ResourceManager.GetString("Utility_MasterId", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Music.
-        /// </summary>
-        public static string Utility_Music {
-            get {
-                return ResourceManager.GetString("Utility_Music", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Idle in {0} servers.
-        /// </summary>
-        public static string Utility_MusicIdle {
-            get {
-                return ResourceManager.GetString("Utility_MusicIdle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Playing in {0} servers.
-        /// </summary>
-        public static string Utility_MusicPlaying {
-            get {
-                return ResourceManager.GetString("Utility_MusicPlaying", resourceCulture);
             }
         }
         
@@ -4426,6 +3903,15 @@ namespace Rias.Properties {
         public static string Utility_Roles {
             get {
                 return ResourceManager.GetString("Utility_Roles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Servers.
+        /// </summary>
+        public static string Utility_Servers {
+            get {
+                return ResourceManager.GetString("Utility_Servers", resourceCulture);
             }
         }
         

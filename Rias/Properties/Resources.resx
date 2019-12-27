@@ -470,7 +470,7 @@ You must have the **{0}** server permissions.</value>
     </data>
 
     <data name="Bot_GuildNotFound" xml:space="preserve">
-        <value>I couldn't find the guild</value>
+        <value>I couldn't find the server</value>
     </data>
     <data name="Bot_LeftGuild" xml:space="preserve">
         <value>Left **{0}**</value>
@@ -509,7 +509,7 @@ You must have the **{0}** server permissions.</value>
         <value>Message edited.</value>
     </data>
     <data name="Bot_MutualGuilds" xml:space="preserve">
-        <value>Mutual guilds</value>
+        <value>Mutual servers</value>
     </data>
     <data name="Bot_RoslynCompiler" xml:space="preserve">
         <value>Roslyn compiler</value>
@@ -810,177 +810,6 @@ Type `{0}allcommands` to get a list with all commands.</value>
     </data>
     <data name="Help_CommandsNotSent" xml:space="preserve">
         <value>I couldn't send you the list with all commands via DM. Please verify if you disabled receiving DMs from this server.</value>
-    </data>
-    
-    <data name="Music_Disabled" xml:space="preserve">
-        <value>The music commands are disabled because of the low YouTube rate-limits. The music module will be removed completely after January 1st 2020.</value>
-    </data>
-    <data name="Music_LavalinkNotConfigured" xml:space="preserve">
-        <value>The Lavalink connection is not configured in commands.json. The music commands are disabled.</value>
-    </data>
-    <data name="Music_LavalinkNotConnected" xml:space="preserve">
-        <value>Lavalink is not connected, please wait a moment or contact my owner if this doesn't get solved after some minutes.</value>
-    </data>
-    <data name="Music_UserNotInVoiceChannel" xml:space="preserve">\
-    <value>You are not in a voice channel.</value>
-    </data>
-    <data name="Music_NotSameVoiceChannel" xml:space="preserve">
-        <value>You are not in the same voice channel with me.</value>
-    </data>
-    <data name="Music_NoConnectPermission" xml:space="preserve">
-        <value>I don't have the permission to connect in the **{0}** channel.</value>
-    </data>
-    <data name="Music_NullOutputChannel" xml:space="preserve">
-        <value>I cannot find the music output channel.</value>
-    </data>
-    <data name="Music_OutputChannelNoViewPermission" xml:space="preserve">
-        <value>I cannot view the music output channel **{0}**.</value>
-    </data>
-    <data name="Music_OutputChannelNoSendPermission" xml:space="preserve">
-        <value>I cannot send messages in music output channel **{0}**.</value>
-    </data>
-    <data name="Music_NewOutputChannel" xml:space="preserve">
-        <value>This channel is now the new music output channel.</value>
-    </data>
-    <data name="Music_OutputChannelCommands" xml:space="preserve">
-        <value>The music commands can be used only from the output channel {0}.</value>
-    </data>
-
-    <data name="Music_ChannelConnected" xml:space="preserve">
-        <value>Connected to **{0}**.</value>
-    </data>
-    <data name="Music_ChannelDisconnected" xml:space="preserve">
-        <value>Disconnected from **{0}**</value>
-    </data>
-    <data name="Music_NoYouTubeUrl" xml:space="preserve">
-        <value>Only YouTube URLs are supported for now, or YouTube search.</value>
-    </data>
-    <data name="Music_TrackLoadNoMatches" xml:space="preserve">
-        <value>I couldn't find any track.</value>
-    </data>
-    <data name="Music_TrackLoadFailed" xml:space="preserve">
-        <value>An error occured on loading the track/s. Either the track/s is/are private, unavailable or the playlist is private.
-This also can have multiple reasons, you can report it in the [Support Server]({0}).</value>
-    </data>
-    <data name="Music_EnqueuingTracks" xml:space="preserve">
-        <value>Enqueuing the tracks, please wait.</value>
-    </data>
-    <data name="Music_TracksEnqueued" xml:space="preserve">
-        <value>Enqueued {0} tracks from {1}.</value>
-    </data>
-    <data name="Music_ChooseTrack" xml:space="preserve">
-        <value>Choose a track by typing the index. You have 1 minute</value>
-    </data>
-    <data name="Music_TrackEnqueued" xml:space="preserve">
-        <value>Track enqueued</value>
-    </data>
-    <data name="Music_NowPlaying" xml:space="preserve">
-        <value>Now playing</value>
-    </data>
-    <data name="Music_TrackChannel" xml:space="preserve">
-        <value>Channel</value>
-    </data>
-    <data name="Music_TrackDuration" xml:space="preserve">
-        <value>Duration</value>
-    </data>
-    <data name="Music_Livestream" xml:space="preserve">
-        <value>Livestream</value>
-    </data>
-    <data name="Music_TrackEtp" xml:space="preserve">
-        <value>Estimated time until playing</value>
-    </data>
-    <data name="Music_RequestedBy" xml:space="preserve">
-        <value>Requested by</value>
-    </data>
-    <data name="Music_Repeat" xml:space="preserve">
-        <value>Repeat</value>
-    </data>
-    <data name="Music_PlayerNotPlaying" xml:space="preserve">
-        <value>The music player is not playing.</value>
-    </data>
-    <data name="Music_PlayerIsPlaying" xml:space="preserve">
-        <value>The music player is playing.</value>
-    </data>
-    <data name="Music_PlayerIsPaused" xml:space="preserve">
-        <value>The music player is paused.</value>
-    </data>
-    <data name="Music_PlayerPaused" xml:space="preserve">
-        <value>The music player has been paused.</value>
-    </data>
-    <data name="Music_PlayerResumed" xml:space="preserve">
-        <value>The music player has been resumed.</value>
-    </data>
-    <data name="Music_Queue" xml:space="preserve">
-        <value>Queue</value>
-    </data>
-    <data name="Music_QueueEmpty" xml:space="preserve">
-        <value>The queue is empty.</value>
-    </data>
-    <data name="Music_TrackIndexLessThan" xml:space="preserve">
-        <value>The index of the track cannot be less than {0}.</value>
-    </data>
-    <data name="Music_TrackIndexAbove" xml:space="preserve">
-        <value>The index of the track above the queue's length.</value>
-    </data>
-    <data name="Music_CurrentVolume" xml:space="preserve">
-        <value>The current volume is **{0}%**.</value>
-    </data>
-    <data name="Music_VolumeBetween" xml:space="preserve">
-        <value>The volume must be between {0} and {1}.</value>
-    </data>
-    <data name="Music_VolumeSet" xml:space="preserve">
-        <value>Volume set to **{0}%**.</value>
-    </data>
-    <data name="Music_TrackNotFound" xml:space="preserve">
-        <value>I couldn't find any track in the queue matching your title.</value>
-    </data>
-    <data name="Music_TotalDuration" xml:space="preserve">
-        <value>Total duration: {0}</value>
-    </data>
-    <data name="Music_SeekPositionAbove" xml:space="preserve">
-        <value>The time is greater than the track's duration.</value>
-    </data>
-    <data name="Music_Seek" xml:space="preserve">
-        <value>Seek</value>
-    </data>
-    <data name="Music_SeekFrom" xml:space="preserve">
-        <value>From</value>
-    </data>
-    <data name="Music_SeekTo" xml:space="preserve">
-        <value>To</value>
-    </data>
-    <data name="Music_QueueShuffled" xml:space="preserve">
-        <value>Queue shuffled.</value>
-    </data>
-    <data name="Music_QueueCleared" xml:space="preserve">
-        <value>Queue cleared.</value>
-    </data>
-    <data name="Music_TrackRemoved" xml:space="preserve">
-        <value>**{0}** has been removed from the queue.</value>
-    </data>
-    <data name="Music_RepeatEnabled" xml:space="preserve">
-        <value>Repeat enabled.</value>
-    </data>
-    <data name="Music_RepeatDisabled" xml:space="preserve">
-        <value>Repeat disabled.</value>
-    </data>
-    <data name="Music_TrackException" xml:space="preserve">
-        <value>Error encountered on playing **{0}**. Playing the next track.</value>
-    </data>
-    <data name="Music_TrackStuck" xml:space="preserve">
-        <value>**{0}** got stuck. Playing the next track.</value>
-    </data>
-    <data name="Music_PlayerFeatureVolume" xml:space="preserve">
-        <value>Changing the volume requires the owner of this server to have the Patreon Tier 2. Check it here: [Patreon]({0})</value>
-    </data>
-    <data name="Music_PlayerFeatureLongTracks" xml:space="preserve">
-        <value>Playing tracks longer than {0} hours requires the owner of this server to have the Patreon Tier 4. Check it here: [Patreon]({1})</value>
-    </data>
-    <data name="Music_PlayerFeatureLivestream" xml:space="preserve">
-        <value>Playing livestreams requires the owner of this server to have the Patreon Tier 4. Check it here: [Patreon]({0})</value>
-    </data>
-    <data name="Music_StopAfter" xml:space="preserve">
-        <value>The music player has been paused. All users left the voice channel and I'll leave in 2 minutes if nobody joins back.</value>
     </data>
     
     <data name="Nsfw_ChannelNotNsfw" xml:space="preserve">
@@ -1352,23 +1181,14 @@ Rest latency: {1} ms</value>
     <data name="Utility_Presence" xml:space="preserve">
         <value>Presence</value>
     </data>
-    <data name="Utility_Guilds" xml:space="preserve">
-        <value>Guilds</value>
+    <data name="Utility_Servers" xml:space="preserve">
+        <value>Servers</value>
     </data>
     <data name="Utility_TextChannels" xml:space="preserve">
         <value>Text channels</value>
     </data>
     <data name="Utility_VoiceChannels" xml:space="preserve">
         <value>Voice channels</value>
-    </data>
-    <data name="Utility_Music" xml:space="preserve">
-        <value>Music</value>
-    </data>
-    <data name="Utility_MusicPlaying" xml:space="preserve">
-        <value>Playing in {0} servers</value>
-    </data>
-    <data name="Utility_MusicIdle" xml:space="preserve">
-        <value>Idle in {0} servers</value>
     </data>
     <data name="Utility_Username" xml:space="preserve">
         <value>Username</value>
@@ -1621,10 +1441,10 @@ You successfully claimed **{0}** for {1} {2}.</value>
         <value>Reasons</value>
     </data>
     <data name="Common_Guild" xml:space="preserve">
-        <value>Guild</value>
+        <value>Server</value>
     </data>
     <data name="Common_GuildUser" xml:space="preserve">
-        <value>Guild User</value>
+        <value>Server user</value>
     </data>
     <data name="Common_DM" xml:space="preserve">
         <value>DM</value>
@@ -1678,36 +1498,42 @@ You successfully claimed **{0}** for {1} {2}.</value>
     <data name="Attribute_OwnerOnly" xml:space="preserve">
         <value>This command can be ran only by master.</value>
     </data>
-    <data name="Attribute_UserPermissionGuild" xml:space="preserve">
-        <value>You must have the {0} guild {1}.</value>
+    <data name="Attribute_UserGuildPermission" xml:space="preserve">
+        <value>You must have the {0} server permission.</value>
+    </data>
+    <data name="Attribute_UserGuildPermissions" xml:space="preserve">
+        <value>You must have the {0} server permissions.</value>
     </data>
     <data name="Attribute_UserPermissionNotGuild" xml:space="preserve">
-        <value>The `UserPermissionAttribute` requires this command to be used in a guild channel.</value>
+        <value>The `UserPermissionAttribute` requires this command to be used in a server channel.</value>
     </data>
-    <data name="Attribute_BotPermissionGuild" xml:space="preserve">
-        <value>I must have the {0} guild {1}.</value>
+    <data name="Attribute_BotGuildPermission" xml:space="preserve">
+        <value>I must have the {0} server permission.</value>
+    </data>
+    <data name="Attribute_BotGuildPermissions" xml:space="preserve">
+        <value>I must have the {0} server permissions.</value>
     </data>
     <data name="Attribute_BotPermissionNotGuild" xml:space="preserve">
-        <value>The `BotPermissionAttribute` requires this command to be used in a guild channel.</value>
+        <value>The `BotPermissionAttribute` requires this command to be used in a server channel.</value>
     </data>
     <data name="Attribute_Context" xml:space="preserve">
         <value>The command must be used in a {0}.</value>
     </data>
 
     <data name="TypeParser_SocketCategoryChannelNotGuild" xml:space="preserve">
-        <value>The `SocketCategoryChannel TypeParser` cannot be used in a context without a guild!</value>
+        <value>The `SocketCategoryChannel TypeParser` cannot be used in a context without a server!</value>
     </data>
     <data name="TypeParser_SocketGuildUserNotGuild" xml:space="preserve">
-        <value>The `SocketGuildUser TypeParser` cannot be used in a context without a guild!</value>
+        <value>The `SocketGuildUser TypeParser` cannot be used in a context without a server!</value>
     </data>
     <data name="TypeParser_SocketRoleNotGuild" xml:space="preserve">
-        <value>The `SocketRole TypeParser` cannot be used in a context without a guild!</value>
+        <value>The `SocketRole TypeParser` cannot be used in a context without a server!</value>
     </data>
     <data name="TypeParser_SocketTextChannelNotGuild" xml:space="preserve">
-        <value>The SocketTextChannel TypeParser cannot be used in a context without a guild!</value>
+        <value>The SocketTextChannel TypeParser cannot be used in a context without a server!</value>
     </data>
     <data name="TypeParser_SocketVoiceChannelNotGuild" xml:space="preserve">
-        <value>The SocketVoiceChannel TypeParser cannot be used in a context without a guild!</value>
+        <value>The SocketVoiceChannel TypeParser cannot be used in a context without a server!</value>
     </data>
     <data name="TypeParser_TimeSpanUnsuccessful" xml:space="preserve">
         <value>The time provided is not valid.

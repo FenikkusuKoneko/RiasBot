@@ -14,10 +14,8 @@ using Rias.Core.Commons;
 using Rias.Core.Database;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
-using Rias.Core.Services.Commons;
 using Rias.Interactive;
 using Serilog;
-using Victoria;
 
 namespace Rias.Core
 {
@@ -99,19 +97,6 @@ namespace Rias.Core
                 .AddSingleton<HttpClient>()
                 .AddSingleton(new InteractiveService(_client!));
 
-            if (_creds!.LavalinkConfig != null)
-            {
-                services.AddSingleton(new LavaNode<MusicPlayer>(_client, new LavaConfig
-                {
-                    Hostname = _creds!.LavalinkConfig.Host,
-                    Port = _creds.LavalinkConfig.Port,
-                    Authorization = _creds.LavalinkConfig.Authorization,
-                    EnableResume = true,
-                    ReconnectAttempts = 100,
-                    ResumeKey = "Rias"
-                }));
-            }
-            
             var connection = GetDatabaseConnection();
             if (connection is null)
                 throw new NullReferenceException("The database connection is not set in credentials.json");

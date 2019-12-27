@@ -17,7 +17,6 @@ using Rias.Core.Implementation;
 using Rias.Core.Services;
 using Rias.Interactive;
 using Rias.Interactive.Paginator;
-using Victoria.Enums;
 
 namespace Rias.Core.Modules.Utility
 {
@@ -28,20 +27,16 @@ namespace Rias.Core.Modules.Utility
         {
             private readonly DiscordShardedClient _client;
             private readonly InteractiveService _interactive;
-            private readonly MusicService _musicService;
 
             public Info(IServiceProvider services) : base(services)
             {
                 _client = services.GetRequiredService<DiscordShardedClient>();
                 _interactive = services.GetRequiredService<InteractiveService>();
-                _musicService = services.GetRequiredService<MusicService>();
             }
 
             [Command("stats")]
             public async Task StatsAsync()
             {
-                var players = _musicService.Lavalink.Players.ToList();
-
                 var embed = new EmbedBuilder
                     {
                         Color = RiasUtils.ConfirmColor,
@@ -59,12 +54,10 @@ namespace Rias.Core.Modules.Utility
                     .AddField(GetText("InServer"), Context.Guild?.Name ?? "-", true)
                     .AddField(GetText("CommandsExecuted"), CommandHandlerService.CommandsExecuted, true)
                     .AddField(GetText("Uptime"), Rias.UpTime.Elapsed.Humanize(5, Resources.GetGuildCulture(Context.Guild?.Id), TimeUnit.Month, TimeUnit.Second), true)
-                    .AddField(GetText("Presence"), $"{_client.Guilds.Count} {GetText("Guilds")}\n" +
+                    .AddField(GetText("Presence"), $"{_client.Guilds.Count} {GetText("Servers")}\n" +
                                                    $"{_client.Guilds.Sum(x => x.TextChannels.Count)} {GetText("TextChannels")}\n" +
                                                    $"{_client.Guilds.Sum(x => x.VoiceChannels.Count)} {GetText("VoiceChannels")}\n" +
-                                                   $"{_client.Guilds.Sum(x => x.MemberCount)} {GetText("#Common_Users")}\n", true)
-                    .AddField(GetText("Music"), $"{GetText("MusicPlaying", players.Count(x => x.PlayerState == PlayerState.Playing))}\n" +
-                                                GetText("MusicIdle", players.Count(x => x.PlayerState != PlayerState.Playing)), true);
+                                                   $"{_client.Guilds.Sum(x => x.MemberCount)} {GetText("#Common_Users")}\n", true);
 
                 var links = new StringBuilder();
                 const string delimiter = " • ";

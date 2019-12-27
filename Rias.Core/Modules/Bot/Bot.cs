@@ -10,7 +10,6 @@ using Rias.Core.Attributes;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
-using Serilog;
 
 namespace Rias.Core.Modules.Bot
 {
@@ -18,12 +17,10 @@ namespace Rias.Core.Modules.Bot
     public partial class Bot : RiasModule<BotService>
     {
         private readonly DiscordShardedClient _client;
-        private readonly MusicService _musicService;
 
         public Bot(IServiceProvider services) : base(services)
         {
             _client = services.GetRequiredService<DiscordShardedClient>();
-            _musicService = services.GetRequiredService<MusicService>();
         }
 
         [Command("leaveguild"),
@@ -54,19 +51,6 @@ namespace Rias.Core.Modules.Bot
          OwnerOnly]
         public async Task UpdateAsync()
         {
-            try
-            {
-                foreach (var player in _musicService.Lavalink.Players)
-                {
-                    await player.LeaveAndDisposeAsync(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"Error in disposing a player:\n{ex}");
-            }
-            
-            await Task.Delay(10000);
             await ReplyConfirmationAsync("Update");
             Environment.Exit(0);
         }

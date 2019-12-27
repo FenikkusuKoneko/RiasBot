@@ -27,7 +27,6 @@ namespace Rias.Core.Implementation
         public string WeebServicesToken { get; }
 
         public DatabaseConfig? DatabaseConfig { get; }
-        public LavalinkConfig? LavalinkConfig { get; }
         public VotesConfig? VotesConfig { get; }
         public PatreonConfig? PatreonConfig { get; }
 
@@ -72,14 +71,6 @@ namespace Rias.Core.Implementation
                 Username = databaseConfig.GetValue<string>(nameof(DatabaseConfig.Username)),
                 Password = databaseConfig.GetValue<string>(nameof(DatabaseConfig.Password)),
                 ApplicationName = databaseConfig.GetValue<string>(nameof(DatabaseConfig.ApplicationName))
-            };
-
-            var lavalinkConfig = config.GetSection(nameof(LavalinkConfig));
-            LavalinkConfig = !lavalinkConfig.Exists() ? null : new LavalinkConfig
-            {
-                Host = lavalinkConfig.GetValue<string>(nameof(LavalinkConfig.Host)),
-                Port = lavalinkConfig.GetValue<ushort>(nameof(LavalinkConfig.Port)),
-                Authorization = lavalinkConfig.GetValue<string>(nameof(LavalinkConfig.Authorization))
             };
 
             var votesConfig = config.GetSection(nameof(VotesConfig));
