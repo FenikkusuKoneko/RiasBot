@@ -3753,6 +3753,42 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to I couldn&apos;t find the language..
+        /// </summary>
+        public static string Utility_LanguageNotFound {
+            get {
+                return ResourceManager.GetString("Utility_LanguageNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Available languages.
+        /// </summary>
+        public static string Utility_Languages {
+            get {
+                return ResourceManager.GetString("Utility_Languages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My language on this server is now **{0}**..
+        /// </summary>
+        public static string Utility_LanguageSet {
+            get {
+                return ResourceManager.GetString("Utility_LanguageSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To set my language in this server type {0}setlanguage &lt;language&gt;.
+        /// </summary>
+        public static string Utility_LanguagesFooter {
+            get {
+                return ResourceManager.GetString("Utility_LanguagesFooter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Master ID.
         /// </summary>
         public static string Utility_MasterId {

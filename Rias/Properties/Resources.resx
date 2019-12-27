@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
@@ -1110,6 +1109,18 @@ For a custom one you must have the Patreon Tier 2. Check it here: [Patreon]({0})
     </data>
     <data name="Utility_PrefixChanged" xml:space="preserve">
         <value>The prefix on this server has been changed from **{0}** to **{1}**.</value>
+    </data>
+    <data name="Utility_Languages" xml:space="preserve">
+        <value>Available languages</value>
+    </data>
+    <data name="Utility_LanguagesFooter" xml:space="preserve">
+        <value>To set my language in this server type {0}setlanguage &lt;language&gt;</value>
+    </data>
+    <data name="Utility_LanguageNotFound" xml:space="preserve">
+        <value>I couldn't find the language.</value>
+    </data>
+    <data name="Utility_LanguageSet" xml:space="preserve">
+        <value>My language on this server is now **{0}**.</value>
     </data>
     <data name="Utility_InviteInfo" xml:space="preserve">
         <value>Invite me to your server: [link]({0}).</value>

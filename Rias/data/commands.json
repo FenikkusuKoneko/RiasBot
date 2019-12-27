@@ -1130,6 +1130,23 @@
           ]
         },
         {
+          "aliases": "languages",
+          "description": "Shows the available languages.",
+          "remarks": [
+            "{0}languages"
+          ]
+        },
+        {
+          "aliases": "setlanguage setlang",
+          "description": "Sets my language on this server.",
+          "remarks": [
+            "{0}setlanguage en",
+            "{0}setlanguage english",
+            "{0}setlanguage ro",
+            "{0}setlanguage romanian"
+          ]
+        },
+        {
           "aliases": "invite",
           "description": "Invite me to your server.",
           "remarks": [

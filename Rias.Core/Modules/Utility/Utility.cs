@@ -58,6 +58,34 @@ namespace Rias.Core.Modules.Utility
             await Service.SetPrefixAsync(Context.Guild!, prefix);
             await ReplyConfirmationAsync("PrefixChanged", currentPrefix, prefix);
         }
+        
+        [Command("languages"), Context(ContextType.Guild)]
+        public async Task LanguagesAsync()
+        {
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ConfirmColor,
+                Title = GetText("Languages"),
+                Description = string.Join('\n', Service.Languages.Select(x => $"{x.Language} ({x.Locale})"))
+            };
+
+            await ReplyAsync(embed);
+        }
+
+        [Command("setlanguage"), Context(ContextType.Guild)]
+        public async Task SetLanguageAsync(string language)
+        {
+            var (locale, lang) = Service.Languages
+                .FirstOrDefault(x => string.Equals(x.Locale, language, StringComparison.OrdinalIgnoreCase) || x.Language.StartsWith(language, StringComparison.OrdinalIgnoreCase));
+            if (string.IsNullOrEmpty(locale))
+            {
+                await ReplyErrorAsync("LanguageNotFound");
+                return;
+            }
+
+            await Service.SetLocaleAsync(Context.Guild, locale.ToLower());
+            await ReplyConfirmationAsync("LanguageSet", $"{lang} ({locale})");
+        }
 
         [Command("invite")]
         public async Task InviteAsync()
