@@ -6,18 +6,20 @@ using Discord.WebSocket;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
+using Rias.Core.Database.Models;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using Rias.Core.Services;
 
 namespace Rias.Core.Modules.Administration
 {
     public partial class Administration
     {
         [Name("Moderation")]
-        public class Moderation : RiasModule<AdministrationService>
+        public class Moderation : RiasModule
         {
-            public Moderation(IServiceProvider services) : base(services) {}
+            public Moderation(IServiceProvider services) : base(services)
+            {
+            }
 
             [Command("kick"), Context(ContextType.Guild),
              UserPermission(GuildPermission.KickMembers), BotPermission(GuildPermission.KickMembers)]
@@ -190,7 +192,8 @@ namespace Rias.Core.Modules.Administration
                     embed.AddField(GetText("#Common_Reason"), reason, true);
 
                 var channel = Context.Channel;
-                var modLogChannel = Context.Guild!.GetTextChannel(Service.GetModLogChannelId(Context.Guild) ?? 0);
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+                var modLogChannel = Context.Guild!.GetTextChannel(guildDb.ModLogChannelId);
                 if (modLogChannel != null)
                 {
                     var preconditions = Context.CurrentGuildUser!.GetPermissions(modLogChannel);

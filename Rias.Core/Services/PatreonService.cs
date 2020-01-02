@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rias.Core.Commons;
 using Rias.Core.Database;
-using Rias.Core.Database.Models;
 using Rias.Core.Implementation;
 using Rias.Core.Services.Websocket;
 using Serilog;
@@ -57,23 +55,6 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
         }
 
-        public int GetPatreonTier(SocketUser user)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.Patreon.FirstOrDefault(x => x.UserId == user.Id)?.Tier ?? 0;
-        }
-        
-        public IList<Patreon> GetPatrons()
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.Patreon
-                .Where(x => x.PatronStatus == PatronStatus.ActivePatron)
-                .OrderByDescending(x => x.AmountCents)
-                .ToList();
-        }
-
         private Task ConnectedAsync()
         {
             Log.Information("Patreon websocket connected");
@@ -109,14 +90,14 @@ namespace Rias.Core.Services
             var pledgeData = JsonConvert.DeserializeObject<PatreonPledgeData>(data);
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var pledgeDb = db.Patreon.FirstOrDefault(x => x.PatreonUserId == pledgeData.PatreonUserId);
+            var pledgeDb = await db.Patreon.FirstOrDefaultAsync(x => x.PatreonUserId == pledgeData.PatreonUserId);
 
             var attempts = 0;
             while (pledgeDb is null && attempts < DatabasePledgeAttempts)
             {
                 await Task.Delay(5000);
                 
-                pledgeDb = db.Patreon.FirstOrDefault(x => x.PatreonUserId == pledgeData.PatreonUserId);
+                pledgeDb = await db.Patreon.FirstOrDefaultAsync(x => x.PatreonUserId == pledgeData.PatreonUserId);
                 attempts++;
             }
 

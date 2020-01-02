@@ -12,20 +12,23 @@ using Serilog;
 
 namespace Rias.Core.Modules
 {
-    public abstract class RiasModule : ModuleBase<RiasCommandContext>
+    public abstract class RiasModule : ModuleBase<RiasCommandContext>, IAsyncDisposable
     {
-        public readonly Credentials Creds;
+        public readonly Credentials Credentials;
         public readonly Resources Resources;
-
-        private readonly IServiceProvider _services;
-
+        
+        public readonly RiasDbContext DbContext;
+        private readonly IServiceScope _scope;
+        
         public string ParentModuleName => Context.Command.Module.Parent?.Name ?? Context.Command.Module.Name;
 
         public RiasModule(IServiceProvider services)
         {
-            Creds = services.GetRequiredService<Credentials>();
+            Credentials = services.GetRequiredService<Credentials>();
             Resources = services.GetRequiredService<Resources>();
-            _services = services;
+            
+            _scope = services.CreateScope();
+            DbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
         }
 
         /// <summary>
@@ -67,11 +70,11 @@ namespace Rias.Core.Modules
         public string GetPrefix()
         {
             var guild = Context.Guild;
-            if (guild == null) return Creds.Prefix;
-            using var scope = _services.CreateScope();
+            if (guild == null) return Credentials.Prefix;
+            using var scope = Context.ServiceProvider.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var prefix = db.Guilds.FirstOrDefault(g => g.GuildId == guild.Id)?.Prefix;
-            return !string.IsNullOrEmpty(prefix) ? prefix : Creds.Prefix;
+            return !string.IsNullOrEmpty(prefix) ? prefix : Credentials.Prefix;
         }
 
         /// <summary>
@@ -93,6 +96,16 @@ namespace Rias.Core.Modules
             });
 
             return Task.CompletedTask;
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_scope is IAsyncDisposable asyncDisposableScope)
+                await asyncDisposableScope.DisposeAsync();
+            else
+                _scope.Dispose();
+            
+            Log.Debug($"Module: {Context.Command.Module.Name}, Command: {Context.Command.Name}, scope disposed");
         }
 
         private void SplitPrefixKey(out string prefix, ref string key)

@@ -57,7 +57,7 @@ namespace Rias.Core.Modules.Searches
         [Command("urbandictionary")]
         public async Task UrbanDictionary([Remainder] string term)
         {
-            if (string.IsNullOrEmpty(Creds.UrbanDictionaryApiKey))
+            if (string.IsNullOrEmpty(Credentials.UrbanDictionaryApiKey))
             {
                 await ReplyErrorAsync("UrbanDictionaryNoApiKey");
                 return;
@@ -66,7 +66,7 @@ namespace Rias.Core.Modules.Searches
             await Context.Channel.TriggerTypingAsync();
             
             using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("X-Mashape-Key", Creds.UrbanDictionaryApiKey);
+            httpClient.DefaultRequestHeaders.Add("X-Mashape-Key", Credentials.UrbanDictionaryApiKey);
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
             using var response = await httpClient.GetAsync($"https://mashape-community-urban-dictionary.p.mashape.com/define?term={Uri.EscapeUriString(term)}");

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,17 +8,17 @@ using Discord;
 using Discord.WebSocket;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
+using MoreLinq;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using Rias.Core.Services;
 
 namespace Rias.Core.Modules.Help
 {
     [Name("Help")]
-    public class Help : RiasModule<HelpService>
+    public class Help : RiasModule
     {
         private readonly DiscordShardedClient _client;
         private readonly CommandService _commandService;
@@ -49,25 +50,25 @@ namespace Rias.Core.Modules.Help
             var links = new StringBuilder();
             const string delimiter = " • ";
 
-            if (!string.IsNullOrEmpty(Creds.OwnerServerInvite))
+            if (!string.IsNullOrEmpty(Credentials.OwnerServerInvite))
             {
-                var ownerServer = _client.GetGuild(Creds.OwnerServerId);
+                var ownerServer = _client.GetGuild(Credentials.OwnerServerId);
                 links.Append(delimiter)
-                    .Append(GetText("SupportServer", ownerServer.Name, Creds.OwnerServerInvite))
+                    .Append(GetText("SupportServer", ownerServer.Name, Credentials.OwnerServerInvite))
                     .Append("\n");
             }
 
             if (links.Length > 0) links.Append(delimiter);
-            if (!string.IsNullOrEmpty(Creds.Invite))
-                links.Append(GetText("InviteMe", Creds.Invite)).Append("\n");
+            if (!string.IsNullOrEmpty(Credentials.Invite))
+                links.Append(GetText("InviteMe", Credentials.Invite)).Append("\n");
 
             if (links.Length > 0) links.Append(delimiter);
-            if (!string.IsNullOrEmpty(Creds.Website))
-                links.Append(GetText("Website", Creds.Website)).Append("\n");
+            if (!string.IsNullOrEmpty(Credentials.Website))
+                links.Append(GetText("Website", Credentials.Website)).Append("\n");
 
             if (links.Length > 0) links.Append(delimiter);
-            if (!string.IsNullOrEmpty(Creds.Patreon))
-                links.Append(GetText("Donate", Creds.Patreon)).Append("\n");
+            if (!string.IsNullOrEmpty(Credentials.Patreon))
+                links.Append(GetText("Donate", Credentials.Patreon)).Append("\n");
 
             embed.AddField(GetText("Links"), links.ToString());
             await ReplyAsync(embed);
@@ -76,8 +77,8 @@ namespace Rias.Core.Modules.Help
         [Command("help")]
         public async Task HelpAsync(string alias1, string? alias2 = null)
         {
-            var module = Service.GetModuleByAlias(alias1);
-            var command = Service.GetCommand(module, module is null ? alias1 : alias2);
+            var module = GetModuleByAlias(alias1);
+            var command = GetCommand(module, module is null ? alias1 : alias2);
             
             var prefix = GetPrefix();
             if (command is null)
@@ -106,7 +107,7 @@ namespace Rias.Core.Modules.Help
             var description = new StringBuilder(command.Description)
                 .Append($"\n\n**{GetText("Module")}**\n{moduleName}")
                 .Replace("[prefix]", prefix)
-                .Replace("[currency]", Creds.Currency);
+                .Replace("[currency]", Credentials.Currency);
 
             embed.WithDescription(description.ToString());
 
@@ -194,8 +195,8 @@ namespace Rias.Core.Modules.Help
                 return;
             }
 
-            var modulesCommands = Service.GetModuleCommands(module);
-            var commandsAliases = Service.GetCommandsAliases(modulesCommands, prefix);
+            var modulesCommands = GetModuleCommands(module);
+            var commandsAliases = GetCommandsAliases(modulesCommands, prefix);
 
             var embed = new EmbedBuilder
             {
@@ -205,8 +206,8 @@ namespace Rias.Core.Modules.Help
 
             foreach (var submodule in module.Submodules)
             {
-                var submoduleCommands = Service.GetModuleCommands(submodule);
-                var submoduleCommandsAliases = Service.GetCommandsAliases(submoduleCommands, prefix);
+                var submoduleCommands = GetModuleCommands(submodule);
+                var submoduleCommandsAliases = GetCommandsAliases(submoduleCommands, prefix);
 
                 embed.AddField(submodule.Name, string.Join("\n", submoduleCommandsAliases), true);
             }
@@ -238,16 +239,16 @@ namespace Rias.Core.Modules.Help
             
             foreach (var module in modules)
             {
-                var moduleCommands = Service.GetModuleCommands(module);
-                var commandsAliases = Service.GetCommandsAliases(moduleCommands, prefix);
+                var moduleCommands = GetModuleCommands(module);
+                var commandsAliases = GetCommandsAliases(moduleCommands, prefix);
 
                 if (commandsAliases.Count != 0)
                     embed.AddField(module.Name, string.Join("\n", commandsAliases), true);
 
                 foreach (var submodule in module.Submodules.OrderBy(m => m.Name))
                 {
-                    var submoduleCommands = Service.GetModuleCommands(submodule);
-                    var submoduleCommandsAliases = Service.GetCommandsAliases(submoduleCommands, prefix);
+                    var submoduleCommands = GetModuleCommands(submodule);
+                    var submoduleCommandsAliases = GetCommandsAliases(submoduleCommands, prefix);
                     if (submoduleCommandsAliases.Count != 0)
                         embed.AddField(submodule.Name, string.Join("\n", submoduleCommandsAliases), true);
                 }
@@ -262,6 +263,49 @@ namespace Rias.Core.Modules.Help
 
             await SendAllCommandsMessageAsync(embed.Build());
         }
+        
+        private Module? GetModuleByAlias(string alias)
+        {
+            if (string.IsNullOrEmpty(alias))
+                return null;
+
+            return _commandService.GetAllModules().FirstOrDefault(x =>
+                x.Aliases.Any(y => string.Equals(y, alias, StringComparison.InvariantCultureIgnoreCase)));
+        }
+        
+        private Command? GetCommand(Module? module, string? alias)
+        {
+            if (module is null && !string.IsNullOrEmpty(alias))
+                return GetCommand(alias);
+            
+            if (string.IsNullOrEmpty(alias))
+                return module?.Commands.FirstOrDefault(x => x.Aliases.Count == 0);
+
+            return module?.Commands.FirstOrDefault(x =>
+                x.Aliases.Any(y => string.Equals(y, alias, StringComparison.InvariantCultureIgnoreCase)));
+        }
+        
+        private Command? GetCommand(string alias) => _commandService.GetAllCommands().FirstOrDefault(x =>
+        {
+            if (x.Aliases is null)
+                return false;
+
+            return x.Module.Aliases.Count == 0 && x.Aliases.Any(y => string.Equals(y, alias, StringComparison.InvariantCultureIgnoreCase));
+        });
+        
+        public IReadOnlyList<Command> GetModuleCommands(Module module) =>
+            module.Commands.DistinctBy(c => c.Name).OrderBy(x => x.Name).ToImmutableList();
+        
+        public IReadOnlyList<string> GetCommandsAliases(IEnumerable<Command> commands, string prefix)
+            => commands.Select(x =>
+            {
+                var nextAliases = string.Join(", ", x.Aliases.Skip(1));
+                if (!string.IsNullOrEmpty(nextAliases))
+                    nextAliases = $"[{nextAliases}]";
+
+                var moduleAlias = x.Module.Aliases.Count != 0 ? $"{x.Module.Aliases[0]} " : null;
+                return $"{prefix}{moduleAlias}{x.Aliases.FirstOrDefault()} {nextAliases}";
+            }).ToImmutableList();
         
         private async Task<bool> SendAllCommandsMessageAsync(Embed embed)
         {

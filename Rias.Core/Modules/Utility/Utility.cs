@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,28 +16,23 @@ using NCalc;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
+using Rias.Core.Database.Models;
 using Rias.Core.Implementation;
-using Rias.Core.Services;
 using Rias.Interactive;
 using Rias.Interactive.Paginator;
-using Color = Discord.Color;
 
 namespace Rias.Core.Modules.Utility
 {
     [Name("Utility")]
-    public partial class Utility : RiasModule<UtilityService>
+    public partial class Utility : RiasModule
     {
         private readonly DiscordShardedClient _client;
         private readonly InteractiveService _interactive;
-        private readonly VotesService _votesService;
-        private readonly PatreonService _patreonService;
         
         public Utility(IServiceProvider services) : base(services)
         {
             _client = services.GetRequiredService<DiscordShardedClient>();
             _interactive = services.GetRequiredService<InteractiveService>();
-            _votesService = services.GetRequiredService<VotesService>();
-            _patreonService = services.GetRequiredService<PatreonService>();
         }
 
         [Command("prefix"), Context(ContextType.Guild)]
@@ -54,8 +51,11 @@ namespace Rias.Core.Modules.Utility
                 return;
             }
 
-            var currentPrefix = GetPrefix();
-            await Service.SetPrefixAsync(Context.Guild!, prefix);
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            var currentPrefix = !string.IsNullOrEmpty(guildDb.Prefix) ? guildDb.Prefix : Credentials.Prefix;
+            guildDb.Prefix = prefix;
+
+            await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("PrefixChanged", currentPrefix, prefix);
         }
         
@@ -66,7 +66,7 @@ namespace Rias.Core.Modules.Utility
             {
                 Color = RiasUtils.ConfirmColor,
                 Title = GetText("Languages"),
-                Description = string.Join('\n', Service.Languages.Select(x => $"{x.Language} ({x.Locale})"))
+                Description = string.Join('\n', Resources.Languages.Select(x => $"{x.Language} ({x.Locale})"))
             };
 
             await ReplyAsync(embed);
@@ -75,41 +75,44 @@ namespace Rias.Core.Modules.Utility
         [Command("setlanguage"), Context(ContextType.Guild)]
         public async Task SetLanguageAsync(string language)
         {
-            var (locale, lang) = Service.Languages
-                .FirstOrDefault(x => string.Equals(x.Locale, language, StringComparison.OrdinalIgnoreCase) || x.Language.StartsWith(language, StringComparison.OrdinalIgnoreCase));
+            var (locale, lang) = Resources.Languages.FirstOrDefault(x =>
+                string.Equals(x.Locale, language, StringComparison.OrdinalIgnoreCase) || x.Language.StartsWith(language, StringComparison.OrdinalIgnoreCase));
             if (string.IsNullOrEmpty(locale))
             {
                 await ReplyErrorAsync("LanguageNotFound");
                 return;
             }
-
-            await Service.SetLocaleAsync(Context.Guild, locale.ToLower());
+            
+            Resources.SetGuildCulture(Context.Guild!.Id, new CultureInfo(locale));
+            
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new Guilds {GuildId = Context.Guild.Id});
+            guildDb.Locale = locale.ToLower();
+            
+            await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("LanguageSet", $"{lang} ({locale})");
         }
 
         [Command("invite")]
         public async Task InviteAsync()
         {
-            if (!string.IsNullOrEmpty(Creds.Invite))
-                await ReplyConfirmationAsync("InviteInfo", Creds.Invite);
+            if (!string.IsNullOrEmpty(Credentials.Invite))
+                await ReplyConfirmationAsync("InviteInfo", Credentials.Invite);
         }
         
         [Command("patreon")]
         public async Task DonateAsync()
         {
-            if (!string.IsNullOrEmpty(Creds.Patreon))
-                await ReplyConfirmationAsync("PatreonInfo", Creds.Patreon, Creds.Currency);
+            if (!string.IsNullOrEmpty(Credentials.Patreon))
+                await ReplyConfirmationAsync("PatreonInfo", Credentials.Patreon, Credentials.Currency);
         }
         
         [Command("patrons")]
         public async Task PatronsAsync()
         {
-            var patrons = _patreonService.GetPatrons();
-
-            
+            var patrons = await DbContext.GetOrderedListAsync<Patreon, int>(x => x.PatronStatus == PatronStatus.ActivePatron, y => y.AmountCents, true);
             if (patrons.Count == 0)
             {
-                await ReplyErrorAsync("NoPatrons", Creds.Patreon, Creds.Currency);
+                await ReplyErrorAsync("NoPatrons", Credentials.Patreon, Credentials.Currency);
                 return;
             }
             
@@ -130,7 +133,7 @@ namespace Rias.Core.Modules.Utility
         [Command("vote")]
         public async Task VoteAsync()
         {
-            await ReplyConfirmationAsync("VoteInfo", $"{Creds.DiscordBotList}/vote", Creds.Currency);
+            await ReplyConfirmationAsync("VoteInfo", $"{Credentials.DiscordBotList}/vote", Credentials.Currency);
         }
         
         [Command("votes")]
@@ -145,8 +148,8 @@ namespace Rias.Core.Modules.Utility
                 "1mo" => TimeSpan.FromDays(30),
                 _ => TimeSpan.FromHours(12)
             };
-
-            var votesGroup = _votesService.GetVotes(timeSpan)
+            
+            var votesGroup = (await DbContext.GetListAsync<Votes>(x => x.DateAdded >= DateTime.UtcNow - timeSpan))
                 .GroupBy(x => x.UserId)
                 .ToList();
 
@@ -199,8 +202,6 @@ namespace Rias.Core.Modules.Utility
          Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.User)]
         public async Task ColorAsync([Remainder] Color color)
         {
-            await using var image = Service.GenerateColorImage(color);
-
             var hexColor = color.ToString();
             var magickColor = new MagickColor(hexColor);
             var hsl = ColorHSL.FromMagickColor(magickColor);
@@ -219,6 +220,10 @@ namespace Rias.Core.Modules.Utility
                 .WithDescription(colorDetails.ToString())
                 .WithImageUrl($"attachment://{fileName}");
             
+            using var magickImage = new MagickImage(MagickColor.FromRgb(color.R, color.G, color.B), 300, 300);
+            var image = new MemoryStream();
+            magickImage.Write(image, MagickFormat.Png);
+            image.Position = 0;
             await Context.Channel.SendFileAsync(image, fileName, embed: embed.Build());
         }
 

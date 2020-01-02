@@ -2,12 +2,13 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
+using Rias.Core.Database.Models;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using Rias.Core.Services;
 using Rias.Interactive;
 
 namespace Rias.Core.Modules.Bot
@@ -15,7 +16,7 @@ namespace Rias.Core.Modules.Bot
     public partial class Bot
     {
         [Name("Database")]
-        public class Database : RiasModule<DatabaseService>
+        public class Database : RiasModule
         {
             private readonly InteractiveService _interactive;
 
@@ -24,8 +25,7 @@ namespace Rias.Core.Modules.Bot
                 _interactive = services.GetRequiredService<InteractiveService>();
             }
 
-            [Command("delete"),
-             OwnerOnly]
+            [Command("delete"), OwnerOnly]
             public async Task DeleteAsync([Remainder] string value)
             {
                 var user = await RiasUtils.GetUserFromSocketOrRestAsync(Context.Client, value);
@@ -43,12 +43,23 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
 
-                await Service.DeleteUserAsync(user);
+                var userDb = await DbContext.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
+                if (userDb != null)
+                    DbContext.Remove(userDb);
+                
+                var waifusDbList = await DbContext.GetListAsync<Waifus>(x => x.UserId == user.Id);
+                if (waifusDbList.Count != 0)
+                    DbContext.RemoveRange(waifusDbList);
+                
+                var profileDb = await DbContext.Profile.FirstOrDefaultAsync(x => x.UserId == user.Id);
+                if (profileDb != null)
+                    DbContext.Remove(profileDb);
+                
+                await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync("UserDeleted", user);
             }
 
-            [Command("database"),
-             OwnerOnly]
+            [Command("database"), OwnerOnly]
             public async Task DatabaseAsync([Remainder] string value)
             {
                 var user = await RiasUtils.GetUserFromSocketOrRestAsync(Context.Client, value);
@@ -58,7 +69,7 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
 
-                var userDb = Service.GetUserDb(user);
+                var userDb = await DbContext.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
                 if (userDb is null)
                 {
                     await ReplyErrorAsync("UserNotInDatabase");
@@ -73,7 +84,7 @@ namespace Rias.Core.Modules.Bot
                     .WithColor(RiasUtils.ConfirmColor)
                     .WithAuthor(user.ToString())
                     .AddField(GetText("#Common_Id"), user.Id, true)
-                    .AddField(GetText("#Gambling_Currency"), $"{userDb.Currency} {Creds.Currency}", true)
+                    .AddField(GetText("#Gambling_Currency"), $"{userDb.Currency} {Credentials.Currency}", true)
                     .AddField(GetText("#Xp_GlobalLevel"), RiasUtils.XpToLevel(userDb.Xp, 30), true)
                     .AddField(GetText("#Xp_GlobalXp"), userDb.Xp, true)
                     .AddField(GetText("IsBlacklisted"), userDb.IsBlacklisted, true)
@@ -84,8 +95,7 @@ namespace Rias.Core.Modules.Bot
                 await ReplyAsync(embed);
             }
 
-            [Command("blacklist"),
-             OwnerOnly]
+            [Command("blacklist"), OwnerOnly]
             public async Task BlacklistAsync([Remainder] string value)
             {
                 var user = await RiasUtils.GetUserFromSocketOrRestAsync(Context.Client, value);
@@ -103,12 +113,14 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
 
-                await Service.AddBlacklistAsync(user);
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                userDb.IsBlacklisted = true;
+                
+                await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync("UserBlacklisted", user);
             }
             
-            [Command("removeblacklist"),
-             OwnerOnly]
+            [Command("removeblacklist"), OwnerOnly]
             public async Task RemoveBlacklistAsync([Remainder] string value)
             {
                 var user = await RiasUtils.GetUserFromSocketOrRestAsync(Context.Client, value);
@@ -118,12 +130,14 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
                 
-                await Service.RemoveBlacklistAsync(user);
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                userDb.IsBlacklisted = false;
+                
+                await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync("UserBlacklistRemoved", user);
             }
 
-            [Command("botban"),
-             OwnerOnly]
+            [Command("botban"), OwnerOnly]
             public async Task BotBanAsync([Remainder] string value)
             {
                 var user = await RiasUtils.GetUserFromSocketOrRestAsync(Context.Client, value);
@@ -141,12 +155,14 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
                 
-                await Service.AddBotBanAsync(user);
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                userDb.IsBanned = true;
+                
+                await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync("UserBotBanned", user);
             }
             
-            [Command("removebotban"),
-             OwnerOnly]
+            [Command("removebotban"), OwnerOnly]
             public async Task RemoveBotBanAsync([Remainder] string value)
             {
                 var user = await RiasUtils.GetUserFromSocketOrRestAsync(Context.Client, value);
@@ -156,7 +172,10 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
 
-                await Service.RemoveBotBanAsync(user);
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                userDb.IsBanned = false;
+                
+                await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync("UserBotBanRemoved", user);
             }
         }

@@ -9,6 +9,7 @@ using MoreLinq.Extensions;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
+using Rias.Core.Database.Models;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
@@ -20,7 +21,7 @@ namespace Rias.Core.Modules.Administration
     public partial class Administration
     {
         [Name("Warnings")]
-        public class Warnings : RiasModule<WarningsService>
+        public class Warnings : RiasModule
         {
             private readonly MuteService _muteService;
             private readonly InteractiveService _interactive;
@@ -34,17 +35,19 @@ namespace Rias.Core.Modules.Administration
             [Command("warn"), Context(ContextType.Guild)]
             public async Task WarnAsync(SocketGuildUser user, [Remainder] string? reason = null)
             {
-                var userRequiredPermissions = Service.CheckRequiredPermissions((SocketGuildUser) Context.User);
-                if (userRequiredPermissions != WarningsService.PermissionRequired.NoPermission)
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+
+                var userRequiredPermissions = CheckRequiredPermissions((SocketGuildUser) Context.User, guildDb);
+                if (userRequiredPermissions != PermissionRequired.NoPermission)
                 {
-                    await SendMissingPermissionsAsync("User", userRequiredPermissions);
+                    await SendMissingPermissionsAsync("User", userRequiredPermissions, guildDb);
                     return;
                 }
 
-                var botRequiredPermissions = Service.CheckRequiredPermissions(Context.CurrentGuildUser!);
-                if (botRequiredPermissions != WarningsService.PermissionRequired.NoPermission)
+                var botRequiredPermissions = CheckRequiredPermissions(Context.CurrentGuildUser!, guildDb);
+                if (botRequiredPermissions != PermissionRequired.NoPermission)
                 {
-                    await SendMissingPermissionsAsync("Bot", botRequiredPermissions);
+                    await SendMissingPermissionsAsync("Bot", botRequiredPermissions, guildDb);
                     return;
                 }
 
@@ -63,33 +66,54 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                var warningResult = await Service.AddWarningAsync(user, (SocketGuildUser) Context.User, reason);
-                if (warningResult.LimitReached)
+                var userWarnings = await DbContext.GetListAsync<Database.Models.Warnings>(x => x.GuildId == Context.Guild!.Id && x.UserId == user.Id);
+                var warnsCount = userWarnings.Count;
+
+                var applyPunishment = false;
+                if (warnsCount + 1 >= guildDb.PunishmentWarningsRequired && guildDb.PunishmentWarningsRequired != 0)
+                {
+                    DbContext.RemoveRange(userWarnings);
+                    await DbContext.SaveChangesAsync();
+                    applyPunishment = true;
+                }
+                
+                if (!applyPunishment && warnsCount >= 10)
                 {
                     await ReplyErrorAsync("UserWarningsLimit", 10);
                     return;
                 }
 
-                if (warningResult.Punishment != WarningsService.PunishmentMethod.NoPunishment)
+                Enum.TryParse<PunishmentMethod>(guildDb.WarningPunishment, true, out var punishment);
+                
+                if (applyPunishment && punishment != PunishmentMethod.NoPunishment)
                 {
-                    await ApplyWarnPunishmentAsync(user, warningResult.Punishment);
+                    await ApplyWarnPunishmentAsync(user, punishment, guildDb);
                     return;
                 }
-
+                
+                await DbContext.AddAsync(new Database.Models.Warnings
+                {
+                    GuildId = user.Guild.Id,
+                    UserId = user.Id,
+                    ModeratorId = Context.User.Id,
+                    Reason = reason
+                });
+                
+                await DbContext.SaveChangesAsync();
                 var embed = new EmbedBuilder()
                     {
                         Color = RiasUtils.Yellow,
                         Title = GetText("Warn")
                     }.AddField(GetText("#Common_User"), user, true)
                     .AddField(GetText("#Common_Id"), user.Id.ToString(), true)
-                    .AddField(GetText("WarningNumber"), warningResult.WarningNumber, true)
+                    .AddField(GetText("WarningNumber"), warnsCount + 1, true)
                     .AddField(GetText("Moderator"), Context.User, true)
                     .WithThumbnailUrl(user.GetRealAvatarUrl());
                 if (!string.IsNullOrEmpty(reason))
                     embed.AddField(GetText("#Common_Reason"), reason, true);
 
                 var channel = Context.Channel;
-                var modLogChannel = Context.Guild!.GetTextChannel(Service.GetModLogChannelId(Context.Guild) ?? 0);
+                var modLogChannel = Context.Guild!.GetTextChannel(guildDb.ModLogChannelId);
                 if (modLogChannel != null)
                 {
                     var preconditions = Context.CurrentGuildUser!.GetPermissions(modLogChannel);
@@ -104,7 +128,7 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task WarningsAsync()
             {
-                var warnings = Service.GetWarnings(Context.Guild!)
+                var warnings = (await DbContext.GetListAsync<Database.Models.Warnings>(x => x.GuildId == Context.Guild!.Id))
                     .GroupBy(x => x.UserId)
                     .Select(x =>
                     {
@@ -112,9 +136,9 @@ namespace Rias.Core.Modules.Administration
                         return user;
                     }).Where(y => y != null)
                     .OrderBy(u => u.Username)
-                    .ToArray();
+                    .ToList();
 
-                if (warnings.Length == 0)
+                if (warnings.Count == 0)
                 {
                     await ReplyErrorAsync("NoWarnedUsers");
                     return;
@@ -142,16 +166,16 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task WarningsAsync([Remainder] SocketGuildUser user)
             {
-                var warnings = Service.GetUserWarnings(user)
+                var warnings = (await DbContext.GetListAsync<Database.Models.Warnings>(x => x.GuildId == user.Guild.Id && x.UserId == user.Id))
                     .Select(x =>
                         new
                         {
                             Moderator = Context.Guild!.GetUser(x.ModeratorId),
                             x.Reason
                         })
-                    .ToArray();
+                    .ToList();
 
-                if (warnings.Length == 0)
+                if (warnings.Count == 0)
                 {
                     await ReplyErrorAsync("UserNoWarnings", user);
                     return;
@@ -186,7 +210,7 @@ namespace Rias.Core.Modules.Administration
                       || guildUser.GuildPermissions.KickMembers
                       || guildUser.GuildPermissions.BanMembers))
                 {
-                    var permsHumanized = WarningsService.PermissionRequired.MuteKickBan.Humanize()
+                    var permsHumanized = PermissionRequired.MuteKickBan.Humanize()
                         .Split(" ")
                         .Select(x => GetText($"{x}Permission"))
                         .Humanize(GetText("#Common_Or").ToLowerInvariant());
@@ -194,7 +218,7 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                var warnings = Service.GetUserWarnings(user);
+                var warnings = (await DbContext.GetListAsync<Database.Models.Warnings>(x => x.GuildId == user.Guild.Id && x.UserId == user.Id));
                 if (warnings.Count == 0)
                 {
                     await ReplyErrorAsync("UserNoWarnings", user);
@@ -214,7 +238,8 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                await Service.RemoveWarningAsync(warning);
+                DbContext.Remove(warning);
+                await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync("WarningCleared", user);
             }
 
@@ -231,7 +256,7 @@ namespace Rias.Core.Modules.Administration
                       || guildUser.GuildPermissions.KickMembers
                       || guildUser.GuildPermissions.BanMembers))
                 {
-                    var permsHumanized = WarningsService.PermissionRequired.MuteKickBan.Humanize()
+                    var permsHumanized = PermissionRequired.MuteKickBan.Humanize()
                         .Split(" ")
                         .Select(x => GetText($"{x}Permission"))
                         .Humanize(GetText("#Common_Or").ToLowerInvariant());
@@ -239,22 +264,23 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                var warnings = Service.GetUserWarnings(user);
+                var warnings = (await DbContext.GetListAsync<Database.Models.Warnings>(x => x.GuildId == user.Guild.Id && x.UserId == user.Id));
                 if (warnings.Count == 0)
                 {
                     await ReplyErrorAsync("UserNoWarnings", user);
                     return;
                 }
 
-                var moderatorWarnings = guildUser.GuildPermissions.Administrator ? warnings : warnings.Where(x => x.ModeratorId == guildUser.Id).ToArray();
+                var moderatorWarnings = guildUser.GuildPermissions.Administrator ? warnings : warnings.Where(x => x.ModeratorId == guildUser.Id).ToList();
 
                 if (moderatorWarnings.Count == 0)
                 {
                     await ReplyErrorAsync("ClearWarningNotModWarnings", user);
                     return;
                 }
-
-                await Service.RemoveWarningsAsync(moderatorWarnings);
+                
+                DbContext.RemoveRange(moderatorWarnings);
+                await DbContext.SaveChangesAsync();
                 if (guildUser.GuildPermissions.Administrator || moderatorWarnings.Count == warnings.Count)
                 {
                     await ReplyConfirmationAsync("AllWarningsCleared", user);
@@ -269,12 +295,7 @@ namespace Rias.Core.Modules.Administration
             [Command("warningpunishment"), Context(ContextType.Guild)]
             public async Task WarningPunishmentAsync()
             {
-                var guildDb = Service.GetGuildDb(Context.Guild!);
-                if (guildDb is null)
-                {
-                    await ReplyErrorAsync("NoWarningPunishment");
-                    return;
-                }
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
                 if (guildDb.PunishmentWarningsRequired == 0)
                 {
                     await ReplyErrorAsync("NoWarningPunishment");
@@ -304,9 +325,14 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
+                Guilds guildDb;
                 if (number == 0)
                 {
-                    await Service.SetWarningPunishmentAsync(Context.Guild!, 0, null);
+                    guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+                    guildDb.PunishmentWarningsRequired = 0;
+                    guildDb.WarningPunishment = null;
+
+                    await DbContext.SaveChangesAsync();
                     await ReplyConfirmationAsync("WarningPunishmentRemoved");
                     return;
                 }
@@ -321,8 +347,12 @@ namespace Rias.Core.Modules.Administration
                     await ReplyErrorAsync("WarningInvalidPunishment");
                     return;
                 }
+                
+                guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+                guildDb.PunishmentWarningsRequired = number;
+                guildDb.WarningPunishment = punishment;
 
-                await Service.SetWarningPunishmentAsync(Context.Guild!, number, punishment);
+                await DbContext.SaveChangesAsync();
                 var embed = new EmbedBuilder
                     {
                         Color = RiasUtils.ConfirmColor,
@@ -332,12 +362,50 @@ namespace Rias.Core.Modules.Administration
 
                 await ReplyAsync(embed);
             }
+            
+            private PermissionRequired CheckRequiredPermissions(SocketGuildUser user, Guilds guildDb)
+            {
+                if (user.Id == user.Guild.OwnerId || user.GuildPermissions.Administrator)
+                    return PermissionRequired.NoPermission;
 
-            private async Task SendMissingPermissionsAsync(string userType, WarningsService.PermissionRequired permissions)
+                var warnPunishment = guildDb?.WarningPunishment;
+                if (string.IsNullOrEmpty(warnPunishment))
+                    return user.GuildPermissions.MuteMembers || user.GuildPermissions.KickMembers || user.GuildPermissions.BanMembers
+                        ? PermissionRequired.NoPermission
+                        : PermissionRequired.MuteKickBan;
+
+                if (string.Equals(warnPunishment, "mute", StringComparison.InvariantCultureIgnoreCase))
+                    return user.GuildPermissions.MuteMembers ? PermissionRequired.NoPermission : PermissionRequired.Mute;
+
+                if (string.Equals(warnPunishment, "kick", StringComparison.InvariantCultureIgnoreCase))
+                    return user.GuildPermissions.KickMembers ? PermissionRequired.NoPermission : PermissionRequired.Kick;
+
+                if (string.Equals(warnPunishment, "ban", StringComparison.InvariantCultureIgnoreCase))
+                    return user.GuildPermissions.BanMembers ? PermissionRequired.NoPermission : PermissionRequired.Ban;
+
+                if (string.Equals(warnPunishment, "softban", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (user.Id == user.Guild.CurrentUser.Id)
+                    {
+                        return user.GuildPermissions.KickMembers && user.GuildPermissions.BanMembers
+                            ? PermissionRequired.NoPermission
+                            : PermissionRequired.KickBan;
+                    }
+
+                    return user.GuildPermissions.KickMembers ? PermissionRequired.NoPermission : PermissionRequired.Kick;
+                }
+
+                if (string.Equals(warnPunishment, "pruneban", StringComparison.InvariantCultureIgnoreCase))
+                    return user.GuildPermissions.BanMembers ? PermissionRequired.NoPermission : PermissionRequired.Ban;
+
+                return default;
+            }
+
+            private async Task SendMissingPermissionsAsync(string userType, PermissionRequired permissions, Guilds guildDb)
             {
                 switch (permissions)
                 {
-                    case WarningsService.PermissionRequired.MuteKickBan:
+                    case PermissionRequired.MuteKickBan:
                     {
                         var permsHumanized = permissions.Humanize()
                             .Split(" ")
@@ -346,7 +414,7 @@ namespace Rias.Core.Modules.Administration
                         await ReplyErrorAsync($"Warning{userType}NoPermissionsDefault", permsHumanized, GetText("#Attribute_Permissions").ToLowerInvariant());
                         return;
                     }
-                    case WarningsService.PermissionRequired.KickBan:
+                    case PermissionRequired.KickBan:
                     {
                         var permsHumanized = permissions.Humanize()
                             .Split(" ")
@@ -356,40 +424,40 @@ namespace Rias.Core.Modules.Administration
                         return;
                     }
                 }
-
-                var punishmentHumanized = Service.GetGuildDb(Context.Guild!)!.WarningPunishment.Humanize(LetterCasing.Title);
+                
+                var punishmentHumanized = guildDb.WarningPunishment.Humanize(LetterCasing.Title);
                 var permHumanized = GetText($"{permissions.Humanize()}Permission");
                 await ReplyErrorAsync($"Warning{userType}NoPermissionsPunishment", punishmentHumanized, permHumanized, GetText("#Attribute_Permission").ToLowerInvariant());
             }
 
-            private async Task ApplyWarnPunishmentAsync(SocketGuildUser user, WarningsService.PunishmentMethod punishment)
+            private async Task ApplyWarnPunishmentAsync(SocketGuildUser user, PunishmentMethod punishment, Guilds guildDb)
             {
                 switch (punishment)
                 {
-                    case WarningsService.PunishmentMethod.Mute:
+                    case PunishmentMethod.Mute:
                         await _muteService.MuteUserAsync(Context.Channel, Context.CurrentGuildUser!, user, GetText("WarningMute"));
                         break;
-                    case WarningsService.PunishmentMethod.Kick:
-                        await SendMessageAsync(user, "UserKicked", "KickedFrom", GetText("WarningKick"));
+                    case PunishmentMethod.Kick:
+                        await SendMessageAsync(user, guildDb, "UserKicked", "KickedFrom", GetText("WarningKick"));
                         await user.KickAsync();
                         break;
-                    case WarningsService.PunishmentMethod.Ban:
-                        await SendMessageAsync(user, "UserBanned", "BannedFrom", GetText("WarningBan"));
+                    case PunishmentMethod.Ban:
+                        await SendMessageAsync(user, guildDb, "UserBanned", "BannedFrom", GetText("WarningBan"));
                         await user.BanAsync();
                         break;
-                    case WarningsService.PunishmentMethod.Softban:
-                        await SendMessageAsync(user, "UserSoftBanned", "KickedFrom", GetText("WarningKick"));
+                    case PunishmentMethod.SoftBan:
+                        await SendMessageAsync(user, guildDb, "UserSoftBanned", "KickedFrom", GetText("WarningKick"));
                         await Context.Guild!.AddBanAsync(user, 7);
                         await Context.Guild.RemoveBanAsync(user);
                         break;
-                    case WarningsService.PunishmentMethod.Pruneban:
-                        await SendMessageAsync(user, "UserBanned", "banned_from", GetText("WarningBan"));
+                    case PunishmentMethod.PruneBan:
+                        await SendMessageAsync(user, guildDb, "UserBanned", "banned_from", GetText("WarningBan"));
                         await Context.Guild!.AddBanAsync(user, 7);
                         break;
                 }
             }
 
-            private async Task SendMessageAsync(SocketGuildUser user, string moderationType, string fromWhere, string? reason)
+            private async Task SendMessageAsync(SocketGuildUser user, Guilds guildDb, string moderationType, string fromWhere, string? reason)
             {
                 var embed = new EmbedBuilder
                     {
@@ -404,7 +472,7 @@ namespace Rias.Core.Modules.Administration
                     embed.AddField(GetText("#Common_Reason"), reason, true);
 
                 var channel = Context.Channel;
-                var modLogChannel = Context.Guild!.GetTextChannel(Service.GetModLogChannelId(Context.Guild) ?? 0);
+                var modLogChannel = Context.Guild!.GetTextChannel(guildDb.ModLogChannelId);
                 if (modLogChannel != null)
                 {
                     var preconditions = Context.CurrentGuildUser!.GetPermissions(modLogChannel);
@@ -435,6 +503,26 @@ namespace Rias.Core.Modules.Administration
                 {
                     // the user blocked the messages from the guild users
                 }
+            }
+            
+            private enum PermissionRequired
+            {
+                NoPermission,
+                MuteKickBan,
+                Mute,
+                Kick,
+                Ban,
+                KickBan
+            }
+
+            private enum PunishmentMethod
+            {
+                NoPunishment,
+                Mute,
+                Kick,
+                Ban,
+                SoftBan,
+                PruneBan
             }
         }
     }

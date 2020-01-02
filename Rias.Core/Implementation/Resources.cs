@@ -24,7 +24,7 @@ namespace Rias.Core.Implementation
 
             using var scope = services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildLocalesDb = db.Guilds.Where(guildDb => !string.IsNullOrEmpty(guildDb.Locale)).ToArray();
+            var guildLocalesDb = db.Guilds.Where(guildDb => !string.IsNullOrEmpty(guildDb.Locale)).ToList();
             foreach (var localeDb in guildLocalesDb)
             {
                 _guildCultures.TryAdd(localeDb.GuildId, new CultureInfo(localeDb.Locale!));
@@ -68,5 +68,10 @@ namespace Rias.Core.Implementation
         {
             return GetText(guildId, $"{prefix}_{key}", args);
         }
+        
+        public readonly (string Locale, string Language)[] Languages =
+        {
+            ("EN", "English")
+        };
     }
 }

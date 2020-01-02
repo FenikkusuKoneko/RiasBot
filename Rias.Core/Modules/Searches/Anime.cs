@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Humanizer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MoreLinq;
 using Qmmands;
@@ -177,7 +178,7 @@ namespace Rias.Core.Modules.Searches
                 CustomCharacters? character;
                 if (name.StartsWith("@") && int.TryParse(name[1..], out var id))
                 {
-                    character = Service.GetCustomCharacterById(id);
+                    character = await DbContext.CustomCharacters.FirstOrDefaultAsync(x => x.CharacterId == id);
                 }
                 else if (int.TryParse(name, out id))
                 {
@@ -186,7 +187,12 @@ namespace Rias.Core.Modules.Searches
                 }
                 else
                 {
-                    character = Service.GetCustomCharacterByName(name);
+                    character = DbContext.CustomCharacters
+                        .AsEnumerable()
+                        .FirstOrDefault(x =>
+                            name.Split(' ')
+                                .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
+                    
                     if (character is null)
                     {
                         await AniListCharacterAsync(name);

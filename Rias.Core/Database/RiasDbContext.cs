@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Rias.Core.Commons;
@@ -86,5 +91,59 @@ namespace Rias.Core.Database
 
             modelBuilder.Entity<Warnings>();
         }
+
+        public async Task<TEntity> GetOrAddAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, Func<TEntity> entityValue) where TEntity : class
+        {
+            var entity = await Set<TEntity>().FirstOrDefaultAsync(predicate);
+            if (entity != null) return entity;
+
+            var newEntity = entityValue();
+            await AddAsync(newEntity);
+            
+            return newEntity;
+        }
+
+        public Task<List<TEntity>> GetOrderedListAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> keySelector, bool descending = false, Range? range = null) where TEntity : class
+        {
+            var query = Set<TEntity>().Where(predicate);
+            var orderedQuery = !descending ? query.OrderBy(keySelector) : query.OrderByDescending(keySelector);
+
+            IQueryable<TEntity>? finalQuery = null;
+            if (range != null)
+            {
+                var start = range.Value.Start.Value;
+                var end = range.Value.End.Value;
+                finalQuery = orderedQuery.Skip(start).Take(end - start);
+            }
+
+            return finalQuery?.ToListAsync() ?? orderedQuery.ToListAsync();
+        }
+
+        public Task<List<TEntity>> GetOrderedListAsync<TEntity, TKey>(Expression<Func<TEntity, TKey>> keySelector, bool descending = false, Range? range = null) where TEntity : class
+        {
+            var orderedQuery = !descending ? Set<TEntity>().OrderBy(keySelector) : Set<TEntity>().OrderByDescending(keySelector);
+
+            IQueryable<TEntity>? finalQuery = null;
+            if (range != null)
+            {
+                var start = range.Value.Start.Value;
+                var end = range.Value.End.Value;
+                finalQuery = orderedQuery.Skip(start).Take(end - start);
+            }
+
+            return finalQuery?.ToListAsync() ?? orderedQuery.ToListAsync();
+        }
+
+        public Task<List<TEntity>> GetListAsync<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class
+            => Set<TEntity>().Where(predicate).ToListAsync();
+
+        public Task<List<TEntity>> GetListAsync<TEntity, TProperty1, TProperty2>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, TProperty1>> include1,
+            Expression<Func<TEntity, TProperty2>> include2) where TEntity : class
+            => Set<TEntity>()
+                .Where(predicate)
+                .Include(include1)
+                .Include(include2)
+                .ToListAsync();
     }
 }

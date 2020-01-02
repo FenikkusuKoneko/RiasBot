@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using ImageMagick;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Database;
 using Rias.Core.Database.Models;
@@ -23,188 +24,80 @@ namespace Rias.Core.Services
         {
             _httpClient = Services.GetRequiredService<HttpClient>();
         }
-
+        
         public const int XpThreshold = 30;
         
+        private readonly ConcurrentDictionary<ulong, DateTime> _usersXp = new ConcurrentDictionary<ulong, DateTime>();
+        private readonly ConcurrentDictionary<(ulong, ulong), DateTime> _guildUsersXp = new ConcurrentDictionary<(ulong, ulong), DateTime>();
+
         private readonly MagickColor _dark = MagickColor.FromRgb(36, 36, 36);
         private readonly MagickColor _darker = MagickColor.FromRgb(32, 32, 32);
         
         private readonly string _arialFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/ArialBold.ttf");
         private readonly string _meiryoFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/Meiryo.ttf");
 
-        public IList<Users> GetXpLeaderboard(int skip, int take)
+        public async Task AddUserXpAsync(SocketGuildUser user)
         {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.Users
-                .OrderByDescending(x => x.Xp)
-                .Skip(skip)
-                .Take(take)
-                .ToList();
-        }
-        
-        public IList<GuildsXp> GetGuildXpLeaderboard(SocketGuild guild)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.GuildsXp
-                .Where(x => x.GuildId == guild.Id)
-                .OrderByDescending(x => x.Xp)
-                .ToList();
-        }
-
-        public async Task<bool> SetGuildXpNotificationAsync(SocketGuild guild)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
-            if (guildDb != null)
-            {
-                 var guildXpNotification = guildDb.GuildXpNotification = !guildDb.GuildXpNotification;
-                 await db.SaveChangesAsync();
-                 
-                 return guildXpNotification;
-            }
-
-            var newGuildDb = new Guilds {GuildId = guild.Id, GuildXpNotification = true};
-            await db.AddAsync(newGuildDb);
-            await db.SaveChangesAsync();
-                
-            return true;
-        }
-
-        public async Task SetLevelRoleAsync(SocketGuild guild, int level , SocketRole? role)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var xpRoleLevelDb = db.GuildXpRoles.FirstOrDefault(x => x.GuildId == guild.Id && x.Level == level);
-            if (role is null)
-            {
-                
-                if (xpRoleLevelDb is null)
-                    return;
-
-                db.Remove(xpRoleLevelDb);
-                await db.SaveChangesAsync();
-                return;
-            }
-            
-            var xpRoleDb = db.GuildXpRoles.FirstOrDefault(x => x.GuildId == guild.Id && x.RoleId == role.Id);
-            if (xpRoleDb != null)
-            {
-                if (xpRoleLevelDb != null)
-                {
-                    xpRoleLevelDb.RoleId = role.Id;
-                    db.Remove(xpRoleDb);
-                }
-                else
-                {
-                    xpRoleDb.Level = level;
-                }
-            }
-            else
-            {
-                if (xpRoleLevelDb != null)
-                {
-                    xpRoleLevelDb.RoleId = role.Id;
-                }
-                else
-                {
-                    var newXpRoleDb = new GuildXpRoles {GuildId = guild.Id, Level = level, RoleId = role.Id};
-                    await db.AddAsync(newXpRoleDb);
-                }
-            }
-
-            await db.SaveChangesAsync();
-        }
-
-        public async Task<IDictionary<ulong, GuildXpRoles>> UpdateLevelRolesAsync(SocketGuild guild)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var lrDict = db.GuildXpRoles.Where(x => x.GuildId == guild.Id).ToDictionary(x => x.RoleId);
-
-            foreach (var (lrKey, lrValue) in lrDict)
-            {
-                var role = guild.GetRole(lrKey);
-                if (role != null) continue;
-                
-                lrDict.Remove(lrKey);
-                db.Remove(lrValue);
-            }
-
-            await db.SaveChangesAsync();
-            return lrDict;
-        }
-
-        public async Task ResetGuildXp(SocketGuild guild)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            db.RemoveRange(db.GuildsXp.Where(x => x.GuildId == guild.Id));
-            await db.SaveChangesAsync();
-        }
-        
-        public async Task AddUserXpAsync(SocketUserMessage userMessage)
-        {
-            if (!(userMessage.Author is SocketGuildUser guildUser))
-                return;
-            
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = db.Users.FirstOrDefault(x => x.UserId == guildUser.Id);
-
             var now = DateTime.UtcNow;
-            if (userDb != null)
+            var check = false;
+            
+            if (_usersXp.TryGetValue(user.Id, out var cooldown))
             {
-                if (userDb.IsBlacklisted)
+                if (cooldown + TimeSpan.FromMinutes(5) > now)
                     return;
-                
-                if (userDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
-                    return;
-                
-                userDb.Xp += 5;
-                userDb.LastMessageDate = now;
             }
             else
             {
-                var newUSerDb = new Users {UserId = guildUser.Id, LastMessageDate = now};
-                await db.AddAsync(newUSerDb);
+                check = true;
             }
-
-            await db.SaveChangesAsync();
-        }
-
-        public async Task AddGuildUserXpAsync(SocketUserMessage userMessage)
-        {
-            if (!(userMessage.Author is SocketGuildUser guildUser))
-                return;
             
-            var (currentLevel, nextLevel) = (0, 0);
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildXpDb = db.GuildsXp.FirstOrDefault(x => x.GuildId == guildUser.Guild.Id && x.UserId == guildUser.Id);
+            var userDb = await db.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id, Xp = -5});
+            
+            if (check && userDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
+                return;
+            
+            userDb.Xp += 5;
+            userDb.LastMessageDate = now;
+            
+            await db.SaveChangesAsync();
+            _usersXp[user.Id] = now;
+        }
 
+        public async Task AddGuildUserXpAsync(SocketGuildUser user, IMessageChannel channel)
+        {
             var now = DateTime.UtcNow;
-            if (guildXpDb != null)
+            var check = false;
+            
+            if (_guildUsersXp.TryGetValue((user.Guild.Id, user.Id), out var cooldown))
             {
-                if (guildXpDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
+                if (cooldown + TimeSpan.FromMinutes(5) > now)
                     return;
-
-                currentLevel = RiasUtils.XpToLevel(guildXpDb.Xp, 30);
-                guildXpDb.Xp += 5;
-                guildXpDb.LastMessageDate = now;
-                nextLevel = RiasUtils.XpToLevel(guildXpDb.Xp, 30);
             }
             else
             {
-                var newGuildXpDb = new GuildsXp {GuildId = guildUser.Guild.Id, UserId = guildUser.Id, LastMessageDate = now};
-                await db.AddAsync(newGuildXpDb);
+                check = true;
             }
+            
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var guildXpDb = await db.GetOrAddAsync(x => x.GuildId == user.Guild.Id && x.UserId == user.Id,
+                () => new GuildsXp {GuildId = user.Guild.Id, UserId = user.Id});
+            
+            if (check && guildXpDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
+                return;
+            
+            var currentLevel = RiasUtils.XpToLevel(guildXpDb.Xp, 30);
+            guildXpDb.Xp += 5;
+            guildXpDb.LastMessageDate = now;
+            var nextLevel = RiasUtils.XpToLevel(guildXpDb.Xp, 30);
 
             await db.SaveChangesAsync();
+            _guildUsersXp[(user.Guild.Id, user.Id)] = now;
+            
             if (currentLevel != nextLevel)
-                await UserLevelUpAsync(guildUser, userMessage.Channel, nextLevel);
+                await UserLevelUpAsync(user, channel, nextLevel);
         }
 
         private async Task UserLevelUpAsync(SocketGuildUser user, IMessageChannel channel, int level)
@@ -212,7 +105,7 @@ namespace Rias.Core.Services
             var guild = user.Guild;
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
 
             var currentUser = guild.CurrentUser;
             if (!currentUser.GuildPermissions.ManageRoles)
@@ -223,7 +116,7 @@ namespace Rias.Core.Services
                 return;
             }
             
-            var xpRoleDb = db.GuildXpRoles.FirstOrDefault(x => x.GuildId == guild.Id && x.Level == level);
+            var xpRoleDb = await db.GuildXpRoles.FirstOrDefaultAsync(x => x.GuildId == guild.Id && x.Level == level);
             if (xpRoleDb is null)
             {
                 if (guildDb != null && guildDb.GuildXpNotification)
@@ -255,7 +148,7 @@ namespace Rias.Core.Services
         }
         public async Task<Stream> GenerateXpImageAsync(SocketGuildUser user)
         {
-            var xpInfo = GetXpInfo(user);
+            var xpInfo = await GetXpInfo(user);
 
             using var image = new MagickImage(_dark, 500, 300);
 
@@ -364,13 +257,13 @@ namespace Rias.Core.Services
             image.Draw(new DrawableComposite(470 - (double) serverNextLevelXpTextImage.Width, 260, CompositeOperator.Over, serverNextLevelXpTextImage));
         }
 
-        private XpInfo GetXpInfo(SocketGuildUser user)
+        private async Task<XpInfo> GetXpInfo(SocketGuildUser user)
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
-            var serverXpDb = db.GuildsXp.FirstOrDefault(x => x.GuildId == user.Guild.Id && x.UserId == user.Id);
-            var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
+            var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
+            var serverXpDb = await db.GuildsXp.FirstOrDefaultAsync(x => x.GuildId == user.Guild.Id && x.UserId == user.Id);
+            var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == user.Id);
 
             var globalXp = userDb?.Xp ?? 0;
             var serverXp = serverXpDb?.Xp ?? 0;
@@ -379,10 +272,10 @@ namespace Rias.Core.Services
                 GlobalXp = globalXp,
                 GlobalLevel = RiasUtils.XpToLevel(globalXp, XpThreshold),
                 GlobalRank = userDb != null
-                    ? db.Users.Select(x => x.Xp)
+                    ? (await db.Users.Select(x => x.Xp)
                           .OrderByDescending(y => y)
-                          .ToList()
-                          .IndexOf(userDb.Xp) + 1
+                          .ToListAsync())
+                      .IndexOf(userDb.Xp) + 1
                     : 0,
                 ServerXp = serverXp,
                 ServerLevel = RiasUtils.XpToLevel(serverXp, XpThreshold),

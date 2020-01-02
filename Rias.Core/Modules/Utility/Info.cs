@@ -49,7 +49,7 @@ namespace Rias.Core.Modules.Utility
                         Footer = new EmbedFooterBuilder().WithText("© 2018-2019 Copyright: Koneko#0001")
                     }.AddField(GetText("Author"), Rias.Author, true)
                     .AddField(GetText("BotId"), Context.Client.CurrentUser.Id, true)
-                    .AddField(GetText("MasterId"), Creds.MasterId, true)
+                    .AddField(GetText("MasterId"), Credentials.MasterId, true)
                     .AddField(GetText("Shard"), $"{_client.GetShardIdFor(Context.Guild)}/{_client.Shards.Count}", true)
                     .AddField(GetText("InServer"), Context.Guild?.Name ?? "-", true)
                     .AddField(GetText("CommandsExecuted"), CommandHandlerService.CommandsExecuted, true)
@@ -62,25 +62,25 @@ namespace Rias.Core.Modules.Utility
                 var links = new StringBuilder();
                 const string delimiter = " • ";
 
-                if (!string.IsNullOrEmpty(Creds.OwnerServerInvite))
+                if (!string.IsNullOrEmpty(Credentials.OwnerServerInvite))
                 {
-                    var ownerServer = _client.GetGuild(Creds.OwnerServerId);
+                    var ownerServer = _client.GetGuild(Credentials.OwnerServerId);
                     links.Append(delimiter)
-                        .Append(GetText("#Help_SupportServer", ownerServer.Name, Creds.OwnerServerInvite))
+                        .Append(GetText("#Help_SupportServer", ownerServer.Name, Credentials.OwnerServerInvite))
                         .Append("\n");
                 }
 
                 if (links.Length > 0) links.Append(delimiter);
-                if (!string.IsNullOrEmpty(Creds.Invite))
-                    links.Append(GetText("#Help_InviteMe", Creds.Invite)).Append("\n");
+                if (!string.IsNullOrEmpty(Credentials.Invite))
+                    links.Append(GetText("#Help_InviteMe", Credentials.Invite)).Append("\n");
 
                 if (links.Length > 0) links.Append(delimiter);
-                if (!string.IsNullOrEmpty(Creds.Website))
-                    links.Append(GetText("#Help_Website", Creds.Website)).Append("\n");
+                if (!string.IsNullOrEmpty(Credentials.Website))
+                    links.Append(GetText("#Help_Website", Credentials.Website)).Append("\n");
 
                 if (links.Length > 0) links.Append(delimiter);
-                if (!string.IsNullOrEmpty(Creds.Patreon))
-                    links.Append(GetText("#Help_Donate", Creds.Patreon)).Append("\n");
+                if (!string.IsNullOrEmpty(Credentials.Patreon))
+                    links.Append(GetText("#Help_Donate", Credentials.Patreon)).Append("\n");
 
                 embed.AddField(GetText("#Help_Links"), links.ToString());
 

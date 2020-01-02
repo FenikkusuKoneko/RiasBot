@@ -3,10 +3,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
+using Rias.Core.Database.Models;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
 using Rias.Interactive;
@@ -18,15 +20,11 @@ namespace Rias.Core.Modules.Profile
     {
         private readonly HttpClient _httpClient;
         private readonly InteractiveService _interactive;
-        private readonly GamblingService _gamblingService;
-        private readonly PatreonService _patreonService;
         
         public Profile(IServiceProvider services) : base(services)
         {
             _httpClient = services.GetRequiredService<HttpClient>();
             _interactive = services.GetRequiredService<InteractiveService>();
-            _gamblingService = services.GetRequiredService<GamblingService>();
-            _patreonService = services.GetRequiredService<PatreonService>();
         }
 
         [Command, Context(ContextType.Guild),
@@ -44,10 +42,10 @@ namespace Rias.Core.Modules.Profile
          Cooldown(1, 30, CooldownMeasure.Seconds, BucketType.User)]
         public async Task BackgroundAsync(string url)
         {
-            var currency = _gamblingService.GetUserCurrency(Context.User);
-            if (currency < 1000)
+            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Users {UserId = Context.User.Id});
+            if (userDb.Currency < 1000)
             {
-                await ReplyErrorAsync("#Gambling_CurrencyNotEnough", Creds.Currency);
+                await ReplyErrorAsync("#Gambling_CurrencyNotEnough", Credentials.Currency);
                 return;
             }
             
@@ -93,8 +91,12 @@ namespace Rias.Core.Modules.Profile
                 return;
             }
 
-            await _gamblingService.RemoveUserCurrencyAsync(Context.User, 1000);
-            await Service.SetProfileBackgroundAsync(Context.User, url);
+            userDb.Currency -= 1000;
+            
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Database.Models.Profile {UserId = Context.User.Id, BackgroundDim = 50});
+            profileDb.BackgroundUrl = url;
+            
+            await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("BackgroundSet");
         }
 
@@ -106,8 +108,11 @@ namespace Rias.Core.Modules.Profile
                 await ReplyErrorAsync("BackgroundDimBetween", 0, 100);
                 return;
             }
+            
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Database.Models.Profile {UserId = Context.User.Id});
+            profileDb.BackgroundDim = dim;
 
-            await Service.SetProfileBackgroundDimAsync(Context.User, dim);
+            await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("BackgroundDimSet", dim);
         }
         
@@ -119,21 +124,27 @@ namespace Rias.Core.Modules.Profile
                 await ReplyErrorAsync("BiographyLimit", 200);
                 return;
             }
+            
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Database.Models.Profile {UserId = Context.User.Id, BackgroundDim = 50});
+            profileDb.Biography = bio;
 
-            await Service.SetProfileBiographyAsync(Context.User, bio);
+            await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("BiographySet");
         }
         
         [Command("color"), Context(ContextType.Guild)]
         public async Task ColorAsync([Remainder] Color color)
         {
-            if (!Service.CheckColorAsync(Context.User, color))
+            if (!await Service.CheckColorAsync(Context.User, color))
             {
-                await ReplyErrorAsync("InvalidColor", Creds.Patreon);
+                await ReplyErrorAsync("InvalidColor", Credentials.Patreon);
                 return;
             }
+            
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Database.Models.Profile {UserId = Context.User.Id, BackgroundDim = 50});
+            profileDb.Color = color.ToString();
 
-            await Service.SetProfileColorAsync(Context.User, color.ToString());
+            await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("ColorSet");
         }
 
@@ -144,19 +155,19 @@ namespace Rias.Core.Modules.Profile
             if (index < 0)
                 index = 0;
 
-            if (Creds.PatreonConfig != null && Context.User.Id != Creds.MasterId)
+            if (Credentials.PatreonConfig != null && Context.User.Id != Credentials.MasterId)
             {
-                var patreonTier = _patreonService.GetPatreonTier(Context.User);
+                var patreonTier = (await DbContext.Patreon.FirstOrDefaultAsync(x => x.UserId == Context.User.Id))?.Tier ?? 0;
                 switch (index)
                 {
                     case 0 when patreonTier < 3:
-                        await ReplyErrorAsync("FirstBadgeNoPatreon", Creds.Patreon);
+                        await ReplyErrorAsync("FirstBadgeNoPatreon", Credentials.Patreon);
                         return;
                     case 1 when patreonTier < 5:
-                        await ReplyErrorAsync("SecondBadgeNoPatreon", Creds.Patreon);
+                        await ReplyErrorAsync("SecondBadgeNoPatreon", Credentials.Patreon);
                         return;
                     case 2 when patreonTier < 6:
-                        await ReplyErrorAsync("ThirdBadgeNoPatreon", Creds.Patreon);
+                        await ReplyErrorAsync("ThirdBadgeNoPatreon", Credentials.Patreon);
                         return;
                 }
             }
@@ -167,7 +178,7 @@ namespace Rias.Core.Modules.Profile
                 return;
             }
 
-            if (string.Equals(text, "master", StringComparison.InvariantCultureIgnoreCase) && Context.User.Id != Creds.MasterId)
+            if (string.Equals(text, "master", StringComparison.InvariantCultureIgnoreCase) && Context.User.Id != Credentials.MasterId)
             {
                 await ReplyErrorAsync("BadgeNotAvailable");
                 return;
@@ -178,8 +189,15 @@ namespace Rias.Core.Modules.Profile
                 await ReplyErrorAsync("BadgeTextLimit");
                 return;
             }
+            
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id,
+                () => new Database.Models.Profile {UserId = Context.User.Id, BackgroundDim = 50});
+            if (profileDb.Badges is null)
+                profileDb.Badges = new string[3];
+                
+            profileDb.Badges[index] = text;
 
-            await Service.SetProfileBadgeAsync(Context.User, index, text);
+            await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("BadgeSet");
         }
     }

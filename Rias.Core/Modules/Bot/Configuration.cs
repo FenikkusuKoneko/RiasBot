@@ -24,8 +24,7 @@ namespace Rias.Core.Modules.Bot
                 _httpClient = services.GetRequiredService<HttpClient>();
             }
 
-            [Command("setusername"),
-             OwnerOnly]
+            [Command("setusername"), OwnerOnly]
             public async Task SetUsernameAsync([Remainder] string username)
             {
                 if (username.Length < 2 || username.Length > 32)
@@ -53,8 +52,7 @@ namespace Rias.Core.Modules.Bot
                 }
             }
 
-            [Command("setavatar"),
-             OwnerOnly]
+            [Command("setavatar"), OwnerOnly]
             public async Task SetAvatarAsync(string url)
             {
                 if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))

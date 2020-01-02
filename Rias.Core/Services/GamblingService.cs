@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Database;
 using Rias.Core.Database.Models;
@@ -19,13 +19,6 @@ namespace Rias.Core.Services
 
         public readonly string[] Arrows = {"⬆", "↗", "➡", "↘", "⬇", "↙", "⬅", "↖"};
         public readonly float[] Multipliers = {1.7f, 2.0f, 1.2f, 0.5f, 0.3f, 0.0f, 0.2f, 1.5f};
-        
-        public Users? GetUser(SocketUser user)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.Users.FirstOrDefault(x => x.UserId == user.Id);
-        }
 
         public int GetUserCurrency(SocketUser user)
         {
@@ -34,40 +27,20 @@ namespace Rias.Core.Services
             return db.Users.FirstOrDefault(x => x.UserId == user.Id)?.Currency ?? 0;
         }
 
-        public IList<Users> GetUsersCurrency(int page, int amount)
+        public async Task AddUserCurrencyAsync(ulong userId, int currency)
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.Users.OrderByDescending(x => x.Currency).Skip(page * amount).Take(amount).ToList();
-        }
-
-        public async Task<int> AddUserCurrencyAsync(ulong userId, int currency)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = db.Users.FirstOrDefault(x => x.UserId == userId);
-
-            int newCurrency;
-            if (userDb != null)
-            {
-                newCurrency = userDb.Currency += currency;
-            }
-            else
-            {
-                var newUserDb = new Users {UserId = userId, Currency = currency};
-                await db.AddAsync(newUserDb);
-                newCurrency = currency;
-            }
-            
+            var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new Users {UserId = userId});
+            userDb.Currency += currency;
             await db.SaveChangesAsync();
-            return newCurrency;
         }
         
         public async Task<int> RemoveUserCurrencyAsync(IUser user, int currency)
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
+            var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
             
             if (userDb == null) return 0;
             
@@ -84,25 +57,6 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
 
             return currencyTaken;
-        }
-
-        public async Task UpdateDailyAsync(IUser user, DateTime dateTime)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
-            
-            if (userDb != null)
-            {
-                userDb.DailyTaken = dateTime;
-            }
-            else
-            {
-                var newUserDb = new Users { UserId = user.Id, DailyTaken = dateTime};
-                await db.AddAsync(newUserDb);
-            }
-
-            await db.SaveChangesAsync();
         }
     }
 }

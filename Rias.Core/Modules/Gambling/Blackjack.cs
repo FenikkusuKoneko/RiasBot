@@ -26,20 +26,20 @@ namespace Rias.Core.Modules.Gambling
             {
                 if (bet < GamblingService.MinimumBet)
                 {
-                    await ReplyErrorAsync("BetLessThan", GamblingService.MinimumBet, Creds.Currency);
+                    await ReplyErrorAsync("BetLessThan", GamblingService.MinimumBet, Credentials.Currency);
                     return;
                 }
 
                 if (bet > GamblingService.MaximumBet)
                 {
-                    await ReplyErrorAsync("BetMoreThan", GamblingService.MaximumBet, Creds.Currency);
+                    await ReplyErrorAsync("BetMoreThan", GamblingService.MaximumBet, Credentials.Currency);
                     return;
                 }
 
                 var currency = _gamblingService.GetUserCurrency(Context.User);
                 if (currency < bet)
                 {
-                    await ReplyErrorAsync("CurrencyNotEnough", Creds.Currency);
+                    await ReplyErrorAsync("CurrencyNotEnough", Credentials.Currency);
                     return;
                 }
 

@@ -23,8 +23,7 @@ namespace Rias.Core.Modules.Bot
             _client = services.GetRequiredService<DiscordShardedClient>();
         }
 
-        [Command("leaveguild"),
-         OwnerOnly]
+        [Command("leaveguild"), OwnerOnly]
         public async Task LeaveGuildAsync(string name)
         {
             var guild = ulong.TryParse(name, out var guildId)
@@ -47,16 +46,14 @@ namespace Rias.Core.Modules.Bot
             await guild.LeaveAsync();
         }
 
-        [Command("update"),
-         OwnerOnly]
+        [Command("update"), OwnerOnly]
         public async Task UpdateAsync()
         {
             await ReplyConfirmationAsync("Update");
             Environment.Exit(0);
         }
 
-        [Command("send"),
-         OwnerOnly]
+        [Command("send"), OwnerOnly]
         public async Task SendAsync(string id, [Remainder] string message)
         {
             var isEmbed = RiasUtils.TryParseEmbed(message, out var embed);
@@ -148,8 +145,7 @@ namespace Rias.Core.Modules.Bot
             }
         }
 
-        [Command("edit"),
-         OwnerOnly]
+        [Command("edit"), OwnerOnly]
         public async Task EditAsync(string id, [Remainder] string message)
         {
             var ids = id.Split("|");
@@ -240,8 +236,7 @@ namespace Rias.Core.Modules.Bot
             await ReplyConfirmationAsync("MessageEdited");
         }
 
-        [Command("finduser"),
-         OwnerOnly]
+        [Command("finduser"), OwnerOnly]
         public async Task FindUserAsync([Remainder] string value)
         {
             IUser? user = null;
@@ -279,8 +274,7 @@ namespace Rias.Core.Modules.Bot
             await ReplyAsync(embed);
         }
 
-        [Command("evaluate"),
-         OwnerOnly]
+        [Command("evaluate"), OwnerOnly]
         public async Task EvaluateAsync([Remainder] string code)
         {
             var embed = new EmbedBuilder
@@ -330,8 +324,7 @@ namespace Rias.Core.Modules.Bot
             await message.ModifyAsync(m => m.Embed = embed.Build());
         }
 
-        [Command("downloadusers"),
-         OwnerOnly]
+        [Command("downloadusers"), OwnerOnly]
         public async Task DownloadUsersAsync(ulong? guildId = null)
         {
             var guild = guildId.HasValue ? _client.GetGuild(guildId.Value) : Context.Guild;

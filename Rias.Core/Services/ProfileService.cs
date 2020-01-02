@@ -21,7 +21,6 @@ namespace Rias.Core.Services
     {
         private readonly HttpClient _httpClient;
         private readonly AnimeService _animeService;
-        private readonly PatreonService _patreonService;
         
         public ProfileService(IServiceProvider services) : base(services)
         {
@@ -30,7 +29,6 @@ namespace Rias.Core.Services
                 Timeout = TimeSpan.FromSeconds(10)
             };
             _animeService = services.GetRequiredService<AnimeService>();
-            _patreonService = services.GetRequiredService<PatreonService>();
         }
         
         private readonly string _defaultBackgroundPath = Path.Combine(Environment.CurrentDirectory, "assets/images/default_background.png");
@@ -55,7 +53,7 @@ namespace Rias.Core.Services
 
         public async Task<Stream> GenerateProfileImageAsync(SocketGuildUser user)
         {
-            var profileInfo = GetProfileInfo(user);
+            var profileInfo = await GetProfileInfoAsync(user);
 
             var height = profileInfo.Waifus!.Count == 0 && profileInfo.SpecialWaifu is null ? 500 : 750;
             using var image = new MagickImage(_dark, 500, height);
@@ -100,103 +98,7 @@ namespace Rias.Core.Services
             return imageStream;
         }
 
-        public async Task SetProfileBackgroundAsync(SocketUser user, string url)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
-            if (profileDb != null)
-            {
-                profileDb.BackgroundUrl = url;
-            }
-            else
-            {
-                var newProfileDb = new Profile {UserId = user.Id, BackgroundUrl = url, BackgroundDim = 50};
-                await db.AddAsync(newProfileDb);
-            }
-
-            await db.SaveChangesAsync();
-        }
-
-        public async Task SetProfileBackgroundDimAsync(SocketUser user, int dim)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
-            if (profileDb != null)
-            {
-                profileDb.BackgroundDim = dim;
-            }
-            else
-            {
-                var newProfileDb = new Profile {UserId = user.Id, BackgroundDim = dim};
-                await db.AddAsync(newProfileDb);
-            }
-
-            await db.SaveChangesAsync();
-        }
-        
-        public async Task SetProfileColorAsync(SocketUser user, string color)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
-            if (profileDb != null)
-            {
-                profileDb.Color = color;
-            }
-            else
-            {
-                var newProfileDb = new Profile {UserId = user.Id, BackgroundDim = 50, Color = color};
-                await db.AddAsync(newProfileDb);
-            }
-
-            await db.SaveChangesAsync();
-        }
-        
-        public async Task SetProfileBiographyAsync(SocketUser user, string bio)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
-            if (profileDb != null)
-            {
-                profileDb.Biography = bio;
-            }
-            else
-            {
-                var newProfileDb = new Profile {UserId = user.Id, BackgroundDim = 50, Biography = bio};
-                await db.AddAsync(newProfileDb);
-            }
-
-            await db.SaveChangesAsync();
-        }
-
-        public async Task SetProfileBadgeAsync(SocketUser user, int index, string text)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
-            if (profileDb != null)
-            {
-                if (profileDb.Badges is null)
-                    profileDb.Badges = new string[3];
-                
-                profileDb.Badges[index] = text;
-            }
-            else
-            {
-                var badges = new string[3];
-                badges[index] = text;
-                
-                var newProfileDb = new Profile {UserId = user.Id, BackgroundDim = 50, Badges = badges};
-                await db.AddAsync(newProfileDb);
-            }
-
-            await db.SaveChangesAsync();
-        }
-
-        public bool CheckColorAsync(SocketUser user, Color color)
+        public async Task<bool> CheckColorAsync(SocketUser user, Color color)
         {
             if (Creds.PatreonConfig is null)
                 return true;
@@ -207,11 +109,13 @@ namespace Rias.Core.Services
             if (_colors.Any(x => x == color))
                 return true;
 
-            var tier = _patreonService.GetPatreonTier(user);
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var tier = (await db.Patreon.FirstOrDefaultAsync(x => x.UserId == user.Id))?.Tier ?? 0;
             return tier >= 2;
         }
-        
-        public bool CheckColorAsync(SocketUser user, Color color, int tier)
+
+        private bool CheckColorAsync(SocketUser user, Color color, int tier)
         {
             if (user.Id == Creds.MasterId)
                 return true;
@@ -577,13 +481,13 @@ namespace Rias.Core.Services
             return null;
         }
 
-        private ProfileInfo GetProfileInfo(SocketUser user)
+        private async Task<ProfileInfo> GetProfileInfoAsync(SocketUser user)
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = db.Users.FirstOrDefault(x => x.UserId == user.Id);
-            var profileDb = db.Profile.FirstOrDefault(x => x.UserId == user.Id);
-            var patreonDb = Creds.PatreonConfig != null ? db.Patreon.FirstOrDefault(x => x.UserId == user.Id) : null;
+            var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
+            var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == user.Id);
+            var patreonDb = Creds.PatreonConfig != null ? await db.Patreon.FirstOrDefaultAsync(x => x.UserId == user.Id) : null;
 
             var waifus = db.Waifus
                 .Include(x => x.Character)
@@ -610,10 +514,10 @@ namespace Rias.Core.Services
                 Xp = xp,
                 Level = RiasUtils.XpToLevel(xp, XpService.XpThreshold),
                 Rank = userDb != null
-                    ? db.Users.Select(x => x.Xp)
+                    ? (await db.Users.Select(x => x.Xp)
                           .OrderByDescending(y => y)
-                          .ToList()
-                          .IndexOf(userDb.Xp) + 1
+                          .ToListAsync())
+                      .IndexOf(userDb.Xp) + 1
                     : 0,
                 BackgroundUrl = profileDb?.BackgroundUrl,
                 Dim = profileDb?.BackgroundDim ?? 50,

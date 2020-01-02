@@ -171,11 +171,12 @@ namespace Rias.Core.Services
             
             var guildChannel = userMessage.Channel as SocketGuildChannel;
             if (guildChannel != null)
+            {
                 await RunTaskAsync(_botService.AddAssignableRoleAsync((SocketGuildUser) userMessage.Author));
+                await RunTaskAsync(_xpService.AddUserXpAsync((SocketGuildUser) userMessage.Author));
+                await RunTaskAsync(_xpService.AddGuildUserXpAsync((SocketGuildUser) userMessage.Author, userMessage.Channel));
+            }
 
-            await RunTaskAsync(_xpService.AddUserXpAsync(userMessage));
-            await RunTaskAsync(_xpService.AddGuildUserXpAsync(userMessage));
-            
             var prefix = GetPrefix(guildChannel);
             if (CommandUtilities.HasPrefix(userMessage.Content, !string.IsNullOrEmpty(prefix) ? prefix : Creds.Prefix, out var output))
             {

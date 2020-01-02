@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MoreLinq.Extensions;
 using Qmmands;
@@ -10,7 +12,6 @@ using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using Rias.Core.Services;
 using Rias.Interactive;
 using Rias.Interactive.Paginator;
 
@@ -19,7 +20,7 @@ namespace Rias.Core.Modules.Administration
     public partial class Administration
     {
         [Name("Self Assignable Roles")]
-        public class SelfAssignableRoles : RiasModule<SelfAssignableRolesService>
+        public class SelfAssignableRoles : RiasModule
         {
             private readonly InteractiveService _interactive;
 
@@ -45,15 +46,15 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                var sar = Service.GetSelfAssignableRole(role);
-                if (sar is null)
+                var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
+                if (sarDb is null)
                 {
                     await ReplyErrorAsync("RoleNotSelfAssignable", role.Name);
                     return;
                 }
 
                 var guildUser = (SocketGuildUser) Context.User;
-                if (guildUser.Roles.Any(x => x.Id == sar.RoleId))
+                if (guildUser.Roles.Any(x => x.Id == sarDb.RoleId))
                 {
                     await ReplyErrorAsync("YouAlreadyAre", role.Name);
                     return;
@@ -80,15 +81,15 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                var sar = Service.GetSelfAssignableRole(role);
-                if (sar is null)
+                var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
+                if (sarDb is null)
                 {
                     await ReplyErrorAsync("RoleNotSelfAssignable", role.Name);
                     return;
                 }
 
                 var guildUser = (SocketGuildUser) Context.User;
-                if (guildUser.Roles.Any(x => x.Id == sar.RoleId))
+                if (guildUser.Roles.Any(x => x.Id == sarDb.RoleId))
                 {
                     await guildUser.RemoveRoleAsync(role);
                 }
@@ -112,9 +113,17 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                if (Service.GetSelfAssignableRole(role) is null)
+                var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
+                if (sarDb is null)
                 {
-                    await Service.AddSelfAssignableRoleAsync(role);
+                    await DbContext.AddAsync(new Database.Models.SelfAssignableRoles
+                    {
+                        GuildId = role.Guild.Id,
+                        RoleId = role.Id,
+                        RoleName = role.Name
+                    });
+
+                    await DbContext.SaveChangesAsync();
                     await ReplyConfirmationAsync("SarAdded", role.Name);
                 }
                 else
@@ -127,10 +136,11 @@ namespace Rias.Core.Modules.Administration
              UserPermission(GuildPermission.ManageRoles), BotPermission(GuildPermission.ManageRoles)]
             public async Task RemoveSelfAssignableRoleAsync([Remainder] SocketRole role)
             {
-                var currentSar = Service.GetSelfAssignableRole(role);
-                if (currentSar != null)
+                var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
+                if (sarDb != null)
                 {
-                    await Service.RemoveSelfAssignableRoleAsync(currentSar);
+                    DbContext.Remove(sarDb);
+                    await DbContext.SaveChangesAsync();
                     await ReplyConfirmationAsync("SarRemoved", role.Name);
                 }
                 else
@@ -144,7 +154,8 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task ListSelfAssignableRolesAsync()
             {
-                var sarList = await Service.UpdateSelfAssignableRolesAsync(Context.Guild!);
+                
+                var sarList = await UpdateSelfAssignableRolesAsync();
                 if (sarList.Count == 0)
                 {
                     await ReplyErrorAsync("NoSar");
@@ -152,7 +163,7 @@ namespace Rias.Core.Modules.Administration
                 }
 
                 var index = 1;
-                var pages = sarList.Values.Batch(15, x => new InteractiveMessage
+                var pages = sarList.Batch(15, x => new InteractiveMessage
                 (
                     new EmbedBuilder
                     {
@@ -163,6 +174,28 @@ namespace Rias.Core.Modules.Administration
                 ));
 
                 await _interactive.SendPaginatedMessageAsync(Context.Message, new PaginatedMessage(pages));
+            }
+
+            private async Task<IList<Database.Models.SelfAssignableRoles>> UpdateSelfAssignableRolesAsync()
+            {
+                var sarList = await DbContext.GetListAsync<Database.Models.SelfAssignableRoles>(x => x.GuildId == Context.Guild!.Id);
+                foreach (var sar in sarList)
+                {
+                    var role = Context.Guild!.GetRole(sar.RoleId);
+                    if (role != null)
+                    {
+                        if (!string.Equals(sar.RoleName, role.Name))
+                            sar.RoleName = role.Name;
+                    }
+                    else
+                    {
+                        sarList.Remove(sar);
+                        DbContext.Remove(sar);
+                    }
+                }
+                
+                await DbContext.SaveChangesAsync();
+                return sarList;
             }
         }
     }

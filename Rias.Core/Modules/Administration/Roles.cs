@@ -8,9 +8,9 @@ using MoreLinq;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
+using Rias.Core.Database.Models;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using Rias.Core.Services;
 using Rias.Interactive;
 using Rias.Interactive.Paginator;
 
@@ -19,7 +19,7 @@ namespace Rias.Core.Modules.Administration
     public partial class Administration
     {
         [Name("Roles")]
-        public class Roles : RiasModule<RolesService>
+        public class Roles : RiasModule
         {
             private readonly InteractiveService _interactive;
 
@@ -246,9 +246,12 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AutoAssignableRoleAsync([Remainder] SocketRole? role = null)
             {
+                Guilds guildDb;
                 if (role is null)
                 {
-                    await Service.RemoveAutoAssignableRoleAsync(Context.Guild!);
+                    guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+                    guildDb.AutoAssignableRoleId = 0;
+                    await DbContext.SaveChangesAsync();
                     await ReplyConfirmationAsync("AarDisabled");
                     return;
                 }
@@ -264,8 +267,11 @@ namespace Rias.Core.Modules.Administration
                     await ReplyErrorAsync("AarNotSet", role.Name);
                     return;
                 }
-
-                await Service.SetAutoAssignableRoleAsync(Context.Guild!, role);
+                
+                guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+                guildDb.AutoAssignableRoleId = role.Id;
+                
+                await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync("AarSet", role.Name);
             }
 

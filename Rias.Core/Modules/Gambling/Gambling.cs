@@ -20,20 +20,20 @@ namespace Rias.Core.Modules.Gambling
         {
             if (bet < GamblingService.MinimumBet)
             {
-                await ReplyErrorAsync("BetLessThan", GamblingService.MinimumBet, Creds.Currency);
+                await ReplyErrorAsync("BetLessThan", GamblingService.MinimumBet, Credentials.Currency);
                 return;
             }
 
             if (bet > GamblingService.MaximumBet)
             {
-                await ReplyErrorAsync("BetMoreThan", GamblingService.MaximumBet, Creds.Currency);
+                await ReplyErrorAsync("BetMoreThan", GamblingService.MaximumBet, Credentials.Currency);
                 return;
             }
 
             var currency = Service.GetUserCurrency(Context.User);
             if (currency < bet)
             {
-                await ReplyErrorAsync("CurrencyNotEnough", Creds.Currency);
+                await ReplyErrorAsync("CurrencyNotEnough", Credentials.Currency);
                 return;
             }
 
@@ -49,12 +49,12 @@ namespace Rias.Core.Modules.Gambling
             string winString;
             if (win >= 0)
             {
-                winString = GetText("YouWon", win, Creds.Currency);
+                winString = GetText("YouWon", win, Credentials.Currency);
                 color = RiasUtils.Green;
             }
             else
             {
-                winString = GetText("YouLost", Math.Abs(win), Creds.Currency);
+                winString = GetText("YouLost", Math.Abs(win), Credentials.Currency);
                 color = RiasUtils.Red;
             }
             

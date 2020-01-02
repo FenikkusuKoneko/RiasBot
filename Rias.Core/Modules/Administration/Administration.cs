@@ -1,35 +1,62 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
-using Rias.Core.Services;
+using Rias.Core.Database.Models;
+using Rias.Core.Extensions;
 
 namespace Rias.Core.Modules.Administration
 {
     [Name("Administration")]
-    public partial class Administration : RiasModule<AdministrationService>
+    public partial class Administration : RiasModule
     {
-        public Administration(IServiceProvider services) : base(services) {}
+        private readonly HttpClient _httpClient;
+
+        public Administration(IServiceProvider services) : base(services)
+        {
+            _httpClient = services.GetRequiredService<HttpClient>();
+        }
 
         [Command("setgreet"), Context(ContextType.Guild),
-         UserPermission(GuildPermission.Administrator), BotPermission(GuildPermission.ManageWebhooks)]
+         UserPermission(GuildPermission.Administrator), BotPermission(GuildPermission.ManageWebhooks),
+        Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task SetGreetAsync()
         {
-            var greetMsg = Service.GetGreetMessage(Context.Guild!);
-            if (string.IsNullOrEmpty(greetMsg))
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            if (string.IsNullOrEmpty(guildDb.GreetMessage))
             {
                 await ReplyErrorAsync("GreetMessageNotSet");
                 return;
             }
+            
+            var webhook = guildDb.GreetWebhookId > 0 ? await Context.Guild!.GetWebhookAsync(guildDb.GreetWebhookId) : null;
+            guildDb.GreetNotification = !guildDb.GreetNotification;
+            if (!guildDb.GreetNotification)
+            {
+                if (webhook != null)
+                    await webhook.DeleteAsync();
 
-            var greet = await Service.SetGreetAsync((SocketTextChannel) Context.Channel);
-            if (greet)
-                await ReplyConfirmationAsync("GreetEnabled", greetMsg);
-            else
+                guildDb.GreetWebhookId = 0;
+                await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync("GreetDisabled");
+
+                return;
+            }
+            
+            if (webhook != null)
+                await webhook.ModifyAsync(x => x.ChannelId = Context.Channel.Id);
+            else
+                webhook = await CreateWebhookAsync((SocketTextChannel) Context.Channel);
+
+            guildDb.GreetWebhookId = webhook.Id;
+            await DbContext.SaveChangesAsync();
+            await ReplyConfirmationAsync("GreetEnabled", guildDb.GreetMessage);
         }
 
         [Command("greetmessage"), Context(ContextType.Guild),
@@ -41,27 +68,48 @@ namespace Rias.Core.Modules.Administration
                 await ReplyErrorAsync("GreetMessageLengthLimit", 1500);
                 return;
             }
+            
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            guildDb.GreetMessage = message;
+            await DbContext.SaveChangesAsync();
 
-            await Service.SetGreetMessageAsync(Context.Guild!, message);
             await ReplyConfirmationAsync("GreetMessageSet");
         }
 
         [Command("setbye"), Context(ContextType.Guild),
-         UserPermission(GuildPermission.Administrator), BotPermission(GuildPermission.ManageWebhooks)]
+         UserPermission(GuildPermission.Administrator), BotPermission(GuildPermission.ManageWebhooks),
+         Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task SetByeAsync()
         {
-            var byeMsg = Service.GetByeMessage(Context.Guild!);
-            if (string.IsNullOrEmpty(byeMsg))
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            if (string.IsNullOrEmpty(guildDb.ByeMessage))
             {
                 await ReplyErrorAsync("ByeMessageNotSet");
                 return;
             }
+            
+            var webhook = guildDb.ByeWebhookId > 0 ? await Context.Guild!.GetWebhookAsync(guildDb.ByeWebhookId) : null;
+            guildDb.ByeNotification = !guildDb.ByeNotification;
+            if (!guildDb.ByeNotification)
+            {
+                if (webhook != null)
+                    await webhook.DeleteAsync();
 
-            var bye = await Service.SetByeAsync((SocketTextChannel) Context.Channel);
-            if (bye)
-                await ReplyConfirmationAsync("ByeEnabled", byeMsg);
-            else
+                guildDb.ByeWebhookId = 0;
+                await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync("ByeDisabled");
+                
+                return;
+            }
+            
+            if (webhook != null)
+                await webhook.ModifyAsync(x => x.ChannelId = Context.Channel.Id);
+            else
+                webhook = await CreateWebhookAsync((SocketTextChannel) Context.Channel);
+
+            guildDb.ByeWebhookId = webhook.Id;
+            await DbContext.SaveChangesAsync();
+            await ReplyConfirmationAsync("ByeEnabled", guildDb.ByeMessage);
         }
 
         [Command("byemessage"), Context(ContextType.Guild),
@@ -73,8 +121,11 @@ namespace Rias.Core.Modules.Administration
                 await ReplyErrorAsync("ByeMessageLengthLimit", 1500);
                 return;
             }
+            
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            guildDb.ByeMessage = message;
+            await DbContext.SaveChangesAsync();
 
-            await Service.SetByeMessageAsync(Context.Guild!, message);
             await ReplyConfirmationAsync("ByeMessageSet");
         }
 
@@ -82,11 +133,31 @@ namespace Rias.Core.Modules.Administration
          UserPermission(GuildPermission.Administrator)]
         public async Task SetModLogAsync()
         {
-            var modlog = await Service.SetModLogAsync(Context.Guild!, Context.Channel);
-            if (modlog)
+            var modLogSet = false;
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            if (guildDb.ModLogChannelId != Context.Channel.Id)
+            {
+                guildDb.ModLogChannelId = Context.Channel.Id;
+                modLogSet = true;
+            }
+            else
+            {
+                guildDb.ModLogChannelId = 0;
+            }
+
+            await DbContext.SaveChangesAsync();
+            
+            if (modLogSet)
                 await ReplyConfirmationAsync("ModLogEnabled");
             else
                 await ReplyConfirmationAsync("ModLogDisabled");
+        }
+        
+        private async Task<RestWebhook> CreateWebhookAsync(SocketTextChannel channel)
+        {
+            var currentUser = channel.Guild.CurrentUser;
+            await using var stream = await _httpClient.GetStreamAsync(currentUser.GetRealAvatarUrl());
+            return await channel.CreateWebhookAsync(currentUser.Username, stream);
         }
     }
 }

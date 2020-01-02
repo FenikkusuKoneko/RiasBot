@@ -42,7 +42,6 @@ namespace Rias.Core
             _client = new DiscordShardedClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
-                TotalShards = 6,
                 AlwaysDownloadUsers = false,
                 MessageCacheSize = 0,
                 ExclusiveBulkDelete = true

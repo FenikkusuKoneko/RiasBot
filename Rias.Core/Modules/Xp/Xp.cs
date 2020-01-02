@@ -3,11 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MoreLinq;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
+using Rias.Core.Database.Models;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
@@ -46,8 +48,8 @@ namespace Rias.Core.Modules.Xp
             page--;
             if (page < 0)
                 page = 0;
-            
-            var xpLeaderboard = Service.GetXpLeaderboard(page * 9, 9);
+
+            var xpLeaderboard = await DbContext.GetOrderedListAsync<Users, int>(x => x.Xp, true, (page * 9)..((page + 1) * 9));
             if (xpLeaderboard.Count == 0)
             {
                 await ReplyErrorAsync("LeaderboardEmpty");
@@ -80,7 +82,7 @@ namespace Rias.Core.Modules.Xp
             if (page < 0)
                 page = 0;
             
-            var xpLeaderboard = Service.GetGuildXpLeaderboard(Context.Guild!)
+            var xpLeaderboard = (await DbContext.GetOrderedListAsync<GuildsXp, int>(x => x.GuildId == Context.Guild!.Id, y => y.Xp, true))
                 .Where(x => Context.Guild!.GetUser(x.UserId) != null)
                 .Skip(page * 9)
                 .Take(9)
@@ -113,7 +115,10 @@ namespace Rias.Core.Modules.Xp
          UserPermission(GuildPermission.Administrator)]
         public async Task XpNotificationAsync()
         {
-            var guildXpNotification = await Service.SetGuildXpNotificationAsync(Context.Guild!);
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            var guildXpNotification = guildDb.GuildXpNotification = !guildDb.GuildXpNotification;
+
+            await DbContext.SaveChangesAsync();
             if (guildXpNotification)
                 await ReplyConfirmationAsync("NotificationEnabled");
             else
@@ -129,10 +134,16 @@ namespace Rias.Core.Modules.Xp
                 await ReplyErrorAsync("LevelUpRoleRewardLimit");
                 return;
             }
-
+            
             if (role is null)
             {
-                await Service.SetLevelRoleAsync(Context.Guild!, level, null);
+                var xpRoleLevelDb = await DbContext.GuildXpRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.Level == level);
+                if (xpRoleLevelDb != null)
+                {
+                    DbContext.Remove(xpRoleLevelDb);
+                    await DbContext.SaveChangesAsync();
+                }
+                
                 await ReplyConfirmationAsync("LevelUpRoleRewardRemoved", level);
                 return;
             }
@@ -148,8 +159,13 @@ namespace Rias.Core.Modules.Xp
                 await ReplyErrorAsync("#Administration_RoleAbove");
                 return;
             }
+
+            var xpRoleDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id && (x.Level == level || x.RoleId == role.Id),
+                () => new GuildXpRoles {GuildId = Context.Guild!.Id});
+            xpRoleDb.Level = level;
+            xpRoleDb.RoleId = role.Id;
             
-            await Service.SetLevelRoleAsync(Context.Guild!, level, role);
+            await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("LevelUpRoleRewardSet", role.Name, level);
         }
 
@@ -157,24 +173,25 @@ namespace Rias.Core.Modules.Xp
          BotPermission(GuildPermission.ManageRoles)]
         public async Task LevelUpRoleRewardListAsync()
         {
-            var levelRoles = await Service.UpdateLevelRolesAsync(Context.Guild!);
+            var levelRoles = await DbContext.GetListAsync<GuildXpRoles>(x => x.GuildId == Context.Guild!.Id);
+            DbContext.RemoveRange(levelRoles.Where(x => Context.Guild!.GetRole(x.RoleId) is null));
+            await DbContext.SaveChangesAsync();
+            
             if (levelRoles.Count == 0)
             {
                 await ReplyErrorAsync("NoLevelUpRoleReward");
                 return;
             }
 
-            var pages = levelRoles.Values
-                .OrderBy(x => x.Level)
-                .Batch(15, x => new InteractiveMessage
-                (
-                    new EmbedBuilder
-                    {
-                        Color = RiasUtils.ConfirmColor,
-                        Title = GetText("LevelUpRoleRewardList"),
-                        Description = string.Join('\n', x.Select(lr => $"{GetText("LevelX", lr.Level)}: {Context.Guild!.GetRole(lr.RoleId)}"))
-                    }
-                ));
+            var pages = levelRoles.OrderBy(x => x.Level).Batch(15, x => new InteractiveMessage
+            (
+                new EmbedBuilder
+                {
+                    Color = RiasUtils.ConfirmColor,
+                    Title = GetText("LevelUpRoleRewardList"),
+                    Description = string.Join('\n', x.Select(lr => $"{GetText("LevelX", lr.Level)}: {Context.Guild!.GetRole(lr.RoleId)}"))
+                }
+            ));
 
             await _interactive.SendPaginatedMessageAsync(Context.Message, new PaginatedMessage(pages));
         }
@@ -191,8 +208,9 @@ namespace Rias.Core.Modules.Xp
                 await ReplyErrorAsync("ResetGuildXpCanceled");
                 return;
             }
-
-            await Service.ResetGuildXp(Context.Guild!);
+            
+            DbContext.RemoveRange(await DbContext.GetListAsync<GuildsXp>(x => x.GuildId == Context.Guild!.Id));
+            await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("GuildXpReset");
         }
     }

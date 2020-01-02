@@ -7,6 +7,7 @@ using Discord;
 using Discord.WebSocket;
 using Humanizer;
 using Humanizer.Localisation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Database;
 using Rias.Core.Database.Models;
@@ -37,7 +38,7 @@ namespace Rias.Core.Services
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var muteTimersDb = db.MuteTimers.ToArray();
+            var muteTimersDb = db.MuteTimers.ToList();
 
             var dateTime = DateTime.UtcNow.AddDays(7);
             foreach (var muteTimerDb in muteTimersDb)
@@ -63,7 +64,7 @@ namespace Rias.Core.Services
 
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
 
             var role = (guild.GetRole(guildDb?.MuteRoleId ?? 0)
                         ?? guild.Roles.FirstOrDefault(x => string.Equals(x.Name, MuteRole) && !x.IsManaged))
@@ -132,7 +133,7 @@ namespace Rias.Core.Services
 
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userGuildDb = db.GuildUsers.FirstOrDefault(x => x.GuildId == guild.Id && x.UserId == user.Id);
+            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == guild.Id && x.UserId == user.Id);
             if (userGuildDb != null)
             {
                 userGuildDb.IsMuted = true;
@@ -154,7 +155,7 @@ namespace Rias.Core.Services
                 return;
             }
 
-            var muteTimerDb = db.MuteTimers.FirstOrDefault(x => x.GuildId == guild.Id && x.UserId == user.Id);
+            var muteTimerDb = await db.MuteTimers.FirstOrDefaultAsync(x => x.GuildId == guild.Id && x.UserId == user.Id);
             if (muteTimerDb != null)
             {
                 muteTimerDb.ModeratorId = moderator.Id;
@@ -202,7 +203,7 @@ namespace Rias.Core.Services
 
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == context.Guild.Id);
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == context.Guild.Id);
 
             var role = context.Guild.GetRole(guildDb?.MuteRoleId ?? 0)
                        ?? context.Guild.Roles.FirstOrDefault(x => string.Equals(x.Name, MuteRole) && !x.IsManaged);
@@ -290,35 +291,13 @@ namespace Rias.Core.Services
 
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userGuildDb = db.GuildUsers.FirstOrDefault(x => x.GuildId == context.GuildId && x.UserId == context.UserId);
+            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == context.GuildId && x.UserId == context.UserId);
             if (userGuildDb != null)
                 userGuildDb.IsMuted = false;
 
-            var muteTimerDb = db.MuteTimers.FirstOrDefault(x => x.GuildId == context.GuildId && x.UserId == context.UserId);
+            var muteTimerDb = await db.MuteTimers.FirstOrDefaultAsync(x => x.GuildId == context.GuildId && x.UserId == context.UserId);
             if (muteTimerDb != null)
                 db.Remove(muteTimerDb);
-
-            await db.SaveChangesAsync();
-        }
-
-        public async Task SetMuteRoleAsync(SocketGuild guild, IRole role)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
-            if (guildDb != null)
-            {
-                guildDb.MuteRoleId = role.Id;
-            }
-            else
-            {
-                var muteRole = new Guilds
-                {
-                    GuildId = guild.Id,
-                    MuteRoleId = role.Id
-                };
-                await db.AddAsync(muteRole);
-            }
 
             await db.SaveChangesAsync();
         }

@@ -7,6 +7,7 @@ using Humanizer.Localisation;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
+using Rias.Core.Database.Models;
 using Rias.Core.Extensions;
 using Rias.Core.Services;
 
@@ -132,7 +133,10 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                await Service.SetMuteRoleAsync(Context.Guild!, role);
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+                guildDb.MuteRoleId = role.Id;
+                await DbContext.SaveChangesAsync();
+                
                 await RunTaskAsync(Service.AddMuteRoleToChannelsAsync(role, Context.Guild!));
                 await ReplyConfirmationAsync("NewMuteRoleSet");
             }
@@ -145,8 +149,12 @@ namespace Rias.Core.Modules.Administration
             public async Task SetMuteAsync([Remainder] string name)
             {
                 var role = await Context.Guild!.CreateRoleAsync(name);
-                await Service.SetMuteRoleAsync(Context.Guild!, role);
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+                guildDb.MuteRoleId = role.Id;
+                await DbContext.SaveChangesAsync();
+                
                 await RunTaskAsync(Service.AddMuteRoleToChannelsAsync(role, Context.Guild!));
+                await ReplyConfirmationAsync("NewMuteRoleSet");
             }
         }
     }

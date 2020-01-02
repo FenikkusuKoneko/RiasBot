@@ -22,7 +22,7 @@ namespace Rias.Core.Modules.Reactions
         Priority(1)]
         public async Task PatAsync([Remainder] SocketGuildUser user)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -49,7 +49,7 @@ namespace Rias.Core.Modules.Reactions
          Priority(0)]
         public async Task PatAsync([Remainder] string? value = null)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -76,7 +76,7 @@ namespace Rias.Core.Modules.Reactions
         Priority(1)]
         public async Task HugAsync([Remainder] SocketGuildUser user)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -103,7 +103,7 @@ namespace Rias.Core.Modules.Reactions
          Priority(0)]
         public async Task HugAsync([Remainder] string? value = null)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -130,7 +130,7 @@ namespace Rias.Core.Modules.Reactions
         Priority(1)]
         public async Task KissAsync([Remainder] SocketGuildUser user)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -157,7 +157,7 @@ namespace Rias.Core.Modules.Reactions
          Priority(0)]
         public async Task KissAsync([Remainder] string? value = null)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -184,7 +184,7 @@ namespace Rias.Core.Modules.Reactions
         Priority(1)]
         public async Task LickAsync([Remainder] SocketGuildUser user)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -211,7 +211,7 @@ namespace Rias.Core.Modules.Reactions
          Priority(0)]
         public async Task LickAsync([Remainder] string? value = null)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -238,7 +238,7 @@ namespace Rias.Core.Modules.Reactions
         Priority(1)]
         public async Task CuddleAsync([Remainder] SocketGuildUser user)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -265,7 +265,7 @@ namespace Rias.Core.Modules.Reactions
          Priority(0)]
         public async Task CuddleAsync([Remainder] string? value = null)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -292,7 +292,7 @@ namespace Rias.Core.Modules.Reactions
         Priority(1)]
         public async Task BiteAsync([Remainder] SocketGuildUser user)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -319,7 +319,7 @@ namespace Rias.Core.Modules.Reactions
          Priority(0)]
         public async Task BiteAsync([Remainder] string? value = null)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -346,7 +346,7 @@ namespace Rias.Core.Modules.Reactions
         Priority(1)]
         public async Task SlapAsync([Remainder] SocketGuildUser user)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -373,7 +373,7 @@ namespace Rias.Core.Modules.Reactions
          Priority(0)]
         public async Task SlapAsync([Remainder] string? value = null)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -399,7 +399,7 @@ namespace Rias.Core.Modules.Reactions
          Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.GuildUser)]
         public async Task CryAsync()
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -464,7 +464,7 @@ namespace Rias.Core.Modules.Reactions
          Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.GuildUser)]
         public async Task BlushAsync()
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -488,7 +488,7 @@ namespace Rias.Core.Modules.Reactions
         Priority(1)]
         public async Task DanceAsync([Remainder] SocketGuildUser user)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -515,7 +515,7 @@ namespace Rias.Core.Modules.Reactions
          Priority(0)]
         public async Task DanceAsync([Remainder] string? value = null)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -542,7 +542,7 @@ namespace Rias.Core.Modules.Reactions
         Priority(1)]
         public async Task PokeAsync([Remainder] SocketGuildUser user)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;
@@ -569,7 +569,7 @@ namespace Rias.Core.Modules.Reactions
          Priority(0)]
         public async Task PokeAsync([Remainder] string? value = null)
         {
-            if (string.IsNullOrEmpty(Creds.WeebServicesToken))
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
                 await ReplyErrorAsync("NoWeebApi");
                 return;

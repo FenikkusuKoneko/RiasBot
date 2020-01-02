@@ -7,11 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rias.Core.Commons;
 using Rias.Core.Database;
-using Rias.Core.Database.Models;
 using Rias.Core.Implementation;
 using Rias.Core.Services.Websocket;
 using Serilog;
@@ -23,7 +23,7 @@ namespace Rias.Core.Services
     {
         private readonly DiscordShardedClient _client;
         private readonly GamblingService _gamblingService;
-        private readonly HttpClient _http;
+        private readonly HttpClient _httpClient;
 
         private Timer? DblTimer { get; }
         private const int DatabaseVoteAttempts = 5;
@@ -32,7 +32,7 @@ namespace Rias.Core.Services
         {
             _client = services.GetRequiredService<DiscordShardedClient>();
             _gamblingService = services.GetRequiredService<GamblingService>();
-            _http = new HttpClient();
+            _httpClient = new HttpClient();
             
             var creds = services.GetRequiredService<Credentials>();
             if (creds.VotesConfig != null)
@@ -48,7 +48,7 @@ namespace Rias.Core.Services
 
             if (!string.IsNullOrEmpty(creds.DiscordBotListApiKey))
             {
-                _http.DefaultRequestHeaders.Add("Authorization", creds.DiscordBotListApiKey);
+                _httpClient.DefaultRequestHeaders.Add("Authorization", creds.DiscordBotListApiKey);
                 DblTimer = new Timer(async _ => await PostDiscordBotListStats(), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
             }
         }
@@ -60,7 +60,7 @@ namespace Rias.Core.Services
             var votes = db.Votes.Where(x => !x.Checked);
             foreach (var vote in votes)
             {
-                var userDb = db.Users.FirstOrDefault(x => x.UserId == vote.UserId);
+                var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == vote.UserId);
                 if (userDb != null && userDb.IsBlacklisted)
                 {
                     db.Remove(vote);
@@ -78,14 +78,6 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
         }
 
-        public IList<Votes> GetVotes(TimeSpan time)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var date = DateTimeOffset.UtcNow - time;
-            return db.Votes.Where(x => x.DateAdded >= date).ToList();
-        }
-        
         private Task ConnectedAsync()
         {
             Log.Information("Votes websocket connected");
@@ -121,14 +113,14 @@ namespace Rias.Core.Services
             var voteData = JsonConvert.DeserializeObject<VoteData>(data);
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var voteDb = db.Votes.FirstOrDefault(x => x.UserId == voteData.User && !x.Checked);
+            var voteDb = await db.Votes.FirstOrDefaultAsync(x => x.UserId == voteData.User && !x.Checked);
 
             var attempts = 0;
             while (voteDb is null && attempts < DatabaseVoteAttempts)
             {
                 await Task.Delay(5000);
                 
-                voteDb = db.Votes.FirstOrDefault(x => x.UserId == voteData.User && !x.Checked);
+                voteDb = await db.Votes.FirstOrDefaultAsync(x => x.UserId == voteData.User && !x.Checked);
                 attempts++;
             }
 
@@ -163,7 +155,7 @@ namespace Rias.Core.Services
                     });
                 content.Headers.Clear();
                 content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-                await _http.PostAsync($"{Creds.DiscordBotList}/stats", content);
+                await _httpClient.PostAsync($"{Creds.DiscordBotList}/stats", content);
             }
             catch (Exception ex)
             {

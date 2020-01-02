@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -25,15 +26,24 @@ namespace Rias.Core.Services
 
         public async Task<ICharacter?> GetOrAddCharacterAsync(string name)
         {
-            if (name.StartsWith("@") && int.TryParse(name[1..], out var id))
-                return GetCustomCharacterById(id);
-            
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            
+            if (name.StartsWith("@") && int.TryParse(name[1..], out var id))
+                return await db.CustomCharacters.FirstOrDefaultAsync(x => x.CharacterId == id);
 
             var characterDb = int.TryParse(name, out id)
-                ? db.Characters.FirstOrDefault(x => x.CharacterId == id)
-                : GetCustomCharacterByName(name) ?? (ICharacter?) GetCharacterByName(name);
+                ? await db.Characters.FirstOrDefaultAsync(x => x.CharacterId == id)
+                : db.CustomCharacters
+                      .AsEnumerable()
+                      .FirstOrDefault(x =>
+                          name.Split(' ')
+                              .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)))
+                  ?? (ICharacter?) db.Characters
+                      .AsEnumerable()
+                      .FirstOrDefault(x =>
+                          name.Split(' ')
+                              .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
 
             if (characterDb is null)
             {
@@ -44,7 +54,7 @@ namespace Rias.Core.Services
                 if (aniListCharacter is null)
                     return null;
                 
-                characterDb = db.Characters.FirstOrDefault(x => x.CharacterId == aniListCharacter.Id);
+                characterDb = await db.Characters.FirstOrDefaultAsync(x => x.CharacterId == aniListCharacter.Id);
                 if (characterDb is null)
                 {
                     var newCharacterDb = new Characters
@@ -100,40 +110,11 @@ namespace Rias.Core.Services
                 .ToObject<TType>();
         }
 
-        public CustomCharacters? GetCustomCharacterById(int id)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.CustomCharacters.FirstOrDefault(x => x.CharacterId == id);
-        }
-        
-        public CustomCharacters? GetCustomCharacterByName(string name)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.CustomCharacters
-                .AsEnumerable()
-                .FirstOrDefault(x =>
-                    name.Split(' ')
-                        .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
-        }
-
-        public Characters? GetCharacterByName(string name)
-        {
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.Characters
-                .AsEnumerable()
-                .FirstOrDefault(x =>
-                    name.Split(' ')
-                        .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
-        }
-
         public async Task SetCharacterImageUrlAsync(int id, string url)
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var character = db.Characters.FirstOrDefault(x => x.CharacterId == id);
+            var character = await db.Characters.FirstOrDefaultAsync(x => x.CharacterId == id);
             if (character != null)
             {
                 character.ImageUrl = url;

@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Commons;
 using Rias.Core.Database;
@@ -49,13 +50,13 @@ namespace Rias.Core.Services
 
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == user.Guild.Id);
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == user.Guild.Id);
             await SendGreetMessageAsync(guildDb, user);
 
             var currentUser = user.Guild.CurrentUser;
             if (!currentUser.GuildPermissions.ManageRoles) return;
 
-            var userGuildDb = db.GuildUsers.Where(x => x.GuildId == user.Guild.Id).FirstOrDefault(x => x.UserId == user.Id);
+            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == user.Guild.Id && x.UserId == user.Id);
             if (userGuildDb is null) return;
             if (!userGuildDb.IsMuted) return;
 
@@ -124,7 +125,7 @@ namespace Rias.Core.Services
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
             if (guildDb is null)
                 return;
             
@@ -139,7 +140,7 @@ namespace Rias.Core.Services
 
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == user.Guild.Id);
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == user.Guild.Id);
             await SendByeMessageAsync(guildDb, user);
         }
 
@@ -195,7 +196,7 @@ namespace Rias.Core.Services
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == guild.Id);
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
             if (guildDb is null)
                 return;
             
@@ -223,7 +224,7 @@ namespace Rias.Core.Services
 
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(x => x.GuildId == user.Guild.Id);
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == user.Guild.Id);
             if (guildDb is null)
                 return;
 
@@ -243,11 +244,11 @@ namespace Rias.Core.Services
 
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = db.Guilds.FirstOrDefault(g => g.GuildId == newUser.Guild.Id);
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == newUser.Guild.Id);
 
             if (guildDb is null) return;
 
-            var userGuildDb = db.GuildUsers.FirstOrDefault(x => x.GuildId == newUser.Guild.Id && x.UserId == newUser.Id);
+            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == newUser.Guild.Id && x.UserId == newUser.Id);
             if (userGuildDb is null) return;
 
             userGuildDb.IsMuted = newUser.Roles.FirstOrDefault(r => r.Id == guildDb.MuteRoleId) != null;
