@@ -116,7 +116,7 @@ namespace Rias.Core.Modules.Waifu
             {
                 UserId = Context.User.Id,
                 Price = waifuPrice,
-                Position = waifus.Max(x => x.Position) + 1
+                Position = waifus.Count != 0 ? waifus.Max(x => x.Position) + 1 : 1
             };
 
             if (character is CustomCharacters)
@@ -486,7 +486,7 @@ namespace Rias.Core.Modules.Waifu
                 Name = name,
                 ImageUrl = url,
                 IsSpecial = true,
-                Position = waifus.Max(x => x.Position) + 1
+                Position = waifus.Count != 0 ? waifus.Max(x => x.Position) + 1 : 1
             });
 
             await DbContext.SaveChangesAsync();
