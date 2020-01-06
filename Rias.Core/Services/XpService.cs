@@ -262,11 +262,15 @@ namespace Rias.Core.Services
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
-            var serverXpDb = await db.GuildsXp.FirstOrDefaultAsync(x => x.GuildId == user.Guild.Id && x.UserId == user.Id);
             var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == user.Id);
 
+            var serverXpList = (await db.GetOrderedListAsync<GuildsXp, int>(x => x.GuildId == user.Guild.Id, y => y.Xp, true))
+                .Where(x => user.Guild.GetUser(x.UserId) != null)
+                .ToList();
+            var userServerXp = serverXpList.FirstOrDefault(x => x.UserId == user.Id);
+            
             var globalXp = userDb?.Xp ?? 0;
-            var serverXp = serverXpDb?.Xp ?? 0;
+            var serverXp = userServerXp?.Xp ?? 0;
             return new XpInfo
             {
                 GlobalXp = globalXp,
@@ -279,13 +283,7 @@ namespace Rias.Core.Services
                     : 0,
                 ServerXp = serverXp,
                 ServerLevel = RiasUtils.XpToLevel(serverXp, XpThreshold),
-                ServerRank = serverXpDb != null
-                    ? db.GuildsXp.Where(x => x.GuildId == user.Guild.Id)
-                        .Select(x => x.Xp)
-                        .OrderByDescending(y => y)
-                        .ToList()
-                        .IndexOf(serverXpDb.Xp) + 1
-                    : 0,
+                ServerRank = userServerXp != null ? serverXpList.IndexOf(userServerXp) + 1 : 0,
                 Color = profileDb?.Color != null ? new MagickColor($"{profileDb.Color}") : MagickColors.White,
             };
         }
