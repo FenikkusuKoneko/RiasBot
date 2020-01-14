@@ -148,8 +148,9 @@ namespace Rias.Core.Modules.Utility
                 "1mo" => TimeSpan.FromDays(30),
                 _ => TimeSpan.FromHours(12)
             };
-            
-            var votesGroup = (await DbContext.GetListAsync<Votes>(x => x.DateAdded >= DateTime.UtcNow - timeSpan))
+
+            var dateAdded = DateTime.UtcNow - timeSpan;
+            var votesGroup = (await DbContext.GetListAsync<Votes>(x => x.DateAdded >= dateAdded))
                 .GroupBy(x => x.UserId)
                 .ToList();
 
