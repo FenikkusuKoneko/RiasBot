@@ -713,11 +713,20 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The role is above my highest role or it is my highest role..
+        ///   Looks up a localized string similar to The role is above your highest role or it is your highest role..
         /// </summary>
         public static string Administration_RoleAbove {
             get {
                 return ResourceManager.GetString("Administration_RoleAbove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The role is above my highest role or it is my highest role..
+        /// </summary>
+        public static string Administration_RoleAboveMe {
+            get {
+                return ResourceManager.GetString("Administration_RoleAboveMe", resourceCulture);
             }
         }
         
@@ -1001,11 +1010,20 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The user is above me or besides me in the roles hierarchy..
+        ///   Looks up a localized string similar to The user is above you or besides you in the roles hierarchy..
         /// </summary>
         public static string Administration_UserAbove {
             get {
                 return ResourceManager.GetString("Administration_UserAbove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user is above me or besides me in the roles hierarchy..
+        /// </summary>
+        public static string Administration_UserAboveMe {
+            get {
+                return ResourceManager.GetString("Administration_UserAboveMe", resourceCulture);
             }
         }
         

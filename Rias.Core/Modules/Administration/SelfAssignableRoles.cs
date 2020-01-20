@@ -36,7 +36,7 @@ namespace Rias.Core.Modules.Administration
             {
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
-                    await ReplyErrorAsync("RoleAbove");
+                    await ReplyErrorAsync("RoleAboveMe");
                     return;
                 }
 
@@ -71,7 +71,7 @@ namespace Rias.Core.Modules.Administration
             {
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
-                    await ReplyErrorAsync("RoleAbove");
+                    await ReplyErrorAsync("RoleAboveMe");
                     return;
                 }
 
@@ -109,7 +109,7 @@ namespace Rias.Core.Modules.Administration
 
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
-                    await ReplyErrorAsync("RoleAbove");
+                    await ReplyErrorAsync("RoleAboveMe");
                     return;
                 }
 

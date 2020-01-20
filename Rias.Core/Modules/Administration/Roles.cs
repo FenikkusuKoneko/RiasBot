@@ -73,6 +73,12 @@ namespace Rias.Core.Modules.Administration
             {
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
+                    await ReplyErrorAsync("RoleAboveMe");
+                    return;
+                }
+                
+                if (((SocketGuildUser) Context.User).CheckRoleHierarchy(role) <= 0)
+                {
                     await ReplyErrorAsync("RoleAbove");
                     return;
                 }
@@ -93,6 +99,12 @@ namespace Rias.Core.Modules.Administration
             public async Task RoleColorAsync(Color color, [Remainder] SocketRole role)
             {
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
+                {
+                    await ReplyErrorAsync("RoleAboveMe");
+                    return;
+                }
+                
+                if (((SocketGuildUser) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAbove");
                     return;
@@ -120,6 +132,12 @@ namespace Rias.Core.Modules.Administration
 
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
+                    await ReplyErrorAsync("RoleAboveMe");
+                    return;
+                }
+                
+                if (((SocketGuildUser) Context.User).CheckRoleHierarchy(role) <= 0)
+                {
                     await ReplyErrorAsync("RoleAbove");
                     return;
                 }
@@ -135,6 +153,12 @@ namespace Rias.Core.Modules.Administration
             public async Task HoistRoleAsync([Remainder] SocketRole role)
             {
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
+                {
+                    await ReplyErrorAsync("RoleAboveMe");
+                    return;
+                }
+                
+                if (((SocketGuildUser) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAbove");
                     return;
@@ -159,6 +183,12 @@ namespace Rias.Core.Modules.Administration
             {
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
+                    await ReplyErrorAsync("RoleAboveMe");
+                    return;
+                }
+                
+                if (((SocketGuildUser) Context.User).CheckRoleHierarchy(role) <= 0)
+                {
                     await ReplyErrorAsync("RoleAbove");
                     return;
                 }
@@ -182,13 +212,13 @@ namespace Rias.Core.Modules.Administration
             {
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
-                    await ReplyErrorAsync("RoleAbove");
+                    await ReplyErrorAsync("RoleAboveMe");
                     return;
                 }
-
-                if (Context.CurrentGuildUser!.CheckHierarchy(user) <= 0)
+                
+                if (((SocketGuildUser) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
-                    await ReplyErrorAsync("UserAbove");
+                    await ReplyErrorAsync("RoleAbove");
                     return;
                 }
 
@@ -215,13 +245,13 @@ namespace Rias.Core.Modules.Administration
             {
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
-                    await ReplyErrorAsync("RoleAbove");
+                    await ReplyErrorAsync("RoleAboveMe");
                     return;
                 }
-
-                if (Context.CurrentGuildUser!.CheckHierarchy(user) <= 0)
+                
+                if (((SocketGuildUser) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
-                    await ReplyErrorAsync("UserAbove");
+                    await ReplyErrorAsync("RoleAbove");
                     return;
                 }
 
@@ -257,6 +287,12 @@ namespace Rias.Core.Modules.Administration
                 }
 
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
+                {
+                    await ReplyErrorAsync("RoleAboveMe");
+                    return;
+                }
+                
+                if (((SocketGuildUser) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAbove");
                     return;

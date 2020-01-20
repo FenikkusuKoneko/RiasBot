@@ -156,7 +156,7 @@ namespace Rias.Core.Modules.Xp
 
             if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
             {
-                await ReplyErrorAsync("#Administration_RoleAbove");
+                await ReplyErrorAsync("#Administration_RoleAboveMe");
                 return;
             }
 

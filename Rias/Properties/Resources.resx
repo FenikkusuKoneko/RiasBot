@@ -130,8 +130,11 @@ The bye message is: **{0}**</value>
     <data name="Administration_CannotPrunebanOwner" xml:space="preserve">
         <value>I cannot pruneban the owner of the server.</value>
     </data>
-    <data name="Administration_UserAbove" xml:space="preserve">
+    <data name="Administration_UserAboveMe" xml:space="preserve">
         <value>The user is above me or besides me in the roles hierarchy.</value>
+    </data>
+    <data name="Administration_UserAbove" xml:space="preserve">
+        <value>The user is above you or besides you in the roles hierarchy.</value>
     </data>
     <data name="Administration_YouAreAbove" xml:space="preserve">
         <value>You are above me or beside me in the roles hierarchy.</value>
@@ -197,8 +200,11 @@ Set a new mute role using `{0}setmute` or mute an user and I will create it auto
     <data name="Administration_RoleNotFound" xml:space="preserve">
         <value>I couldn't find the role.</value>
     </data>
-    <data name="Administration_RoleAbove" xml:space="preserve">
+    <data name="Administration_RoleAboveMe" xml:space="preserve">
         <value>The role is above my highest role or it is my highest role.</value>
+    </data>
+    <data name="Administration_RoleAbove" xml:space="preserve">
+        <value>The role is above your highest role or it is your highest role.</value>
     </data>
     <data name="Administration_NoRoles" xml:space="preserve">
         <value>No roles on this server.</value>

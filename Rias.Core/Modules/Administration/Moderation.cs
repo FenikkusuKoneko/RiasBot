@@ -36,6 +36,12 @@ namespace Rias.Core.Modules.Administration
 
                 if (Context.CurrentGuildUser!.CheckHierarchy(user) <= 0)
                 {
+                    await ReplyErrorAsync("UserAboveMe");
+                    return;
+                }
+                
+                if (((SocketGuildUser) Context.User).CheckHierarchy(user) <= 0)
+                {
                     await ReplyErrorAsync("UserAbove");
                     return;
                 }
@@ -58,6 +64,12 @@ namespace Rias.Core.Modules.Administration
                 }
 
                 if (Context.CurrentGuildUser!.CheckHierarchy(user) <= 0)
+                {
+                    await ReplyErrorAsync("UserAboveMe");
+                    return;
+                }
+                
+                if (((SocketGuildUser) Context.User).CheckHierarchy(user) <= 0)
                 {
                     await ReplyErrorAsync("UserAbove");
                     return;
@@ -82,6 +94,12 @@ namespace Rias.Core.Modules.Administration
 
                 if (Context.CurrentGuildUser!.CheckHierarchy(user) <= 0)
                 {
+                    await ReplyErrorAsync("UserAboveMe");
+                    return;
+                }
+                
+                if (((SocketGuildUser) Context.User).CheckHierarchy(user) <= 0)
+                {
                     await ReplyErrorAsync("UserAbove");
                     return;
                 }
@@ -105,6 +123,12 @@ namespace Rias.Core.Modules.Administration
                 }
 
                 if (Context.CurrentGuildUser!.CheckHierarchy(user) <= 0)
+                {
+                    await ReplyErrorAsync("UserAboveMe");
+                    return;
+                }
+                
+                if (((SocketGuildUser) Context.User).CheckHierarchy(user) <= 0)
                 {
                     await ReplyErrorAsync("UserAbove");
                     return;
