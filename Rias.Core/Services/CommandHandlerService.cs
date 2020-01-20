@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,6 +31,7 @@ namespace Rias.Core.Services
         private readonly CooldownService _cooldownService;
 
         private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.json");
+        public readonly ConcurrentDictionary<ulong, string> GuildPrefixes = new ConcurrentDictionary<ulong, string>();
 
         public static int CommandsExecuted;
 
@@ -44,8 +46,17 @@ namespace Rias.Core.Services
 
             LoadCommands();
             LoadTypeParsers();
+            LoadGuildPrefixes();
 
             _client.MessageReceived += MessageReceivedAsync;
+        }
+
+        public string GetGuildPrefix(ulong? guildId)
+        {
+            if (guildId is null)
+                return Creds.Prefix;
+
+            return GuildPrefixes.TryGetValue(guildId.Value, out var prefix) ? prefix : Creds.Prefix;
         }
 
         private void LoadCommands()
@@ -164,6 +175,22 @@ namespace Rias.Core.Services
             }
         }
 
+        private void LoadGuildPrefixes()
+        {
+            var sw = Stopwatch.StartNew();
+            
+            using var scope = Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            
+            foreach (var guildDb in db.Guilds.Where(guildDb => !string.IsNullOrEmpty(guildDb.Prefix)))
+            {
+                GuildPrefixes[guildDb.GuildId] = guildDb.Prefix!;
+            }
+            
+            sw.Stop();
+            Log.Information($"Guild prefixes loaded: {sw.ElapsedMilliseconds} ms");
+        }
+
         private async Task MessageReceivedAsync(SocketMessage message)
         {
             if (!(message is SocketUserMessage userMessage)) return;
@@ -177,7 +204,7 @@ namespace Rias.Core.Services
                 await RunTaskAsync(_xpService.AddGuildUserXpAsync((SocketGuildUser) userMessage.Author, userMessage.Channel));
             }
 
-            var prefix = GetPrefix(guildChannel);
+            var prefix = GetGuildPrefix(guildChannel?.Guild.Id);
             if (CommandUtilities.HasPrefix(userMessage.Content, !string.IsNullOrEmpty(prefix) ? prefix : Creds.Prefix, out var output))
             {
                 await RunTaskAsync(ExecuteCommandAsync(userMessage, guildChannel, output));
@@ -289,16 +316,6 @@ namespace Rias.Core.Services
             var reason = result.Reason;
             SplitPrefixKey(ref prefix, ref reason);
             return context.Channel.SendErrorMessageAsync(_resources.GetText(context.Guild?.Id, prefix, reason));
-        }
-
-        private string? GetPrefix(SocketGuildChannel? channel)
-        {
-            if (channel is null)
-                return null;
-            
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.Guilds.FirstOrDefault(x => x.GuildId == channel.Guild.Id)?.Prefix;
         }
 
         private bool CheckGuildCommandMessageDeletion(SocketGuild guild)

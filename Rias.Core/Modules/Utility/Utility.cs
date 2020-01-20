@@ -18,6 +18,7 @@ using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Database.Models;
 using Rias.Core.Implementation;
+using Rias.Core.Services;
 using Rias.Interactive;
 using Rias.Interactive.Paginator;
 
@@ -28,11 +29,13 @@ namespace Rias.Core.Modules.Utility
     {
         private readonly DiscordShardedClient _client;
         private readonly InteractiveService _interactive;
+        private readonly CommandHandlerService _commandHandlerService;
         
         public Utility(IServiceProvider services) : base(services)
         {
             _client = services.GetRequiredService<DiscordShardedClient>();
             _interactive = services.GetRequiredService<InteractiveService>();
+            _commandHandlerService = services.GetRequiredService<CommandHandlerService>();
         }
 
         [Command("prefix"), Context(ContextType.Guild)]
@@ -51,8 +54,10 @@ namespace Rias.Core.Modules.Utility
                 return;
             }
 
+            var currentPrefix = GetPrefix();
+            _commandHandlerService.GuildPrefixes[Context.Guild!.Id] = prefix;
+
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
-            var currentPrefix = !string.IsNullOrEmpty(guildDb.Prefix) ? guildDb.Prefix : Credentials.Prefix;
             guildDb.Prefix = prefix;
 
             await DbContext.SaveChangesAsync();

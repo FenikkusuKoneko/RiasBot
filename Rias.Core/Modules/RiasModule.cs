@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +15,9 @@ namespace Rias.Core.Modules
     {
         public readonly Credentials Credentials;
         public readonly Resources Resources;
-        
         public readonly RiasDbContext DbContext;
+        
+        private readonly CommandHandlerService _commandHandlerService;
         private readonly IServiceScope _scope;
         
         public string ParentModuleName => Context.Command.Module.Parent?.Name ?? Context.Command.Module.Name;
@@ -26,6 +26,8 @@ namespace Rias.Core.Modules
         {
             Credentials = services.GetRequiredService<Credentials>();
             Resources = services.GetRequiredService<Resources>();
+
+            _commandHandlerService = services.GetRequiredService<CommandHandlerService>();
             
             _scope = services.CreateScope();
             DbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -67,15 +69,7 @@ namespace Rias.Core.Modules
             return Resources.GetText(Context.Guild?.Id, prefix, key, args);
         }
 
-        public string GetPrefix()
-        {
-            var guild = Context.Guild;
-            if (guild == null) return Credentials.Prefix;
-            using var scope = Context.ServiceProvider.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var prefix = db.Guilds.FirstOrDefault(g => g.GuildId == guild.Id)?.Prefix;
-            return !string.IsNullOrEmpty(prefix) ? prefix : Credentials.Prefix;
-        }
+        public string GetPrefix() => _commandHandlerService.GetGuildPrefix(Context.Guild?.Id);
 
         /// <summary>
         /// Run a task in an async way.
