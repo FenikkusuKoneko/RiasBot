@@ -45,7 +45,7 @@ namespace Rias.Core.Modules.Gambling
 
                 if (Service.TryGetBlackjack((SocketGuildUser) Context.User, out _))
                 {
-                    await ReplyErrorAsync("BlackjackSession", GetPrefix());
+                    await ReplyErrorAsync("BlackjackSession", Context.Prefix);
                     return;
                 }
                 

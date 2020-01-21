@@ -18,7 +18,6 @@ using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Database.Models;
 using Rias.Core.Implementation;
-using Rias.Core.Services;
 using Rias.Interactive;
 using Rias.Interactive.Paginator;
 
@@ -29,19 +28,17 @@ namespace Rias.Core.Modules.Utility
     {
         private readonly DiscordShardedClient _client;
         private readonly InteractiveService _interactive;
-        private readonly CommandHandlerService _commandHandlerService;
         
         public Utility(IServiceProvider services) : base(services)
         {
             _client = services.GetRequiredService<DiscordShardedClient>();
             _interactive = services.GetRequiredService<InteractiveService>();
-            _commandHandlerService = services.GetRequiredService<CommandHandlerService>();
         }
 
         [Command("prefix"), Context(ContextType.Guild)]
         public async Task PrefixAsync()
         {
-            await ReplyConfirmationAsync("PrefixIs", GetPrefix());
+            await ReplyConfirmationAsync("PrefixIs", Context.Prefix);
         }
 
         [Command("setprefix"), Context(ContextType.Guild),
@@ -53,15 +50,12 @@ namespace Rias.Core.Modules.Utility
                 await ReplyErrorAsync("PrefixLimit", 15);
                 return;
             }
-
-            var currentPrefix = GetPrefix();
-            _commandHandlerService.GuildPrefixes[Context.Guild!.Id] = prefix;
-
+            
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
             guildDb.Prefix = prefix;
 
             await DbContext.SaveChangesAsync();
-            await ReplyConfirmationAsync("PrefixChanged", currentPrefix, prefix);
+            await ReplyConfirmationAsync("PrefixChanged", Context.Prefix, prefix);
         }
         
         [Command("languages"), Context(ContextType.Guild)]

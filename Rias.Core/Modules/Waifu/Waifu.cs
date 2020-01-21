@@ -99,7 +99,7 @@ namespace Rias.Core.Modules.Waifu
             embed.AddField(GetText("ClaimedBy"), $"{waifuUsers.Count} {GetText("#Common_Users").ToLowerInvariant()}", true)
                 .AddField(GetText("#Utility_Price"), waifuPrice, true);
             
-            await Context.Channel.SendMessageAsync(Format.Bold(GetText("ClaimNote", GetPrefix())), embed: embed.Build());
+            await Context.Channel.SendMessageAsync(Format.Bold(GetText("ClaimNote", Context.Prefix)), embed: embed.Build());
 
             if (claimCanceled)
                 return;

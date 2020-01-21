@@ -42,10 +42,8 @@ namespace Rias.Core.Modules.Help
                 },
                 Footer = new EmbedFooterBuilder().WithText("© 2018-2019 Copyright: Koneko#0001")
             };
-
-            var prefix = GetPrefix();
-
-            embed.WithDescription(GetText("Info", prefix));
+            
+            embed.WithDescription(GetText("Info", Context.Prefix));
 
             var links = new StringBuilder();
             const string delimiter = " • ";
@@ -80,18 +78,17 @@ namespace Rias.Core.Modules.Help
             var module = GetModuleByAlias(alias1);
             var command = GetCommand(module, module is null ? alias1 : alias2);
             
-            var prefix = GetPrefix();
             if (command is null)
             {
-                await ReplyErrorAsync("CommandNotFound", prefix);
+                await ReplyErrorAsync("CommandNotFound", Context.Prefix);
                 return;
             }
 
             var moduleAlias = module != null ? $"{module.Aliases[0]} " : string.Empty;
-            var title = string.Join(" / ", command.Aliases.Select(a => $"{prefix}{moduleAlias}{a}"));
+            var title = string.Join(" / ", command.Aliases.Select(a => $"{Context.Prefix}{moduleAlias}{a}"));
             if (string.IsNullOrEmpty(title))
             {
-                title = $"{prefix}{moduleAlias}";
+                title = $"{Context.Prefix}{moduleAlias}";
             } 
             
             var embed = new EmbedBuilder
@@ -106,7 +103,7 @@ namespace Rias.Core.Modules.Help
 
             var description = new StringBuilder(command.Description)
                 .Append($"\n\n**{GetText("Module")}**\n{moduleName}")
-                .Replace("[prefix]", prefix)
+                .Replace("[prefix]", Context.Prefix)
                 .Replace("[currency]", Credentials.Currency);
 
             embed.WithDescription(description.ToString());
@@ -148,7 +145,7 @@ namespace Rias.Core.Modules.Help
                                                             $"{GetText("#Common_Per")}: **{GetText($"#Common_{commandCooldown.BucketType}")}**", true);
             }
 
-            embed.AddField(GetText("#Common_Example"), string.Format(command.Remarks, prefix), true);
+            embed.AddField(GetText("#Common_Example"), string.Format(command.Remarks, Context.Prefix), true);
             embed.WithCurrentTimestamp();
 
             await ReplyAsync(embed);
@@ -163,7 +160,7 @@ namespace Rias.Core.Modules.Help
                 Title = GetText("ModulesListTitle"),
                 Footer = new EmbedFooterBuilder
                 {
-                    Text = GetText("ModulesListFooter", GetPrefix())
+                    Text = GetText("ModulesListFooter", Context.Prefix)
                 }
             };
 
@@ -187,16 +184,15 @@ namespace Rias.Core.Modules.Help
         [Command("commands")]
         public async Task CommandsAsync([Remainder] string name)
         {
-            var prefix = GetPrefix();
             var module = _commandService.GetAllModules().FirstOrDefault(m => m.Name.StartsWith(name, StringComparison.InvariantCultureIgnoreCase));
             if (module is null)
             {
-                await ReplyErrorAsync("ModuleNotFound", prefix);
+                await ReplyErrorAsync("ModuleNotFound", Context.Prefix);
                 return;
             }
 
             var modulesCommands = GetModuleCommands(module);
-            var commandsAliases = GetCommandsAliases(modulesCommands, prefix);
+            var commandsAliases = GetCommandsAliases(modulesCommands, Context.Prefix);
 
             var embed = new EmbedBuilder
             {
@@ -207,12 +203,12 @@ namespace Rias.Core.Modules.Help
             foreach (var submodule in module.Submodules)
             {
                 var submoduleCommands = GetModuleCommands(submodule);
-                var submoduleCommandsAliases = GetCommandsAliases(submoduleCommands, prefix);
+                var submoduleCommandsAliases = GetCommandsAliases(submoduleCommands, Context.Prefix);
 
                 embed.AddField(submodule.Name, string.Join("\n", submoduleCommandsAliases), true);
             }
 
-            embed.WithFooter(GetText("CommandInfo", prefix));
+            embed.WithFooter(GetText("CommandInfo", Context.Prefix));
             embed.WithCurrentTimestamp();
             await ReplyAsync(embed);
         }
@@ -220,14 +216,13 @@ namespace Rias.Core.Modules.Help
         [Command("allcommands"), Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task AllCommandsAsync()
         {
-            var prefix = GetPrefix();
             var embed = new EmbedBuilder
             {
                 Color = RiasUtils.ConfirmColor,
                 Title = GetText("AllCommands"),
                 Footer = new EmbedFooterBuilder
                 {
-                    Text = GetText("CommandInfo", prefix)
+                    Text = GetText("CommandInfo", Context.Prefix)
                 },
                 Timestamp = DateTimeOffset.UtcNow
             };
@@ -240,7 +235,7 @@ namespace Rias.Core.Modules.Help
             foreach (var module in modules)
             {
                 var moduleCommands = GetModuleCommands(module);
-                var commandsAliases = GetCommandsAliases(moduleCommands, prefix);
+                var commandsAliases = GetCommandsAliases(moduleCommands, Context.Prefix);
 
                 if (commandsAliases.Count != 0)
                     embed.AddField(module.Name, string.Join("\n", commandsAliases), true);
@@ -248,7 +243,7 @@ namespace Rias.Core.Modules.Help
                 foreach (var submodule in module.Submodules.OrderBy(m => m.Name))
                 {
                     var submoduleCommands = GetModuleCommands(submodule);
-                    var submoduleCommandsAliases = GetCommandsAliases(submoduleCommands, prefix);
+                    var submoduleCommandsAliases = GetCommandsAliases(submoduleCommands, Context.Prefix);
                     if (submoduleCommandsAliases.Count != 0)
                         embed.AddField(submodule.Name, string.Join("\n", submoduleCommandsAliases), true);
                 }

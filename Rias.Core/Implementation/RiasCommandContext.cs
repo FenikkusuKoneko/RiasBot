@@ -36,8 +36,13 @@ namespace Rias.Core.Implementation
         /// Gets the user's message that executed the command.
         /// </summary>
         public SocketUserMessage Message { get; }
+        
+        /// <summary>
+        /// Gets the prefix of the server or the default one.
+        /// </summary>
+        public string Prefix { get; }
 
-        public RiasCommandContext(DiscordShardedClient client, SocketUserMessage message, IServiceProvider services) : base(services)
+        public RiasCommandContext(DiscordShardedClient client, SocketUserMessage message, IServiceProvider services, string prefix) : base(services)
         {
             Guild = (message.Channel as SocketGuildChannel)?.Guild;
             Client = client.GetShard(GetShardId(client, Guild));
@@ -45,6 +50,7 @@ namespace Rias.Core.Implementation
             User = message.Author;
             CurrentGuildUser = Guild?.CurrentUser;
             Message = message;
+            Prefix = prefix;
         }
 
         /// <summary> Gets the shard ID of the command context. </summary>

@@ -160,7 +160,7 @@ namespace Rias.Core.Modules.Administration
                         Description = string.Join("\n", x.Select(u => $"{index++}. {u} | {u.Id}")),
                         Footer = new EmbedFooterBuilder
                         {
-                            Text = GetText("WarningListFooter", GetPrefix())
+                            Text = GetText("WarningListFooter", Context.Prefix)
                         }
                     }
                 ));

@@ -284,13 +284,11 @@ namespace Rias.Core.Modules.Searches
                     return;
                 }
 
-                var prefix = GetPrefix();
-
                 var pages = animeList.Batch(10).Select(x => new InteractiveMessage
                 (
                     new EmbedBuilder
                     {
-                        Title = GetText("AnimeList", title, prefix),
+                        Title = GetText("AnimeList", title, Context.Prefix),
                         Color = RiasUtils.ConfirmColor,
                         Description = string.Join("\n", x.Select(c =>
                             $"[{(string.IsNullOrEmpty(c.Title.Romaji) ? c.Title.English : c.Title.Romaji)}]({c.SiteUrl}) | {c.Id}"))
@@ -310,14 +308,12 @@ namespace Rias.Core.Modules.Searches
                     await ReplyErrorAsync("MangaListNotFound");
                     return;
                 }
-
-                var prefix = GetPrefix();
-
+                
                 var pages = mangaList.Batch(10).Select(x => new InteractiveMessage
                 (
                     new EmbedBuilder
                     {
-                        Title = GetText("MangaList", title, prefix),
+                        Title = GetText("MangaList", title, Context.Prefix),
                         Color = RiasUtils.ConfirmColor,
                         Description = string.Join("\n", x.Select(c =>
                             $"[{(string.IsNullOrEmpty(c.Title.Romaji) ? c.Title.English : c.Title.Romaji)}]({c.SiteUrl}) | {c.Id}"))
@@ -337,14 +333,12 @@ namespace Rias.Core.Modules.Searches
                     await ReplyErrorAsync("CharactersNotFound");
                     return;
                 }
-
-                var prefix = GetPrefix();
-
+                
                 var pages = characters.Batch(10).Select(x => new InteractiveMessage
                 (
                     new EmbedBuilder
                     {
-                        Title = GetText("CharacterList", name, prefix),
+                        Title = GetText("CharacterList", name, Context.Prefix),
                         Color = RiasUtils.ConfirmColor,
                         Description = string.Join("\n", x.Select(c =>
                             $"[{c.Name.First} {c.Name.Last}]({c.SiteUrl}) | {c.Id}"))

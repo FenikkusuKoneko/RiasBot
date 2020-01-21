@@ -17,7 +17,6 @@ namespace Rias.Core.Modules
         public readonly Resources Resources;
         public readonly RiasDbContext DbContext;
         
-        private readonly CommandHandlerService _commandHandlerService;
         private readonly IServiceScope _scope;
         
         public string ParentModuleName => Context.Command.Module.Parent?.Name ?? Context.Command.Module.Name;
@@ -27,7 +26,6 @@ namespace Rias.Core.Modules
             Credentials = services.GetRequiredService<Credentials>();
             Resources = services.GetRequiredService<Resources>();
 
-            _commandHandlerService = services.GetRequiredService<CommandHandlerService>();
             
             _scope = services.CreateScope();
             DbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -68,9 +66,7 @@ namespace Rias.Core.Modules
             SplitPrefixKey(out var prefix, ref key);
             return Resources.GetText(Context.Guild?.Id, prefix, key, args);
         }
-
-        public string GetPrefix() => _commandHandlerService.GetGuildPrefix(Context.Guild?.Id);
-
+        
         /// <summary>
         /// Run a task in an async way.
         /// </summary>
