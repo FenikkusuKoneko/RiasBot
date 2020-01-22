@@ -587,7 +587,7 @@ namespace Rias.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to I couldn&apos;t find the mute role, nor the default mute role **rias-mute**.
-        ///Set a new mute role using `{0}setmute` or mute an user and I will create it automatically..
+        ///Set a new mute role using `{0}setmute` or mute a user and I will create it automatically..
         /// </summary>
         public static string Administration_MuteRoleNotFound {
             get {
@@ -1281,7 +1281,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use `{0}warnings &lt;user&gt;` to get the warnings for an user..
+        ///   Looks up a localized string similar to Use `{0}warnings &lt;user&gt;` to get the warnings for a user.
         /// </summary>
         public static string Administration_WarningListFooter {
             get {
@@ -1778,7 +1778,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The message doesn&apos;t belong to an user..
+        ///   Looks up a localized string similar to The message doesn&apos;t belong to a user.
         /// </summary>
         public static string Bot_MessageNotUserMessage {
             get {

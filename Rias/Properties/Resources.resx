@@ -180,7 +180,7 @@ The bye message is: **{0}**</value>
     </data>
     <data name="Administration_MuteRoleNotFound" xml:space="preserve">
         <value>I couldn't find the mute role, nor the default mute role **rias-mute**.
-Set a new mute role using `{0}setmute` or mute an user and I will create it automatically.</value>
+Set a new mute role using `{0}setmute` or mute a user and I will create it automatically.</value>
     </data>
     <data name="Administration_NewMuteRoleSet" xml:space="preserve">
         <value>New mute role set.</value>
@@ -404,7 +404,7 @@ I must have the **{0}** server permission(s).</value>
         <value>No warned users.</value>
     </data>
     <data name="Administration_WarningListFooter" xml:space="preserve">
-        <value>Use `{0}warnings &lt;user&gt;` to get the warnings for an user.</value>
+        <value>Use `{0}warnings &lt;user&gt;` to get the warnings for a user.</value>
     </data>
     <data name="Administration_UserWarnings" xml:space="preserve">
         <value>All warnings for {0}</value>
@@ -505,7 +505,7 @@ You must have the **{0}** server permissions.</value>
         <value>I couldn't find the message.</value>
     </data>
     <data name="Bot_MessageNotUserMessage" xml:space="preserve">
-        <value>The message doesn't belong to an user.</value>
+        <value>The message doesn't belong to a user.</value>
     </data>
     <data name="Bot_MessageNotSelf" xml:space="preserve">
         <value>The message doesn't belong to me.</value>

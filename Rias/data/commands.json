@@ -123,7 +123,7 @@
           "commands": [
             {
               "aliases": "kick k",
-              "description": "Kicks an user. If you provide a reason message I will DM the user with the reason.",
+              "description": "Kicks a user. If you provide a reason message I will DM the user with the reason.",
               "remarks": [
                 "{0}k @User",
                 "{0}k @User Your behavior is bad!"
@@ -131,7 +131,7 @@
             },
             {
               "aliases": "ban b",
-              "description": "Bans an user. If you provide a reason message I will DM the user with the reason.",
+              "description": "Bans a user. If you provide a reason message I will DM the user with the reason.",
               "remarks": [
                 "{0}b @User",
                 "{0}b @User You've violated many rules!"
@@ -139,7 +139,7 @@
             },
             {
               "aliases": "softban sb",
-              "description": "Bans an user with the option to remove his messages from last 7 days, and then unbans it. The result is a kick.",
+              "description": "Bans a user with the option to remove his messages from last 7 days, and then unbans it. The result is a kick.",
               "remarks": [
                 "{0}sb @User",
                 "{0}sb @User Don't spam here!"
@@ -147,7 +147,7 @@
             },
             {
               "aliases": "pruneban pb",
-              "description": "Bans an user with the option to remove his messages from last 7 days. Different from \"softban\" where the user is unbanned.",
+              "description": "Bans a user with the option to remove his messages from last 7 days. Different from \"softban\" where the user is unbanned.",
               "remarks": [
                 "{0}pb @User",
                 "{0}pb @User DO NOT SPAM HERE!"
@@ -170,7 +170,7 @@
           "commands": [
             {
               "aliases": "mute",
-              "description": "Mutes an user from text and voice channels. You can mute with a timeout and/or you can provide a reason.",
+              "description": "Mutes a user from text and voice channels. You can mute with a timeout and/or you can provide a reason.",
               "remarks": [
                 "{0}mute @User",
                 "{0}mute @User Stop talking off topic",
@@ -180,7 +180,7 @@
             },
             {
               "aliases": "unmute",
-              "description": "Unmutes an user from text and voice channels. You can provide a reason.",
+              "description": "Unmutes a user from text and voice channels. You can provide a reason.",
               "remarks": [
                 "{0}unmute @User",
                 "{0}unmute @User You are forgiven"
@@ -222,7 +222,7 @@
               ]
             },
             {
-              "aliases": "rolecolor rc",
+              "aliases": "rolecolor rolecolour rc",
               "description": "Sets the color for a role. The color must be hex format, '#' is optionally.",
               "remarks": [
                 "{0}rc #dc143c Rias",
@@ -259,7 +259,7 @@
             },
             {
               "aliases": "addrole ar setrole sr",
-              "description": "Adds/Sets a role to an user.",
+              "description": "Adds/Sets a role to a user.",
               "remarks": [
                 "{0}ar User Admin",
                 "{0}ar @User @Admin",
@@ -269,7 +269,7 @@
             },
             {
               "aliases": "removerole rr",
-              "description": "Removes a role from an user.",
+              "description": "Removes a role from a user.",
               "remarks": [
                 "{0}rr User Admin",
                 "{0}rr @User @Admin",
@@ -335,7 +335,7 @@
           "commands": [
             {
               "aliases": "setnickname setnick",
-              "description": "Sets an user's nickname in this server. Provide no arguments to remove its nickname.",
+              "description": "Sets a user's nickname in this server. Provide no arguments to remove its nickname.",
               "remarks": [
                 "{0}setnick User nickname",
                 "{0}setnick @User nickname",
@@ -447,7 +447,7 @@
           "commands": [
             {
               "aliases": "warn",
-              "description": "Warn an user. Also, you can specify a reason.",
+              "description": "Warn a user. Also, you can specify a reason.",
               "remarks": [
                 "{0}warn User",
                 "{0}warn @User",
@@ -458,7 +458,7 @@
             },
             {
               "aliases": "warnings warninglist warnlist",
-              "description": "Shows all warned users in this server, paginated, or shows all warnings for an user.",
+              "description": "Shows all warned users in this server, paginated, or shows all warnings for a user.",
               "remarks": [
                 "{0}warnings",
                 "{0}warnings User",
@@ -468,7 +468,7 @@
             },
             {
               "aliases": "clearwarning clearwarn",
-              "description": "Clear one warning by ID or all of an user.\nAdministrators can clear any warning and moderators can clear only their added warnings to an user.",
+              "description": "Clear one warning by ID or all of a user.\nAdministrators can clear any warning and moderators can clear only their added warnings to a user.",
               "remarks": [
                 "{0}clearwarn User 1",
                 "{0}clearwarn @User 2",
@@ -517,7 +517,7 @@
         },
         {
           "aliases": "send",
-          "description": "I will send a message to an user <u:user-id> or to a channel from a server <c:channel-id>. Embed is supported.",
+          "description": "I will send a message to a user <u:user-id> or to a channel from a server <c:channel-id>. Embed is supported.",
           "remarks": [
             "{0}send u:327927038360944640 message",
             "{0}send c:381975649428176907 message"
@@ -532,7 +532,7 @@
         },
         {
           "aliases": "finduser",
-          "description": "Searches an user from Discord and shows its info.",
+          "description": "Searches a user from Discord and shows its info.",
           "remarks": [
             "{0}finduser 327927038360944640",
             "{0}finduser Koneko#0001"
@@ -600,7 +600,7 @@
           "commands": [
             {
               "aliases": "delete",
-              "description": "Deletes an user from the database. The currency, global xp, waifus and profile settings will be erased.",
+              "description": "Deletes a user from the database. The currency, global xp, waifus and profile settings will be erased.",
               "remarks": [
                 "{0}delete 327927038360944640",
                 "{0}delete Koneko#0001"
@@ -608,7 +608,7 @@
             },
             {
               "aliases": "database db",
-              "description": "Shows details about an user from the database.",
+              "description": "Shows details about a user from the database.",
               "remarks": [
                 "{0}db 327927038360944640",
                 "{0}delete Koneko#0001"
@@ -616,7 +616,7 @@
             },
             {
               "aliases": "blacklist",
-              "description": "Adds an user to the blacklist. It will cannot generate global xp and it will cannot receive [currency].",
+              "description": "Adds a user to the blacklist. It will cannot generate global xp and it will cannot receive [currency].",
               "remarks": [
                 "{0}blacklist 327927038360944640",
                 "{0}blacklist Koneko#0001"
@@ -624,7 +624,7 @@
             },
             {
               "aliases": "removeblacklist",
-              "description": "Removes an user from the blacklist. It will can generate global xp and will can receive [currency].",
+              "description": "Removes a user from the blacklist. It will can generate global xp and will can receive [currency].",
               "remarks": [
                 "{0}removeblacklist 327927038360944640",
                 "{0}removeblacklist Koneko#0001"
@@ -632,7 +632,7 @@
             },
             {
               "aliases": "botban",
-              "description": "Bans an user from using me. It will also be added to the blacklist.",
+              "description": "Bans a user from using me. It will also be added to the blacklist.",
               "remarks": [
                 "{0}botban 327927038360944640",
                 "{0}botban Koneko#0001"
@@ -640,7 +640,7 @@
             },
             {
               "aliases": "removebotban",
-              "description": "Unbans an user, allow it to use me. It will not be removed from the blacklist (if it is).",
+              "description": "Unbans a user, allow it to use me. It will not be removed from the blacklist (if it is).",
               "remarks": [
                 "{0}removebotban 327927038360944640",
                 "{0}removebotban Koneko#0001"
@@ -705,7 +705,7 @@
           "commands": [
             {
               "aliases": "currency $ hearts",
-              "description": "Shows the currency you have or for an user.",
+              "description": "Shows the currency you have or for a user.",
               "remarks": [
                 "{0}$",
                 "{0}$ User",
@@ -715,7 +715,7 @@
             },
             {
               "aliases": "reward",
-              "description": "Rewards an user with some amount of [currency].",
+              "description": "Rewards a user with some amount of [currency].",
               "remarks": [
                 "{0}reward 100 User",
                 "{0}reward 100 @User",
@@ -724,7 +724,7 @@
             },
             {
               "aliases": "take",
-              "description": "Takes some amount of [currency] from an user.",
+              "description": "Takes some amount of [currency] from a user.",
               "remarks": [
                 "{0}take 100 User",
                 "{0}take 100 @User",
@@ -856,7 +856,7 @@
       "aliases": "profile",
       "commands": [
         {
-          "description": "Shows your profile or for an user.",
+          "description": "Shows your profile or for a user.",
           "remarks": [
             "{0}profile",
             "{0}profile User",
@@ -886,7 +886,7 @@
           ]
         },
         {
-          "aliases": "color",
+          "aliases": "color colour",
           "description": "Sets the profile's color. It can be a hex or a html name. Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a custom one you must be a Patron.",
           "remarks": [
             "{0}profile color red",
@@ -895,7 +895,7 @@
         },
         {
           "aliases": "badge",
-          "description": "Sets a profile badge. There are 3 badges that an user can have depending of its Patreon tier.",
+          "description": "Sets a profile badge. There are 3 badges that a user can have depending of its Patreon tier.",
           "remarks": [
             "{0}profile badge 1 2D>3D",
             "{0}profile badge 2 Hentai",
@@ -909,7 +909,7 @@
       "commands": [
         {
           "aliases": "pat pet",
-          "description": "Pat an user <3.",
+          "description": "Pat a user <3.",
           "remarks": [
             "{0}pat",
             "{0}pat User",
@@ -919,7 +919,7 @@
         },
         {
           "aliases": "hug",
-          "description": "Hug an user <3.",
+          "description": "Hug a user <3.",
           "remarks": [
             "{0}hug",
             "{0}hug User",
@@ -929,7 +929,7 @@
         },
         {
           "aliases": "kiss",
-          "description": "Kiss an user :heart:.",
+          "description": "Kiss a user :heart:.",
           "remarks": [
             "{0}kiss",
             "{0}kiss User",
@@ -939,7 +939,7 @@
         },
         {
           "aliases": "lick",
-          "description": "Lick an user, lewd.",
+          "description": "Lick a user, lewd.",
           "remarks": [
             "{0}lick",
             "{0}lick User",
@@ -949,7 +949,7 @@
         },
         {
           "aliases": "cuddle",
-          "description": "Cuddle an user.",
+          "description": "Cuddle a user.",
           "remarks": [
             "{0}cuddle",
             "{0}cuddle User",
@@ -959,7 +959,7 @@
         },
         {
           "aliases": "bite",
-          "description": "Bite an user.",
+          "description": "Bite a user.",
           "remarks": [
             "{0}bite",
             "{0}bite User",
@@ -969,7 +969,7 @@
         },
         {
           "aliases": "slap",
-          "description": "Slap an user.",
+          "description": "Slap a user.",
           "remarks": [
             "{0}slap",
             "{0}slap User",
@@ -986,7 +986,7 @@
         },
         {
           "aliases": "grope",
-          "description": "Grope an user.",
+          "description": "Grope a user.",
           "remarks": [
             "{0}grope",
             "{0}grope User",
@@ -1013,7 +1013,7 @@
         },
         {
           "aliases": "poke",
-          "description": "Poke an user.",
+          "description": "Poke a user.",
           "remarks": [
             "{0}poke",
             "{0}poke User",
@@ -1200,7 +1200,7 @@
           ]
         },
         {
-          "aliases": "color",
+          "aliases": "color colour",
           "description": "Generates a preview image of a hex color or a html name color.",
           "remarks": [
             "{0}color #dc143c",
@@ -1229,7 +1229,7 @@
             },
             {
               "aliases": "userinfo uinfo",
-              "description": "Shows the info for an user. Provide no arguments to show your info.",
+              "description": "Shows the info for a user. Provide no arguments to show your info.",
               "remarks": [
                 "{0}uinfo",
                 "{0}uinfo User",
@@ -1253,7 +1253,7 @@
             },
             {
               "aliases": "avatar av",
-              "description": "Shows the avatar for an user. Provide no arguments to show your avatar.",
+              "description": "Shows the avatar for a user. Provide no arguments to show your avatar.",
               "remarks": [
                 "{0}av",
                 "{0}av User",
@@ -1303,7 +1303,7 @@
         },
         {
           "aliases": "all waifus",
-          "description": "Shows all your waifus or for an user.",
+          "description": "Shows all your waifus or for a user.",
           "remarks": [
             "{0}waifu all"
           ]
@@ -1349,7 +1349,7 @@
       "commands": [
         {
           "aliases": "xp",
-          "description": "Shows your global level, global xp, server level and server xp, or for an user.",
+          "description": "Shows your global level, global xp, server level and server xp, or for a user.",
           "remarks": [
             "{0}xp",
             "{0}xp User",
@@ -1382,7 +1382,7 @@
         },
         {
           "aliases": "leveluprolereward lurr",
-          "description": "Adds a role in the level up role reward list.\nWhen an user reaches the level it will be rewarded with the role.\nTo remove a role from the list provide no role for the respective level.",
+          "description": "Adds a role in the level up role reward list.\nWhen a user reaches the level it will be rewarded with the role.\nTo remove a role from the list provide no role for the respective level.",
           "remarks": [
             "{0}lurr 5 Active",
             "{0}lurr 5"
