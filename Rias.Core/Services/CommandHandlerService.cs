@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -232,7 +233,7 @@ namespace Rias.Core.Services
             switch (result)
             {
                 case ChecksFailedResult failedResult:
-                    await RunTaskAsync(SendErrorResultMessageAsync(context, userMessage, failedResult));
+                    await RunTaskAsync(SendErrorResultMessageAsync(context, failedResult));
                     break;
                 case CommandOnCooldownResult commandOnCooldownResult:
                     await RunTaskAsync(SendCommandOnCooldownMessageAsync(context, commandOnCooldownResult));
@@ -241,32 +242,35 @@ namespace Rias.Core.Services
                     if (typeParseFailedResult.Reason.StartsWith('#'))
                         await RunTaskAsync(SendTypeParseFailedResultAsync(context, typeParseFailedResult));
                     break;
+                case ArgumentParseFailedResult argumentParseFailedResult:
+                    await RunTaskAsync(SendArgumentParseFailedResultAsync(context, argumentParseFailedResult));
+                    break;
             }
         }
 
-        private Task SendErrorResultMessageAsync(RiasCommandContext context, SocketUserMessage userMessage, ChecksFailedResult result)
+        private Task SendErrorResultMessageAsync(RiasCommandContext context, ChecksFailedResult result)
         {
             var guildId = context.Guild?.Id;
             var embed = new EmbedBuilder
             {
                 Color = RiasUtils.ErrorColor,
-                Title = _resources.GetText(guildId, "Service", "CommandNotExecuted")
+                Title = GetText(guildId, "Service", "CommandNotExecuted")
             };
 
             var failedChecks = result.FailedChecks;
             (CheckAttribute? check, CheckResult? checkResult) = (null, null);
 
-            var description = _resources.GetText(guildId, "Common", "Reason");
+            var description = GetText(guildId, "Common", "Reason");
             if (failedChecks.Count > 1)
             {
-                description = _resources.GetText(guildId, "Common", "Reasons");
+                description = GetText(guildId, "Common", "Reasons");
                 (check, checkResult) = failedChecks.FirstOrDefault(x => x.Check is ContextAttribute);
             }
 
             embed.WithDescription(check is null
                 ? $"**{description}**:\n{string.Join("\n", failedChecks.Select(x => x.Result.Reason))}"
                 : $"**{description}**:\n{checkResult?.Reason}");
-            return userMessage.Channel.SendMessageAsync(embed);
+            return context.Channel.SendMessageAsync(embed);
         }
 
         private async Task SendCommandOnCooldownMessageAsync(RiasCommandContext context, CommandOnCooldownResult result)
@@ -286,7 +290,7 @@ namespace Rias.Core.Services
 
             _cooldownService.Add(cooldownKey);
             
-            await context.Channel.SendErrorMessageAsync(_resources.GetText(context.Guild?.Id, "Service", "CommandCooldown",
+            await context.Channel.SendErrorMessageAsync(GetText(context.Guild?.Id, "Service", "CommandCooldown",
                 retryAfter.Humanize(culture: _resources.GetGuildCulture(context.Guild?.Id))));
             
             await Task.Delay(retryAfter);
@@ -298,7 +302,31 @@ namespace Rias.Core.Services
             string? prefix = null;
             var reason = result.Reason;
             SplitPrefixKey(ref prefix, ref reason);
-            return context.Channel.SendErrorMessageAsync(_resources.GetText(context.Guild?.Id, prefix, reason));
+            return context.Channel.SendErrorMessageAsync(GetText(context.Guild?.Id, prefix, reason));
+        }
+        
+        private async Task SendArgumentParseFailedResultAsync(RiasCommandContext context, ArgumentParseFailedResult result)
+        {
+            var guildId = context.Guild?.Id;
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ErrorColor,
+                Title = GetText(guildId, "Service", "CommandNotExecuted")
+            };
+
+            var rawArguments = Regex.Matches(result.RawArguments, @"\w+|""[\w\s]*""");
+            if (rawArguments.Count == result.Command.Parameters.Count)
+                return;
+            
+            if (rawArguments.Count < result.Command.Parameters.Count)
+                embed.WithDescription(GetText(guildId, "Service", "CommandLessArguments",
+                    await GetGuildPrefixAsync(context.Guild), result.Command.Name));
+            
+            if (rawArguments.Count > result.Command.Parameters.Count)
+                embed.WithDescription(GetText(guildId, "Service", "CommandManyArguments",
+                    await GetGuildPrefixAsync(context.Guild), result.Command.Name));
+            
+            await context.Channel.SendMessageAsync(embed);
         }
         
         private async Task<string> GetGuildPrefixAsync(SocketGuild? guild)

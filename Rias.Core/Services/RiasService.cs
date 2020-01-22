@@ -51,7 +51,7 @@ namespace Rias.Core.Services
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
-        public string GetText(ulong guildId, string? prefix, string key, params object[] args)
+        public string GetText(ulong? guildId, string? prefix, string key, params object[] args)
         {
             SplitPrefixKey(ref prefix, ref key);
             return Resources.GetText(guildId, prefix, key, args);

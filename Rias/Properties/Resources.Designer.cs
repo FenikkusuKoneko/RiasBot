@@ -3454,6 +3454,26 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The arguments provided are less than the required arguments of the command.
+        ///For more details on how to use the command type `{0}help {1}`.
+        /// </summary>
+        public static string Service_CommandLessArguments {
+            get {
+                return ResourceManager.GetString("Service_CommandLessArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The arguments provided are more than the required arguments of the command.
+        ///For more details on how to use the command type `{0}help {1}`.
+        /// </summary>
+        public static string Service_CommandManyArguments {
+            get {
+                return ResourceManager.GetString("Service_CommandManyArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The command couldn&apos;t be executed.
         /// </summary>
         public static string Service_CommandNotExecuted {

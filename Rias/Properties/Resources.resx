@@ -1555,4 +1555,12 @@ Examples 1mo2d3h4m5s, 1w2d3h4m5s, 1h2m, 1m2s.</value>
     <data name="Service_CommandCooldown" xml:space="preserve">
         <value>Hey, calm down! Take a breath and try again in **{0}**.</value>
     </data>
+    <data name="Service_CommandLessArguments" xml:space="preserve">
+        <value>The arguments provided are less than the required arguments of the command.
+For more details on how to use the command type `{0}help {1}`</value>
+    </data>
+    <data name="Service_CommandManyArguments" xml:space="preserve">
+        <value>The arguments provided are more than the required arguments of the command.
+For more details on how to use the command type `{0}help {1}`</value>
+    </data>
 </root>
