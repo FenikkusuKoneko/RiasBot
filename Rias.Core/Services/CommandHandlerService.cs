@@ -194,6 +194,8 @@ namespace Rias.Core.Services
             }
 
             var index = userMessage.Content.IndexOf(' ');
+            if (index < 1) return;
+            
             var mention = userMessage.Content[..index];
             if (MentionUtils.TryParseUser(mention, out var id))
             {

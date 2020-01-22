@@ -307,7 +307,7 @@ namespace Rias.Core.Services
 #if GLOBAL || DEBUG
             const string currency = "Hearts";
 #else
-            const string currency = "Currency;";
+            const string currency = "Currency";
 #endif
             
             using var currencyTextImage = new MagickImage($"caption:{Resources.GetText(guild.Id, "Gambling", currency)}", settings);
