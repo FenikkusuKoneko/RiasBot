@@ -57,7 +57,7 @@ namespace Rias.Core.Services
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var votes = db.Votes.Where(x => !x.Checked);
+            var votes = await db.Votes.Where(x => !x.Checked).ToListAsync();
             foreach (var vote in votes)
             {
                 var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == vote.UserId);
