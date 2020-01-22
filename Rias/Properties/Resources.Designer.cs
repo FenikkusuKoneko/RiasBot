@@ -1236,7 +1236,7 @@ namespace Rias.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to This server doesn&apos;t have a warning punishment set so I must be a moderator to execute the `warn` command.
-        ///I must have the **{0}** server {1}..
+        ///I must have the **{0}** server permission(s)..
         /// </summary>
         public static string Administration_WarningBotNoPermissionsDefault {
             get {
@@ -1245,7 +1245,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This server has **{0}** warning punishment set so I must have the **{1}** server {2} to execute the `warn` command..
+        ///   Looks up a localized string similar to This server has **{0}** warning punishment set so I must have the **{1}** server permission(s) to execute the `warn` command..
         /// </summary>
         public static string Administration_WarningBotNoPermissionsPunishment {
             get {
@@ -1363,7 +1363,7 @@ namespace Rias.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to This server doesn&apos;t have a warning punishment set so you must be a moderator to use the `warn` command.
-        ///You must have the **{0}** server {1}..
+        ///You must have the **{0}** server permission(s)..
         /// </summary>
         public static string Administration_WarningUserNoPermissionsDefault {
             get {
@@ -1372,7 +1372,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This server has **{0}** warning punishment set so you must have the **{1}** server {2} to use the `warn` command..
+        ///   Looks up a localized string similar to This server has **{0}** warning punishment set so you must have the **{1}** server permission(s) to use the `warn` command..
         /// </summary>
         public static string Administration_WarningUserNoPermissionsPunishment {
             get {
@@ -1417,16 +1417,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to I must have the {0} server permission..
-        /// </summary>
-        public static string Attribute_BotGuildPermission {
-            get {
-                return ResourceManager.GetString("Attribute_BotGuildPermission", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to I must have the {0} server permissions..
+        ///   Looks up a localized string similar to I must have the {0} server permission(s)..
         /// </summary>
         public static string Attribute_BotGuildPermissions {
             get {
@@ -1462,34 +1453,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Permission.
-        /// </summary>
-        public static string Attribute_Permission {
-            get {
-                return ResourceManager.GetString("Attribute_Permission", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Permissions.
-        /// </summary>
-        public static string Attribute_Permissions {
-            get {
-                return ResourceManager.GetString("Attribute_Permissions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You must have the {0} server permission..
-        /// </summary>
-        public static string Attribute_UserGuildPermission {
-            get {
-                return ResourceManager.GetString("Attribute_UserGuildPermission", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You must have the {0} server permissions..
+        ///   Looks up a localized string similar to You must have the {0} server permission(s)..
         /// </summary>
         public static string Attribute_UserGuildPermissions {
             get {

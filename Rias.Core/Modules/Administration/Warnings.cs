@@ -417,7 +417,7 @@ namespace Rias.Core.Modules.Administration
                             .Split(" ")
                             .Select(x => GetText($"{x}Permission"))
                             .Humanize(GetText("#Common_Or").ToLowerInvariant());
-                        await ReplyErrorAsync($"Warning{userType}NoPermissionsDefault", permsHumanized, GetText("#Attribute_Permissions").ToLowerInvariant());
+                        await ReplyErrorAsync($"Warning{userType}NoPermissionsDefault", permsHumanized);
                         return;
                     }
                     case PermissionRequired.KickBan:
@@ -426,14 +426,14 @@ namespace Rias.Core.Modules.Administration
                             .Split(" ")
                             .Select(x => GetText($"{x}Permission"))
                             .Humanize(GetText("#Common_Or").ToLowerInvariant());
-                        await ReplyErrorAsync($"Warning{userType}NoPermissionsPunishment", permsHumanized, GetText("#Attribute_Permissions").ToLowerInvariant());
+                        await ReplyErrorAsync($"Warning{userType}NoPermissionsPunishment", permsHumanized);
                         return;
                     }
                 }
                 
                 var punishmentHumanized = guildDb.WarningPunishment.Humanize(LetterCasing.Title);
                 var permHumanized = GetText($"{permissions.Humanize()}Permission");
-                await ReplyErrorAsync($"Warning{userType}NoPermissionsPunishment", punishmentHumanized, permHumanized, GetText("#Attribute_Permission").ToLowerInvariant());
+                await ReplyErrorAsync($"Warning{userType}NoPermissionsPunishment", punishmentHumanized, permHumanized);
             }
 
             private async Task ApplyWarnPunishmentAsync(SocketGuildUser user, PunishmentMethod punishment, Guilds guildDb)

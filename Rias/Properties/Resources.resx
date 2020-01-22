@@ -364,17 +364,17 @@ Set a new mute role using `{0}setmute` or mute an user and I will create it auto
     </data>
     <data name="Administration_WarningUserNoPermissionsDefault" xml:space="preserve">
         <value>This server doesn't have a warning punishment set so you must be a moderator to use the `warn` command.
-You must have the **{0}** server {1}.</value>
+You must have the **{0}** server permission(s).</value>
     </data>
     <data name="Administration_WarningUserNoPermissionsPunishment" xml:space="preserve">
-        <value>This server has **{0}** warning punishment set so you must have the **{1}** server {2} to use the `warn` command.</value>
+        <value>This server has **{0}** warning punishment set so you must have the **{1}** server permission(s) to use the `warn` command.</value>
     </data>
     <data name="Administration_WarningBotNoPermissionsDefault" xml:space="preserve">
         <value>This server doesn't have a warning punishment set so I must be a moderator to execute the `warn` command.
-I must have the **{0}** server {1}.</value>
+I must have the **{0}** server permission(s).</value>
     </data>
     <data name="Administration_WarningBotNoPermissionsPunishment" xml:space="preserve">
-        <value>This server has **{0}** warning punishment set so I must have the **{1}** server {2} to execute the `warn` command.</value>
+        <value>This server has **{0}** warning punishment set so I must have the **{1}** server permission(s) to execute the `warn` command.</value>
     </data>
     <data name="Administration_CannotWarnOwner" xml:space="preserve">
         <value>You cannot warn the owner of the server.</value>
@@ -1506,29 +1506,17 @@ You successfully claimed **{0}** for {1} {2}.</value>
         <value>Server</value>
     </data>
 
-    <data name="Attribute_Permission" xml:space="preserve">
-        <value>Permission</value>
-    </data>
-    <data name="Attribute_Permissions" xml:space="preserve">
-        <value>Permissions</value>
-    </data>
     <data name="Attribute_OwnerOnly" xml:space="preserve">
         <value>This command can be ran only by master.</value>
     </data>
-    <data name="Attribute_UserGuildPermission" xml:space="preserve">
-        <value>You must have the {0} server permission.</value>
-    </data>
     <data name="Attribute_UserGuildPermissions" xml:space="preserve">
-        <value>You must have the {0} server permissions.</value>
+        <value>You must have the {0} server permission(s).</value>
     </data>
     <data name="Attribute_UserPermissionNotGuild" xml:space="preserve">
         <value>The `UserPermissionAttribute` requires this command to be used in a server channel.</value>
     </data>
-    <data name="Attribute_BotGuildPermission" xml:space="preserve">
-        <value>I must have the {0} server permission.</value>
-    </data>
     <data name="Attribute_BotGuildPermissions" xml:space="preserve">
-        <value>I must have the {0} server permissions.</value>
+        <value>I must have the {0} server permission(s).</value>
     </data>
     <data name="Attribute_BotPermissionNotGuild" xml:space="preserve">
         <value>The `BotPermissionAttribute` requires this command to be used in a server channel.</value>

@@ -54,9 +54,7 @@ namespace Rias.Core.Attributes
 
             var guildId = context.Guild?.Id;
             var permsHumanized = requiredPermsList.Humanize(x => $"**{x.Titleize()}**", resources.GetText(guildId, "Common", "And").ToLowerInvariant());
-            
-            var permStringKey = requiredPermsList.Length > 1 ? "BotGuildPermissions" : "BotGuildPermission";
-            return CheckResult.Unsuccessful(resources.GetText(guildId, "Attribute", permStringKey, permsHumanized));
+            return CheckResult.Unsuccessful(resources.GetText(guildId, "Attribute", "BotGuildPermissions", permsHumanized));
         }
     }
 }
