@@ -32,6 +32,7 @@ namespace Rias.Core.Services
         private readonly CooldownService _cooldownService;
 
         private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.json");
+        public static int CommandsAttempted;
         public static int CommandsExecuted;
 
         public CommandHandlerService(IServiceProvider services) : base(services)
@@ -218,6 +219,7 @@ namespace Rias.Core.Services
             var context = new RiasCommandContext(_client, userMessage, Services, prefix);
             var result = await _service.ExecuteAsync(output, context);
 
+            CommandsAttempted++;
             if (result.IsSuccessful)
             {
                 if (channel != null &&

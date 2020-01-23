@@ -52,6 +52,7 @@ namespace Rias.Core.Modules.Utility
                     .AddField(GetText("MasterId"), Credentials.MasterId, true)
                     .AddField(GetText("Shard"), $"{_client.GetShardIdFor(Context.Guild)}/{_client.Shards.Count}", true)
                     .AddField(GetText("InServer"), Context.Guild?.Name ?? "-", true)
+                    .AddField(GetText("CommandsAttempted"), CommandHandlerService.CommandsAttempted, true)
                     .AddField(GetText("CommandsExecuted"), CommandHandlerService.CommandsExecuted, true)
                     .AddField(GetText("Uptime"), Rias.UpTime.Elapsed.Humanize(5, Resources.GetGuildCulture(Context.Guild?.Id), TimeUnit.Month, TimeUnit.Second), true)
                     .AddField(GetText("Presence"), $"{_client.Guilds.Count} {GetText("Servers")}\n" +

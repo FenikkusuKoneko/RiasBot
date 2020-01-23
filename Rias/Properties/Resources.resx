@@ -867,7 +867,7 @@ Type `{0}allcommands` to get a list with all commands.</value>
         <value>Profile color set.</value>
     </data>
     <data name="Profile_InvalidColor" xml:space="preserve">
-        <value>Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available.
+        <value>Only White, Red, Green, Cyan/Aqua, Orange, HotPink and Magenta are available.
 For a custom one you must have the Patreon Tier 2. Check it here: [Patreon]({0})</value>
     </data>
     <data name="Profile_FirstBadgeNoPatreon" xml:space="preserve">
@@ -1188,6 +1188,9 @@ Rest latency: {1} ms</value>
     </data>
     <data name="Utility_InServer" xml:space="preserve">
         <value>In server</value>
+    </data>
+    <data name="Utility_CommandsAttempted" xml:space="preserve">
+        <value>Commands attempted</value>
     </data>
     <data name="Utility_CommandsExecuted" xml:space="preserve">
         <value>Commands executed</value>

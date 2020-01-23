@@ -1281,7 +1281,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use `{0}warnings &lt;user&gt;` to get the warnings for a user.
+        ///   Looks up a localized string similar to Use `{0}warnings &lt;user&gt;` to get the warnings for a user..
         /// </summary>
         public static string Administration_WarningListFooter {
             get {
@@ -1778,7 +1778,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The message doesn&apos;t belong to a user.
+        ///   Looks up a localized string similar to The message doesn&apos;t belong to a user..
         /// </summary>
         public static string Bot_MessageNotUserMessage {
             get {
@@ -2841,7 +2841,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available.
+        ///   Looks up a localized string similar to Only White, Red, Green, Cyan/Aqua, Orange, HotPink and Magenta are available.
         ///For a custom one you must have the Patreon Tier 2. Check it here: [Patreon]({0}).
         /// </summary>
         public static string Profile_InvalidColor {
@@ -3634,6 +3634,15 @@ namespace Rias.Properties {
         public static string Utility_Chose {
             get {
                 return ResourceManager.GetString("Utility_Chose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commands attempted.
+        /// </summary>
+        public static string Utility_CommandsAttempted {
+            get {
+                return ResourceManager.GetString("Utility_CommandsAttempted", resourceCulture);
             }
         }
         

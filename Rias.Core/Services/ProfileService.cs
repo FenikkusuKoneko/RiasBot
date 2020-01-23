@@ -45,10 +45,10 @@ namespace Rias.Core.Services
             new Color(255, 255, 255),    //white
             new Color(255, 0, 0),        //red
             new Color(0, 255, 0),        //green
-            new Color(0, 255, 255),      //cyan
+            new Color(0, 255, 255),      //cyan/aqua
             new Color(255, 165, 0),      //orange
             new Color(255, 105, 180),    //hot pink
-            new Color(255, 0, 180)       //magenta
+            new Color(255, 0, 255)       //magenta
         };
 
         public async Task<Stream> GenerateProfileImageAsync(SocketGuildUser user)
