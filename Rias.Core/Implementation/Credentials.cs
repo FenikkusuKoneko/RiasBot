@@ -106,9 +106,8 @@ namespace Rias.Core.Implementation
             
             using var sha = SHA512.Create();
             var hash = GetHash(sha, GlobalPassword);
-
+            
             IsGlobal = hash.Equals(_hash, StringComparison.OrdinalIgnoreCase);
-            Log.Information($"IsGlobal: {IsGlobal}");
         }
         
         private static string GetHash(HashAlgorithm hashAlgorithm, string input)
