@@ -866,7 +866,7 @@
         },
         {
           "aliases": "background bg cover image",
-          "description": "Sets the profile's background image. Price: 1000 [currency].\nOnly https. Direct image links, png, jpg or jpeg allowed.\nFor better results, resize and/or crop the image to 500x250. NSFW images are not allowed, you will be banned.",
+          "description": "Sets the profile's background image. Price: 1000 [currency].\nOnly https. Direct image links, png, jpg or jpeg allowed.\nFor better results, resize and/or crop the image to 500x250.\nNSFW images are not allowed, you will be banned.",
           "remarks": [
             "{0}profile bg https://i.imgur.com/pQAwZJ3.png"
           ]
@@ -1319,7 +1319,7 @@
         },
         {
           "aliases": "image avatar",
-          "description": "Set an image for your special waifu or for your custom ones, the url link comes first then the waifu name or id. Oh and it's free.",
+          "description": "Set an image for your special waifu or for your custom ones, the url link comes first then the waifu name or id. Oh and it's free.\nNSFW images are not allowed, you will be banned.",
           "remarks": [
             "{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg Rias Gremory",
             "{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg 50389",
