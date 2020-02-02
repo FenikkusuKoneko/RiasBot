@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,6 +49,7 @@ namespace Rias.Core.Services
 
             if (!string.IsNullOrEmpty(creds.DiscordBotListToken))
             {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Creds.DiscordBotListToken);
                 DblTimer = new Timer(async _ => await PostDiscordBotListStats(), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
             }
         }
@@ -145,16 +147,11 @@ namespace Rias.Core.Services
             
             try
             {
-                using var content = new FormUrlEncodedContent(
-                    new Dictionary<string, string>
-                    {
-                        {"shard_count", _client.Shards.Count.ToString()},
-                        {"server_count", _client.Guilds.Count.ToString()}
-                    });
-                content.Headers.Clear();
-                content.Headers.Add("Authorization", Creds.DiscordBotListToken);
-                content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-
+                using var content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {"shard_count", _client.Shards.Count.ToString()},
+                    {"server_count", _client.Guilds.Count.ToString()}
+                });
                 await _httpClient.PostAsync($"https://top.gg/api/bots/{_client.CurrentUser.Id}/stats", content);
             }
             catch (Exception ex)
