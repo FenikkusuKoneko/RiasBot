@@ -23,7 +23,7 @@ namespace Rias.Core.Implementation
         public string DiscordBotList { get; set; }
         
         public string UrbanDictionaryApiKey { get; }
-        public string DiscordBotListApiKey { get; }
+        public string DiscordBotListToken { get; }
         public string WeebServicesToken { get; }
 
         public DatabaseConfig? DatabaseConfig { get; }
@@ -59,7 +59,7 @@ namespace Rias.Core.Implementation
             DiscordBotList = config.GetValue<string>(nameof(DiscordBotList));
 
             UrbanDictionaryApiKey = config.GetValue<string>(nameof(UrbanDictionaryApiKey));
-            DiscordBotListApiKey = config.GetValue<string>(nameof(DiscordBotListApiKey));
+            DiscordBotListToken = config.GetValue<string>(nameof(DiscordBotListToken));
             WeebServicesToken = config.GetValue<string>(nameof(WeebServicesToken));
 
             var databaseConfig = config.GetSection(nameof(DatabaseConfig));
