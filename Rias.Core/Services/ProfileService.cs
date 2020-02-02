@@ -304,11 +304,7 @@ namespace Rias.Core.Services
             settings.FillColor = MagickColors.White;
             settings.FontPointsize = 15;
 
-#if GLOBAL || DEBUG
-            const string currency = "Hearts";
-#else
-            const string currency = "Currency";
-#endif
+            var currency = Creds.IsGlobal ? "Hearts" : "Currency";
             
             using var currencyTextImage = new MagickImage($"caption:{Resources.GetText(guild.Id, "Gambling", currency)}", settings);
             image.Draw(new DrawableComposite(100 - (double) currencyTextImage.Width / 2, 315, CompositeOperator.Over, currencyTextImage));

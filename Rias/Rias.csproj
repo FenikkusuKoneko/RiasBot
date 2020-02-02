@@ -9,7 +9,7 @@
         <PackageVersion>2.0.0-alpha</PackageVersion>
         <Copyright>2018-2019 Koneko</Copyright>
         <PackageProjectUrl>https://riasbot.me</PackageProjectUrl>
-        <Configurations>Debug;Release;Global</Configurations>
+        <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 

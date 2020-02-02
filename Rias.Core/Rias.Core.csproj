@@ -5,7 +5,7 @@
         <LangVersion>8</LangVersion>
         <Nullable>enable</Nullable>
         <NoWarn>NU1701</NoWarn>
-        <Configurations>Debug;Release;Global</Configurations>
+        <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 

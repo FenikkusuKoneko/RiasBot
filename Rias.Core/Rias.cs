@@ -22,7 +22,7 @@ namespace Rias.Core
     public class Rias
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "2.4.12";
+        public const string Version = "2.4.13";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         private DiscordShardedClient? _client;
@@ -31,13 +31,18 @@ namespace Rias.Core
 
         public async Task InitializeAsync()
         {
-#if GLOBAL
-            Log.Information($"Initializing public RiasBot version {Version}");
-#elif DEBUG || RELEASE
-            Log.Information($"Initializing development RiasBot version {Version}");
-#endif
-
             _creds = new Credentials();
+            
+            if (_creds.IsGlobal)
+                Log.Information($"Initializing global RiasBot version {Version}");
+            else
+            {
+#if !DEBUG
+                Log.Information($"Initializing RiasBot version {Version}");
+#else
+                Log.Information($"Initializing development RiasBot version {Version}");
+#endif
+            }
 
             _client = new DiscordShardedClient(new DiscordSocketConfig
             {

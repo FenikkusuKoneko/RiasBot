@@ -121,12 +121,10 @@ namespace Rias.Core.Services
                     {
                         if (command.Aliases.Contains(commandAlias))
                             continue;
-                        
-#if !(DEBUG || GLOBAL)
-                        if (string.Equals(commandAlias, "hearts", StringComparison.Ordinal))
+
+                        if (!Creds.IsGlobal && string.Equals(commandAlias, "hearts", StringComparison.Ordinal))
                             continue;
-#endif
-                        
+
                         command.AddAlias(commandAlias);
                     }
                 }

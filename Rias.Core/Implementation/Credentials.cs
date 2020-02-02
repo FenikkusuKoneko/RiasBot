@@ -1,35 +1,42 @@
 using System;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using Discord;
 using Microsoft.Extensions.Configuration;
 using Rias.Core.Commons.Configs;
+using Serilog;
 
 namespace Rias.Core.Implementation
 {
     public class Credentials
     {
-        public string Prefix { get; }
-        public string Token { get; }
+        public readonly string Prefix;
+        public readonly string Token;
 
         public ulong MasterId { get; }
         public string Currency { get; }
 
-        public string Invite { get; }
-        public string OwnerServerInvite { get; }
+        public readonly string Invite;
+        public readonly string OwnerServerInvite;
         public ulong OwnerServerId { get; }
 
-        public string Patreon { get; }
-        public string Website { get; }
-        public string DiscordBotList { get; set; }
-        
-        public string UrbanDictionaryApiKey { get; }
-        public string DiscordBotListToken { get; }
-        public string WeebServicesToken { get; }
+        public readonly string Patreon;
+        public readonly string Website;
+        public readonly string DiscordBotList;
 
-        public DatabaseConfig? DatabaseConfig { get; }
-        public VotesConfig? VotesConfig { get; }
-        public PatreonConfig? PatreonConfig { get; }
+        public readonly string UrbanDictionaryApiKey;
+        public readonly string DiscordBotListToken;
+        public readonly string WeebServicesToken;
 
+        public readonly DatabaseConfig? DatabaseConfig;
+        public readonly VotesConfig? VotesConfig;
+        public readonly PatreonConfig? PatreonConfig;
+
+        public readonly string GlobalPassword;
+        public bool IsGlobal { get; }
+
+        private readonly string _hash = "5700A1E58C59A2B9297478473CCD078ACAE139ED0D40734347F141A35566A7CE03C336D4575E09788839731AEB235A2A6E0C17744E0CEB64B6119D34F3300D8F";
         private readonly string _credsPath = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
 
         public Credentials()
@@ -92,6 +99,29 @@ namespace Rias.Core.Implementation
                 UrlParameters = patreonConfig.GetValue<string>(nameof(PatreonConfig.UrlParameters)),
                 Authorization = patreonConfig.GetValue<string>(nameof(PatreonConfig.Authorization))
             };
+            
+            GlobalPassword = config.GetValue<string>(nameof(GlobalPassword));
+            if (string.IsNullOrEmpty(GlobalPassword))
+                return;
+            
+            using var sha = SHA512.Create();
+            var hash = GetHash(sha, GlobalPassword);
+
+            IsGlobal = hash.Equals(_hash, StringComparison.OrdinalIgnoreCase);
+            Log.Information($"IsGlobal: {IsGlobal}");
+        }
+        
+        private static string GetHash(HashAlgorithm hashAlgorithm, string input)
+        {
+            var data = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(input));
+            var sb = new StringBuilder();
+            
+            foreach (var b in data)
+            {
+                sb.Append(b.ToString("x2"));
+            }
+
+            return sb.ToString();
         }
     }
 }
