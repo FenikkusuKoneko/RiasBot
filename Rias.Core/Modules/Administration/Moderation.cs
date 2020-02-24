@@ -148,15 +148,19 @@ namespace Rias.Core.Modules.Administration
 
                 if (amount < 1)
                     return;
-                if (amount > 100)
+                if (amount < 100)
+                    amount++;
+                else
                     amount = 100;
 
                 var messages = (await channel.GetMessagesAsync(amount).FlattenAsync())
                     .Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt.ToUniversalTime()).Days < 14)
-                    .ToArray();
+                    .ToList();
 
-                if (messages.Length != 0)
+                if (messages.Count != 0)
+                {
                     await channel.DeleteMessagesAsync(messages);
+                }
                 else
                     await ReplyErrorAsync("PruneLimit");
             }
@@ -181,7 +185,9 @@ namespace Rias.Core.Modules.Administration
 
                 if (amount < 1)
                     return;
-                if (amount > 100)
+                if (amount < 100)
+                    amount++;
+                else
                     amount = 100;
 
                 var messages = (await channel.GetMessagesAsync().FlattenAsync())

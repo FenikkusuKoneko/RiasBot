@@ -222,7 +222,8 @@ namespace Rias.Core.Services
             {
                 if (channel != null &&
                     channel.Guild.CurrentUser.GuildPermissions.ManageMessages &&
-                    await CheckGuildCommandMessageDeletion(channel.Guild))
+                    await CheckGuildCommandMessageDeletion(channel.Guild) &&
+                    !string.Equals(context.Command.Name, "prune", StringComparison.Ordinal))
                 {
                     await userMessage.DeleteAsync();
                 }

@@ -155,7 +155,7 @@
             },
             {
               "aliases": "prune purge",
-              "description": "`[prefix]prune x` removes last x number of messages from the channel (up to 100).\n`[prefix]prune @User` removes all User's messages in the last 100 messages.",
+              "description": "`[prefix]prune x` removes last x number of messages from the channel (up to 100, including yours).\n`[prefix]prune @User` removes all User's messages in the last 100 messages (including yours).",
               "remarks": [
                 "{0}prune x",
                 "{0}prune @User",
