@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Rias.Core.Commons.Configs;
 
-namespace Rias.Core.Services.Websocket
+namespace Rias.Core.Services.WebSocket
 {
     public class RiasWebsocket
     {
@@ -88,7 +88,7 @@ namespace Rias.Core.Services.Websocket
         
         private async Task<string> ReceiveAsync()
         {
-            var buffer = new byte[1024 * 4];
+            var buffer = new byte[4 * 1024];
             var end = false;
             while (!end)
             {

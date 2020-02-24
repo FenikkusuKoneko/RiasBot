@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using Rias.Core.Commons;
 using Rias.Core.Database;
 using Rias.Core.Implementation;
-using Rias.Core.Services.Websocket;
+using Rias.Core.Services.WebSocket;
 using Serilog;
 using Serilog.Events;
 
@@ -27,7 +27,6 @@ namespace Rias.Core.Services
         private readonly HttpClient _httpClient;
 
         private Timer? DblTimer { get; }
-        private const int DatabaseVoteAttempts = 5;
         
         public VotesService(IServiceProvider services) : base(services)
         {
@@ -115,16 +114,7 @@ namespace Rias.Core.Services
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var voteDb = await db.Votes.FirstOrDefaultAsync(x => x.UserId == voteData.User && !x.Checked);
-
-            var attempts = 0;
-            while (voteDb is null && attempts < DatabaseVoteAttempts)
-            {
-                await Task.Delay(5000);
-                
-                voteDb = await db.Votes.FirstOrDefaultAsync(x => x.UserId == voteData.User && !x.Checked);
-                attempts++;
-            }
-
+            
             if (voteDb is null)
             {
                 Log.Error($"Couldn't take the vote data from the database for user {voteData.User}");

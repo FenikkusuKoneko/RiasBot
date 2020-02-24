@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using Rias.Core.Commons;
 using Rias.Core.Database;
 using Rias.Core.Implementation;
-using Rias.Core.Services.Websocket;
+using Rias.Core.Services.WebSocket;
 using Serilog;
 using Serilog.Events;
 
@@ -26,16 +26,16 @@ namespace Rias.Core.Services
             _gamblingService = services.GetRequiredService<GamblingService>();
             
             var creds = services.GetRequiredService<Credentials>();
-            if (creds.PatreonConfig != null)
-            {
-                var websocket = new RiasWebsocket();
-                websocket.ConnectAsync(creds.PatreonConfig);
-
-                websocket.OnConnected += ConnectedAsync;
-                websocket.OnDisconnected += DisconnectedAsync;
-                websocket.Log += LogAsync;
-                websocket.OnReceive += PledgeReceivedAsync;
-            }
+            // if (creds.PatreonConfig != null)
+            // {
+            //     var websocket = new RiasWebsocket();
+            //     websocket.ConnectAsync(creds.PatreonConfig);
+            //
+            //     websocket.OnConnected += ConnectedAsync;
+            //     websocket.OnDisconnected += DisconnectedAsync;
+            //     websocket.Log += LogAsync;
+            //     websocket.OnReceive += PledgeReceivedAsync;
+            // }
         }
 
         public async Task CheckPatronsAsync()
