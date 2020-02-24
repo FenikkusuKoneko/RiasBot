@@ -2535,7 +2535,8 @@ namespace Rias.Properties {
         ///Type `{0}commands &lt;moduleName&gt;` or `{0}commands &lt;submoduleName&gt;` to get a list with all commands from the module or submodule.
         ///Example: `{0}commands Administration`, `{0}commands Server`
         ///
-        ///Type `{0}allcommands` to get a list with all commands..
+        ///Type `{0}allcommands` to get a list with all commands.
+        ///Check https://riasbot.me/commands to see all commands with description and examples..
         /// </summary>
         public static string Help_Info {
             get {
@@ -2643,7 +2644,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [**Website** - Still in development]({0}).
+        ///   Looks up a localized string similar to [**Website** - Check info about me or about the commands]({0}).
         /// </summary>
         public static string Help_Website {
             get {

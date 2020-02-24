@@ -760,7 +760,8 @@ Type `{0}modules` to get a list with all modules and submodules.
 Type `{0}commands &lt;moduleName&gt;` or `{0}commands &lt;submoduleName&gt;` to get a list with all commands from the module or submodule.
 Example: `{0}commands Administration`, `{0}commands Server`
 
-Type `{0}allcommands` to get a list with all commands.</value>
+Type `{0}allcommands` to get a list with all commands.
+Check https://riasbot.me/commands to see all commands with description and examples.</value>
     </data>
     <data name="Help_Links" xml:space="preserve">
         <value>Links</value>
@@ -772,7 +773,7 @@ Type `{0}allcommands` to get a list with all commands.</value>
         <value>[**Invite me** - I would like to be in your server]({0})</value>
     </data>
     <data name="Help_Website" xml:space="preserve">
-        <value>[**Website** - Still in development]({0})</value>
+        <value>[**Website** - Check info about me or about the commands]({0})</value>
     </data>
     <data name="Help_Donate" xml:space="preserve">
         <value>[**Become a Patron** - Support this project]({0})</value>
