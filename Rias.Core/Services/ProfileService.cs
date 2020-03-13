@@ -255,7 +255,10 @@ namespace Rias.Core.Services
 
             var x = 150.0;
             foreach (var badge in badges)
-                AddBadge(image, profileInfo, badgeSettings, badge, ref x);
+            {
+                if (!string.IsNullOrEmpty(badge))
+                    AddBadge(image, profileInfo, badgeSettings, badge, ref x);
+            }
         }
 
         private void AddBadge(MagickImage image, ProfileInfo profileInfo, MagickReadSettings badgeSettings, string badge, ref double x)
