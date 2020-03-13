@@ -761,7 +761,7 @@ Type `{0}commands &lt;moduleName&gt;` or `{0}commands &lt;submoduleName&gt;` to 
 Example: `{0}commands Administration`, `{0}commands Server`
 
 Type `{0}allcommands` to get a list with all commands.
-Check https://riasbot.me/commands to see all commands with description and examples.</value>
+Check https://riasbot.me/commands to see all commands with their description and examples.</value>
     </data>
     <data name="Help_Links" xml:space="preserve">
         <value>Links</value>
@@ -869,16 +869,16 @@ Check https://riasbot.me/commands to see all commands with description and examp
     </data>
     <data name="Profile_InvalidColor" xml:space="preserve">
         <value>Only White, Red, Green, Cyan/Aqua, Orange, HotPink and Magenta are available.
-For a custom one you must have the Patreon Tier 2. Check it here: [Patreon]({0})</value>
+For a custom one you must have the Patreon Tier {0}. Check it here: [Patreon]({1})</value>
     </data>
     <data name="Profile_FirstBadgeNoPatreon" xml:space="preserve">
-        <value>To change the first badge you must have Patreon Tier 3. Check it here: [Patreon]({0})</value>
+        <value>To change the first badge you must have Patreon Tier {0}. Check it here: [Patreon]({1})</value>
     </data>
     <data name="Profile_SecondBadgeNoPatreon" xml:space="preserve">
-        <value>To change the second badge you must have Patreon Tier 5. Check it here: [Patreon]({0})</value>
+        <value>To change the second badge you must have Patreon Tier {0}. Check it here: [Patreon]({1})</value>
     </data>
     <data name="Profile_ThirdBadgeNoPatreon" xml:space="preserve">
-        <value>To change the third badge you must have Patreon Tier 6. Check it here: [Patreon]({0})</value>
+        <value>To change the third badge you must have Patreon Tier {0}. Check it here: [Patreon]({1})</value>
     </data>
     <data name="Profile_BadgeError" xml:space="preserve">
         <value>You can set only the first, second or third badge, no more.</value>

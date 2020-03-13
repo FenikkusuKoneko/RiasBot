@@ -439,6 +439,6 @@ $RECYCLE.BIN/
 bin/
 obj/
 
-# Things you should not receive but create yourself :^)
+# Things you should not get but create yourself :^)
 Rias/data/credentials.json
 Rias/logs/

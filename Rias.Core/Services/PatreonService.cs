@@ -18,8 +18,13 @@ namespace Rias.Core.Services
     public class PatreonService : RiasService
     {
         private readonly GamblingService _gamblingService;
-
+        
         private const int DatabasePledgeAttempts = 5;
+
+        public const int ProfileColorTier = 1;
+        public const int ProfileFirstBadgeTier = 2;
+        public const int ProfileSecondBadgeTier = 3;
+        public const int ProfileThirdBadgeTier = 4;
 
         public PatreonService(IServiceProvider services) : base(services)
         {

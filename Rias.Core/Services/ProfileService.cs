@@ -112,7 +112,7 @@ namespace Rias.Core.Services
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var tier = (await db.Patreon.FirstOrDefaultAsync(x => x.UserId == user.Id))?.Tier ?? 0;
-            return tier >= 2;
+            return tier >= PatreonService.ProfileColorTier;
         }
 
         private bool CheckColorAsync(SocketUser user, Color color, int tier)
@@ -123,7 +123,7 @@ namespace Rias.Core.Services
             if (_colors.Any(x => x == color))
                 return true;
 
-            return tier >= 2;
+            return tier >= PatreonService.ProfileColorTier;
         }
 
         private async Task AddBackgroundAsync(MagickImage image, ProfileInfo profileInfo)
@@ -239,17 +239,13 @@ namespace Rias.Core.Services
                 else
                     badges.Add("Master");
             }
-            else if (profileInfo.PatreonTier < 3)
-            {
-                badges.Add("Supporter");
-            }
             else if (profileInfo.Badges != null && profileInfo.Badges.Count != 0)
             {
                 if (profileInfo.Badges.Count != 0)
                     badges.Add(profileInfo.Badges[0]);
-                if (profileInfo.PatreonTier >= 5 && profileInfo.Badges.Count > 1)
+                if (profileInfo.PatreonTier >= PatreonService.ProfileSecondBadgeTier && profileInfo.Badges.Count > 1)
                     badges.Add(profileInfo.Badges[1]);
-                if (profileInfo.PatreonTier >= 6 && profileInfo.Badges.Count > 2)
+                if (profileInfo.PatreonTier >= PatreonService.ProfileThirdBadgeTier && profileInfo.Badges.Count > 2)
                     badges.Add(profileInfo.Badges[2]);
             }
             else

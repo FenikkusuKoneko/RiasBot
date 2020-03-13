@@ -22,7 +22,7 @@ namespace Rias.Core
     public class Rias
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "2.4.15";
+        public const string Version = "2.5.0";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         private DiscordShardedClient? _client;
@@ -107,7 +107,7 @@ namespace Rias.Core
 
             services.AddDbContext<RiasDbContext>(x => x.UseNpgsql(connection).UseSnakeCaseNamingConvention());
 
-            var attributeServices = typeof(Rias).Assembly!.GetTypes()
+            var attributeServices = typeof(Rias).Assembly.GetTypes()
                 .Where(x => typeof(RiasService).IsAssignableFrom(x)
                             && !x.GetTypeInfo().IsInterface
                             && !x.GetTypeInfo().IsAbstract)

@@ -137,7 +137,7 @@ namespace Rias.Core.Modules.Profile
         {
             if (!await Service.CheckColorAsync(Context.User, color))
             {
-                await ReplyErrorAsync("InvalidColor", Credentials.Patreon);
+                await ReplyErrorAsync("InvalidColor", PatreonService.ProfileColorTier, Credentials.Patreon);
                 return;
             }
             
@@ -160,14 +160,14 @@ namespace Rias.Core.Modules.Profile
                 var patreonTier = (await DbContext.Patreon.FirstOrDefaultAsync(x => x.UserId == Context.User.Id))?.Tier ?? 0;
                 switch (index)
                 {
-                    case 0 when patreonTier < 3:
-                        await ReplyErrorAsync("FirstBadgeNoPatreon", Credentials.Patreon);
+                    case 0 when patreonTier < PatreonService.ProfileFirstBadgeTier:
+                        await ReplyErrorAsync("FirstBadgeNoPatreon", PatreonService.ProfileFirstBadgeTier, Credentials.Patreon);
                         return;
-                    case 1 when patreonTier < 5:
-                        await ReplyErrorAsync("SecondBadgeNoPatreon", Credentials.Patreon);
+                    case 1 when patreonTier < PatreonService.ProfileSecondBadgeTier:
+                        await ReplyErrorAsync("SecondBadgeNoPatreon", PatreonService.ProfileSecondBadgeTier, Credentials.Patreon);
                         return;
-                    case 2 when patreonTier < 6:
-                        await ReplyErrorAsync("ThirdBadgeNoPatreon", Credentials.Patreon);
+                    case 2 when patreonTier < PatreonService.ProfileThirdBadgeTier:
+                        await ReplyErrorAsync("ThirdBadgeNoPatreon", PatreonService.ProfileThirdBadgeTier, Credentials.Patreon);
                         return;
                 }
             }

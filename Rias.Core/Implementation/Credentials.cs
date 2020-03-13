@@ -91,7 +91,7 @@ namespace Rias.Core.Implementation
             };
             
             var patreonConfig = config.GetSection(nameof(PatreonConfig));
-            PatreonConfig = !votesConfig.Exists() ? null : new PatreonConfig
+            PatreonConfig = !patreonConfig.Exists() ? null : new PatreonConfig
             {
                 WebSocketHost = patreonConfig.GetValue<string>(nameof(PatreonConfig.WebSocketHost)),
                 WebSocketPort = patreonConfig.GetValue<ushort>(nameof(PatreonConfig.WebSocketPort)),

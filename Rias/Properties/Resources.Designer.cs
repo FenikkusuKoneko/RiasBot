@@ -2536,7 +2536,7 @@ namespace Rias.Properties {
         ///Example: `{0}commands Administration`, `{0}commands Server`
         ///
         ///Type `{0}allcommands` to get a list with all commands.
-        ///Check https://riasbot.me/commands to see all commands with description and examples..
+        ///Check https://riasbot.me/commands to see all commands with their description and examples..
         /// </summary>
         public static string Help_Info {
             get {
@@ -2833,7 +2833,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to To change the first badge you must have Patreon Tier 3. Check it here: [Patreon]({0}).
+        ///   Looks up a localized string similar to To change the first badge you must have Patreon Tier {0}. Check it here: [Patreon]({1}).
         /// </summary>
         public static string Profile_FirstBadgeNoPatreon {
             get {
@@ -2843,7 +2843,7 @@ namespace Rias.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Only White, Red, Green, Cyan/Aqua, Orange, HotPink and Magenta are available.
-        ///For a custom one you must have the Patreon Tier 2. Check it here: [Patreon]({0}).
+        ///For a custom one you must have the Patreon Tier {0}. Check it here: [Patreon]({1}).
         /// </summary>
         public static string Profile_InvalidColor {
             get {
@@ -2852,7 +2852,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to To change the second badge you must have Patreon Tier 5. Check it here: [Patreon]({0}).
+        ///   Looks up a localized string similar to To change the second badge you must have Patreon Tier {0}. Check it here: [Patreon]({1}).
         /// </summary>
         public static string Profile_SecondBadgeNoPatreon {
             get {
@@ -2861,7 +2861,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to To change the third badge you must have Patreon Tier 6. Check it here: [Patreon]({0}).
+        ///   Looks up a localized string similar to To change the third badge you must have Patreon Tier {0}. Check it here: [Patreon]({1}).
         /// </summary>
         public static string Profile_ThirdBadgeNoPatreon {
             get {
