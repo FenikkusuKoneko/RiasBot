@@ -47,7 +47,9 @@ namespace Rias.Core.Services
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var patrons = db.Patreon.Where(x => !x.Checked && x.PatronStatus == PatronStatus.ActivePatron);
+            var patrons = db.Patreon.Where(x => x.PatronStatus == PatronStatus.ActivePatron &&
+                                                !x.Checked && x.Tier > 0);
+            
             foreach (var patron in patrons)
             {
                 var reward = patron.AmountCents * 5;
