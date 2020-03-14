@@ -289,13 +289,7 @@ namespace Rias.Core.Modules.Waifu
                     currentWaifuDb.CustomImageUrl = null;
             }
 
-            var waifuDb = waifu is CustomWaifus
-                ? await DbContext.CustomWaifus.FirstOrDefaultAsync(x => x.Id == waifu.Id)
-                : (IWaifus) await DbContext.Waifus.FirstOrDefaultAsync(x => x.Id == waifu.Id);
-            
-            if (waifuDb != null)
-                waifuDb.IsSpecial = true;
-
+            waifu.IsSpecial = true;
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("Special", waifu.Name!);
         }
@@ -472,6 +466,16 @@ namespace Rias.Core.Modules.Waifu
             }
             
             userDb.Currency -= WaifuCreationPrice;
+            var currentSpecialWaifu = (IWaifus) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
+                                      ?? await DbContext.CustomWaifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial);
+
+            if (currentSpecialWaifu != null)
+            {
+                currentSpecialWaifu.IsSpecial = false;
+                if (currentSpecialWaifu is Waifus currentWaifuDb)
+                    currentWaifuDb.CustomImageUrl = null;
+            }
+            
             var waifus = (await DbContext.GetListAsync<Waifus, Characters, CustomCharacters>
             (
                 x => x.UserId == Context.User.Id,
