@@ -172,9 +172,9 @@ namespace Rias.Core.Services
             });
             
             using var avatarLayer = new MagickImage(MagickColors.Transparent, 70, 70);
-            avatarLayer.Draw(new Drawables().RoundRectangle(0, 0, avatarLayer.Width, avatarLayer.Height, 15, 15).FillColor(MagickColors.White));
-            avatarImage.Composite(avatarLayer, CompositeOperator.DstIn);
-            avatarLayer.Draw(new DrawableComposite(0, 0, CompositeOperator.Over, avatarImage));
+            avatarLayer.Draw(new Drawables().RoundRectangle(0, 0, avatarLayer.Width, avatarLayer.Height, 15, 15)
+                .FillColor(MagickColors.White));
+            avatarLayer.Composite(avatarImage, CompositeOperator.Atop);
             
             image.Draw(new DrawableComposite(30, 30, CompositeOperator.Over, avatarLayer));
             

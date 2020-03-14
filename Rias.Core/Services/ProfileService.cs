@@ -198,10 +198,10 @@ namespace Rias.Core.Services
             });
             
             using var avatarLayer = new MagickImage(MagickColors.Transparent, 100, 100);
-            avatarLayer.Draw(new Drawables().RoundRectangle(0, 0, avatarLayer.Width, avatarLayer.Height, 15, 15).FillColor(MagickColors.White));
-            avatarImage.Composite(avatarLayer, CompositeOperator.DstIn);
-            avatarLayer.Draw(new DrawableComposite(0, 0, CompositeOperator.Over, avatarImage));
-            
+            avatarLayer.Draw(new Drawables().RoundRectangle(0, 0, avatarLayer.Width, avatarLayer.Height, 15, 15)
+                .FillColor(MagickColors.White));
+            avatarLayer.Composite(avatarImage, CompositeOperator.Atop);
+
             image.Draw(new DrawableComposite(30, 120, CompositeOperator.Over, avatarLayer));
             
             var usernameSettings = new MagickReadSettings
@@ -215,7 +215,7 @@ namespace Rias.Core.Services
             };
             
             using var usernameImage = new MagickImage($"caption:{user}", usernameSettings);
-            image.Draw(new DrawableComposite(150, 150, CompositeOperator.Over, usernameImage));
+            image.Draw(new DrawableComposite(150, 130, CompositeOperator.Over, usernameImage));
 
             if (profileInfo is null)
                 return;
@@ -264,15 +264,24 @@ namespace Rias.Core.Services
         private void AddBadge(MagickImage image, ProfileInfo profileInfo, MagickReadSettings badgeSettings, string badge, ref double x)
         {
             using var badgeImage = new MagickImage($"caption:{badge}", badgeSettings);
-            var badgeWidth = badgeImage.Width + badgeImage.Width * 30 / 100;
+            var extraWidth = 30;
+            var halfExtraWidth = (double) extraWidth / 2;
+            var badgeHeight = 30;
+            var badgeWidth = badgeImage.Width + extraWidth;
             
-            using var badgeLayer = new MagickImage(MagickColors.Transparent, badgeWidth, 20);
+            using var badgeLayer = new MagickImage(MagickColors.Transparent, badgeWidth, badgeHeight);
             badgeLayer.Draw(new Drawables()
-                .RoundRectangle(0, 0, badgeLayer.Width, badgeLayer.Height, 10, 10)
+                .Arc(0, 0, extraWidth, badgeHeight, 90, 270)
                 .FillColor(profileInfo.Color));
-            badgeLayer.Composite(badgeImage, Gravity.Center, CompositeOperator.DstOut);
+            badgeLayer.Draw(new Drawables()
+                .Rectangle(halfExtraWidth, 0, badgeImage.Width + halfExtraWidth, badgeHeight)
+                .FillColor(profileInfo.Color));
+            badgeLayer.Draw(new Drawables()
+                .Arc(badgeWidth - extraWidth - 1, 0, badgeWidth - 1, badgeHeight, 270, 90)
+                .FillColor(profileInfo.Color));
             
-            image.Draw(new DrawableComposite(x, 200, CompositeOperator.Over, badgeLayer));
+            badgeLayer.Composite(badgeImage, Gravity.Center, CompositeOperator.DstOut);
+            image.Draw(new DrawableComposite(x, 190, CompositeOperator.Over, badgeLayer));
             x += badgeWidth + 10;
         }
 

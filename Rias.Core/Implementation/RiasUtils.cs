@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using ImageMagick;
 using Newtonsoft.Json;
 using Rias.Core.Commons;
 
@@ -238,5 +239,26 @@ namespace Rias.Core.Implementation
 
             return true;
         }
+
+        // /// <summary>
+        // /// Get black or white color based on the background color.
+        // /// </summary>
+        // /// <param name="color"></param>
+        // /// <returns></returns>
+        // public static MagickColor GetBlackOrWhiteColor(MagickColor color)
+        // {
+        //     double Convert(ushort innerColor)
+        //     {
+        //         var c = (double) innerColor / ushort.MaxValue;
+        //         return c <= 0.03928 ? c / 12.92 : Math.Pow((c + 0.055) / 1.055, 2.4);
+        //     }
+        //     
+        //     var r = Convert(color.R);
+        //     var g = Convert(color.G);
+        //     var b = Convert(color.B);
+        //     
+        //     var luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        //     return luminance > 0.179 ? MagickColors.Black : MagickColors.White;
+        // }
     }
 }
