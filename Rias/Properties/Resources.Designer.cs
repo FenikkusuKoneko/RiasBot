@@ -2779,6 +2779,15 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Profile badge removed..
+        /// </summary>
+        public static string Profile_BadgeRemoved {
+            get {
+                return ResourceManager.GetString("Profile_BadgeRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Profile badge set..
         /// </summary>
         public static string Profile_BadgeSet {
@@ -3266,7 +3275,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Genres.
+        ///   Looks up a localized string similar to Is adult.
         /// </summary>
         public static string Searches_IsAdult {
             get {

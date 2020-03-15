@@ -892,6 +892,9 @@ For a custom one you must have the Patreon Tier {0}. Check it here: [Patreon]({1
     <data name="Profile_BadgeSet" xml:space="preserve">
         <value>Profile badge set.</value>
     </data>
+    <data name="Profile_BadgeRemoved" xml:space="preserve">
+        <value>Profile badge removed.</value>
+    </data>
     
     <data name="Reactions_NoWeebApi" xml:space="preserve">
         <value>The Weeb Services API has to be set in order to use this reaction command.</value>
@@ -1048,7 +1051,7 @@ For a custom one you must have the Patreon Tier {0}. Check it here: [Patreon]({1
         <value>Synonyms</value>
     </data>
     <data name="Searches_IsAdult" xml:space="preserve">
-        <value>Genres</value>
+        <value>Is adult</value>
     </data>
     <data name="Searches_Description" xml:space="preserve">
         <value>Description</value>

@@ -231,33 +231,27 @@ namespace Rias.Core.Services
             if (profileInfo.PatreonTier == 0 && user.Id != Creds.MasterId)
                 return;
 
-            var badges = new List<string>();
-            if (user.Id == Creds.MasterId)
+            var xBadge = user.Id == Creds.MasterId ? "Master" : "Supporter";
+
+            if (profileInfo.Badges is null)
+                profileInfo.Badges = new List<string>() {xBadge};
+            else if (user.Id != Creds.MasterId)
             {
-                if (profileInfo.Badges != null && profileInfo.Badges.Count != 0)
-                    badges.AddRange(profileInfo.Badges);
-                else
-                    badges.Add("Master");
+                if (profileInfo.PatreonTier < PatreonService.ProfileThirdBadgeTier && profileInfo.Badges.Count > 2)
+                    profileInfo.Badges.RemoveAt(2);
+                if (profileInfo.PatreonTier < PatreonService.ProfileSecondBadgeTier && profileInfo.Badges.Count > 1) 
+                    profileInfo.Badges.RemoveAt(1);
+                if (profileInfo.PatreonTier < PatreonService.ProfileFirstBadgeTier && profileInfo.Badges.Count != 0)
+                    profileInfo.Badges.RemoveAt(0);
             }
-            else if (profileInfo.Badges != null && profileInfo.Badges.Count != 0)
-            {
-                if (profileInfo.Badges.Count != 0)
-                    badges.Add(profileInfo.Badges[0]);
-                if (profileInfo.PatreonTier >= PatreonService.ProfileSecondBadgeTier && profileInfo.Badges.Count > 1)
-                    badges.Add(profileInfo.Badges[1]);
-                if (profileInfo.PatreonTier >= PatreonService.ProfileThirdBadgeTier && profileInfo.Badges.Count > 2)
-                    badges.Add(profileInfo.Badges[2]);
-            }
-            else
-            {
-                badges.Add("Supporter");
-            }
+            
+            if (profileInfo.Badges.Count == 0)
+                profileInfo.Badges.Add(xBadge);
 
             var x = 150.0;
-            foreach (var badge in badges)
+            foreach (var badge in profileInfo.Badges)
             {
-                if (!string.IsNullOrEmpty(badge))
-                    AddBadge(image, profileInfo, badgeSettings, badge, ref x);
+                AddBadge(image, profileInfo, badgeSettings, badge, ref x);
             }
         }
 
@@ -527,7 +521,7 @@ namespace Rias.Core.Services
                 Dim = profileDb?.BackgroundDim ?? 50,
                 Biography = profileDb?.Biography ?? DefaultBiography,
                 Color = new MagickColor(color.ToString()),
-                Badges = profileDb?.Badges,
+                Badges = profileDb?.Badges?.Where(x => !string.IsNullOrEmpty(x)).ToList(),
                 Waifus = waifus.Where(x => x.Position != 0)
                     .OrderBy(x => x.Position)
                     .Concat(waifus.Where(x=> x.Position == 0))

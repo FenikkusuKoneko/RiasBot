@@ -149,7 +149,7 @@ namespace Rias.Core.Modules.Profile
         }
 
         [Command("badge"), Context(ContextType.Guild)]
-        public async Task BadgeAsync(int index, string text)
+        public async Task BadgeAsync(int index, string? text = null)
         {
             index--;
             if (index < 0)
@@ -184,7 +184,7 @@ namespace Rias.Core.Modules.Profile
                 return;
             }
 
-            if (text.Length > 20)
+            if (!string.IsNullOrEmpty(text) && text.Length > 20)
             {
                 await ReplyErrorAsync("BadgeTextLimit");
                 return;
@@ -195,10 +195,10 @@ namespace Rias.Core.Modules.Profile
             if (profileDb.Badges is null)
                 profileDb.Badges = new string[3];
                 
-            profileDb.Badges[index] = text;
+            profileDb.Badges[index] = text!;
 
             await DbContext.SaveChangesAsync();
-            await ReplyConfirmationAsync("BadgeSet");
+            await ReplyConfirmationAsync(string.IsNullOrEmpty(text) ? "BadgeRemoved" : "BadgeSet");
         }
     }
 }

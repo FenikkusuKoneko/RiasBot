@@ -130,7 +130,7 @@ namespace Rias.Core.Modules.Utility
                     }.AddField(GetText("#Common_Id"), Context.Guild.Id, true)
                     .AddField(GetText("Owner"), Context.Guild.Owner, true)
                     .AddField(GetText("#Common_Users"), Context.Guild.MemberCount, true)
-                    .AddField(GetText("CurrentlyOnline"), Context.Guild.Users.Count(x => x.Status != UserStatus.Offline || x.Status != UserStatus.Invisible), true)
+                    .AddField(GetText("CurrentlyOnline"), Context.Guild.Users.Count(x => x.Status != UserStatus.Offline && x.Status != UserStatus.Invisible), true)
                     .AddField(GetText("Bots"), Context.Guild.Users.Count(x => x.IsBot), true)
                     .AddField(GetText("CreatedAt"), Context.Guild.CreatedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField(GetText("TextChannels"), Context.Guild.TextChannels.Count, true)
