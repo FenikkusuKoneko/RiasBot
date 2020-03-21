@@ -29,7 +29,7 @@ namespace Rias.Core.Services
 
         private readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), Timer> _timers = new ConcurrentDictionary<(ulong, ulong), Timer>();
 
-        public const string MuteRole = "rias-mute";
+        public const string MuteRole = "rias-mute-dev";
         private const string ModuleName = "Administration";
 
         private Timer LoadTimers { get; }
@@ -71,7 +71,7 @@ namespace Rias.Core.Services
                        ?? (IRole) await guild.CreateRoleAsync(MuteRole);
 
             var currentUser = guild.CurrentUser;
-            if (currentUser.CheckRoleHierarchy((SocketRole)role) <= 0)
+            if (currentUser.CheckRoleHierarchy(role) <= 0)
             {
                 await ReplyErrorAsync(channel, guild.Id, ModuleName, "MuteRoleAbove", role.Name);
                 return;
@@ -309,13 +309,15 @@ namespace Rias.Core.Services
             var categories = guild.CategoryChannels;
             foreach (var category in categories)
             {
-                await AddPermissionOverwriteAsync(category, role, permissions);
+                if (guild.CurrentUser.GetPermissions(category).ViewChannel)
+                    await AddPermissionOverwriteAsync(category, role, permissions);
             }
 
             var channels = guild.Channels;
             foreach (var channel in channels)
             {
-                await AddPermissionOverwriteAsync(channel, role, permissions);
+                if (guild.CurrentUser.GetPermissions(channel).ViewChannel)
+                    await AddPermissionOverwriteAsync(channel, role, permissions);
             }
         }
 

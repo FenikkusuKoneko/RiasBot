@@ -33,7 +33,7 @@ namespace Rias.Core.Extensions
         /// A value equal with 0 if the current user's highest role is the role that is checked<br/>
         /// A value greater than 0 if current user's highest role is above the role<br/>
         /// The value returned is the difference between the user's highest role position and the role's position</returns>
-        public static int CheckRoleHierarchy(this SocketGuildUser user, SocketRole role)
+        public static int CheckRoleHierarchy(this SocketGuildUser user, IRole role)
             => user.Hierarchy - role.Position;
 
         public static async Task<IUserMessage> SendMessageAsync(this SocketUser user, EmbedBuilder embed)
