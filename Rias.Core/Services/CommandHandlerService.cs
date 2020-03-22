@@ -230,7 +230,7 @@ namespace Rias.Core.Services
                 
                 CommandsExecuted++;
             }
-            
+
             switch (result)
             {
                 case ChecksFailedResult failedResult:
@@ -247,6 +247,13 @@ namespace Rias.Core.Services
                     await RunTaskAsync(SendArgumentParseFailedResultAsync(context, argumentParseFailedResult));
                     break;
             }
+            
+            if (result.IsSuccessful) return;
+            Log.Logger.Information($"[Command] \"{context.Command.Name}\" (attempted - {result.GetType()})\n" +
+                                   $"\t\t[Arguments] \"{string.Join(" ", context.Arguments)}\"\n" +
+                                   $"\t\t[User] \"{context.User}\" ({context.User.Id})\n" +
+                                   $"\t\t[Channel] \"{context.Channel.Name}\" ({context.Channel.Id})\n" +
+                                   $"\t\t[Guild] \"{context.Guild?.Name ?? "DM"}\" ({context.Guild?.Id ?? 0})");
         }
 
         private Task SendErrorResultMessageAsync(RiasCommandContext context, ChecksFailedResult result)
