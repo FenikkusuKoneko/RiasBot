@@ -110,7 +110,7 @@ namespace Rias.Core.Modules.Searches
                     }
                 );
                 if (!string.IsNullOrEmpty(x.Example))
-                    interactiveMessage.EmbedBuilder!.AddField(GetText("#Common_Example"), x.Example);
+                    interactiveMessage.EmbedBuilder!.AddField(GetText("#Common_Example"), x.Example.Truncate(1024));
                 return interactiveMessage;
             });
 

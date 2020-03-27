@@ -1,6 +1,6 @@
 ﻿namespace Rias.Core.Commons.Configs
 {
-    public interface IWebsocketConfig
+    public interface IWebSocketConfig
     {
         public string? WebSocketHost { get; set; }
         public ushort WebSocketPort { get; set; }

@@ -53,6 +53,38 @@ namespace Rias.Core.Modules.Administration
                 else
                     await ReplyConfirmationAsync("NicknameChanged", user, nickname);
             }
+            
+            [Command("setmynickname"), Context(ContextType.Guild),
+             BotPermission(GuildPermission.ManageNicknames),
+             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            public async Task SetMyNicknameAsync([Remainder] string? nickname = null)
+            {
+                var user = (SocketGuildUser) Context.User;
+                if (user.Id == Context.Guild!.OwnerId)
+                {
+                    await ReplyErrorAsync("NicknameYouOwner");
+                    return;
+                }
+
+                if (Context.CurrentGuildUser!.CheckHierarchy(user) <= 0)
+                {
+                    await ReplyErrorAsync("YouAboveMe");
+                    return;
+                }
+
+                if (!user.GuildPermissions.ChangeNickname)
+                {
+                    await ReplyErrorAsync("ChangeNicknamePermission");
+                    return;
+                }
+                
+                await user.ModifyAsync(x => x.Nickname = nickname);
+
+                if (string.IsNullOrEmpty(nickname))
+                    await ReplyConfirmationAsync("YourNicknameRemoved", user);
+                else
+                    await ReplyConfirmationAsync("YourNicknameChanged", user, nickname);
+            }
 
             [Command("setservername"), Context(ContextType.Guild),
              UserPermission(GuildPermission.ManageGuild), BotPermission(GuildPermission.ManageGuild),

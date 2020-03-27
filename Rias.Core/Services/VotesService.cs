@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -13,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rias.Core.Commons;
 using Rias.Core.Database;
+using Rias.Core.Database.Models;
 using Rias.Core.Implementation;
 using Rias.Core.Services.WebSocket;
 using Serilog;
@@ -23,7 +23,6 @@ namespace Rias.Core.Services
     public class VotesService : RiasService
     {
         private readonly DiscordShardedClient _client;
-        private readonly GamblingService _gamblingService;
         private readonly HttpClient _httpClient;
 
         private Timer? DblTimer { get; }
@@ -31,19 +30,16 @@ namespace Rias.Core.Services
         public VotesService(IServiceProvider services) : base(services)
         {
             _client = services.GetRequiredService<DiscordShardedClient>();
-            _gamblingService = services.GetRequiredService<GamblingService>();
             _httpClient = new HttpClient();
             
             var creds = services.GetRequiredService<Credentials>();
             if (creds.VotesConfig != null)
             {
-                var websocket = new RiasWebsocket();
-                websocket.ConnectAsync(creds.VotesConfig);
+                var websocket = new RiasWebSocket(creds.VotesConfig, "VotesWebSocket");
+                RunTaskAsync(websocket.ConnectAsync());
 
-                websocket.OnConnected += ConnectedAsync;
-                websocket.OnDisconnected += DisconnectedAsync;
                 websocket.Log += LogAsync;
-                websocket.OnReceive += VoteReceivedAsync;
+                websocket.DataReceived += VoteReceivedAsync;
             }
 
             if (!string.IsNullOrEmpty(creds.DiscordBotListToken))
@@ -60,8 +56,8 @@ namespace Rias.Core.Services
             var votes = await db.Votes.Where(x => !x.Checked).ToListAsync();
             foreach (var vote in votes)
             {
-                var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == vote.UserId);
-                if (userDb != null && userDb.IsBlacklisted)
+                var userDb = await db.GetOrAddAsync(x => x.UserId == vote.UserId, () => new Users {UserId = vote.UserId});
+                if (userDb.IsBlacklisted)
                 {
                     db.Remove(vote);
                     Log.Information($"Vote discord user with ID {vote.UserId} is blacklisted, it was removed from the votes database table");
@@ -69,25 +65,13 @@ namespace Rias.Core.Services
                 }
 
                 var reward = vote.IsWeekend ? 50 : 25;
-                await _gamblingService.AddUserCurrencyAsync(vote.UserId, reward);
+                userDb.Currency += reward;
                 
                 vote.Checked = true;
                 Log.Information($"Vote discord user with ID {vote.UserId} was rewarded with {reward} hearts");
             }
             
             await db.SaveChangesAsync();
-        }
-
-        private Task ConnectedAsync()
-        {
-            Log.Information("Votes websocket connected");
-            return Task.CompletedTask;
-        }
-        
-        private Task DisconnectedAsync(WebSocketCloseStatus? status, string description)
-        {
-            Log.Information($"Votes websocket diconnected. Status: {status}. Description: {description}");
-            return Task.CompletedTask;
         }
 
         private Task LogAsync(LogMessage msg)
@@ -103,7 +87,7 @@ namespace Rias.Core.Services
                 _ => LogEventLevel.Verbose
             };
 
-            Log.Logger.Write(logEventLevel, $"Votes websocket: {msg.Message}");
+            Log.Logger.Write(logEventLevel, $"{msg.Source}: {msg.Message}");
 
             return Task.CompletedTask;
         }
@@ -113,17 +97,18 @@ namespace Rias.Core.Services
             var voteData = JsonConvert.DeserializeObject<VoteData>(data);
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var voteDb = await db.Votes.FirstOrDefaultAsync(x => x.UserId == voteData.User && !x.Checked);
+            var voteDb = await db.Votes.FirstOrDefaultAsync(x => x.UserId == voteData.UserId && !x.Checked);
             
             if (voteDb is null)
             {
-                Log.Error($"Couldn't take the vote data from the database for user {voteData.User}");
+                Log.Error($"Couldn't take the vote data from the database for user {voteData.UserId}");
                 return;
             }
 
             var reward = voteDb.IsWeekend ? 50 : 25;
-            await _gamblingService.AddUserCurrencyAsync(voteDb.UserId, reward);
-
+            var userDb = await db.GetOrAddAsync(x => x.UserId == voteData.UserId, () => new Users {UserId = voteData.UserId});
+            userDb.Currency += reward;
+            
             voteDb.Checked = true;
             await db.SaveChangesAsync();
             

@@ -269,6 +269,15 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to I cannot change your nickname because you don&apos;t have the permission to change your nickname in his server..
+        /// </summary>
+        public static string Administration_ChangeNicknamePermission {
+            get {
+                return ResourceManager.GetString("Administration_ChangeNicknamePermission", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name&apos;s length must be between {0} and {1} characters..
         /// </summary>
         public static string Administration_ChannelNameLengthLimit {
@@ -655,6 +664,15 @@ namespace Rias.Properties {
         public static string Administration_NicknameRemoved {
             get {
                 return ResourceManager.GetString("Administration_NicknameRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I cannot change the server&apos;s owner nickname..
+        /// </summary>
+        public static string Administration_NicknameYouOwner {
+            get {
+                return ResourceManager.GetString("Administration_NicknameYouOwner", resourceCulture);
             }
         }
         
@@ -1381,6 +1399,15 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You are above me or besides me in the roles hierarchy..
+        /// </summary>
+        public static string Administration_YouAboveMe {
+            get {
+                return ResourceManager.GetString("Administration_YouAboveMe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You already are **{0}**..
         /// </summary>
         public static string Administration_YouAlreadyAre {
@@ -1413,6 +1440,24 @@ namespace Rias.Properties {
         public static string Administration_YouAreNot {
             get {
                 return ResourceManager.GetString("Administration_YouAreNot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your nickname was changed to **{1}**..
+        /// </summary>
+        public static string Administration_YourNicknameChanged {
+            get {
+                return ResourceManager.GetString("Administration_YourNicknameChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your nickname was removed..
+        /// </summary>
+        public static string Administration_YourNicknameRemoved {
+            get {
+                return ResourceManager.GetString("Administration_YourNicknameRemoved", resourceCulture);
             }
         }
         
@@ -3064,6 +3109,15 @@ namespace Rias.Properties {
         public static string Reactions_PokeYou {
             get {
                 return ResourceManager.GetString("Reactions_PokeYou", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is pouting..
+        /// </summary>
+        public static string Reactions_Pout {
+            get {
+                return ResourceManager.GetString("Reactions_Pout", resourceCulture);
             }
         }
         

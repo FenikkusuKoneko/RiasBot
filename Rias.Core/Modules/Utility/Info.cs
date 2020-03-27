@@ -110,7 +110,7 @@ namespace Rias.Core.Modules.Utility
                     .AddField(GetText("Username"), user, true)
                     .AddField(GetText("Nickname"), user.Nickname ?? "-", true)
                     .AddField(GetText("#Common_Id"), user.Id, true)
-                    .AddField(GetText("Activity"), !string.IsNullOrEmpty(activity) ? activity : "-", true)
+                    .AddField(GetText("Activity"), !string.IsNullOrWhiteSpace(activity) ? activity : "-", true)
                     .AddField(GetText("Status"), user.Status, true)
                     .AddField(GetText("JoinedServer"), user.JoinedAt?.ToString("yyyy-MM-dd hh:mm:ss tt") ?? "-", true)
                     .AddField(GetText("JoinedDiscord"), user.CreatedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)

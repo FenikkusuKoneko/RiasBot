@@ -5,10 +5,10 @@ namespace Rias.Core.Commons
     public class VoteData
     {
         [JsonProperty("bot")]
-        public ulong Bot { get; set; }
+        public ulong BotId { get; set; }
         
         [JsonProperty("user")]
-        public ulong User { get; set; }
+        public ulong UserId { get; set; }
         
         [JsonProperty("type")]
         public string? Type { get; set; }

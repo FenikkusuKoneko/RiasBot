@@ -22,7 +22,7 @@ namespace Rias.Core
     public class Rias
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "2.5.8";
+        public const string Version = "2.6.0";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         private DiscordShardedClient? _client;
@@ -67,11 +67,11 @@ namespace Rias.Core
             provider.GetRequiredService<CommandHandlerService>();
             provider.GetRequiredService<BotService>();
             await provider.GetRequiredService<NsfwService>().InitializeAsync();
-
-            if (_creds.PatreonConfig != null)
-                await provider.GetRequiredService<PatreonService>().CheckPatronsAsync();
+            
             if (_creds.VotesConfig != null)
                 await provider.GetRequiredService<VotesService>().CheckVotesAsync();
+            if (_creds.PatreonConfig != null)
+                await provider.GetRequiredService<PatreonService>().CheckPatronsAsync();
         }
 
         private object? CooldownBucketKeyGenerator(object bucketType, CommandContext context)

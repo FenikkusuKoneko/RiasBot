@@ -1,6 +1,6 @@
 ﻿namespace Rias.Core.Commons.Configs
 {
-    public class PatreonConfig : IWebsocketConfig
+    public class PatreonConfig : IWebSocketConfig
     {
         public string? WebSocketHost { get; set; }
         public ushort WebSocketPort { get; set; }

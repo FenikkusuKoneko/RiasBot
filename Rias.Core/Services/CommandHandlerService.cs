@@ -249,7 +249,7 @@ namespace Rias.Core.Services
             }
             
             if (result.IsSuccessful) return;
-            Log.Logger.Information($"[Command] \"{context.Command.Name}\" (attempted - {result.GetType()})\n" +
+            Log.Logger.Information($"[Command] \"{context.Command?.Name}\" (attempted - {result.GetType()})\n" +
                                    $"\t\t[Arguments] \"{string.Join(" ", context.Arguments)}\"\n" +
                                    $"\t\t[User] \"{context.User}\" ({context.User.Id})\n" +
                                    $"\t\t[Channel] \"{context.Channel.Name}\" ({context.Channel.Id})\n" +

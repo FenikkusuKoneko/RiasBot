@@ -101,6 +101,7 @@ namespace Rias.Core.Modules.Administration
              UserPermission(GuildPermission.ManageRoles), BotPermission(GuildPermission.ManageRoles)]
             public async Task AddSelfAssignableRoleAsync([Remainder] SocketRole role)
             {
+                if (role.IsEveryone) return;
                 if (role.IsManaged)
                 {
                     await ReplyErrorAsync("SarNotAdded", role.Name);
@@ -154,7 +155,6 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task ListSelfAssignableRolesAsync()
             {
-                
                 var sarList = await UpdateSelfAssignableRolesAsync();
                 if (sarList.Count == 0)
                 {

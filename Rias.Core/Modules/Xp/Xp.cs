@@ -148,6 +148,7 @@ namespace Rias.Core.Modules.Xp
                 return;
             }
             
+            if (role.IsEveryone) return;
             if (role.IsManaged)
             {
                 await ReplyErrorAsync("LevelUpRoleRewardNotSet", role.Name);

@@ -68,7 +68,7 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("PatYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("PattedBy", value, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("PattedBy", value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
         }
         
         [Command("hug"), Context(ContextType.Guild),
@@ -122,7 +122,7 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("HugYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("HuggedBy", value, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("HuggedBy", value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
         }
         
         [Command("kiss"), Context(ContextType.Guild),
@@ -176,7 +176,7 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("KissYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("KissedBy", value, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("KissedBy", value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
         }
         
         [Command("lick"), Context(ContextType.Guild),
@@ -230,7 +230,7 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("LickYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("LickedBy", value, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("LickedBy", value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
         }
         
         [Command("cuddle"), Context(ContextType.Guild),
@@ -284,7 +284,7 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("CuddleYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("CuddledBy", value, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("CuddledBy", value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
         }
         
         [Command("bite"), Context(ContextType.Guild),
@@ -338,7 +338,7 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("BiteYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("BittenBy", value, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("BittenBy", value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
         }
         
         [Command("slap"), Context(ContextType.Guild),
@@ -392,7 +392,7 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("SlapYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("SlappedBy", value, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("SlappedBy", value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
         }
         
         [Command("cry"), Context(ContextType.Guild),
@@ -457,7 +457,7 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("GropeYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("GropedBy", value, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("GropedBy", value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
         }
         
         [Command("blush"), Context(ContextType.Guild),
@@ -534,7 +534,7 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("Dance", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("DanceTogether", Context.User.Mention, value), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("DanceTogether", Context.User.Mention, value.Replace("@everyone", "everyone")), embed: embed.Build());
         }
         
         [Command("poke"), Context(ContextType.Guild),
@@ -588,7 +588,30 @@ namespace Rias.Core.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText("PokeYou", Context.User.Mention), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync(GetText("PokedBy", value, Context.User), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText("PokedBy", value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
+        }
+        
+        [Command("pout"), Context(ContextType.Guild),
+         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.GuildUser)]
+        public async Task PoutAsync()
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync("NoWeebApi");
+                return;
+            }
+
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ConfirmColor,
+                ImageUrl = await Service.GetReactionUrlAsync("pout"),
+                Footer = new EmbedFooterBuilder
+                {
+                    Text = $"{GetText("PoweredBy")} weeb.sh"
+                }
+            };
+            
+            await Context.Channel.SendMessageAsync(GetText("Pout", Context.User.Mention), embed: embed.Build());
         }
     }
 }

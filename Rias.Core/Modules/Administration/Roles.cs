@@ -71,6 +71,7 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task DeleteRoleAsync([Remainder] SocketRole role)
             {
+                if (role.IsEveryone) return;
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAboveMe");
@@ -98,6 +99,7 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RoleColorAsync(Color color, [Remainder] SocketRole role)
             {
+                if (role.IsEveryone) return;
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAboveMe");
@@ -129,7 +131,8 @@ namespace Rias.Core.Modules.Administration
                     await ReplyErrorAsync("RoleNotFound");
                     return;
                 }
-
+                
+                if (role.IsEveryone) return;
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAboveMe");
@@ -152,6 +155,7 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task HoistRoleAsync([Remainder] SocketRole role)
             {
+                if (role.IsEveryone) return;
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAboveMe");
@@ -181,6 +185,7 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task MentionRoleAsync([Remainder] SocketRole role)
             {
+                if (role.IsEveryone) return;
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAboveMe");
@@ -210,6 +215,7 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AddRoleAsync(SocketGuildUser user, [Remainder] SocketRole role)
             {
+                if (role.IsEveryone) return;
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAboveMe");
@@ -243,6 +249,7 @@ namespace Rias.Core.Modules.Administration
             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RemoveRoleAsync(SocketGuildUser user, [Remainder] SocketRole role)
             {
+                if (role.IsEveryone) return;
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAboveMe");

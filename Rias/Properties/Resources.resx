@@ -133,6 +133,9 @@ The bye message is: **{0}**</value>
     <data name="Administration_UserAboveMe" xml:space="preserve">
         <value>The user is above me or besides me in the roles hierarchy.</value>
     </data>
+    <data name="Administration_YouAboveMe" xml:space="preserve">
+        <value>You are above me or besides me in the roles hierarchy.</value>
+    </data>
     <data name="Administration_UserAbove" xml:space="preserve">
         <value>The user is above you or besides you in the roles hierarchy.</value>
     </data>
@@ -302,11 +305,23 @@ Set a new mute role using `{0}setmute` or mute a user and I will create it autom
     <data name="Administration_NicknameOwner" xml:space="preserve">
         <value>You cannot change the server's owner nickname.</value>
     </data>
+    <data name="Administration_NicknameYouOwner" xml:space="preserve">
+        <value>I cannot change the server's owner nickname.</value>
+    </data>
+    <data name="Administration_ChangeNicknamePermission" xml:space="preserve">
+        <value>I cannot change your nickname because you don't have the permission to change your nickname in his server.</value>
+    </data>
     <data name="Administration_NicknameRemoved" xml:space="preserve">
         <value>{0}'s nickname was removed successfully.</value>
     </data>
+    <data name="Administration_YourNicknameRemoved" xml:space="preserve">
+        <value>Your nickname was removed.</value>
+    </data>
     <data name="Administration_NicknameChanged" xml:space="preserve">
         <value>{0}'s nickname was changed to **{1}** successfully.</value>
+    </data>
+    <data name="Administration_YourNicknameChanged" xml:space="preserve">
+        <value>Your nickname was changed to **{1}**.</value>
     </data>
     <data name="Administration_ServerNameLengthLimit" xml:space="preserve">
         <value>The server name must be between 2-100 characters length.</value>
@@ -967,6 +982,9 @@ For a custom one you must have the Patreon Tier {0}. Check it here: [Patreon]({1
     </data>
     <data name="Reactions_PokedBy" xml:space="preserve">
         <value>{0} you have been poked by **{1}**.</value>
+    </data>
+    <data name="Reactions_Pout" xml:space="preserve">
+        <value>{0} is pouting.</value>
     </data>
     
     <data name="Searches_Source" xml:space="preserve">

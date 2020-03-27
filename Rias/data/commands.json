@@ -263,7 +263,6 @@
               "remarks": [
                 "{0}ar User Admin",
                 "{0}ar @User @Admin",
-                "{0}ar Nickname 613497353143451649",
                 "{0}ar 327927038360944640 613497353143451649"
               ]
             },
@@ -273,7 +272,6 @@
               "remarks": [
                 "{0}rr User Admin",
                 "{0}rr @User @Admin",
-                "{0}rr Nickname 613497353143451649",
                 "{0}rr 327927038360944640 613497353143451649"
               ]
             },
@@ -340,6 +338,13 @@
                 "{0}setnick User nickname",
                 "{0}setnick @User nickname",
                 "{0}setnick 327927038360944640 nickname"
+              ]
+            },
+            {
+              "aliases": "setmynickname setmynick",
+              "description": "I will set your nickname in this server if you have the permission to change your nickname. Provide no arguments for me to remove your nickname.",
+              "remarks": [
+                "{0}setmynick nickname"
               ]
             },
             {
@@ -1019,6 +1024,13 @@
             "{0}poke User",
             "{0}poke @User",
             "{0}poke 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "pout",
+          "description": "Maybe someone will pat you.",
+          "remarks": [
+            "{0}pout"
           ]
         }
       ]

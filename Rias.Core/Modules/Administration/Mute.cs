@@ -133,6 +133,7 @@ namespace Rias.Core.Modules.Administration
              Priority(1)]
             public async Task SetMuteAsync([Remainder] SocketRole role)
             {
+                if (role.IsEveryone) return;
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAboveMe");

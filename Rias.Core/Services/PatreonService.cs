@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Discord;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rias.Core.Commons;
 using Rias.Core.Database;
+using Rias.Core.Database.Models;
 using Rias.Core.Implementation;
 using Rias.Core.Services.WebSocket;
 using Serilog;
@@ -17,10 +17,6 @@ namespace Rias.Core.Services
 {
     public class PatreonService : RiasService
     {
-        private readonly GamblingService _gamblingService;
-        
-        private const int DatabasePledgeAttempts = 5;
-
         public const int ProfileColorTier = 1;
         public const int ProfileFirstBadgeTier = 2;
         public const int ProfileSecondBadgeTier = 3;
@@ -28,19 +24,14 @@ namespace Rias.Core.Services
 
         public PatreonService(IServiceProvider services) : base(services)
         {
-            _gamblingService = services.GetRequiredService<GamblingService>();
-            
             var creds = services.GetRequiredService<Credentials>();
-            // if (creds.PatreonConfig != null)
-            // {
-            //     var websocket = new RiasWebsocket();
-            //     websocket.ConnectAsync(creds.PatreonConfig);
-            //
-            //     websocket.OnConnected += ConnectedAsync;
-            //     websocket.OnDisconnected += DisconnectedAsync;
-            //     websocket.Log += LogAsync;
-            //     websocket.OnReceive += PledgeReceivedAsync;
-            // }
+            if (creds.PatreonConfig != null)
+            {
+                var websocket = new RiasWebSocket(creds.PatreonConfig, "PatreonWebSocket");
+                RunTaskAsync(websocket.ConnectAsync());
+                websocket.Log += LogAsync;
+                websocket.DataReceived += PledgeReceivedAsync;
+            }
         }
 
         public async Task CheckPatronsAsync()
@@ -53,25 +44,14 @@ namespace Rias.Core.Services
             foreach (var patron in patrons)
             {
                 var reward = patron.AmountCents * 5;
-                await _gamblingService.AddUserCurrencyAsync(patron.UserId, reward);
+                var userDb = await db.GetOrAddAsync(x => x.UserId == patron.UserId, () => new Users {UserId = patron.UserId});
+                userDb.Currency += reward;
 
                 patron.Checked = true;
                 Log.Information($"Patreon discord user with ID {patron.UserId} was rewarded with {reward} hearts");
             }
             
             await db.SaveChangesAsync();
-        }
-
-        private Task ConnectedAsync()
-        {
-            Log.Information("Patreon websocket connected");
-            return Task.CompletedTask;
-        }
-        
-        private Task DisconnectedAsync(WebSocketCloseStatus? status, string description)
-        {
-            Log.Information($"Patreon websocket diconnected. Status: {status}. Description: {description}");
-            return Task.CompletedTask;
         }
 
         private Task LogAsync(LogMessage msg)
@@ -87,7 +67,7 @@ namespace Rias.Core.Services
                 _ => LogEventLevel.Verbose
             };
 
-            Log.Logger.Write(logEventLevel, $"Patreon websocket: {msg.Message}");
+            Log.Logger.Write(logEventLevel, $"{msg.Source}: {msg.Message}");
 
             return Task.CompletedTask;
         }
@@ -97,30 +77,22 @@ namespace Rias.Core.Services
             var pledgeData = JsonConvert.DeserializeObject<PatreonPledgeData>(data);
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var pledgeDb = await db.Patreon.FirstOrDefaultAsync(x => x.PatreonUserId == pledgeData.PatreonUserId);
-
-            var attempts = 0;
-            while (pledgeDb is null && attempts < DatabasePledgeAttempts)
+            var patreonDb = await db.Patreon.FirstOrDefaultAsync(x => x.UserId == pledgeData.DiscordId);
+            
+            if (patreonDb is null)
             {
-                await Task.Delay(5000);
-                
-                pledgeDb = await db.Patreon.FirstOrDefaultAsync(x => x.PatreonUserId == pledgeData.PatreonUserId);
-                attempts++;
-            }
-
-            if (pledgeDb is null)
-            {
-                Log.Error($"Couldn't take the pledge data from the database for Patreon member: {pledgeData.PatreonUserName}, ID: {pledgeData.PatreonUserId}");
+                Log.Error($"Couldn't take the patreon data from the database for user {pledgeData.DiscordId}");
                 return;
             }
-
-            var reward = pledgeDb.AmountCents * 5;
-            await _gamblingService.AddUserCurrencyAsync(pledgeDb.UserId, reward);
-
-            pledgeDb.Checked = true;
+            
+            var reward = pledgeData.AmountCents * 5;
+            var userDb = await db.GetOrAddAsync(x => x.UserId == pledgeData.DiscordId, () => new Users {UserId = pledgeData.DiscordId});
+            userDb.Currency += reward;
+            
+            patreonDb.Checked = true;
             await db.SaveChangesAsync();
             
-            Log.Information($"Patreon discord user with ID {pledgeDb.UserId} was rewarded with {reward} hearts");
+            Log.Information($"Patreon discord user with ID {patreonDb.UserId} was rewarded with {reward} hearts");
         }
     }
 }
