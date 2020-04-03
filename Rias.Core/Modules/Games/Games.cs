@@ -44,6 +44,13 @@ namespace Rias.Core.Modules.Games
             }
         }
 
+        [Command("8ball"), Context(ContextType.Guild)]
+        public async Task EightBallAsync([Remainder] string _)
+        {
+            var number = new Random().Next(20);
+            await ReplyConfirmationAsync($"EightBallAnswer{number + 1}");
+        }
+
         [SuppressMessage("ReSharper", "UnusedMember.Local")]
         private enum Rps
         {

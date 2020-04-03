@@ -613,5 +613,28 @@ namespace Rias.Core.Modules.Reactions
             
             await Context.Channel.SendMessageAsync(GetText("Pout", Context.User.Mention), embed: embed.Build());
         }
+
+        [Command("sleepy"), Context(ContextType.Guild),
+         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.GuildUser)]
+        public async Task SleepyAsync()
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync("NoWeebApi");
+                return;
+            }
+
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ConfirmColor,
+                ImageUrl = await Service.GetReactionUrlAsync("sleepy"),
+                Footer = new EmbedFooterBuilder
+                {
+                    Text = $"{GetText("PoweredBy")} weeb.sh"
+                }
+            };
+            
+            await Context.Channel.SendMessageAsync(GetText("Sleepy", Context.User.Mention), embed: embed.Build());
+        }
     }
 }

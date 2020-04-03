@@ -2483,6 +2483,186 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to As I see it, yes..
+        /// </summary>
+        public static string Games_EightBallAnswer1 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My reply is no..
+        /// </summary>
+        public static string Games_EightBallAnswer10 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer10", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My sources say no..
+        /// </summary>
+        public static string Games_EightBallAnswer11 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer11", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outlook not so good..
+        /// </summary>
+        public static string Games_EightBallAnswer12 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer12", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outlook good..
+        /// </summary>
+        public static string Games_EightBallAnswer13 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer13", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reply hazy, try again..
+        /// </summary>
+        public static string Games_EightBallAnswer14 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer14", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signs point to yes..
+        /// </summary>
+        public static string Games_EightBallAnswer15 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer15", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Very doubtful..
+        /// </summary>
+        public static string Games_EightBallAnswer16 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer16", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Without a doubt..
+        /// </summary>
+        public static string Games_EightBallAnswer17 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer17", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes..
+        /// </summary>
+        public static string Games_EightBallAnswer18 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer18", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes – definitely..
+        /// </summary>
+        public static string Games_EightBallAnswer19 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer19", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ask again later..
+        /// </summary>
+        public static string Games_EightBallAnswer2 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You may rely on it..
+        /// </summary>
+        public static string Games_EightBallAnswer20 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer20", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Better not tell you now..
+        /// </summary>
+        public static string Games_EightBallAnswer3 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot predict now..
+        /// </summary>
+        public static string Games_EightBallAnswer4 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Concentrate and ask again..
+        /// </summary>
+        public static string Games_EightBallAnswer5 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don’t count on it..
+        /// </summary>
+        public static string Games_EightBallAnswer6 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It is certain..
+        /// </summary>
+        public static string Games_EightBallAnswer7 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It is decidedly so..
+        /// </summary>
+        public static string Games_EightBallAnswer8 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Most likely..
+        /// </summary>
+        public static string Games_EightBallAnswer9 {
+            get {
+                return ResourceManager.GetString("Games_EightBallAnswer9", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to I chose {0}, draw!.
         /// </summary>
         public static string Games_RpsDraw {
@@ -3145,6 +3325,15 @@ namespace Rias.Properties {
         public static string Reactions_SlapYou {
             get {
                 return ResourceManager.GetString("Reactions_SlapYou", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Good night {0}, see you tomorrow..
+        /// </summary>
+        public static string Reactions_Sleepy {
+            get {
+                return ResourceManager.GetString("Reactions_Sleepy", resourceCulture);
             }
         }
         

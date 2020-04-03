@@ -763,6 +763,66 @@ Do you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}.</valu
     <data name="Games_RpsDraw" xml:space="preserve">
         <value>I chose {0}, draw!</value>
     </data>
+    <data name="Games_EightBallAnswer1" xml:space="preserve">
+        <value>As I see it, yes.</value>
+    </data>
+    <data name="Games_EightBallAnswer2" xml:space="preserve">
+        <value>Ask again later.</value>
+    </data>
+    <data name="Games_EightBallAnswer3" xml:space="preserve">
+        <value>Better not tell you now.</value>
+    </data>
+    <data name="Games_EightBallAnswer4" xml:space="preserve">
+        <value>Cannot predict now.</value>
+    </data>
+    <data name="Games_EightBallAnswer5" xml:space="preserve">
+        <value>Concentrate and ask again.</value>
+    </data>
+    <data name="Games_EightBallAnswer6" xml:space="preserve">
+        <value>Don’t count on it.</value>
+    </data>
+    <data name="Games_EightBallAnswer7" xml:space="preserve">
+        <value>It is certain.</value>
+    </data>
+    <data name="Games_EightBallAnswer8" xml:space="preserve">
+        <value>It is decidedly so.</value>
+    </data>
+    <data name="Games_EightBallAnswer9" xml:space="preserve">
+        <value>Most likely.</value>
+    </data>
+    <data name="Games_EightBallAnswer10" xml:space="preserve">
+        <value>My reply is no.</value>
+    </data>
+    <data name="Games_EightBallAnswer11" xml:space="preserve">
+        <value>My sources say no.</value>
+    </data>
+    <data name="Games_EightBallAnswer12" xml:space="preserve">
+        <value>Outlook not so good.</value>
+    </data>
+    <data name="Games_EightBallAnswer13" xml:space="preserve">
+        <value>Outlook good.</value>
+    </data>
+    <data name="Games_EightBallAnswer14" xml:space="preserve">
+        <value>Reply hazy, try again.</value>
+    </data>
+    <data name="Games_EightBallAnswer15" xml:space="preserve">
+        <value>Signs point to yes.</value>
+    </data>
+    <data name="Games_EightBallAnswer16" xml:space="preserve">
+        <value>Very doubtful.</value>
+    </data>
+    <data name="Games_EightBallAnswer17" xml:space="preserve">
+        <value>Without a doubt.</value>
+    </data>
+    <data name="Games_EightBallAnswer18" xml:space="preserve">
+        <value>Yes.</value>
+    </data>
+    <data name="Games_EightBallAnswer19" xml:space="preserve">
+        <value>Yes – definitely.</value>
+    </data>
+    <data name="Games_EightBallAnswer20" xml:space="preserve">
+        <value>You may rely on it.</value>
+    </data>
 
     <data name="Help_Title" xml:space="preserve">
         <value>{0} Bot v{1} help page</value>
@@ -985,6 +1045,9 @@ For a custom one you must have the Patreon Tier {0}. Check it here: [Patreon]({1
     </data>
     <data name="Reactions_Pout" xml:space="preserve">
         <value>{0} is pouting.</value>
+    </data>
+    <data name="Reactions_Sleepy" xml:space="preserve">
+        <value>Good night {0}, see you tomorrow.</value>
     </data>
     
     <data name="Searches_Source" xml:space="preserve">

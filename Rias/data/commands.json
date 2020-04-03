@@ -763,6 +763,13 @@
           "remarks": [
             "{0}rps rock"
           ]
+        },
+        {
+          "aliases": "8ball 8b",
+          "description": "Ask 8 ball a question.",
+          "remarks": [
+            "{0}8b Should I sleep right now?"
+          ]
         }
       ]
     },
@@ -1031,6 +1038,13 @@
           "description": "Maybe someone will pat you.",
           "remarks": [
             "{0}pout"
+          ]
+        },
+        {
+          "aliases": "sleepy sleep",
+          "description": "Good night. See you tomorrow.",
+          "remarks": [
+            "{0}sleepy"
           ]
         }
       ]
