@@ -29,7 +29,7 @@ namespace Rias.Core.Services
 
         private readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), Timer> _timers = new ConcurrentDictionary<(ulong, ulong), Timer>();
 
-        public const string MuteRole = "rias-mute-dev";
+        public const string MuteRole = "rias-mute";
         private const string ModuleName = "Administration";
 
         private Timer LoadTimers { get; }
