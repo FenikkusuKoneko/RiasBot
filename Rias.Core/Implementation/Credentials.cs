@@ -36,7 +36,7 @@ namespace Rias.Core.Implementation
         public readonly string GlobalPassword;
         public bool IsGlobal { get; }
 
-        private readonly string _hash = "5700A1E58C59A2B9297478473CCD078ACAE139ED0D40734347F141A35566A7CE03C336D4575E09788839731AEB235A2A6E0C17744E0CEB64B6119D34F3300D8F";
+        private readonly string _hash = "43ee591ba577662ab1f60b156e592c17dfd96f2699565b31b3c754c96c033f34459b18c4e8e7a1dff87699cb8c40821d5fb38872deeb6eb3f26703889f80970f";
         private readonly string _credsPath = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
 
         public Credentials()

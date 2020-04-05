@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using ImageMagick;
 using Newtonsoft.Json;
 using Rias.Core.Commons;
 
