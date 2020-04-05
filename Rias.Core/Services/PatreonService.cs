@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Microsoft.EntityFrameworkCore;
@@ -38,8 +39,9 @@ namespace Rias.Core.Services
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var patrons = db.Patreon.Where(x => x.PatronStatus == PatronStatus.ActivePatron &&
-                                                !x.Checked && x.Tier > 0);
+            var patrons = await db.Patreon.Where(x => x.PatronStatus == PatronStatus.ActivePatron &&
+                                                !x.Checked && x.Tier > 0)
+                .ToListAsync();
             
             foreach (var patron in patrons)
             {

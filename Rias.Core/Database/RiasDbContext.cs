@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -39,7 +40,7 @@ namespace Rias.Core.Database
         public DbSet<Warnings>? Warnings { get; set; }
         public DbSet<Patreon>? Patreon { get; set; }
         public DbSet<Votes>? Votes { get; set; }
-
+        
         public RiasDbContext(DbContextOptions<RiasDbContext> options) : base(options)
         {
             NpgsqlConnection.GlobalTypeMapper.MapEnum<LastChargeStatus>();
