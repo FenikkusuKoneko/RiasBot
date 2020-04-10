@@ -179,7 +179,7 @@ namespace Rias.Core.Modules.Administration
             private async Task<IList<Database.Models.SelfAssignableRoles>> UpdateSelfAssignableRolesAsync()
             {
                 var sarList = await DbContext.GetListAsync<Database.Models.SelfAssignableRoles>(x => x.GuildId == Context.Guild!.Id);
-                foreach (var sar in sarList)
+                foreach (var sar in sarList.ToArray())
                 {
                     var role = Context.Guild!.GetRole(sar.RoleId);
                     if (role != null)
