@@ -200,9 +200,11 @@
           "commands": [
             {
               "aliases": "roles",
-              "description": "Shows the roles on this server, paginated.",
+              "description": "Shows the roles on this server, or the roles for a user, paginated.",
               "remarks": [
-                "{0}roles"
+                "{0}roles",
+                "{0}roles User",
+                "{0}roles 327927038360944640"
               ]
             },
             {

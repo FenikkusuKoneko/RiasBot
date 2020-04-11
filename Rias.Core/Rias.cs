@@ -22,7 +22,7 @@ namespace Rias.Core
     public class Rias
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "2.7.4";
+        public const string Version = "2.8.0";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         private DiscordShardedClient? _client;

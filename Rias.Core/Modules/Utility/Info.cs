@@ -95,6 +95,8 @@ namespace Rias.Core.Modules.Utility
 
                 var userRoles = user.Roles.Where(role => role.Id != Context.Guild!.EveryoneRole.Id)
                     .OrderByDescending(r => r.Position)
+                    .Take(10)
+                    .Select(x => x.Mention)
                     .ToList();
 
                 var activity = user.Activity switch
@@ -114,7 +116,7 @@ namespace Rias.Core.Modules.Utility
                     .AddField(GetText("Status"), user.Status, true)
                     .AddField(GetText("JoinedServer"), user.JoinedAt?.ToString("yyyy-MM-dd hh:mm:ss tt") ?? "-", true)
                     .AddField(GetText("JoinedDiscord"), user.CreatedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
-                    .AddField($"{GetText("Roles")} ({userRoles.Count})", userRoles.Count != 0 ? string.Join("\n", userRoles.Take(10)) : "-", true);
+                    .AddField($"{GetText("Roles")} ({userRoles.Count})", userRoles.Count != 0 ? string.Join("\n", userRoles) : "-", true);
 
                 await ReplyAsync(embed);
             }

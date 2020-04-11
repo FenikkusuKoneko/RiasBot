@@ -29,17 +29,20 @@ namespace Rias.Core.Modules.Administration
             }
 
             [Command("roles"), Context(ContextType.Guild),
-            Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task RolesAsync()
+            Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.GuildUser)]
+            public async Task RolesAsync([Remainder] SocketGuildUser? user = null)
             {
-                var everyoneRole = Context.Guild!.Roles.Where(x => x.Id == Context.Guild!.EveryoneRole.Id);
-                var roles = Context.Guild.Roles.OrderByDescending(x => x.Position)
-                    .Except(everyoneRole)
-                    .ToArray();
+                var roles = user is null ? Context.Guild!.Roles : user.Roles;
+                roles = roles.Where(x => x.Id != Context.Guild!.EveryoneRole.Id)
+                    .OrderByDescending(x => x.Position)
+                    .ToList();
 
-                if (roles.Length == 0)
+                if (roles.Count == 0)
                 {
-                    await ReplyErrorAsync("NoRoles");
+                    if (user is null)
+                        await ReplyErrorAsync("NoRoles");
+                    else
+                        await ReplyErrorAsync("UserNoRoles", user);
                     return;
                 }
 
@@ -48,9 +51,9 @@ namespace Rias.Core.Modules.Administration
                 (
                     new EmbedBuilder
                     {
-                        Title = GetText("ListRoles"),
+                        Title = user is null ? GetText("ListRoles") : GetText("UserListRoles", user),
                         Color = RiasUtils.ConfirmColor,
-                        Description = string.Join("\n", x.Select(role => $"#{index++} {role.Name} | {role.Id}"))
+                        Description = string.Join("\n", x.Select(role => $"#{index++} {role.Mention} | {role.Id}"))
                     }
                 ));
 

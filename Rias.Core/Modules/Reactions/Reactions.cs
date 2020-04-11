@@ -462,7 +462,7 @@ namespace Rias.Core.Modules.Reactions
         
         [Command("blush"), Context(ContextType.Guild),
          Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.GuildUser)]
-        public async Task BlushAsync()
+        public async Task BlushAsync([Remainder] SocketGuildUser user)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
@@ -480,7 +480,36 @@ namespace Rias.Core.Modules.Reactions
                 }
             };
             
-            await Context.Channel.SendMessageAsync(GetText("Blush", Context.User.Mention), embed: embed.Build());
+            if (user.Id == Context.User.Id)
+                await Context.Channel.SendMessageAsync(GetText("Blush", Context.User.Mention), embed: embed.Build());
+            else
+                await Context.Channel.SendMessageAsync(GetText("BlushAt", Context.User, user.Mention), embed: embed.Build());
+        }
+        
+        [Command("blush"), Context(ContextType.Guild),
+         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.GuildUser)]
+        public async Task BlushAsync([Remainder] string? value = null)
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync("NoWeebApi");
+                return;
+            }
+
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ConfirmColor,
+                ImageUrl = await Service.GetReactionUrlAsync("blush"),
+                Footer = new EmbedFooterBuilder
+                {
+                    Text = $"{GetText("PoweredBy")} weeb.sh"
+                }
+            };
+            
+            if (value is null)
+                await Context.Channel.SendMessageAsync(GetText("Blush", Context.User.Mention), embed: embed.Build());
+            else
+                await Context.Channel.SendMessageAsync(GetText("BlushAt", Context.User, value.Replace("@everyone", "everyone")), embed: embed.Build());
         }
         
         [Command("dance"), Context(ContextType.Guild),
@@ -593,7 +622,7 @@ namespace Rias.Core.Modules.Reactions
         
         [Command("pout"), Context(ContextType.Guild),
          Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.GuildUser)]
-        public async Task PoutAsync()
+        public async Task PoutAsync([Remainder] SocketGuildUser user)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
@@ -611,7 +640,36 @@ namespace Rias.Core.Modules.Reactions
                 }
             };
             
-            await Context.Channel.SendMessageAsync(GetText("Pout", Context.User.Mention), embed: embed.Build());
+            if (user.Id == Context.User.Id)
+                await Context.Channel.SendMessageAsync(GetText("Pout", Context.User.Mention), embed: embed.Build());
+            else
+                await Context.Channel.SendMessageAsync(GetText("PoutAt", Context.User, user.Mention), embed: embed.Build());
+        }
+        
+        [Command("pout"), Context(ContextType.Guild),
+         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.GuildUser)]
+        public async Task PoutAsync([Remainder] string? value = null)
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync("NoWeebApi");
+                return;
+            }
+
+            var embed = new EmbedBuilder
+            {
+                Color = RiasUtils.ConfirmColor,
+                ImageUrl = await Service.GetReactionUrlAsync("pout"),
+                Footer = new EmbedFooterBuilder
+                {
+                    Text = $"{GetText("PoweredBy")} weeb.sh"
+                }
+            };
+            
+            if (value is null)
+                await Context.Channel.SendMessageAsync(GetText("Pout", Context.User.Mention), embed: embed.Build());
+            else
+                await Context.Channel.SendMessageAsync(GetText("PoutAt", Context.User, value.Replace("@everyone", "everyone")), embed: embed.Build());
         }
 
         [Command("sleepy"), Context(ContextType.Guild),

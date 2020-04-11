@@ -212,8 +212,14 @@ Set a new mute role using `{0}setmute` or mute a user and I will create it autom
     <data name="Administration_NoRoles" xml:space="preserve">
         <value>No roles on this server.</value>
     </data>
+    <data name="Administration_UserNoRoles" xml:space="preserve">
+        <value>**{0}** doesn't have any role.</value>
+    </data>
     <data name="Administration_ListRoles" xml:space="preserve">
         <value>The roles on this server</value>
+    </data>
+    <data name="Administration_UserListRoles" xml:space="preserve">
+        <value>The roles for {0}</value>
     </data>
     <data name="Administration_RoleCreated" xml:space="preserve">
         <value>The role **{0}** was created successfully.</value>
@@ -1031,6 +1037,9 @@ For a custom one you must have the Patreon Tier {0}. Check it here: [Patreon]({1
     <data name="Reactions_Blush" xml:space="preserve">
         <value>{0} is blushing.</value>
     </data>
+    <data name="Reactions_BlushAt" xml:space="preserve">
+        <value>{0} is blushing at you, {1}.</value>
+    </data>
     <data name="Reactions_Dance" xml:space="preserve">
         <value>{0} is dancing.</value>
     </data>
@@ -1045,6 +1054,9 @@ For a custom one you must have the Patreon Tier {0}. Check it here: [Patreon]({1
     </data>
     <data name="Reactions_Pout" xml:space="preserve">
         <value>{0} is pouting.</value>
+    </data>
+    <data name="Reactions_PoutAt" xml:space="preserve">
+        <value>{0} is pouting at you, {1}.</value>
     </data>
     <data name="Reactions_Sleepy" xml:space="preserve">
         <value>Good night {0}, see you tomorrow.</value>

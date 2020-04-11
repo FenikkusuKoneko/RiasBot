@@ -1082,6 +1082,15 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The roles for {0}.
+        /// </summary>
+        public static string Administration_UserListRoles {
+            get {
+                return ResourceManager.GetString("Administration_UserListRoles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User muted.
         /// </summary>
         public static string Administration_UserMuted {
@@ -1096,6 +1105,15 @@ namespace Rias.Properties {
         public static string Administration_UserNoRole {
             get {
                 return ResourceManager.GetString("Administration_UserNoRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to **{0}** doesn&apos;t have any role..
+        /// </summary>
+        public static string Administration_UserNoRoles {
+            get {
+                return ResourceManager.GetString("Administration_UserNoRoles", resourceCulture);
             }
         }
         
@@ -3131,6 +3149,15 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is blushing at you, {1}..
+        /// </summary>
+        public static string Reactions_BlushAt {
+            get {
+                return ResourceManager.GetString("Reactions_BlushAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} you have been cuddled by **{1}** &lt;3..
         /// </summary>
         public static string Reactions_CuddledBy {
@@ -3298,6 +3325,15 @@ namespace Rias.Properties {
         public static string Reactions_Pout {
             get {
                 return ResourceManager.GetString("Reactions_Pout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is pouting at you, {1}..
+        /// </summary>
+        public static string Reactions_PoutAt {
+            get {
+                return ResourceManager.GetString("Reactions_PoutAt", resourceCulture);
             }
         }
         
