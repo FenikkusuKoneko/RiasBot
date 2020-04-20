@@ -1,0 +1,1415 @@
+{
+  "modules": [
+    {
+      "name": "administration",
+      "commands": [
+        {
+          "aliases": "setgreet greet",
+          "description": "Toggles the announcements in the current channel when someone joins the server.",
+          "remarks": [
+            "{0}greet"
+          ]
+        },
+        {
+          "aliases": "greetmessage greetmsg",
+          "description": "Sets the announcement message when someone joins the server.\nPlaceholders:\n`%mention%` - will mention the user\n`%user%` - will write the user's username\n`%server%` or `%guild%` - will put the name of the server\nEmbeds are supported, json form.",
+          "remarks": [
+            "{0}greetmsg Welcome %mention% to %guild%..."
+          ]
+        },
+        {
+          "aliases": "setbye bye",
+          "description": "Toggles the announcements in the current channel when someone leaves the server.",
+          "remarks": [
+            "{0}bye"
+          ]
+        },
+        {
+          "aliases": "byemessage byemsg",
+          "description": "Sets the announcement message when someone leaves the server.\nPlaceholders:\n`%mention%` - will mention the user\n`%user%` - will write the user's username\n`%server%` or `%guild%` - will put the name of the server\nEmbeds are supported, json form.",
+          "remarks": [
+            "{0}byemsg %user% left %guild%..."
+          ]
+        },
+        {
+          "aliases": "setmodlog modlog",
+          "description": "Sets the current channel as \"mod-log\" channel where I will post notifications about warn, mute, unmute, kick, ban, softban, pruneban. Provide no arguments to disable it from the current channel.",
+          "remarks": [
+            "{0}modlog"
+          ]
+        }
+      ],
+      "submodules": [
+        {
+          "name": "category channels",
+          "commands": [
+            {
+              "aliases": "createcategory ccat",
+              "description": "Creates a category channel.",
+              "remarks": [
+                "{0}ccat MEDIA"
+              ]
+            },
+            {
+              "aliases": "deletecategory dcat",
+              "description": "Deletes a category channel. The category's ID is supported.",
+              "remarks": [
+                "{0}dcat MEDIA",
+                "{0}dcat 416510975286444032"
+              ]
+            },
+            {
+              "aliases": "renamecategory rncat",
+              "description": "Renames a category channel. Separate the old name from the new name with '->'. The category's ID is supported.",
+              "remarks": [
+                "{0}rncat 416510975286444032 -> MUSIC"
+              ]
+            },
+            {
+              "aliases": "addtextchanneltocategory atchtocat",
+              "description": "Adds a text channel to a category channel. Separate the channel name from the category name with '->'. The category's ID and text channel's ID are supported.",
+              "remarks": [
+                "{0}atchtocat music -> MEDIA",
+                "{0}atchtocat 476708100930273280 -> 416510975286444032",
+                "{0}atchtocat 476708100930273280 -> MEDIA",
+                "{0}atchtocat music -> 416510975286444032"
+              ]
+            },
+            {
+              "aliases": "addvoicechanneltocategory avchtocat",
+              "description": "Adds a voice channel to a category channel. Separate the channel name from the category name with '->'. The category's ID and voice channel's ID are supported.",
+              "remarks": [
+                "{0}avchtocat Music -> MEDIA",
+                "{0}avchtocat 467279437105463315 -> 416510975286444032",
+                "{0}avchtocat 467279437105463315 -> MEDIA",
+                "{0}avchtocat Music -> 416510975286444032"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "emojis",
+          "commands": [
+            {
+              "aliases": "addemoji addemote",
+              "description": "Adds an emoji in this server. PNG, JPG or GIF supported. The image's size must be under 256 KB.",
+              "remarks": [
+                "{0}addemoji https://i.imgur.com/h86xaCX.png diamond_heart"
+              ]
+            },
+            {
+              "aliases": "deleteemoji delemoji deleteemote delemote",
+              "description": "Deletes an emoji from this server. 'Mentioning' the emoji is supported.",
+              "remarks": [
+                "{0}delemoji diamond_heart",
+                "{0}delemoji :diamond_heart:"
+
+              ]
+            },
+            {
+              "aliases": "renameemoji rnemoji renameemote rnemote",
+              "description": "Renames an emoji on this server. Separate the old name by the new name with '->'. 'Mentioning' the emotes are supported.",
+              "remarks": [
+                "{0}rnemoji heart -> heart_diamond",
+                "{0}rnemoji :heart: -> heart_diamond",
+                "{0}rnemoji heart -> :heart_diamond:",
+                "{0}rnemoji :heart: -> :heart_diamond:"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "moderation",
+          "commands": [
+            {
+              "aliases": "kick k",
+              "description": "Kicks a user. If you provide a reason message I will DM the user with the reason.",
+              "remarks": [
+                "{0}k @User",
+                "{0}k @User Your behavior is bad!"
+              ]
+            },
+            {
+              "aliases": "ban b",
+              "description": "Bans a user. If you provide a reason message I will DM the user with the reason.",
+              "remarks": [
+                "{0}b @User",
+                "{0}b @User You've violated many rules!"
+              ]
+            },
+            {
+              "aliases": "softban sb",
+              "description": "Bans a user with the option to remove his messages from last 7 days, and then unbans it. The result is a kick.",
+              "remarks": [
+                "{0}sb @User",
+                "{0}sb @User Don't spam here!"
+              ]
+            },
+            {
+              "aliases": "pruneban pb",
+              "description": "Bans a user with the option to remove his messages from last 7 days. Different from \"softban\" where the user is unbanned.",
+              "remarks": [
+                "{0}pb @User",
+                "{0}pb @User DO NOT SPAM HERE!"
+              ]
+            },
+            {
+              "aliases": "prune purge",
+              "description": "`[prefix]prune x` removes last x number of messages from the channel (up to 100, including yours).\n`[prefix]prune @User` removes all User's messages in the last 100 messages (including yours).",
+              "remarks": [
+                "{0}prune x",
+                "{0}prune @User",
+                "{0}prune @User x",
+                "{0}prune x @User"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "mute",
+          "commands": [
+            {
+              "aliases": "mute",
+              "description": "Mutes a user from text and voice channels. You can mute with a timeout and/or you can provide a reason.",
+              "remarks": [
+                "{0}mute @User",
+                "{0}mute @User Stop talking off topic",
+                "{0}mute @User 1h",
+                "{0}mute @User 1d2h See you tomorrow"
+              ]
+            },
+            {
+              "aliases": "unmute",
+              "description": "Unmutes a user from text and voice channels. You can provide a reason.",
+              "remarks": [
+                "{0}unmute @User",
+                "{0}unmute @User You are forgiven"
+              ]
+            },
+            {
+              "aliases": "setmute",
+              "description": "Sets the mute role. If the role doesn't exist it will be created.",
+              "remarks": [
+                "{0}setmute role"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "roles",
+          "commands": [
+            {
+              "aliases": "roles",
+              "description": "Shows the roles on this server, paginated.",
+              "remarks": [
+                "{0}roles"
+              ]
+            },
+            {
+              "aliases": "createrole cr",
+              "description": "Creates a role with the provided name.",
+              "remarks": [
+                "{0}cr Rias"
+              ]
+            },
+            {
+              "aliases": "deleterole dr",
+              "description": "Deletes the role you provide.",
+              "remarks": [
+                "{0}dr Rias",
+                "{0}dr @Rias",
+                "{0}dr 416771209833742368"
+              ]
+            },
+            {
+              "aliases": "rolecolor rolecolour rc",
+              "description": "Sets the color for a role. The color can be a hex format or a html name, '#' is optional.\nIf the role's name has more than one word use quotation marks to properly take the role.",
+              "remarks": [
+                "{0}rc Rias #dc143c",
+                "{0}rc Rias crimson",
+                "{0}rc \"Rias Gremory\" #dc143c",
+                "{0}rc 416771209833742368 ff0000"
+              ]
+            },
+            {
+              "aliases": "renamerole rnr",
+              "description": "Renames a role. You have to separate the old name by the new name with '->'.",
+              "remarks": [
+                "{0}rnr Rias -> Rias-waifu",
+                "{0}rnr @Rias -> Rias-waifu",
+                "{0}rnr 416771209833742368 -> Rias-waifu"
+              ]
+            },
+            {
+              "aliases": "hoistrole hr",
+              "description": "Sets the role to be or not displayed independently in the users list.",
+              "remarks": [
+                "{0}hr Admin",
+                "{0}hr @Admin",
+                "{0}hr 581123049408036874"
+              ]
+            },
+            {
+              "aliases": "mentionrole mr",
+              "description": "Sets the role to be or not mentioned.",
+              "remarks": [
+                "{0}mr Admin",
+                "{0}mr @Admin",
+                "{0}mr 581123049408036874"
+              ]
+            },
+            {
+              "aliases": "addrole ar setrole sr",
+              "description": "Adds/Sets a role to a user.",
+              "remarks": [
+                "{0}ar User Admin",
+                "{0}ar @User @Admin",
+                "{0}ar Nickname 613497353143451649",
+                "{0}ar 327927038360944640 613497353143451649"
+              ]
+            },
+            {
+              "aliases": "removerole rr",
+              "description": "Removes a role from a user.",
+              "remarks": [
+                "{0}rr User Admin",
+                "{0}rr @User @Admin",
+                "{0}rr Nickname 613497353143451649",
+                "{0}rr 327927038360944640 613497353143451649"
+              ]
+            },
+            {
+              "aliases": "autoassignablerole aar",
+              "description": "Sets a role to be auto-assigned for every user who joins the server. Provide no role to deactivate it.",
+              "remarks": [
+                "{0}aar Member"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "self assignable roles",
+          "commands": [
+            {
+              "aliases": "iam",
+              "description": "Assign to yourself a role from this server's self assignable roles list.",
+              "remarks": [
+                "{0}iam kawaii",
+                "{0}iam 613497353143451649"
+              ]
+            },
+            {
+              "aliases": "iamnot iamn",
+              "description": "Remove from yourself a role from this server's self assignable roles list.",
+              "remarks": [
+                "{0}iamn kawaii",
+                "{0}iam 613497353143451649"
+              ]
+            },
+            {
+              "aliases": "addselfassignablerole asar",
+              "description": "Adds a role in this server's self assignable roles list.",
+              "remarks": [
+                "{0}asar lewd",
+                "{0}asar 613497353143451649"
+              ]
+            },
+            {
+              "aliases": "removeselfassignablerole rsar",
+              "description": "Removes a role in this server's self assignable roles list.",
+              "remarks": [
+                "{0}rsar lewd",
+                "{0}rsar 613497353143451649"
+              ]
+            },
+            {
+              "aliases": "listselfassignableroles lsar",
+              "description": "Shows this server's self assignable roles list, paginated.",
+              "remarks": [
+                "{0}lsar"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "server",
+          "commands": [
+            {
+              "aliases": "setnickname setnick",
+              "description": "Sets a user's nickname in this server. Provide no arguments to remove its nickname.",
+              "remarks": [
+                "{0}setnick User nickname",
+                "{0}setnick @User nickname",
+                "{0}setnick 327927038360944640 nickname"
+              ]
+            },
+            {
+              "aliases": "setmynickname setmynick",
+              "description": "I will set your nickname in this server if you have the permission to change your nickname. Provide no arguments for me to remove your nickname.",
+              "remarks": [
+                "{0}setmynick nickname"
+              ]
+            },
+            {
+              "aliases": "setservername ssn",
+              "description": "Sets this server's name.",
+              "remarks": [
+                "{0}ssr Gremory Castle"
+              ]
+            },
+            {
+              "aliases": "setservericon ssi",
+              "description": "Sets this server's icon.",
+              "remarks": [
+                "{0}ssr https://i.imgur.com/SrRA0Bp.png"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "text channels",
+          "commands": [
+            {
+              "aliases": "createtextchannel ctch",
+              "description": "Creates a text channel.",
+              "remarks": [
+                "{0}ctch music",
+                "{0}ctch #music",
+                "{0}ctch 476708100930273280"
+              ]
+            },
+            {
+              "aliases": "deletetextchannel dtch",
+              "description": "Deletes a text channel.",
+              "remarks": [
+                "{0}dtch music",
+                "{0}dtch #music",
+                "{0}dtch 476708100930273280"
+              ]
+            },
+            {
+              "aliases": "renametextchannel rntch",
+              "description": "Renames a text channel. Separate the old name from the new one with '->'.",
+              "remarks": [
+                "{0}rntch media -> music",
+                "{0}rntch #media -> music",
+                "{0}rntch 416511169214545920 -> music"
+              ]
+            },
+            {
+              "aliases": "channeltopic ct",
+              "description": "Shows the current channel topic.",
+              "remarks": [
+                "{0}ct"
+              ]
+            },
+            {
+              "aliases": "setchanneltopic sct",
+              "description": "Sets this channel topic.",
+              "remarks": [
+                "{0}sct topic"
+              ]
+            },
+            {
+              "aliases": "setnsfwchannel snsfwch",
+              "description": "Toggles this channel or another channel as NSFW.",
+              "remarks": [
+                "{0}snsfwch",
+                "{0}snsfwch nsfw",
+                "{0}snsfwch #nsfw",
+                "{0}snsfwch 585309508394418176"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "voice channels",
+          "commands": [
+            {
+              "aliases": "createvoicechannel cvch",
+              "description": "Creates a voice channel.",
+              "remarks": [
+                "{0}cvch Music"
+              ]
+            },
+            {
+              "aliases": "deletevoicechannel dvch",
+              "description": "Deletes a voice channel.",
+              "remarks": [
+                "{0}dvch Music",
+                "{0}dvch 467279437105463315"
+              ]
+            },
+            {
+              "aliases": "renamevoicechannel rnvch",
+              "description": "Renames a voice channel. Separate the old name from the new one with '->'.",
+              "remarks": [
+                "{0}rnvch Media -> Music",
+                "{0}rnvch 467279437105463315 -> Music"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "warnings",
+          "commands": [
+            {
+              "aliases": "warn",
+              "description": "Warn a user. Also, you can specify a reason.",
+              "remarks": [
+                "{0}warn User",
+                "{0}warn @User",
+                "{0}warn 327927038360944640",
+                "{0}warn User Rule violated...",
+                "{0}warn 327927038360944640 Rule violated..."
+              ]
+            },
+            {
+              "aliases": "warnings warninglist warnlist",
+              "description": "Shows all warned users in this server, paginated, or shows all warnings for a user.",
+              "remarks": [
+                "{0}warnings",
+                "{0}warnings User",
+                "{0}warnings @User",
+                "{0}warnings 327927038360944640"
+              ]
+            },
+            {
+              "aliases": "clearwarning clearwarn",
+              "description": "Clear one warning by ID or all of a user.\nAdministrators can clear any warning and moderators can clear only their added warnings to a user.",
+              "remarks": [
+                "{0}clearwarn User 1",
+                "{0}clearwarn @User 2",
+                "{0}clearwarn 327927038360944640 1",
+                "{0}clearwarn User all",
+                "{0}clearwarn 327927038360944640 all"
+              ]
+            },
+            {
+              "aliases": "warningpunishment warnpunishment",
+              "description": "Shows the current warning punishment in this server.",
+              "remarks": [
+                "{0}warnpunishment"
+              ]
+            },
+            {
+              "aliases": "setwarningpunishment setwarnpunishment",
+              "description": "Sets the warning punishment (mute, kick, ban, softban or pruneban) and the number of warnings (maximum 10) that trigger it.\n Set it to 0 to disable the current warning punishment.",
+              "remarks": [
+                "{0}setwarnpunishment 0",
+                "{0}setwarnpunishment 3 mute",
+                "{0}setwarnpunishment 3 kick",
+                "{0}setwarnpunishment 5 ban"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bot",
+      "commands": [
+        {
+          "aliases": "leaveguild leaveserver",
+          "description": "Makes me to leave a guild/server.",
+          "remarks": [
+            "{0}leaveguild 416492045859946507"
+          ]
+        },
+        {
+          "aliases": "update restart",
+          "description": "Shuts down the application. If the option to update the project is set on linux it will update and start the application.",
+          "remarks": [
+            "{0}update"
+          ]
+        },
+        {
+          "aliases": "send",
+          "description": "I will send a message to a user <u:user-id> or to a channel from a server <c:channel-id>. Embed is supported.",
+          "remarks": [
+            "{0}send u:327927038360944640 message",
+            "{0}send c:381975649428176907 message"
+          ]
+        },
+        {
+          "aliases": "edit",
+          "description": "I will edit a message that I own and is available in a server <channel-id|message-id>. Embed is supported.",
+          "remarks": [
+            "{0}edit 416511999837732864|419897542508281867 message"
+          ]
+        },
+        {
+          "aliases": "finduser",
+          "description": "Searches a user from Discord and shows its info.",
+          "remarks": [
+            "{0}finduser 327927038360944640",
+            "{0}finduser Koneko#0001"
+          ]
+        },
+        {
+          "aliases": "evaluate eval",
+          "description": "Evaluates a C# code.",
+          "remarks": [
+            "{0}eval code..."
+          ]
+        }
+      ],
+      "submodules": [
+        {
+          "name": "activity",
+          "commands": [
+            {
+              "aliases": "activity",
+              "description": "Sets my activity to `Playing`, `Listening to`, `Watching` or `Streaming`. Rotation is supported, in seconds.",
+              "remarks": [
+                "{0}activity playing r!h for help",
+                "{0}activity streaming https://www.twitch.tv/ twitch",
+                "{0}activity 30 playing r!h for help\\nwatching anime"
+              ]
+            },
+            {
+              "aliases": "status",
+              "description": "Sets my status to Online, Idle/AFK, DnD/DoNotDisturb, Invisible/Offline.",
+              "remarks": [
+                "{0}status online"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "configuration",
+          "commands": [
+            {
+              "aliases": "setusername",
+              "description": "Sets my username. It can be changed twice per hour.",
+              "remarks": [
+                "{0}setusername Rias"
+              ]
+            },
+            {
+              "aliases": "setavatar setpfp",
+              "description": "Sets my profile picture/avatar. It can be changed twice per 10 minutes.",
+              "remarks": [
+                "{0}setavatar https://i.imgur.com/ZW96TT6.jpg"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "database",
+          "commands": [
+            {
+              "aliases": "delete",
+              "description": "Deletes a user from the database. The currency, global xp, waifus and profile settings will be erased.",
+              "remarks": [
+                "{0}delete 327927038360944640",
+                "{0}delete Koneko#0001"
+              ]
+            },
+            {
+              "aliases": "database db",
+              "description": "Shows details about a user from the database.",
+              "remarks": [
+                "{0}db 327927038360944640",
+                "{0}delete Koneko#0001"
+              ]
+            },
+            {
+              "aliases": "blacklist",
+              "description": "Adds a user to the blacklist. It will cannot generate global xp and it will cannot receive [currency].",
+              "remarks": [
+                "{0}blacklist 327927038360944640",
+                "{0}blacklist Koneko#0001"
+              ]
+            },
+            {
+              "aliases": "removeblacklist",
+              "description": "Removes a user from the blacklist. It will can generate global xp and will can receive [currency].",
+              "remarks": [
+                "{0}removeblacklist 327927038360944640",
+                "{0}removeblacklist Koneko#0001"
+              ]
+            },
+            {
+              "aliases": "botban",
+              "description": "Bans a user from using me. It will also be added to the blacklist.",
+              "remarks": [
+                "{0}botban 327927038360944640",
+                "{0}botban Koneko#0001"
+              ]
+            },
+            {
+              "aliases": "removebotban",
+              "description": "Unbans a user, allow it to use me. It will not be removed from the blacklist (if it is).",
+              "remarks": [
+                "{0}removebotban 327927038360944640",
+                "{0}removebotban Koneko#0001"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "commands",
+      "commands": [
+        {
+          "aliases": "deletecommandmessage delcmdmsg",
+          "description": "Toggles the deletion of the user's message that triggered the command.",
+          "remarks": [
+            "{0}delcmdmsg"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "gambling",
+      "commands": [
+        {
+          "aliases": "wheel",
+          "description": "Bet on wheel. You can win up to 2x [currency] of the bet.",
+          "remarks": [
+            "{0}wheel 1000"
+          ]
+        }
+      ],
+      "submodules": [
+        {
+          "name": "blackjack",
+          "aliases": "blackjack bj",
+          "commands": [
+            {
+              "description": "Play a game of blackjack.\n\nOptions:\n- hit(🎴) - draw a card from the deck\n- stand(🤚) - stand with your cards\n- split(↔) - split your hand in two if you have a pair\n\nThe game is played with 4 decks. And you lose the draws.",
+              "remarks": [
+                "{0}blackjack 100"
+              ]
+            },
+            {
+              "aliases": "resume",
+              "description": "Resumes the blackjack session in this channel.",
+              "remarks": [
+                "{0}blackjack resume"
+              ]
+            },
+            {
+              "aliases": "stop",
+              "description": "Stops the blackjack session, you will also lose the bet.",
+              "remarks": [
+                "{0}blackjack stop"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "currency",
+          "commands": [
+            {
+              "aliases": "currency $ hearts",
+              "description": "Shows the currency you have or for a user.",
+              "remarks": [
+                "{0}$",
+                "{0}$ User",
+                "{0}$ @User",
+                "{0}$ 327927038360944640"
+              ]
+            },
+            {
+              "aliases": "reward",
+              "description": "Rewards a user with some amount of [currency].",
+              "remarks": [
+                "{0}reward 100 User",
+                "{0}reward 100 @User",
+                "{0}reward 100 327927038360944640"
+              ]
+            },
+            {
+              "aliases": "take",
+              "description": "Takes some amount of [currency] from a user.",
+              "remarks": [
+                "{0}take 100 User",
+                "{0}take 100 @User",
+                "{0}take 100 327927038360944640"
+              ]
+            },
+            {
+              "aliases": "leaderboard lb",
+              "description": "Shows a list with [currency] of users.",
+              "remarks": [
+                "{0}lb"
+              ]
+            },
+            {
+              "aliases": "daily dailies",
+              "description": "Get your daily [currency].",
+              "remarks": [
+                "{0}daily"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "games",
+      "commands": [
+        {
+          "aliases": "rps",
+          "description": "Play a game of rock-paper-scissors.",
+          "remarks": [
+            "{0}rps rock"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "commands": [
+        {
+          "aliases": "help h",
+          "description": "Shows a help info for a command, or shows the general help info if no arguments are given.",
+          "remarks": [
+            "{0}h",
+            "{0}h anime"
+          ]
+        },
+        {
+          "aliases": "modules mdls",
+          "description": "Shows all modules and submodules.",
+          "remarks": [
+            "{0}mdls"
+          ]
+        },
+        {
+          "aliases": "commands cmds",
+          "description": "Shows all commands of a module or submodule.",
+          "remarks": [
+            "{0}cmds Administration",
+            "{0}cmds Moderation"
+          ]
+        },
+        {
+          "aliases": "allcommands allcmds",
+          "description": "I will DM you with all commands.",
+          "remarks": [
+            "{0}allcmds"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nsfw",
+      "commands": [
+        {
+          "aliases": "hentai",
+          "description": "Shows a hentai image. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.",
+          "remarks": [
+            "{0}hentai",
+            "{0}hentai yuri, uncensored",
+            "{0}hentai Rias Gremory"
+          ]
+        },
+        {
+          "aliases": "danbooru",
+          "description": "Shows a hentai image from Danbooru. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.",
+          "remarks": [
+            "{0}danbooru",
+            "{0}danbooru yuri"
+          ]
+        },
+        {
+          "aliases": "konachan",
+          "description": "Shows a hentai image from Konachan. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.",
+          "remarks": [
+            "{0}konachan",
+            "{0}konachan yuri"
+          ]
+        },
+        {
+          "aliases": "yandere",
+          "description": "Shows a hentai image from Yandere. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.",
+          "remarks": [
+            "{0}yandere",
+            "{0}yandere yuri"
+          ]
+        },
+        {
+          "aliases": "gelbooru",
+          "description": "Shows a hentai image from Gelbooru. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.",
+          "remarks": [
+            "{0}gelbooru",
+            "{0}gelbooru yuri"
+          ]
+        },
+        {
+          "aliases": "hentaiplus hentai+",
+          "description": "Shows multiple hentai images from Danbooru, Konachan, Yandere and Gelbooru. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.",
+          "remarks": [
+            "{0}hentai+",
+            "{0}hentai+ yuri, uncensored",
+            "{0}hentai+ Highschool DxD"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "profile",
+      "aliases": "profile",
+      "commands": [
+        {
+          "description": "Shows your profile or for a user.",
+          "remarks": [
+            "{0}profile",
+            "{0}profile User",
+            "{0}profile @User",
+            "{0}profile 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "background bg cover image",
+          "description": "Sets the profile's background image. Price: 1000 [currency].\nOnly https. Direct image links, png, jpg or jpeg allowed.\nFor better results, resize and/or crop the image to 500x250.\nNSFW images are not allowed, you will be banned.",
+          "remarks": [
+            "{0}profile bg https://i.imgur.com/pQAwZJ3.png"
+          ]
+        },
+        {
+          "aliases": "dim",
+          "description": "Sets the profile's background dim. Default is 50%. 0 means the background will have the original brightness, 100 means full black.",
+          "remarks": [
+            "{0}profile dim 50"
+          ]
+        },
+        {
+          "aliases": "biography bio",
+          "description": "Sets the profile's biography.",
+          "remarks": [
+            "{0}profile bio Rias is my waifu."
+          ]
+        },
+        {
+          "aliases": "color colour",
+          "description": "Sets the profile's color. The color can be a hex format or a html name, '#' is optional.\nOnly White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a custom one you must be a Patron.",
+          "remarks": [
+            "{0}profile color red",
+            "{0}profile color #dc143c"
+          ]
+        },
+        {
+          "aliases": "badge",
+          "description": "Sets a profile badge. There are 3 badges that a user can have depending of its Patreon tier. To remove a badge simply provide no text.",
+          "remarks": [
+            "{0}profile badge 1 2D>3D",
+            "{0}profile badge 2 Hentai",
+            "{0}profile badge 3 Neko"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reactions",
+      "commands": [
+        {
+          "aliases": "pat pet",
+          "description": "Pat a user <3.",
+          "remarks": [
+            "{0}pat",
+            "{0}pat User",
+            "{0}pat @User",
+            "{0}pat 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "hug",
+          "description": "Hug a user <3.",
+          "remarks": [
+            "{0}hug",
+            "{0}hug User",
+            "{0}hug @User",
+            "{0}hug 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "kiss",
+          "description": "Kiss a user :heart:.",
+          "remarks": [
+            "{0}kiss",
+            "{0}kiss User",
+            "{0}kiss @User",
+            "{0}kiss 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "lick",
+          "description": "Lick a user, lewd.",
+          "remarks": [
+            "{0}lick",
+            "{0}lick User",
+            "{0}lick @User",
+            "{0}lick 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "cuddle",
+          "description": "Cuddle a user.",
+          "remarks": [
+            "{0}cuddle",
+            "{0}cuddle User",
+            "{0}cuddle @User",
+            "{0}cuddle 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "bite",
+          "description": "Bite a user.",
+          "remarks": [
+            "{0}bite",
+            "{0}bite User",
+            "{0}bite @User",
+            "{0}bite 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "slap",
+          "description": "Slap a user.",
+          "remarks": [
+            "{0}slap",
+            "{0}slap User",
+            "{0}slap @User",
+            "{0}slap 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "cry crying",
+          "description": "If you cry ;-;.",
+          "remarks": [
+            "{0}cry"
+          ]
+        },
+        {
+          "aliases": "grope",
+          "description": "Grope a user.",
+          "remarks": [
+            "{0}grope",
+            "{0}grope User",
+            "{0}grope @User",
+            "{0}grope 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "blush",
+          "description": "You are blushing.",
+          "remarks": [
+            "{0}blush"
+          ]
+        },
+        {
+          "aliases": "dance dancing",
+          "description": "Dance alone or with someone.",
+          "remarks": [
+            "{0}dance",
+            "{0}dance User",
+            "{0}dance @User",
+            "{0}dance 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "poke",
+          "description": "Poke a user.",
+          "remarks": [
+            "{0}poke",
+            "{0}poke User",
+            "{0}poke @User",
+            "{0}poke 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "pout",
+          "description": "Maybe someone will pat you.",
+          "remarks": [
+            "{0}pout"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "searches",
+      "commands": [
+        {
+          "aliases": "wikipedia wiki",
+          "description": "Searches on Wikipedia.",
+          "remarks": [
+            "{0}wiki anime"
+          ]
+        },
+        {
+          "aliases": "urbandictionary ud",
+          "description": "Searches on urban dictionary, paginated.",
+          "remarks": [
+            "{0}ud waifu"
+          ]
+        }
+      ],
+      "submodules": [
+        {
+          "name": "anime",
+          "commands": [
+            {
+              "aliases": "anime",
+              "description": "Shows info about an anime from AniList.",
+              "remarks": [
+                "{0}anime High School DxD"
+              ]
+            },
+            {
+              "aliases": "manga",
+              "description": "Shows info about a manga from AniList.",
+              "remarks": [
+                "{0}manga High School DxD"
+              ]
+            },
+            {
+              "aliases": "character",
+              "description": "Shows info about a character from the database or AniList.\nIf the ID start with `@` then the character will be searched by ID on database, if not then the character will be searched first by name on database then on AniList.",
+              "remarks": [
+                "{0}character Rias Gremory",
+                "{0}character 50389",
+                "{0}character @1"
+              ]
+            },
+            {
+              "aliases": "animelist anilist",
+              "description": "Shows a list with anime and their IDs from AniList matching the title, paginated.",
+              "remarks": [
+                "{0}anilist High School DxD"
+              ]
+            },
+            {
+              "aliases": "mangalist",
+              "description": "Shows a list with manga and their IDs from AniList matching the title, paginated.",
+              "remarks": [
+                "{0}mangalist High School DxD"
+              ]
+            },
+            {
+              "aliases": "characters",
+              "description": "Shows a list with characters and their IDs from AniList matching the name, paginated.",
+              "remarks": [
+                "{0}mangalist High School DxD"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "cute girls",
+          "commands": [
+            {
+              "aliases": "neko",
+              "description": "Shows a neko girl image.",
+              "remarks": [
+                "{0}neko"
+              ]
+            },
+            {
+              "aliases": "kitsune",
+              "description": "Shows a kitsune girl image.",
+              "remarks": [
+                "{0}kitsune"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "utility",
+      "commands": [
+        {
+          "aliases": "prefix",
+          "description": "Shows the current server's prefix.",
+          "remarks": [
+            "{0}prefix"
+          ]
+        },
+        {
+          "aliases": "setprefix",
+          "description": "Sets the prefix on this server.",
+          "remarks": [
+            "{0}setprefix r!"
+          ]
+        },
+        {
+          "aliases": "languages",
+          "description": "Shows the available languages.",
+          "remarks": [
+            "{0}languages"
+          ]
+        },
+        {
+          "aliases": "setlanguage setlang",
+          "description": "Sets my language on this server.",
+          "remarks": [
+            "{0}setlanguage en",
+            "{0}setlanguage english",
+            "{0}setlanguage ro",
+            "{0}setlanguage romanian"
+          ]
+        },
+        {
+          "aliases": "invite",
+          "description": "Invite me to your server.",
+          "remarks": [
+            "{0}invite"
+          ]
+        },
+        {
+          "aliases": "patreon support donate",
+          "description": "Support this project on Patreon.",
+          "remarks": [
+            "{0}patreon"
+          ]
+        },
+        {
+          "aliases": "patrons supporters",
+          "description": "Shows a list with all users that support this project, ordered by their donation amount, paginated.",
+          "remarks": [
+            "{0}patrons"
+          ]
+        },
+        {
+          "aliases": "vote",
+          "description": "Vote me to become more popular.",
+          "remarks": [
+            "{0}vote"
+          ]
+        },
+        {
+          "aliases": "votes",
+          "description": "Shows a list with all users that voted in the last 12 hours (12h), 24 hours (24h, 1d), 7 days (7d) or 30 days (30d, 1mo), paginated. The default is 12h.",
+          "remarks": [
+            "{0}votes",
+            "{0}votes 24h",
+            "{0}votes 7d",
+            "{0}votes 30d"
+          ]
+        },
+        {
+          "aliases": "ping",
+          "description": "Pong.",
+          "remarks": [
+            "{0}ping"
+          ]
+        },
+        {
+          "aliases": "choose",
+          "description": "I will choose an item from a list. Separators: `,`, `|`, `;`.",
+          "remarks": [
+            "{0}choose 1, 2, 3, 4, 5",
+            "{0}choose Rias | Koneko | Kurumi"
+          ]
+        },
+        {
+          "aliases": "color colour",
+          "description": "Generates a preview image of a hex color or a html name color. '#' is optional.",
+          "remarks": [
+            "{0}color #dc143c",
+            "{0}color crimson"
+          ]
+        },
+        {
+          "aliases": "calculator calc",
+          "description": "Calculates a math expression.",
+          "remarks": [
+            "{0}calc 2+2",
+            "{0}calc sqrt(2)"
+          ]
+        }
+      ],
+      "submodules": [
+        {
+          "name": "info",
+          "commands": [
+            {
+              "aliases": "stats",
+              "description": "Shows my stats.",
+              "remarks": [
+                "{0}stats"
+              ]
+            },
+            {
+              "aliases": "userinfo uinfo",
+              "description": "Shows the info for a user. Provide no arguments to show your info.",
+              "remarks": [
+                "{0}uinfo",
+                "{0}uinfo User",
+                "{0}uinfo @User",
+                "{0}uinfo 327927038360944640"
+              ]
+            },
+            {
+              "aliases": "serverinfo sinfo",
+              "description": "Shows the info for this server.",
+              "remarks": [
+                "{0}sinfo"
+              ]
+            },
+            {
+              "aliases": "shardsinfo shinfo",
+              "description": "Shows the connection state of all shards.",
+              "remarks": [
+                "{0}shinfo"
+              ]
+            },
+            {
+              "aliases": "avatar av",
+              "description": "Shows the avatar for a user. Provide no arguments to show your avatar.",
+              "remarks": [
+                "{0}av",
+                "{0}av User",
+                "{0}av @User",
+                "{0}av 327927038360944640"
+              ]
+            },
+            {
+              "aliases": "servericon sic",
+              "description": "Shows the icon of this server.",
+              "remarks": [
+                "{0}sic"
+              ]
+            },
+            {
+              "aliases": "whoisplaying whosplaying whoplays",
+              "description": "Shows a list with all users from the server that play a game.",
+              "remarks": [
+                "{0}whoisplaying osu!"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "waifu",
+      "aliases": "waifu",
+      "commands": [
+        {
+          "aliases": "claim",
+          "description": "Claim a waifu, this can be from the database or AniList.\nIf the ID starts with `@` then the character will be searched by ID on database, if not then the character will be searched first, by name, on database then on AniList.\n\nThe price for every waifu usually starts from 1000 [currency] and grows for each claim with 10 [currency], also it will decrease for each divorce.",
+          "remarks": [
+            "{0}waifu claim Rias Gremory",
+            "{0}waifu claim 50389",
+            "{0}waifu claim @1"
+          ]
+        },
+        {
+          "aliases": "divorce",
+          "description": "Divorce from a waifu.",
+          "remarks": [
+            "{0}waifu divorce Rias Gremory",
+            "{0}waifu divorce 50389",
+            "{0}waifu divorce @1"
+          ]
+        },
+        {
+          "aliases": "all waifus",
+          "description": "Shows all your waifus or for a user.",
+          "remarks": [
+            "{0}waifu all"
+          ]
+        },
+        {
+          "aliases": "special beloved",
+          "description": "Make a waifu special/beloved. Only one waifu can be special, if you set another one, the previous one will have this status off. The price is 5000 [currency]. This action is not reversible.",
+          "remarks": [
+            "{0}waifu special Rias Gremory",
+            "{0}waifu special 50389",
+            "{0}waifu special @1"
+          ]
+        },
+        {
+          "aliases": "image avatar",
+          "description": "Set an image for your special waifu or for your custom ones, the url link comes first then the waifu name or id. Oh and it's free.\nNSFW images are not allowed, you will be banned.",
+          "remarks": [
+            "{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg Rias Gremory",
+            "{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg 50389",
+            "{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg @1"
+          ]
+        },
+        {
+          "aliases": "position",
+          "description": "Set the position of a waifu. Think of it as a list, if you move one above all the others below will have the position incremented.",
+          "remarks": [
+            "{0}waifu position 1 Rias Gremory",
+            "{0}waifu position 2 50389",
+            "{0}waifu position 3 @1"
+          ]
+        },
+        {
+          "aliases": "create",
+          "description": "Create a waifu. Put a direct link image and a name. The price is 10000 [currency]. She will have the beloved status automatically.",
+          "remarks": [
+            "{0}waifu create https://i.imgur.com/ZW96TT6.jpg My Waifu"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "xp",
+      "commands": [
+        {
+          "aliases": "xp",
+          "description": "Shows your global level, global xp, server level and server xp, or for a user.",
+          "remarks": [
+            "{0}xp",
+            "{0}xp User",
+            "{0}xp @User",
+            "{0}xp 327927038360944640"
+          ]
+        },
+        {
+          "aliases": "xpleaderboard xplb",
+          "description": "Shows the global xp leaderboard.",
+          "remarks": [
+            "{0}xplb",
+            "{0}xplb 5"
+          ]
+        },
+        {
+          "aliases": "serverxpleaderboard serverxplb sxplb",
+          "description": "Shows this server xp leaderboard.",
+          "remarks": [
+            "{0}sxplb",
+            "{0}sxplb 5"
+          ]
+        },
+        {
+          "aliases": "xpnotification xpnotify xpn",
+          "description": "Enables or disables the server xp notifications.",
+          "remarks": [
+            "{0}xpnotify"
+          ]
+        },
+        {
+          "aliases": "leveluprolereward lurr",
+          "description": "Adds a role in the level up role reward list.\nWhen a user reaches the level it will be rewarded with the role.\nTo remove a role from the list provide no role for the respective level.",
+          "remarks": [
+            "{0}lurr 5 Active",
+            "{0}lurr 5"
+          ]
+        },
+        {
+          "aliases": "leveluprolerewardlist lurrl lurrs",
+          "description": "Shows the with level up role reward list.",
+          "remarks": [
+            "{0}lurrl"
+          ]
+        },
+        {
+          "aliases": "resetserverxp rsxp",
+          "description": "Resets this server xp leaderboard.",
+          "remarks": [
+            "{0}rsxp"
+          ]
+        }
+      ]
+    }
+  ]
+}
