@@ -21,7 +21,7 @@ namespace Rias.Core.Modules.Bot
         [Command("leaveguild"), OwnerOnly]
         public async Task LeaveGuildAsync(string name)
         {
-            var guild = ulong.TryParse(name, out var guildId)
+            var guild = Snowflake.TryParse(name, out var guildId)
                 ? RiasBot.GetGuild(guildId)
                 : RiasBot.Guilds.FirstOrDefault(x => string.Equals(x.Value.Name, name)).Value;
 
@@ -56,7 +56,7 @@ namespace Rias.Core.Modules.Bot
             if (id.StartsWith("c:", StringComparison.InvariantCultureIgnoreCase))
             {
                 CachedChannel channel;
-                if (ulong.TryParse(id[2..], out var channelId))
+                if (Snowflake.TryParse(id[2..], out var channelId))
                 {
                     channel = RiasBot.GetChannel(channelId);
                 }
@@ -103,7 +103,7 @@ namespace Rias.Core.Modules.Bot
             if (id.StartsWith("u:", StringComparison.InvariantCultureIgnoreCase))
             {
                 CachedUser user;
-                if (ulong.TryParse(id[2..], out var userId))
+                if (Snowflake.TryParse(id[2..], out var userId))
                 {
                     user = RiasBot.GetUser(userId);
                 }
@@ -152,7 +152,7 @@ namespace Rias.Core.Modules.Bot
             }
 
             CachedChannel channel;
-            if (ulong.TryParse(ids[0], out var channelId))
+            if (Snowflake.TryParse(ids[0], out var channelId))
             {
                 channel = RiasBot.GetChannel(channelId);
             }
@@ -188,7 +188,7 @@ namespace Rias.Core.Modules.Bot
             }
 
             IMessage restMessage;
-            if (ulong.TryParse(ids[1], out var messageId))
+            if (Snowflake.TryParse(ids[1], out var messageId))
             {
                 restMessage = await textChannel.GetMessageAsync(messageId);
             }
@@ -240,7 +240,7 @@ namespace Rias.Core.Modules.Bot
         public async Task FindUserAsync([Remainder] string value)
         {
             IUser? user = null;
-            if (ulong.TryParse(value, out var userId))
+            if (Snowflake.TryParse(value, out var userId))
             {
                 user = RiasBot.GetUser(userId) ?? (IUser) await RiasBot.GetUserAsync(userId);
             }

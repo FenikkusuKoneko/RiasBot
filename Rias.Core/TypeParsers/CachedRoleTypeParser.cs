@@ -24,7 +24,7 @@ namespace Rias.Core.TypeParsers
                     return TypeParserResult<CachedRole>.Successful(role);
             }
 
-            if (ulong.TryParse(value, out var id))
+            if (Snowflake.TryParse(value, out var id))
             {
                 role = context.Guild.GetRole(id);
                 if (role != null)

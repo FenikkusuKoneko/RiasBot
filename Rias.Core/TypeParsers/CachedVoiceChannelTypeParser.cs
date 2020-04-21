@@ -18,7 +18,7 @@ namespace Rias.Core.TypeParsers
 
             CachedVoiceChannel channel;
 
-            if (ulong.TryParse(value, out var id))
+            if (Snowflake.TryParse(value, out var id))
             {
                 channel = context.Guild.GetVoiceChannel(id);
                 if (channel != null)

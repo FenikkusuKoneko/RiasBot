@@ -36,7 +36,7 @@ namespace Rias.Core.Services
         }
 
         private readonly ConcurrentDictionary<DiscordClientBase, bool> _shardsReady = new ConcurrentDictionary<DiscordClientBase, bool>();
-        private readonly ConcurrentDictionary<ulong, RestWebhookClient> _webhooks = new ConcurrentDictionary<ulong, RestWebhookClient>();
+        private readonly ConcurrentDictionary<Snowflake, RestWebhookClient> _webhooks = new ConcurrentDictionary<Snowflake, RestWebhookClient>();
 
         private async Task MemberJoinedAsync(MemberJoinedEventArgs args)
         {

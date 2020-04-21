@@ -24,7 +24,7 @@ namespace Rias.Core.Services
             LoadTimers = new Timer(_ => LoadTimersAsync(), null, TimeSpan.Zero, TimeSpan.FromDays(7));
         }
         
-        private readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), Timer> _timers = new ConcurrentDictionary<(ulong, ulong), Timer>();
+        private readonly ConcurrentDictionary<(Snowflake GuildId, Snowflake UserId), Timer> _timers = new ConcurrentDictionary<(Snowflake, Snowflake), Timer>();
 
 #if DEBUG
         public const string MuteRole = "rias-mute-dev";
@@ -361,10 +361,10 @@ namespace Rias.Core.Services
         public class MuteContext
         {
             public CachedGuild? Guild { get; private set; }
-            public ulong GuildId { get; }
+            public Snowflake GuildId { get; }
             public CachedMember? Moderator { get; private set; }
             public CachedMember? Member { get; private set; }
-            public ulong UserId { get; }
+            public Snowflake UserId { get; }
             public IMessageChannel? SourceChannel { get; private set; }
             public string? Reason { get; }
             public bool SentByTimer { get; }
@@ -382,7 +382,7 @@ namespace Rias.Core.Services
                 Reason = reason;
             }
 
-            public MuteContext(Rias riasBot, ulong guildId, ulong moderatorId, ulong userId, ulong channelId)
+            public MuteContext(Rias riasBot, Snowflake guildId, Snowflake moderatorId, Snowflake userId, Snowflake channelId)
             {
                 _riasBot = riasBot;
 

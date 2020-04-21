@@ -26,7 +26,7 @@ namespace Rias.Core.Services
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module name of this class.
         /// </summary>
-        public Task<IUserMessage> ReplyConfirmationAsync(IMessageChannel channel, ulong guildId, string key, params object[] args)
+        public Task<IUserMessage> ReplyConfirmationAsync(IMessageChannel channel, Snowflake guildId, string key, params object[] args)
         {
             return channel.SendConfirmationMessageAsync(Localization.GetText(guildId, key, args));
         }
@@ -36,7 +36,7 @@ namespace Rias.Core.Services
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
-        public Task<IUserMessage> ReplyErrorAsync(IMessageChannel channel, ulong guildId, string key, params object[] args)
+        public Task<IUserMessage> ReplyErrorAsync(IMessageChannel channel, Snowflake guildId, string key, params object[] args)
         {
             return channel.SendErrorMessageAsync(Localization.GetText(guildId, key, args));
         }
@@ -46,7 +46,7 @@ namespace Rias.Core.Services
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
-        public string GetText(ulong? guildId, string key, params object[] args)
+        public string GetText(Snowflake? guildId, string key, params object[] args)
         {
             return Localization.GetText(guildId, key, args);
         }

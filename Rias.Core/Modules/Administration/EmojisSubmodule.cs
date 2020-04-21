@@ -159,7 +159,7 @@ namespace Rias.Core.Modules.Administration
                     return Context.Guild!.Emojis.FirstOrDefault(x => x.Value.Id == emoji.Id).Value
                            ?? (ICustomEmoji) await Context.Guild!.GetEmojiAsync(emoji.Id);
 
-                if (ulong.TryParse(value, out var emojiId))
+                if (Snowflake.TryParse(value, out var emojiId))
                     return Context.Guild!.Emojis.FirstOrDefault(x => x.Value.Id == emojiId).Value
                            ?? (ICustomEmoji) await Context.Guild!.GetEmojiAsync(emojiId);
 

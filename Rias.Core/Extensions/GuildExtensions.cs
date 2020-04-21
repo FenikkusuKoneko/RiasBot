@@ -23,7 +23,7 @@ namespace Rias.Core.Extensions
         /// Gets a category channel by id or name (ordinal ignore case).
         /// </summary>
         public static CachedCategoryChannel? GetCategoryChannel(this CachedGuild guild, string value)
-            => ulong.TryParse(value, out var channelId)
+            => Snowflake.TryParse(value, out var channelId)
                 ? guild.CategoryChannels.FirstOrDefault(x => x.Key == channelId).Value
                 : guild.CategoryChannels.FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
 
@@ -35,7 +35,7 @@ namespace Rias.Core.Extensions
             if (Discord.TryParseChannelMention(value, out var channelSnowflake))
                 return guild.GetTextChannel(channelSnowflake);
 
-            return ulong.TryParse(value, out var channelId)
+            return Snowflake.TryParse(value, out var channelId)
                 ? guild.GetTextChannel(channelId)
                 : guild.TextChannels.FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
         }
@@ -44,7 +44,7 @@ namespace Rias.Core.Extensions
         /// Gets a voice channel by id or name (ordinal ignore case)
         /// </summary>
         public static CachedVoiceChannel? GetVoiceChannel(this CachedGuild guild, string value)
-            => ulong.TryParse(value, out var channelId)
+            => Snowflake.TryParse(value, out var channelId)
                 ? guild.GetVoiceChannel(channelId)
                 : guild.VoiceChannels.FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
 

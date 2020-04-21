@@ -25,7 +25,7 @@ namespace Rias.Core.TypeParsers
                     return TypeParserResult<CachedTextChannel>.Successful(channel);
             }
 
-            if (ulong.TryParse(value, out var id))
+            if (Snowflake.TryParse(value, out var id))
             {
                 channel = context.Guild.GetTextChannel(id);
                 if (channel != null)

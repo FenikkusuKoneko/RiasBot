@@ -25,7 +25,7 @@ namespace Rias.Core.TypeParsers
                     return TypeParserResult<CachedMember>.Successful(member);
             }
 
-            if (ulong.TryParse(value, out var id))
+            if (Snowflake.TryParse(value, out var id))
             {
                 member = context.Guild.GetMember(id);
                 if (member != null)

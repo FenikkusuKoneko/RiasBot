@@ -11,12 +11,12 @@ namespace Rias.Core.Implementation
         public readonly string Prefix;
         public readonly string Token;
 
-        public ulong MasterId { get; }
+        public Snowflake MasterId { get; }
         public string Currency { get; }
 
         public readonly string Invite;
         public readonly string OwnerServerInvite;
-        public ulong OwnerServerId { get; }
+        public Snowflake OwnerServerId { get; }
 
         public readonly string Patreon;
         public readonly string Website;

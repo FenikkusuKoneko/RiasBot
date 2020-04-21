@@ -17,7 +17,7 @@ namespace Rias.Core.TypeParsers
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
             IUser? user = null;
 
-            if (ulong.TryParse(value, out var id))
+            if (Snowflake.TryParse(value, out var id))
                 user = await context.ServiceProvider.GetRequiredService<Rias>().GetUserAsync(id);
             
             if (user != null)

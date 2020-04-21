@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Disqord;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rias.Core.Database;
@@ -15,7 +16,7 @@ namespace Rias.Core.Implementation
         private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _locales =
             new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
         
-        private readonly ConcurrentDictionary<ulong, string> _guildLocales = new ConcurrentDictionary<ulong, string>();
+        private readonly ConcurrentDictionary<Snowflake, string> _guildLocales = new ConcurrentDictionary<Snowflake, string>();
         
         private readonly string _localesPath = Path.Combine(Environment.CurrentDirectory, "assets/locales");
         private readonly string _defaultLocale = "en";
@@ -36,19 +37,19 @@ namespace Rias.Core.Implementation
             var guildLocalesDb = db.Guilds.Where(guildDb => !string.IsNullOrEmpty(guildDb.Locale)).ToList();
             foreach (var localeDb in guildLocalesDb)
             {
-                _guildLocales.TryAdd(localeDb.GuildId,localeDb.Locale!);
+                _guildLocales.TryAdd(localeDb.GuildId, localeDb.Locale!);
             }
             
             sw.Stop();
             Log.Information($"Locales loaded: {sw.ElapsedMilliseconds} ms");
         }
         
-        public void SetGuildLocale(ulong guildId, string locale)
+        public void SetGuildLocale(Snowflake guildId, string locale)
         {
             _guildLocales.AddOrUpdate(guildId, locale, (id, old) => locale);
         }
         
-        public string GetGuildLocale(ulong? guildId)
+        public string GetGuildLocale(Snowflake? guildId)
         {
             if (!guildId.HasValue)
                 return _defaultLocale;
@@ -56,7 +57,7 @@ namespace Rias.Core.Implementation
             return _guildLocales.TryGetValue(guildId.Value, out var locale) ? locale : _defaultLocale;
         }
 
-        public void RemoveGuildLocale(ulong guildId)
+        public void RemoveGuildLocale(Snowflake guildId)
         {
             _guildLocales.TryRemove(guildId, out _);
         }
@@ -79,7 +80,7 @@ namespace Rias.Core.Implementation
         /// <summary>
         /// Get a translation string with or without arguments.<br/>
         /// </summary>
-        public string GetText(ulong? guildId, string key, params object[] args)
+        public string GetText(Snowflake? guildId, string key, params object[] args)
         {
             var locale = guildId.HasValue ? GetGuildLocale(guildId.Value) : _defaultLocale;
             if (TryGetLocaleString(locale, key, out var @string))

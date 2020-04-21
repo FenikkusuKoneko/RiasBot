@@ -313,7 +313,7 @@ namespace Rias.Core.Modules.Administration
                 if (Discord.TryParseRoleMention(value, out var roleId))
                     return Context.Guild!.GetRole(roleId);
 
-                if (ulong.TryParse(value, out var id))
+                if (Snowflake.TryParse(value, out var id))
                     return Context.Guild!.GetRole(id);
 
                 return Context.Guild!.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
