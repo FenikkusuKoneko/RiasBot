@@ -6,9 +6,6 @@
         <LangVersion>8</LangVersion>
         <Nullable>enable</Nullable>
         <NoWarn>NU1701</NoWarn>
-        <PackageVersion>3.0.0</PackageVersion>
-        <Copyright>2018-2020 Koneko</Copyright>
-        <PackageProjectUrl>https://riasbot.me</PackageProjectUrl>
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
@@ -22,18 +19,6 @@
         </Content>
         <Content Include="assets\**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="data\commands.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="data\credentials.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="assets\strings\en-US.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="assets\locales\ro.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 

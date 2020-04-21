@@ -103,7 +103,6 @@
               "remarks": [
                 "{0}delemoji diamond_heart",
                 "{0}delemoji :diamond_heart:"
-
               ]
             },
             {
@@ -704,7 +703,7 @@
           "name": "currency",
           "commands": [
             {
-              "aliases": "currency $ hearts",
+              "aliases": "currency $",
               "description": "Shows the currency you have or for a user.",
               "remarks": [
                 "{0}$",

@@ -38,9 +38,10 @@ namespace Rias.Core.TypeParsers
             if (index > 0)
             {
                 var username = value[..index];
-                if (ushort.TryParse(value[(index+1)..], out var discriminator))
+                var discriminator = value[(index+1)..];
+                if (discriminator.Length == 4 && int.TryParse(discriminator, out _))
                 {
-                    member = members.FirstOrDefault(u => string.Equals(u.Value.Discriminator, discriminator.ToString())
+                    member = members.FirstOrDefault(u => string.Equals(u.Value.Discriminator, discriminator)
                                                          && string.Equals(u.Value.Name, username, StringComparison.OrdinalIgnoreCase)).Value;
                     if (member != null)
                         return TypeParserResult<CachedMember>.Successful(member);

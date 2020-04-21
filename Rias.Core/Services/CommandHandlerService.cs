@@ -34,7 +34,7 @@ namespace Rias.Core.Services
         public static int CommandsExecuted;
 
         private List<Type> _typeParsers = new List<Type>();
-        
+
         public CommandHandlerService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _commandService = serviceProvider.GetRequiredService<CommandService>();
@@ -117,10 +117,7 @@ namespace Rias.Core.Services
                     {
                         if (command.Aliases.Contains(commandAlias))
                             continue;
-
-                        // if (!Credentials.IsGlobal && string.Equals(commandAlias, "hearts", StringComparison.Ordinal))
-                        //     continue;
-
+                        
                         command.AddAlias(commandAlias);
                     }
                 }
@@ -312,7 +309,7 @@ namespace Rias.Core.Services
             return !string.IsNullOrEmpty(prefix) ? prefix : Credentials.Prefix;
         }
         
-        private class ModuleInfo
+        public class ModuleInfo
         {
             public string? Name { get; set; }
             public string? Aliases { get; set; }
@@ -320,7 +317,7 @@ namespace Rias.Core.Services
             public IEnumerable<ModuleInfo>? Submodules { get; set; }
         }
 
-        private class CommandInfo
+        public class CommandInfo
         {
             public string? Aliases { get; set; }
             public string? Description { get; set; }

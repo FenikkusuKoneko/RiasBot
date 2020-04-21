@@ -28,7 +28,7 @@ namespace Rias
 
             var masterType = typeof(Core.Rias).Assembly
                 .GetTypes()
-                .FirstOrDefault(x => x.Name == "Master");
+                .FirstOrDefault(x => string.Equals(x.Name, "Master"));
 
             if (masterType != null)
                 Activator.CreateInstance(masterType);

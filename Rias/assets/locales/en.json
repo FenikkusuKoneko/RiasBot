@@ -200,7 +200,7 @@
   "bot_set_username_error": "My username couldn't be changed. Keep in mind that it can be changed twice per hour. If you already did it, then try again later.",
   "bot_avatar_set": "My avatar was changed successfully.",
   "bot_set_avatar_error": "My avatar couldn't be changed. Keep in mind that it can be changed twice per 10 minutes. If you already did it, then try again later.",
-  "bot_delete_dialog": "Are you sure you want to delete this user from the database?",
+  "bot_delete_dialog": "Are you sure you want to delete **{0}** from the database?",
   "bot_delete_canceled": "Delete canceled!",
   "bot_user_deleted": "The user **{0}** has been deleted from the database.",
   "bot_user_not_in_database": "The user is not in the database.",
