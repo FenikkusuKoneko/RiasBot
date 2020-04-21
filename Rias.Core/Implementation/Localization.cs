@@ -333,6 +333,7 @@ namespace Rias.Core.Implementation
         public static string GamesRpsWon => "games_rps_won";
         public static string GamesRpsLost => "games_rps_lost";
         public static string GamesRpsDraw => "games_rps_draw";
+        public static string GamesEightBallAnswer(int number) => $"games_eight_ball_answer_{number}";
         
         public static string HelpTitle => "help_title";
         public static string HelpInfo => "help_info";
