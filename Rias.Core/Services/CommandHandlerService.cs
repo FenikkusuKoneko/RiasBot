@@ -27,6 +27,7 @@ namespace Rias.Core.Services
     public class CommandHandlerService : RiasService
     {
         private readonly CommandService _commandService;
+        private readonly BotService _botService;
         private readonly CooldownService _cooldownService;
         
         private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.json");
@@ -38,6 +39,7 @@ namespace Rias.Core.Services
         public CommandHandlerService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _commandService = serviceProvider.GetRequiredService<CommandService>();
+            _botService = serviceProvider.GetRequiredService<BotService>();
             _cooldownService = serviceProvider.GetRequiredService<CooldownService>();
             
             LoadCommands();
@@ -165,7 +167,7 @@ namespace Rias.Core.Services
             var guildChannel = userMessage.Channel as CachedTextChannel;
             if (guildChannel != null)
             {
-                //await RunTaskAsync(_botService.AddAssignableRoleAsync((SocketGuildUser) userMessage.Author));
+                await RunTaskAsync(_botService.AddAssignableRoleAsync((CachedMember) userMessage.Author));
                 //await RunTaskAsync(_xpService.AddUserXpAsync((SocketGuildUser) userMessage.Author));
                 //await RunTaskAsync(_xpService.AddGuildUserXpAsync((SocketGuildUser) userMessage.Author, userMessage.Channel));
             }
@@ -199,13 +201,13 @@ namespace Rias.Core.Services
             
             if (result.IsSuccessful)
             {
-                // if (channel != null &&
-                //     channel.Guild.CurrentUser.GuildPermissions.ManageMessages &&
-                //     await CheckGuildCommandMessageDeletion(channel.Guild) &&
-                //     !string.Equals(context.Command.Name, "prune", StringComparison.Ordinal))
-                // {
-                //     await userMessage.DeleteAsync();
-                // }
+                if (channel != null &&
+                    channel.Guild.CurrentMember.Permissions.ManageMessages &&
+                    await CheckGuildCommandMessageDeletion(channel.Guild) &&
+                    !string.Equals(context.Command.Name, "prune"))
+                {
+                    await userMessage.DeleteAsync();
+                }
                 
                 CommandsExecuted++;
                 return;
@@ -307,6 +309,13 @@ namespace Rias.Core.Services
             var prefix = (await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id))?.Prefix;
             
             return !string.IsNullOrEmpty(prefix) ? prefix : Credentials.Prefix;
+        }
+        
+        private async Task<bool> CheckGuildCommandMessageDeletion(CachedGuild guild)
+        {
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            return (await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id))?.DeleteCommandMessage ?? false;
         }
         
         public class ModuleInfo
