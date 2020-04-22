@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Disqord;
 using Disqord.Events;
 using Humanizer;
+using Humanizer.Localisation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -292,8 +293,9 @@ namespace Rias.Core.Services
 
             _cooldownService.Add(cooldownKey);
             
+            retryAfter += TimeSpan.FromSeconds(1);
             await context.Channel.SendErrorMessageAsync(GetText(context.Guild?.Id, Localization.ServiceCommandCooldown,
-                retryAfter.Humanize(culture: new CultureInfo(Localization.GetGuildLocale(context.Guild?.Id)))));
+                retryAfter.Humanize(culture: new CultureInfo(Localization.GetGuildLocale(context.Guild?.Id)), minUnit: TimeUnit.Second)));
             
             await Task.Delay(retryAfter);
             _cooldownService.Remove(cooldownKey);
