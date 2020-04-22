@@ -9,7 +9,8 @@ using Rias.Core.Services;
 
 namespace Rias.Core.Modules.Gambling
 {
-    public class GamblingModule : RiasModule<GamblingService>
+    [Name("Gambling")]
+    public partial class GamblingModule : RiasModule<GamblingService>
     {
         public GamblingModule(IServiceProvider services) : base(services)
         {
