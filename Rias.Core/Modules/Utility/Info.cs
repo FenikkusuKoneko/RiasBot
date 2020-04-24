@@ -50,7 +50,7 @@ namespace Rias.Core.Modules.Utility
                     }.AddField(GetText("Author"), Rias.Author, true)
                     .AddField(GetText("BotId"), Context.Client.CurrentUser.Id, true)
                     .AddField(GetText("MasterId"), Credentials.MasterId, true)
-                    .AddField(GetText("Shard"), $"{_client.GetShardIdFor(Context.Guild)}/{_client.Shards.Count}", true)
+                    .AddField(GetText("Shard"), $"{_client.GetShardIdFor(Context.Guild) + 1}/{_client.Shards.Count}", true)
                     .AddField(GetText("InServer"), Context.Guild?.Name ?? "-", true)
                     .AddField(GetText("CommandsAttempted"), CommandHandlerService.CommandsAttempted, true)
                     .AddField(GetText("CommandsExecuted"), CommandHandlerService.CommandsExecuted, true)
@@ -176,7 +176,7 @@ namespace Rias.Core.Modules.Utility
                 var shards = _client.Shards;
                 var connectedShards = shards.Count(x => x.ConnectionState == ConnectionState.Connected);
 
-                var index = 0;
+                var index = 1;
                 var pages = _client.Shards.Batch(15, x => new InteractiveMessage
                 (
                     new EmbedBuilder
