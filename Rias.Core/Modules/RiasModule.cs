@@ -65,7 +65,7 @@ namespace Rias.Core.Modules
 
         public async Task SendPaginatedMessageAsync<T>(List<T> items, int itemsPerPage, Func<IEnumerable<T>, int, LocalEmbedBuilder> embedFunc)
         {
-            var pageCount = (items.Count + 1) / itemsPerPage + 1;
+            var pageCount = ((items.Count - 1) / itemsPerPage) + 1;
             
             var pages = items.Split(itemsPerPage).Select((x, i) =>
             {

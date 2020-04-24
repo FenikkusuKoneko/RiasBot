@@ -44,11 +44,6 @@ namespace Rias.Core.Services
             await PopulateCacheAsync(yandereImages, NsfwImageApiProvider.Yandere);
             var gelbooruImages = await DeserializeXmlHentaiAsync(GelbooruApi);
             await PopulateCacheAsync(gelbooruImages, NsfwImageApiProvider.Gelbooru);
-            
-            Log.Debug(danbooruImages.Count(x => string.IsNullOrEmpty(x.FileUrl)).ToString());
-            Log.Debug(konachanImages.Count(x => string.IsNullOrEmpty(x.FileUrl)).ToString());
-            Log.Debug(yandereImages.Count(x => string.IsNullOrEmpty(x.FileUrl)).ToString());
-            Log.Debug(gelbooruImages.Count(x => string.IsNullOrEmpty(x.FileUrl)).ToString());
 
             CacheInitialized = true;
         }
