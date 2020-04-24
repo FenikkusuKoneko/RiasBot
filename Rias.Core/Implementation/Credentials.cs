@@ -5,7 +5,6 @@ using System.Text;
 using Discord;
 using Microsoft.Extensions.Configuration;
 using Rias.Core.Commons.Configs;
-using Serilog;
 
 namespace Rias.Core.Implementation
 {

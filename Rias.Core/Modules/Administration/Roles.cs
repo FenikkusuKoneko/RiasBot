@@ -65,7 +65,7 @@ namespace Rias.Core.Modules.Administration
             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateRoleAsync([Remainder]string name)
             {
-                await Context.Guild!.CreateRoleAsync(name);
+                await Context.Guild!.CreateRoleAsync(name, isMentionable: false);
                 await ReplyConfirmationAsync("RoleCreated", name);
             }
 

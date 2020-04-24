@@ -68,7 +68,7 @@ namespace Rias.Core.Services
 
             var role = (guild.GetRole(guildDb?.MuteRoleId ?? 0)
                         ?? guild.Roles.FirstOrDefault(x => string.Equals(x.Name, MuteRole) && !x.IsManaged))
-                       ?? (IRole) await guild.CreateRoleAsync(MuteRole);
+                       ?? (IRole) await guild.CreateRoleAsync(MuteRole, isMentionable: false);
 
             var currentUser = guild.CurrentUser;
             if (currentUser.CheckRoleHierarchy(role) <= 0)

@@ -161,7 +161,7 @@ namespace Rias.Core.Modules.Administration
              Priority(0)]
             public async Task SetMuteAsync([Remainder] string name)
             {
-                var role = await Context.Guild!.CreateRoleAsync(name);
+                var role = await Context.Guild!.CreateRoleAsync(name, isMentionable: false);
                 var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
                 guildDb.MuteRoleId = role.Id;
                 await DbContext.SaveChangesAsync();

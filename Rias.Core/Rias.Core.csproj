@@ -11,28 +11,28 @@
 
     <ItemGroup>
         <PackageReference Include="CoreCLR-NCalc" Version="2.2.70" />
-        <PackageReference Include="Discord.Net.Core" Version="2.2.0-dev-20191123.2" />
-        <PackageReference Include="Discord.Net.Rest" Version="2.2.0-dev-20191123.2" />
-        <PackageReference Include="Discord.Net.Webhook" Version="2.2.0-dev-20191123.2" />
-        <PackageReference Include="Discord.Net.WebSocket" Version="2.2.0-dev-20191123.2" />
-        <PackageReference Include="EFCore.NamingConventions" Version="1.0.0" />
-        <PackageReference Include="Humanizer" Version="2.7.9" />
-        <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.15.0" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.5.0-beta2-19631-01" />
+        <PackageReference Include="Discord.Net.Core" Version="2.3.0-dev-20200422.4" />
+        <PackageReference Include="Discord.Net.Rest" Version="2.3.0-dev-20200422.4" />
+        <PackageReference Include="Discord.Net.Webhook" Version="2.3.0-dev-20200422.4" />
+        <PackageReference Include="Discord.Net.WebSocket" Version="2.3.0-dev-20200422.4" />
+        <PackageReference Include="EFCore.NamingConventions" Version="1.1.0" />
+        <PackageReference Include="Humanizer" Version="2.8.2" />
+        <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.16.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.7.0-1.20224.1" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.3" />
         <PackageReference Include="morelinq" Version="3.3.2" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.0" />
-        <PackageReference Include="Qmmands" Version="3.1.0-nightly-00234" />
-        <PackageReference Include="Serilog" Version="2.9.1-dev-01154" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.3" />
+        <PackageReference Include="Qmmands" Version="3.1.2-nightly-00245" />
+        <PackageReference Include="Serilog" Version="2.9.1-dev-01165" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.4.1-dev-00071" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00834" />
-        <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
-        <PackageReference Include="System.Linq.Async" Version="4.0.0" ExcludeAssets="All" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0-dev-00873" />
+        <PackageReference Include="System.Linq.Async" Version="4.1.1" ExcludeAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
