@@ -109,7 +109,7 @@ namespace Rias.Core.Modules
         /// <param name="func"></param>
         public Task RunTaskAsync(Task func)
         {
-            _ = Task.Run(async () =>
+            Task.Run(async () =>
             {
                 try
                 {

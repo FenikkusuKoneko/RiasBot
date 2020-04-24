@@ -109,19 +109,17 @@ namespace Rias.Core.Services
             await ProcessGameAsync(blackjack, args.Reaction.Value.Emoji);
         }
         
-        private Task ProcessGameAsync(BlackjackGame blackjack, IEmoji emoji)
+        private async Task ProcessGameAsync(BlackjackGame blackjack, IEmoji emoji)
         {
             
             if (emoji.Equals(CardEmoji))
-                _ = RunTaskAsync(blackjack.HitAsync());
+                await RunTaskAsync(blackjack.HitAsync());
         
             if (emoji.Equals(HandEmoji))
-                _ = RunTaskAsync(blackjack.StandAsync());
+                await RunTaskAsync(blackjack.StandAsync());
             
             if (emoji.Equals(SplitEmoji) && blackjack.PlayerCanSplit)
-                _ = RunTaskAsync(blackjack.SplitAsync());
-
-            return Task.CompletedTask;
+                await RunTaskAsync(blackjack.SplitAsync());
         }
     }
 }

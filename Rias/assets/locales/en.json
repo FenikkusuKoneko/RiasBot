@@ -235,7 +235,7 @@
   "gambling_currency_you": "You have {0} {1}.",
   "gambling_currency_you_vote": "You have {0} {1}.\nDo you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}.",
   "gambling_currency_user": "**{0}** has {1} {2}.",
-  "gambling_user_rewarded": "I gave {0} {1} to **{2}**. Now he/she has {3} {1}.",
+  "gambling_user_rewarded": "I gave {0} {1} to **{2}**. Now they have {3} {1}.",
   "gambling_user_took": "I took {0} {1} from **{2}**.",
   "gambling_currency_leaderboard": "{0} Leaderboard",
   "gambling_leaderboard_no_users": "No users on this page.",
