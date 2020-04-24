@@ -66,10 +66,10 @@ namespace Rias.Core.Modules.Searches
             await Context.Channel.TriggerTypingAsync();
             
             using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("X-Mashape-Key", Credentials.UrbanDictionaryApiKey);
+            httpClient.DefaultRequestHeaders.Add("x-rapidapi-key", Credentials.UrbanDictionaryApiKey);
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-            using var response = await httpClient.GetAsync($"https://mashape-community-urban-dictionary.p.mashape.com/define?term={Uri.EscapeUriString(term)}");
+            using var response = await httpClient.GetAsync($"https://mashape-community-urban-dictionary.p.rapidapi.com/define?term={Uri.EscapeUriString(term)}");
             if (!response.IsSuccessStatusCode)
             {
                 await ReplyErrorAsync("DefinitionNotFound");
