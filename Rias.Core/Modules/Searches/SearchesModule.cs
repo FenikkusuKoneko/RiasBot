@@ -14,7 +14,7 @@ using Rias.Core.Implementation;
 namespace Rias.Core.Modules.Searches
 {
     [Name("Searches")]
-    public class SearchesModule : RiasModule
+    public partial class SearchesModule : RiasModule
     {
         private readonly HttpClient _httpClient;
         

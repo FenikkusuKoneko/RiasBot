@@ -156,10 +156,7 @@ namespace Rias.Core.Modules.Help
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.HelpModulesListTitle),
-                Footer = new LocalEmbedFooterBuilder
-                {
-                    Text = GetText(Localization.HelpModulesListFooter, Context.Prefix)
-                }
+                Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.HelpModulesListFooter, Context.Prefix))
             };
 
             var modules = _commandService.GetAllModules()
@@ -228,10 +225,7 @@ namespace Rias.Core.Modules.Help
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.HelpAllCommands),
-                Footer = new LocalEmbedFooterBuilder
-                {
-                    Text = GetText(Localization.HelpCommandInfo, Context.Prefix)
-                },
+                Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.HelpCommandInfo, Context.Prefix)),
                 Timestamp = DateTimeOffset.UtcNow
             };
 
