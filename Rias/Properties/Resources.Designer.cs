@@ -4685,6 +4685,15 @@ namespace Rias.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Waifus.
+        /// </summary>
+        public static string Waifu_Waifus {
+            get {
+                return ResourceManager.GetString("Waifu_Waifus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Global level.
         /// </summary>
         public static string Xp_GlobalLevel {

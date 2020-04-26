@@ -1468,6 +1468,9 @@ You successfully claimed **{0}** for {1} {2}.</value>
     <data name="Waifu_Created" xml:space="preserve">
         <value>Congratulations! You successfully created **{0}**.</value>
     </data>
+    <data name="Waifu_Waifus" xml:space="preserve">
+        <value>Waifus</value>
+    </data>
     
     <data name="Xp_GlobalLevel" xml:space="preserve">
         <value>Global level</value>

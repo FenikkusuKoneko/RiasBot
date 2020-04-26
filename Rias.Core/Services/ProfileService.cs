@@ -290,18 +290,27 @@ namespace Rias.Core.Services
                 Width = 125,
                 TextGravity = Gravity.Center
             };
+
+            var segmentLength = 500 / 6;
             
             using var currencyImage = new MagickImage($"caption:{profileInfo.Currency}", settings);
-            image.Draw(new DrawableComposite(100 - (double) currencyImage.Width / 2, 280, CompositeOperator.Over, currencyImage));
+            image.Draw(new DrawableComposite(segmentLength - (double) currencyImage.Width / 2, 280, CompositeOperator.Over, currencyImage));
+
+            var waifusCount = profileInfo.Waifus!.Count;
+            if (profileInfo.SpecialWaifu != null)
+                waifusCount++;
             
+            using var waifusImage = new MagickImage($"caption:{waifusCount}", settings);
+            image.Draw(new DrawableComposite(segmentLength * 2 - (double) waifusImage.Width / 2, 280, CompositeOperator.Over, waifusImage));
+
             using var levelImage = new MagickImage($"caption:{profileInfo.Level}", settings);
-            image.Draw(new DrawableComposite(200 - (double) levelImage.Width / 2, 280, CompositeOperator.Over, levelImage));
+            image.Draw(new DrawableComposite(segmentLength * 3 - (double) levelImage.Width / 2, 280, CompositeOperator.Over, levelImage));
             
             using var totalXpImage = new MagickImage($"caption:{profileInfo.Xp}", settings);
-            image.Draw(new DrawableComposite(300 - (double) totalXpImage.Width / 2, 280, CompositeOperator.Over, totalXpImage));
+            image.Draw(new DrawableComposite(segmentLength * 4 - (double) totalXpImage.Width / 2, 280, CompositeOperator.Over, totalXpImage));
             
             using var rankImage = new MagickImage($"caption:{profileInfo.Rank}", settings);
-            image.Draw(new DrawableComposite(400 - (double) rankImage.Width / 2, 280, CompositeOperator.Over, rankImage));
+            image.Draw(new DrawableComposite(segmentLength * 5 - (double) rankImage.Width / 2, 280, CompositeOperator.Over, rankImage));
             
             settings.FillColor = MagickColors.White;
             settings.FontPointsize = 15;
@@ -309,16 +318,19 @@ namespace Rias.Core.Services
             var currency = Creds.IsGlobal ? "Hearts" : "Currency";
             
             using var currencyTextImage = new MagickImage($"caption:{Resources.GetText(guild.Id, "Gambling", currency)}", settings);
-            image.Draw(new DrawableComposite(100 - (double) currencyTextImage.Width / 2, 315, CompositeOperator.Over, currencyTextImage));
+            image.Draw(new DrawableComposite(segmentLength - (double) currencyTextImage.Width / 2, 315, CompositeOperator.Over, currencyTextImage));
+            
+            using var waifusTextImage = new MagickImage($"caption:{Resources.GetText(guild.Id, "Waifu", "Waifus")}", settings);
+            image.Draw(new DrawableComposite(segmentLength * 2 - (double) waifusTextImage.Width / 2, 315, CompositeOperator.Over, waifusTextImage));
             
             using var levelTextImage = new MagickImage($"caption:{Resources.GetText(guild.Id, "Xp", "Level")}", settings);
-            image.Draw(new DrawableComposite(200 - (double) levelTextImage.Width / 2, 315, CompositeOperator.Over, levelTextImage));
+            image.Draw(new DrawableComposite(segmentLength * 3 - (double) levelTextImage.Width / 2, 315, CompositeOperator.Over, levelTextImage));
             
             using var totalXpTextImage = new MagickImage($"caption:{Resources.GetText(guild.Id, "Xp", "TotalXp")}", settings);
-            image.Draw(new DrawableComposite(300 - (double) totalXpTextImage.Width / 2, 315, CompositeOperator.Over, totalXpTextImage));
+            image.Draw(new DrawableComposite(segmentLength * 4 - (double) totalXpTextImage.Width / 2, 315, CompositeOperator.Over, totalXpTextImage));
             
             using var rankTextImage = new MagickImage($"caption:{Resources.GetText(guild.Id, "Common", "Rank")}", settings);
-            image.Draw(new DrawableComposite(400 - (double) rankTextImage.Width / 2, 315, CompositeOperator.Over, rankTextImage));
+            image.Draw(new DrawableComposite(segmentLength * 5 - (double) rankTextImage.Width / 2, 315, CompositeOperator.Over, rankTextImage));
             
             image.Draw(new Drawables()
                 .RoundRectangle(50, 360, 450, 370, 5, 5)
