@@ -1067,7 +1067,7 @@
             },
             {
               "aliases": "character",
-              "description": "Shows info about a character from the database or AniList.\nIf the ID start with `@` then the character will be searched by ID on database, if not then the character will be searched first by name on database then on AniList.",
+              "description": "Shows info about a character from the database or AniList.\nIf the character is not on AniList but it is a custom character in the database use @id.",
               "remarks": [
                 "{0}character Rias Gremory",
                 "{0}character 50389",

@@ -92,7 +92,7 @@ namespace Rias.Core.Implementation
 
         public static int? HexToInt(string? hex, int decimals = 6)
         {
-            hex = hex?.Replace("#", "");
+            hex = hex?.Replace("#", string.Empty);
 
             if (string.IsNullOrEmpty(hex))
                 return null;
