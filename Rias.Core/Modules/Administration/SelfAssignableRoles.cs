@@ -40,12 +40,6 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                if (Context.CurrentGuildUser!.CheckHierarchy((SocketGuildUser) Context.User) <= 0)
-                {
-                    await ReplyErrorAsync("YouAreAbove");
-                    return;
-                }
-
                 var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
                 if (sarDb is null)
                 {
@@ -72,12 +66,6 @@ namespace Rias.Core.Modules.Administration
                 if (Context.CurrentGuildUser!.CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync("RoleAboveMe");
-                    return;
-                }
-
-                if (Context.CurrentGuildUser!.CheckHierarchy((SocketGuildUser) Context.User) <= 0)
-                {
-                    await ReplyErrorAsync("YouAreAbove");
                     return;
                 }
 

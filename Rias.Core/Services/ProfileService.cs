@@ -225,7 +225,7 @@ namespace Rias.Core.Services
                 BackgroundColor = MagickColors.Transparent,
                 FillColor = MagickColors.White,
                 Font = _arialFontPath,
-                FontPointsize = 15,
+                FontPointsize = 15
             };
 
             if (profileInfo.PatreonTier == 0 && user.Id != Creds.MasterId)

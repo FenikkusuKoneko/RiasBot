@@ -282,7 +282,7 @@ namespace Rias.Core.Services
         {
             var references = new[]
             {
-                typeof(Rias).Assembly,
+                typeof(Rias).Assembly
             };
             
             var globals = new RoslynGlobals

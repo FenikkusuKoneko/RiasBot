@@ -311,7 +311,7 @@ namespace Rias.Core.Modules.Administration
                 var embed = new EmbedBuilder
                     {
                         Color = RiasUtils.ConfirmColor,
-                        Description = GetText("WarningPunishment"),
+                        Description = GetText("WarningPunishment")
                     }.AddField(GetText("Warnings"), guildDb.PunishmentWarningsRequired, true)
                     .AddField(GetText("Punishment"), guildDb.WarningPunishment.Titleize(), true);
 
@@ -362,7 +362,7 @@ namespace Rias.Core.Modules.Administration
                 var embed = new EmbedBuilder
                     {
                         Color = RiasUtils.ConfirmColor,
-                        Description = GetText("WarningPunishmentSet"),
+                        Description = GetText("WarningPunishmentSet")
                     }.AddField(GetText("Warnings"), number, true)
                     .AddField(GetText("Punishment"), punishment.Titleize(), true);
 

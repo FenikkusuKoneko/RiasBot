@@ -284,7 +284,7 @@ namespace Rias.Core.Services
                 ServerXp = serverXp,
                 ServerLevel = RiasUtils.XpToLevel(serverXp, XpThreshold),
                 ServerRank = userServerXp != null ? serverXpList.IndexOf(userServerXp) + 1 : 0,
-                Color = profileDb?.Color != null ? new MagickColor($"{profileDb.Color}") : MagickColors.White,
+                Color = profileDb?.Color != null ? new MagickColor($"{profileDb.Color}") : MagickColors.White
             };
         }
 

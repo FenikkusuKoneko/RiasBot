@@ -149,7 +149,7 @@ namespace Rias.Core.Modules.Profile
         }
 
         [Command("badge"), Context(ContextType.Guild)]
-        public async Task BadgeAsync(int index, string? text = null)
+        public async Task BadgeAsync(int index, [Remainder] string? text = null)
         {
             index--;
             if (index < 0)

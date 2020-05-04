@@ -6,6 +6,6 @@ namespace Rias.Core.Commons
     public enum ContextType
     {
         Guild = 1,
-        DM = 2,
+        DM = 2
     }
 }
