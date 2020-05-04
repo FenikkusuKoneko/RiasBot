@@ -229,6 +229,10 @@ namespace Rias.Core.Services
                 Log.Information("All shards are connected");
 
                 RiasBot.GetRequiredService<MuteService>();
+                
+                var reactionsService =  RiasBot.GetRequiredService<ReactionsService>();
+                reactionsService.WeebUserAgent = $"{RiasBot.CurrentUser.Name}/{Rias.Version}";
+                reactionsService.AddWeebUserAgent();
             }
 
             return Task.CompletedTask;

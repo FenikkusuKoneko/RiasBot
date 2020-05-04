@@ -386,6 +386,7 @@ namespace Rias.Core.Implementation
         
         public static string ReactionsNoWeebApi => "reactions_no_weeb_api";
         public static string ReactionsPoweredBy => "reactions_powered_by";
+        public static string ReactionsLimit => "reactions_limit";
         public static string ReactionsPatYou => "reactions_pat_you";
         public static string ReactionsPattedBy => "reactions_patted_by";
         public static string ReactionsHugYou => "reactions_hug_you";
@@ -404,11 +405,14 @@ namespace Rias.Core.Implementation
         public static string ReactionsGropeYou => "reactions_grope_you";
         public static string ReactionsGropedBy => "reactions_groped_by";
         public static string ReactionsBlush => "reactions_blush";
+        public static string ReactionsBlushAt => "reactions_blush_at";
         public static string ReactionsDance => "reactions_dance";
         public static string ReactionsDanceTogether => "reactions_dance_together";
         public static string ReactionsPokeYou => "reactions_poke_you";
         public static string ReactionsPokedBy => "reactions_poked_by";
         public static string ReactionsPout => "reactions_pout";
+        public static string ReactionsPoutAt => "reactions_pout_at";
+        public static string ReactionsSleepy => "reactions_sleepy";
         
         public static string SearchesSource => "searches_source";
         public static string SearchesNotFound => "searches_not_found";
