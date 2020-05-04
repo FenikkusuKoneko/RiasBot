@@ -40,7 +40,7 @@ namespace Rias.Core.Modules.Help
                     Name = GetText("Title", Context.Client.CurrentUser.Username, Rias.Version),
                     IconUrl = Context.Client.CurrentUser.GetRealAvatarUrl()
                 },
-                Footer = new EmbedFooterBuilder().WithText("© 2018-2019 Copyright: Koneko#0001")
+                Footer = new EmbedFooterBuilder().WithText("© 2018-2020 Copyright: Koneko#0001")
             };
             
             embed.WithDescription(GetText("Info", Context.Prefix));

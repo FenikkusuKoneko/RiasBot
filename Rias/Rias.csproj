@@ -7,7 +7,7 @@
         <Nullable>enable</Nullable>
         <NoWarn>NU1701</NoWarn>
         <PackageVersion>2.0.0-alpha</PackageVersion>
-        <Copyright>2018-2019 Koneko</Copyright>
+        <Copyright>2018-2020 Koneko</Copyright>
         <PackageProjectUrl>https://riasbot.me</PackageProjectUrl>
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU</Platforms>

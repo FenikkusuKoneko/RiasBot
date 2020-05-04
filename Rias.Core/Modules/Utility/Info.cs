@@ -46,7 +46,7 @@ namespace Rias.Core.Modules.Utility
                             IconUrl = Context.Client.CurrentUser.GetRealAvatarUrl()
                         },
                         ThumbnailUrl = Context.Client.CurrentUser.GetRealAvatarUrl(),
-                        Footer = new EmbedFooterBuilder().WithText("© 2018-2019 Copyright: Koneko#0001")
+                        Footer = new EmbedFooterBuilder().WithText("© 2018-2020 Copyright: Koneko#0001")
                     }.AddField(GetText("Author"), Rias.Author, true)
                     .AddField(GetText("BotId"), Context.Client.CurrentUser.Id, true)
                     .AddField(GetText("MasterId"), Credentials.MasterId, true)
