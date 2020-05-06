@@ -753,11 +753,11 @@ Do you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}.</valu
 In the meantime you can vote me on [Discord Bot List]({1}) to receive extra {2}.</value>
     </data>
     <data name="Gambling_DailyReceived" xml:space="preserve">
-        <value>You received your daily {0} {1}.</value>
+        <value>You received your daily {0} {1}. You have now {2} {1}.</value>
     </data>
     <data name="Gambling_DailyReceivedVote" xml:space="preserve">
-        <value>You received your daily {0} {1}.
-Do you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}.</value>
+        <value>You received your daily {0} {1}. You have now {2} {1}.
+Do you want more? Vote me on [Discord Bot List]({3}) to receive extra {1}.</value>
     </data>
     
     <data name="Games_RpsWon" xml:space="preserve">
@@ -1610,7 +1610,7 @@ You successfully claimed **{0}** for {1} {2}.</value>
     </data>
 
     <data name="Attribute_OwnerOnly" xml:space="preserve">
-        <value>This command can be ran only by master.</value>
+        <value>This command can be ran only by my master.</value>
     </data>
     <data name="Attribute_UserGuildPermissions" xml:space="preserve">
         <value>You must have the {0} server permission(s).</value>

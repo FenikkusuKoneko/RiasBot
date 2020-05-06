@@ -1507,7 +1507,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This command can be ran only by master..
+        ///   Looks up a localized string similar to This command can be ran only by my master..
         /// </summary>
         public static string Attribute_OwnerOnly {
             get {
@@ -2409,7 +2409,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You received your daily {0} {1}..
+        ///   Looks up a localized string similar to You received your daily {0} {1}. You have now {2} {1}..
         /// </summary>
         public static string Gambling_DailyReceived {
             get {
@@ -2418,8 +2418,8 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You received your daily {0} {1}.
-        ///Do you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}..
+        ///   Looks up a localized string similar to You received your daily {0} {1}. You have now {2} {1}.
+        ///Do you want more? Vote me on [Discord Bot List]({3}) to receive extra {1}..
         /// </summary>
         public static string Gambling_DailyReceivedVote {
             get {
