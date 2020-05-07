@@ -2409,7 +2409,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You received your daily {0} {1}. You have now {2} {1}..
+        ///   Looks up a localized string similar to You received your daily {0} {1}. You now have {2} {1}..
         /// </summary>
         public static string Gambling_DailyReceived {
             get {
@@ -2418,7 +2418,7 @@ namespace Rias.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You received your daily {0} {1}. You have now {2} {1}.
+        ///   Looks up a localized string similar to You received your daily {0} {1}. You now have {2} {1}.
         ///Do you want more? Vote me on [Discord Bot List]({3}) to receive extra {1}..
         /// </summary>
         public static string Gambling_DailyReceivedVote {
@@ -2438,7 +2438,7 @@ namespace Rias.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to You can get your next daily in {0}.
-        ///In the meantime you can vote me on [Discord Bot List]({1}) to receive extra {2}..
+        ///In the meantime you can vote for me on [Discord Bot List]({1}) to receive extra {2}..
         /// </summary>
         public static string Gambling_DailyWaitVote {
             get {
