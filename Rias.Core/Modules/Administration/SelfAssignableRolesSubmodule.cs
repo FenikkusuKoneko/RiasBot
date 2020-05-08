@@ -33,12 +33,6 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                if (Context.CurrentMember!.CheckHierarchy((CachedMember) Context.User) <= 0)
-                {
-                    await ReplyErrorAsync(Localization.AdministrationYouAboveMe);
-                    return;
-                }
-
                 var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
                 if (sarDb is null)
                 {
@@ -65,12 +59,6 @@ namespace Rias.Core.Modules.Administration
                 if (Context.CurrentMember!.CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAboveMe);
-                    return;
-                }
-
-                if (Context.CurrentMember!.CheckHierarchy((CachedMember) Context.User) <= 0)
-                {
-                    await ReplyErrorAsync(Localization.AdministrationYouAboveMe);
                     return;
                 }
 
