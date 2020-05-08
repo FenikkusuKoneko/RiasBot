@@ -240,9 +240,9 @@
   "gambling_currency_leaderboard": "{0} Leaderboard",
   "gambling_leaderboard_no_users": "No users on this page.",
   "gambling_daily_wait": "You can get your next daily in {0}.",
-  "gambling_daily_wait_vote": "You can get your next daily in {0}.\nIn the meantime you can vote me on [Discord Bot List]({1}) to receive extra {2}.",
-  "gambling_daily_received": "You received your daily {0} {1}.",
-  "gambling_daily_received_vote": "You received your daily {0} {1}.\nDo you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}.",
+  "gambling_daily_wait_vote": "You can get your next daily in {0}.\nIn the meantime you can vote for me on [Discord Bot List]({1}) to receive extra {2}.",
+  "gambling_daily_received": "You received your daily {0} {1}. You now have {2} {1}.",
+  "gambling_daily_received_vote": "You received your daily {0} {1}. You now have {2} {1}.\nDo you want more? Vote for me on [Discord Bot List]({3}) to receive extra {1}.",
   
   "games_rps_won": "I chose {0}, you won!",
   "games_rps_lost": "I chose {0}, you lost!",
@@ -531,7 +531,7 @@
   "common_server": "Server",
   "common_menu_page": "Page {0} / {1}",
   
-  "attribute_owner_only": "This command can be ran only by master.",
+  "attribute_owner_only": "This command can be ran only by my master.",
   "attribute_user_guild_permissions": "You must have the {0} server permission(s).",
   "attribute_user_permission_not_guild": "The `UserPermissionAttribute` requires this command to be used in a server channel.",
   "attribute_bot_guild_permissions": "I must have the {0} server permission(s).",

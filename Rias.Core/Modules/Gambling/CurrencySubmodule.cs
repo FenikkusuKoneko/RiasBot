@@ -112,9 +112,9 @@ namespace Rias.Core.Modules.Gambling
 
                 await DbContext.SaveChangesAsync();
                 if (string.IsNullOrEmpty(Credentials.DiscordBotList))
-                    await ReplyConfirmationAsync(Localization.GamblingDailyReceived, 100, Credentials.Currency);
+                    await ReplyConfirmationAsync(Localization.GamblingDailyReceived, 100, Credentials.Currency, userDb.Currency);
                 else
-                    await ReplyConfirmationAsync(Localization.GamblingDailyReceivedVote, 100, Credentials.Currency, $"{Credentials.DiscordBotList}/vote");
+                    await ReplyConfirmationAsync(Localization.GamblingDailyReceivedVote, 100, Credentials.Currency, userDb.Currency, $"{Credentials.DiscordBotList}/vote");
             }
         }
     }

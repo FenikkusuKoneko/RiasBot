@@ -262,11 +262,6 @@ namespace Rias.Core.Services
         
         public async Task<EvaluationDetails?> EvaluateAsync(RiasCommandContext context, string code)
         {
-            var references = new[]
-            {
-                typeof(Rias).Assembly,
-            };
-            
             var globals = new RoslynGlobals
             {
                 Rias = RiasBot,
@@ -280,7 +275,7 @@ namespace Rias.Core.Services
                 "Rias.Core.Extensions", "Rias.Core.Database", "Qmmands"
             };
             
-            var scriptOptions = ScriptOptions.Default.WithReferences(references).AddImports(imports);
+            var scriptOptions = ScriptOptions.Default.WithReferences(typeof(Rias).Assembly).AddImports(imports);
             code = SanitizeCode(code);
             
             using var loader = new InteractiveAssemblyLoader();
