@@ -520,6 +520,8 @@ namespace Rias.Core.Implementation
         public static string UtilityUsersPlay => "utility_users_play";
         public static string UtilityNoUserIsPlaying => "utility_no_user_is_playing";
         public static string UtilityPrice => "utility_price";
+        public static string UtilityTimeLowest => "utility_time_lowest";
+        public static string UtilityTimeHighest => "utility_time_highest";
         
         public static string WaifuHasWaifu => "waifu_has_waifu";
         public static string WaifuClaimCurrencyNotEnough => "waifu_claim_currency_not_enough";

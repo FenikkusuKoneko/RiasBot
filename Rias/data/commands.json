@@ -1182,7 +1182,7 @@
         },
         {
           "aliases": "votes",
-          "description": "Shows a list with all users that voted in the last 12 hours (12h), 24 hours (24h, 1d), 7 days (7d) or 30 days (30d, 1mo), paginated. The default is 12h.",
+          "description": "Shows a list with all users that voted in the last specified time, default is 12 hours, paginated.",
           "remarks": [
             "{0}votes",
             "{0}votes 24h",

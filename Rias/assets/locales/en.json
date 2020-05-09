@@ -452,6 +452,8 @@
   "utility_users_play": "The users who play {0}",
   "utility_no_user_is_playing": "No user is playing {0}.",
   "utility_price": "Price",
+  "utility_time_lowest": "The time cannot be lower than **{0}**.",
+  "utility_time_highest": "The time cannot be higher than **{0}**.",
   
   "waifu_has_waifu": "You already have this waifu. The claim has been canceled.",
   "waifu_claim_currency_not_enough": "Unfortunately you don't have enough {0} to claim this waifu. The claim has been canceled.",
