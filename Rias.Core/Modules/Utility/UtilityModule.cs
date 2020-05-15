@@ -20,7 +20,7 @@ using Rias.Core.Models;
 namespace Rias.Core.Modules.Utility
 {
     [Name("Utility")]
-    public class UtilityModule : RiasModule
+    public partial class UtilityModule : RiasModule
     {
         public UtilityModule(IServiceProvider serviceProvider) : base(serviceProvider)
         {
@@ -54,7 +54,7 @@ namespace Rias.Core.Modules.Utility
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityLanguages),
-                Description = string.Join('\n', Localization.Locales.Select(x => $"{x.Language} ({x.Locale})")),
+                Description = string.Join("\n", Localization.Locales.Select(x => $"{x.Language} ({x.Locale})")),
                 Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.UtilityLanguagesFooter, Credentials.Prefix))
             };
 
@@ -112,7 +112,7 @@ namespace Rias.Core.Modules.Utility
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityAllPatrons),
-                Description = string.Join('\n', items.Select(p => $"{++index}. {RiasBot.GetUser(p.UserId)?.ToString() ?? p.UserId.ToString()}"))
+                Description = string.Join("\n", items.Select(p => $"{++index}. {RiasBot.GetUser(p.UserId)?.ToString() ?? p.UserId.ToString()}"))
             });
         }
         
@@ -165,7 +165,7 @@ namespace Rias.Core.Modules.Utility
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityAllVotes, timeSpanHumanized),
-                Description = string.Join('\n', items)
+                Description = string.Join("\n", items)
             });
         }
         

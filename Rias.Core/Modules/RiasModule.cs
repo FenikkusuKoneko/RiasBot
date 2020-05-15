@@ -28,7 +28,7 @@ namespace Rias.Core.Modules
         private readonly IServiceScope _scope;
         
         private readonly TimeSpan _defaultInteractivityTimeout = TimeSpan.FromMinutes(1);
-        
+
         public RiasModule(IServiceProvider serviceProvider)
         {
             RiasBot = serviceProvider.GetRequiredService<Rias>();

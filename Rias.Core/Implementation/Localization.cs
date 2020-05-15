@@ -510,7 +510,7 @@ namespace Rias.Core.Implementation
         public static string UtilityAfkChannel => "utility_afk_channel";
         public static string UtilityRegion => "utility_region";
         public static string UtilityVerificationLevel => "utility_verification_level";
-        public static string UtilityPremiumTier => "utility_premium_tier";
+        public static string UtilityBoostTier => "utility_boost_tier";
         public static string UtilityBoosts => "utility_boosts";
         public static string UtilityVanityUrl => "utility_vanity_url";
         public static string UtilityFeatures => "utility_features";

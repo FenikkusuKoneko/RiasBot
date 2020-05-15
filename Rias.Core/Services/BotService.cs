@@ -293,7 +293,7 @@ namespace Rias.Core.Services
                     CompilationTime = compilationTime,
                     Code = code,
                     IsCompiled = false,
-                    Exception = string.Join('\n', diagnostics.Select(x => x.ToString()))
+                    Exception = string.Join("\n", diagnostics.Select(x => x.ToString()))
                 };
             }
             

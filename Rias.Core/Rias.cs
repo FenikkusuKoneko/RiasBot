@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -20,6 +21,7 @@ namespace Rias.Core
     {
         public const string Author = "Koneko#0001";
         public const string Version = "3.0.0";
+        public static readonly Stopwatch UpTime = new Stopwatch();
 
         private readonly IServiceProvider _provider;
         private static Credentials? _credentials;
@@ -59,6 +61,8 @@ namespace Rias.Core
             
             foreach (var serviceType in autoStartServices)
                 _provider.GetRequiredService(serviceType);
+            
+            UpTime.Start();
         }
 
         private static object? CooldownBucketKeyGenerator(object bucketType, CommandContext context)
