@@ -647,7 +647,7 @@ namespace Rias.Core.Modules.Reactions
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
             {
-                await ReplyErrorAsync("NoWeebApi");
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
                 return;
             }
             

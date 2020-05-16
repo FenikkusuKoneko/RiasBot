@@ -1364,19 +1364,19 @@
           ]
         },
         {
-          "aliases": "xpleaderboard xplb",
+          "aliases": "globalxpleaderboard gxplb",
           "description": "Shows the global xp leaderboard.",
           "remarks": [
-            "{0}xplb",
-            "{0}xplb 5"
+            "{0}gxplb",
+            "{0}gxplb 5"
           ]
         },
         {
-          "aliases": "serverxpleaderboard serverxplb sxplb",
+          "aliases": "xpleaderboard sxplb xplb",
           "description": "Shows this server xp leaderboard.",
           "remarks": [
-            "{0}sxplb",
-            "{0}sxplb 5"
+            "{0}xplb",
+            "{0}xplb 5"
           ]
         },
         {

@@ -203,7 +203,7 @@ namespace Rias.Core.Modules.Searches
                         Title = character.Name
                     }.AddField(GetText(Localization.CommonId), character.Id, true)
                     .AddField(GetText(Localization.SearchesSource), GetText(Localization.BotDatabase), true)
-                    .AddField(GetText("Description"), !string.IsNullOrEmpty(character.Description) ? character.Description.Truncate(1000) : "-")
+                    .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(character.Description) ? character.Description.Truncate(1000) : "-")
                     .WithImageUrl(character.ImageUrl);
 
                 await ReplyAsync(embed);
