@@ -538,6 +538,7 @@ namespace Rias.Core.Implementation
         public static string WaifuUserNoWaifus => "waifu_user_no_waifus";
         public static string WaifuAllWaifus => "waifu_all_waifus";
         public static string WaifuAllUserWaifus => "waifu_all_user_waifus";
+        public static string WaifuWaifusNumber => "waifu_waifus_number";
         public static string WaifuPosition => "waifu_position";
         public static string WaifuAlreadySpecial => "waifu_already_special";
         public static string WaifuSpecialConfirmation => "waifu_special_confirmation";

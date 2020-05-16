@@ -15,10 +15,9 @@ namespace Rias.Core.Services
     {
         public LoggingService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            var riasBot = serviceProvider.GetRequiredService<Rias>();
             var commandService = serviceProvider.GetRequiredService<CommandService>();
             
-            riasBot.Logger.MessageLogged += DisqordLog;
+            RiasBot.Logger.MessageLogged += DisqordLog;
             commandService.CommandExecuted += CommandExecutedAsync;
             commandService.CommandExecutionFailed += CommandExecutionFailedAsync;
         }
