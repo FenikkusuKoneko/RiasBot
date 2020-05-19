@@ -734,7 +734,7 @@ Do you want more? Vote me on [Discord Bot List]({2}) to receive extra {1}.</valu
         <value>**{0}** has {1} {2}.</value>
     </data>
     <data name="Gambling_UserRewarded" xml:space="preserve">
-        <value>I gave {0} {1} to **{2}**. Now he/she has {3} {1}.</value>
+        <value>I gave {0} {1} to **{2}**. Now they have {3} {1}.</value>
     </data>
     <data name="Gambling_UserTook" xml:space="preserve">
         <value>I took {0} {1} from **{2}**.</value>
@@ -757,7 +757,7 @@ In the meantime you can vote for me on [Discord Bot List]({1}) to receive extra 
     </data>
     <data name="Gambling_DailyReceivedVote" xml:space="preserve">
         <value>You received your daily {0} {1}. You now have {2} {1}.
-Do you want more? Vote me on [Discord Bot List]({3}) to receive extra {1}.</value>
+Do you want more? Vote for me on [Discord Bot List]({3}) to receive extra {1}.</value>
     </data>
     
     <data name="Games_RpsWon" xml:space="preserve">

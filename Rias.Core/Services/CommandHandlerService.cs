@@ -119,6 +119,9 @@ namespace Rias.Core.Services
                 {
                     foreach (var commandAlias in commandInfo.Aliases.Split(" "))
                     {
+                        if (string.Equals(commandAlias, "waifus"))
+                            continue;
+                        
                         if (command.Aliases.Contains(commandAlias))
                             continue;
 

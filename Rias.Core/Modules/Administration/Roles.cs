@@ -265,7 +265,7 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                if (user.Roles.Any(x => x.Id != role.Id))
+                if (user.Roles.All(x => x.Id != role.Id))
                 {
                     await ReplyErrorAsync("UserNoRole", user);
                     return;
