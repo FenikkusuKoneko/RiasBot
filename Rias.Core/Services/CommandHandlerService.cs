@@ -30,6 +30,7 @@ namespace Rias.Core.Services
         private readonly CommandService _commandService;
         private readonly BotService _botService;
         private readonly CooldownService _cooldownService;
+        private readonly XpService _xpService;
         
         private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.json");
         public static int CommandsAttempted;
@@ -42,6 +43,7 @@ namespace Rias.Core.Services
             _commandService = serviceProvider.GetRequiredService<CommandService>();
             _botService = serviceProvider.GetRequiredService<BotService>();
             _cooldownService = serviceProvider.GetRequiredService<CooldownService>();
+            _xpService = serviceProvider.GetRequiredService<XpService>();
             
             LoadCommands();
             LoadTypeParsers();
@@ -169,8 +171,8 @@ namespace Rias.Core.Services
             if (guildChannel != null)
             {
                 await RunTaskAsync(_botService.AddAssignableRoleAsync((CachedMember) userMessage.Author));
-                //await RunTaskAsync(_xpService.AddUserXpAsync((SocketGuildUser) userMessage.Author));
-                //await RunTaskAsync(_xpService.AddGuildUserXpAsync((SocketGuildUser) userMessage.Author, userMessage.Channel));
+                await RunTaskAsync(_xpService.AddUserXpAsync(userMessage.Author));
+                await RunTaskAsync(_xpService.AddGuildUserXpAsync((CachedMember) userMessage.Author, userMessage.Channel));
             }
             
             var prefix = await GetGuildPrefixAsync(guildChannel?.Guild);

@@ -35,12 +35,12 @@ namespace Rias.Core.Services
         private readonly string _arialFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/ArialBold.ttf");
         private readonly string _meiryoFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/Meiryo.ttf");
         
-        public async Task AddUserXpAsync(CachedMember member)
+        public async Task AddUserXpAsync(CachedUser user)
         {
             var now = DateTime.UtcNow;
             var check = false;
             
-            if (_usersXp.TryGetValue(member.Id, out var cooldown))
+            if (_usersXp.TryGetValue(user.Id, out var cooldown))
             {
                 if (cooldown + TimeSpan.FromMinutes(5) > now)
                     return;
@@ -52,7 +52,7 @@ namespace Rias.Core.Services
             
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = await db.GetOrAddAsync(x => x.UserId == member.Id, () => new UsersEntity {UserId = member.Id, Xp = -5});
+            var userDb = await db.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id, Xp = -5});
             
             if (check && userDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
                 return;
@@ -61,7 +61,7 @@ namespace Rias.Core.Services
             userDb.LastMessageDate = now;
             
             await db.SaveChangesAsync();
-            _usersXp[member.Id] = now;
+            _usersXp[user.Id] = now;
         }
         
         public async Task AddGuildUserXpAsync(CachedMember member, IMessageChannel channel)
