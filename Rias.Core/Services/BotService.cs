@@ -33,6 +33,7 @@ namespace Rias.Core.Services
             RiasBot.ShardReady += ShardReadyAsync;
             RiasBot.MemberJoined += MemberJoinedAsync;
             RiasBot.MemberLeft += MemberLeftAsync;
+            RiasBot.MemberUpdated += MemberUpdatedAsync;
         }
 
         private readonly ConcurrentDictionary<DiscordClientBase, bool> _shardsReady = new ConcurrentDictionary<DiscordClientBase, bool>();
@@ -258,6 +259,28 @@ namespace Rias.Core.Services
 
             if (currentMember.CheckRoleHierarchy(aar) > 0 && !aar.IsManaged && member.GetRole(aar.Id) is null)
                 await member.GrantRoleAsync(aar.Id);
+        }
+
+        private async Task MemberUpdatedAsync(MemberUpdatedEventArgs args)
+        {
+            var oldMember = args.OldMember;
+            var newMember = args.NewMember;
+            
+            // we care only about the mute role
+            if (oldMember.Roles.Count == newMember.Roles.Count)
+                return;
+
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == newMember.Guild.Id);
+
+            if (guildDb is null) return;
+
+            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == newMember.Guild.Id && x.UserId == newMember.Id);
+            if (userGuildDb is null) return;
+
+            userGuildDb.IsMuted = newMember.Roles.FirstOrDefault(x => x.Key == guildDb.MuteRoleId).Value != null;
+            await db.SaveChangesAsync();
         }
         
         public async Task<EvaluationDetails?> EvaluateAsync(RiasCommandContext context, string code)
