@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace Rias.Core.Commons
+namespace Rias.Core.Models
 {
-    public class VoteData
+    public class Vote
     {
         [JsonProperty("bot")]
         public ulong BotId { get; set; }

@@ -10,10 +10,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rias.Core.Attributes;
-using Rias.Core.Commons;
 using Rias.Core.Database;
 using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
+using Rias.Core.Models;
 using Rias.Core.Services.WebSocket;
 using Serilog;
 using Serilog.Events;
@@ -95,7 +95,7 @@ namespace Rias.Core.Services
         
         private async Task VoteReceivedAsync(string data)
         {
-            var voteData = JsonConvert.DeserializeObject<VoteData>(data);
+            var voteData = JsonConvert.DeserializeObject<Vote>(data);
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var voteDb = await db.Votes.FirstOrDefaultAsync(x => x.UserId == voteData.UserId && !x.Checked);

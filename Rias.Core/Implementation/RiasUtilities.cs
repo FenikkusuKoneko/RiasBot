@@ -5,7 +5,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Disqord;
 using Newtonsoft.Json;
-using Rias.Core.Commons;
+using Rias.Core.Models;
 
 namespace Rias.Core.Implementation
 {

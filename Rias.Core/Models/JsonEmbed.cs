@@ -1,7 +1,7 @@
 using System;
 using Disqord;
 
-namespace Rias.Core.Commons
+namespace Rias.Core.Models
 {
     public class JsonEmbed
     {
