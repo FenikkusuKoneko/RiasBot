@@ -192,8 +192,8 @@ namespace Rias.Core.Services
 
         private async Task ExecuteCommandAsync(CachedUserMessage userMessage, CachedTextChannel? channel, string prefix, string output)
         {
-            // if (await CheckUserBan(userMessage.Author) && userMessage.Author.Id != Creds.MasterId)
-            //     return;
+            if (await CheckUserBan(userMessage.Author) && userMessage.Author.Id != Credentials.MasterId)
+                return;
             
             var channelPermissions = channel?.Guild.CurrentMember.GetPermissionsFor(channel);
             if (channelPermissions.HasValue && !channelPermissions.Value.SendMessages)
@@ -320,6 +320,13 @@ namespace Rias.Core.Services
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return (await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id))?.DeleteCommandMessage ?? false;
+        }
+        
+        private async Task<bool> CheckUserBan(CachedUser user)
+        {
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            return (await db.Users.FirstOrDefaultAsync(x => x.UserId == user.Id))?.IsBanned ?? false;
         }
         
         public class ModuleInfo
