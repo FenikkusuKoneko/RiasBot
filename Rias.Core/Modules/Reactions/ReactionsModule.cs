@@ -12,7 +12,7 @@ namespace Rias.Core.Modules.Reactions
     [Name("Reactions")]
     public class ReactionsModule : RiasModule<ReactionsService>
     {
-        public ReactionsModule(IServiceProvider services) : base(services)
+        public ReactionsModule(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 

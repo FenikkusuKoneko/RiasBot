@@ -16,7 +16,7 @@ namespace Rias.Core.Modules.Xp
     [Name("Xp")]
     public class XpModule : RiasModule<XpService>
     {
-        public XpModule(IServiceProvider services) : base(services)
+        public XpModule(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
         
@@ -25,7 +25,7 @@ namespace Rias.Core.Modules.Xp
         public async Task XpAsync(CachedMember? member = null)
         {
             member ??= (CachedMember) Context.User;
-            using var unused = Context.Channel.Typing();
+            using var _ = Context.Channel.Typing();
 
             await using var xpImage = await Service.GenerateXpImageAsync(member);
             await Context.Channel.SendMessageAsync(new[] {new LocalAttachment(xpImage, $"{member.Id}_xp.png")});

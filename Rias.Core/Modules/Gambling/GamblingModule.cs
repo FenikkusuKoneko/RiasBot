@@ -12,7 +12,7 @@ namespace Rias.Core.Modules.Gambling
     [Name("Gambling")]
     public partial class GamblingModule : RiasModule<GamblingService>
     {
-        public GamblingModule(IServiceProvider services) : base(services)
+        public GamblingModule(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
         

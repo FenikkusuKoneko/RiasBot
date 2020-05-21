@@ -19,7 +19,7 @@ namespace Rias.Core.Modules.Administration
         [Name("Mute")]
         public class MuteSubmodule : RiasModule<MuteService>
         {
-            public MuteSubmodule(IServiceProvider services) : base(services)
+            public MuteSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
             {
             }
             

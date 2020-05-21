@@ -17,9 +17,9 @@ namespace Rias.Core.Modules.Gambling
         {
             private readonly GamblingService _gamblingService;
             
-            public BlackjackSubmodule(IServiceProvider services) : base(services)
+            public BlackjackSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
             {
-                _gamblingService = services.GetRequiredService<GamblingService>();
+                _gamblingService = serviceProvider.GetRequiredService<GamblingService>();
             }
             
             [Command, Context(ContextType.Guild)]

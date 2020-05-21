@@ -21,7 +21,7 @@ namespace Rias.Core.Implementation
         private readonly string _localesPath = Path.Combine(Environment.CurrentDirectory, "assets/locales");
         private readonly string _defaultLocale = "en";
 
-        public Localization(IServiceProvider services)
+        public Localization(IServiceProvider serviceProvider)
         {
             var sw = Stopwatch.StartNew();
             
@@ -31,7 +31,7 @@ namespace Rias.Core.Implementation
                 _locales.TryAdd(fileName, JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText(locale)));
             }
             
-            using var scope = services.CreateScope();
+            using var scope = serviceProvider.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
 
             var guildLocalesDb = db.Guilds.Where(guildDb => !string.IsNullOrEmpty(guildDb.Locale)).ToList();
@@ -553,6 +553,7 @@ namespace Rias.Core.Implementation
         public static string WaifuCreationConfirmation => "waifu_creation_confirmation";
         public static string WaifuCreationCanceled => "waifu_creation_canceled";
         public static string WaifuCreated => "waifu_created";
+        public static string WaifuWaifus => "waifu_waifus";
         
         public static string XpGlobalLevel => "xp_global_level";
         public static string XpGlobalXp => "xp_global_xp";

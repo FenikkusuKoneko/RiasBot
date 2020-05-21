@@ -20,9 +20,9 @@ namespace Rias.Core.Modules.Help
     {
         private readonly CommandService _commandService;
         
-        public HelpModule(IServiceProvider services) : base(services)
+        public HelpModule(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _commandService = services.GetRequiredService<CommandService>();
+            _commandService = serviceProvider.GetRequiredService<CommandService>();
         }
         
         [Command("help")]

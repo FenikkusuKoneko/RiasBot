@@ -13,7 +13,7 @@ namespace Rias.Core.Modules.Nsfw
     [Name("Nsfw")]
     public class NsfwModule : RiasModule<NsfwService>
     {
-        public NsfwModule(IServiceProvider services) : base(services)
+        public NsfwModule(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
         

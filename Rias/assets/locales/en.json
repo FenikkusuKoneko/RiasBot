@@ -485,6 +485,7 @@
   "waifu_creation_confirmation": "Do you want to create **{0}**? Type `yes` to confirm or something else to cancel.",
   "waifu_creation_canceled": "Waifu creation canceled!",
   "waifu_created": "Congratulations! You successfully created **{0}**.",
+  "waifu_waifus": "Waifus",
   
   "xp_global_level": "Global level",
   "xp_global_xp": "Global xp",

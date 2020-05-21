@@ -20,7 +20,7 @@ namespace Rias.Core.Modules.Searches
         [Name("Anime")]
         public class AnimeSubmodule : RiasModule<AnimeService>
         {
-            public AnimeSubmodule(IServiceProvider services) : base(services)
+            public AnimeSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
             {
             }
             

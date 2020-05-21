@@ -139,9 +139,9 @@ namespace Rias.Core.Modules
     {
         public readonly TService Service;
 
-        public RiasModule(IServiceProvider services) : base(services)
+        public RiasModule(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            Service = services.GetRequiredService<TService>();
+            Service = serviceProvider.GetRequiredService<TService>();
         }
     }
 }
