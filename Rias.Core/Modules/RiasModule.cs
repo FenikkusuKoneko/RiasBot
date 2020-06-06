@@ -65,7 +65,7 @@ namespace Rias.Core.Modules
 
         public async Task SendPaginatedMessageAsync<T>(List<T> items, int itemsPerPage, Func<IEnumerable<T>, int, LocalEmbedBuilder> embedFunc)
         {
-            var pageCount = ((items.Count - 1) / itemsPerPage) + 1;
+            var pageCount = (items.Count - 1) / itemsPerPage + 1;
             
             var pages = items.Split(itemsPerPage).Select((x, i) =>
             {
@@ -77,7 +77,7 @@ namespace Rias.Core.Modules
                 return new Page(embed.Build());
             });
             
-            var menu = new PagedMenu(Context.User.Id, new DefaultPageProvider(pages), false);
+            var menu = new RiasPagedMenu(Context.User.Id, new DefaultPageProvider(pages));
             if (pageCount > 1)
             {
                 await menu.AddButtonAsync(new Button(new LocalEmoji("⏮️"), async _ => await menu.ChangePageAsync(0), 0));

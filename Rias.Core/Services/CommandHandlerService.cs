@@ -243,16 +243,13 @@ namespace Rias.Core.Services
                 Title = GetText(guildId, Localization.ServiceCommandNotExecuted)
             };
 
-            var reasons = new HashSet<string>();
+            var reasons = new List<string>();
             foreach (var failedResult in failedResults)
             {
                 switch (failedResult)
                 {
                     case ChecksFailedResult checksFailedResult:
-                        foreach (var reason in checksFailedResult.FailedChecks.Select(x => x.Result.Reason))
-                        {
-                            reasons.Add(reason);
-                        }
+                        reasons.AddRange(checksFailedResult.FailedChecks.Select(x => x.Result.Reason));
                         break;
                     case TypeParseFailedResult typeParseFailedResult:
                         if (_typeParsers.Any(x => x.BaseType!.GetGenericArguments()[0] == typeParseFailedResult.Parameter.Type))
@@ -272,6 +269,9 @@ namespace Rias.Core.Services
                         break;
                 }
             }
+
+            if (reasons.Count == 0)
+                return Task.CompletedTask;
 
             embed.WithDescription($"**{GetText(guildId, reasons.Count == 1 ? Localization.CommonReason : Localization.CommonReasons)}**:\n" +
                                   string.Join("\n", reasons.Select(x => $"• {x}")));

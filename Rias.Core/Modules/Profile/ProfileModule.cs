@@ -108,7 +108,7 @@ namespace Rias.Core.Modules.Profile
             profileDb.BackgroundDim = dim;
 
             await DbContext.SaveChangesAsync();
-            await ReplyConfirmationAsync(Localization.ProfileBackgroundSet, dim);
+            await ReplyConfirmationAsync(Localization.ProfileBackgroundDimSet, dim);
         }
         
         [Command("biography"), Context(ContextType.Guild)]

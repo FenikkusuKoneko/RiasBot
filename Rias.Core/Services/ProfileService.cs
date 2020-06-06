@@ -33,7 +33,6 @@ namespace Rias.Core.Services
         public string CurrencyLocalization = Localization.GamblingCurrency;
         
         private readonly string _defaultBackgroundPath = Path.Combine(Environment.CurrentDirectory, "assets/images/default_background.png");
-        private const string DefaultBiography = "Nothing here, just dust.";
 
         private readonly MagickColor _dark = MagickColor.FromRgb(36, 36, 36);
         private readonly MagickColor _darker = MagickColor.FromRgb(32, 32, 32);
@@ -499,28 +498,28 @@ namespace Rias.Core.Services
             return null;
         }
 
-        private async Task<ProfileInfo> GetProfileInfoAsync(CachedUser user)
+        private async Task<ProfileInfo> GetProfileInfoAsync(CachedMember member)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
-            var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == user.Id);
-            var patreonDb = Credentials.PatreonConfig != null ? await db.Patreon.FirstOrDefaultAsync(x => x.UserId == user.Id) : null;
+            var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == member.Id);
+            var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == member.Id);
+            var patreonDb = Credentials.PatreonConfig != null ? await db.Patreon.FirstOrDefaultAsync(x => x.UserId == member.Id) : null;
 
             var waifus = db.Waifus
                 .Include(x => x.Character)
                 .Include(x => x.CustomCharacter)
-                .Where(x => x.UserId == user.Id)
+                .Where(x => x.UserId == member.Id)
                 .AsEnumerable()
                 .Cast<IWaifusEntity>()
                 .ToList();
             
-            waifus.AddRange(db.CustomWaifus.Where(x => x.UserId == user.Id));
+            waifus.AddRange(db.CustomWaifus.Where(x => x.UserId == member.Id));
 
             var xp = userDb?.Xp ?? 0;
 
             var color = profileDb?.Color != null ? new Color(RiasUtilities.HexToInt(profileDb.Color[1..]).GetValueOrDefault()) : _colors[0];
-            if (color != _colors[0] && !await CheckColorAsync(user, color, patreonDb?.Tier ?? 0))
+            if (color != _colors[0] && !await CheckColorAsync(member, color, patreonDb?.Tier ?? 0))
                 color = _colors[0];
 
             var specialWaifu = waifus.FirstOrDefault(x => x.IsSpecial);
@@ -539,7 +538,7 @@ namespace Rias.Core.Services
                     : 0,
                 BackgroundUrl = profileDb?.BackgroundUrl,
                 Dim = profileDb?.BackgroundDim ?? 50,
-                Biography = profileDb?.Biography ?? DefaultBiography,
+                Biography = profileDb?.Biography ?? GetText(member.Guild.Id, Localization.ProfileDefaultBiography),
                 Color = new MagickColor(color.ToString()),
                 Badges = profileDb?.Badges?.Where(x => !string.IsNullOrEmpty(x)).ToList(),
                 Waifus = waifus.Where(x => x.Position != 0)

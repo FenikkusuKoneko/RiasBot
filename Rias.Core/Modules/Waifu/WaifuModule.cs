@@ -189,7 +189,7 @@ namespace Rias.Core.Modules.Waifu
             }
 
             var specialWaifu = allWaifus.FirstOrDefault(x => x.IsSpecial);
-            var specialWaifuString = "";
+            var specialWaifuString = string.Empty;
             if (specialWaifu != null)
             {
                 var specialWaifuStringify = StringifyWaifu(specialWaifu);

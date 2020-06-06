@@ -43,9 +43,9 @@ namespace Rias.Core
                 .AddSingleton(this)
                 .AddSingleton(commandService)
                 .AddSingleton(credentials)
+                .AddSingleton(interactivity)
                 .AddSingleton<Localization>()
                 .AddSingleton<HttpClient>()
-                .AddSingleton(interactivity)
                 .AddDbContext<RiasDbContext>(x => x.UseNpgsql(databaseConnection).UseSnakeCaseNamingConvention())
                 .BuildServiceProvider();
             
