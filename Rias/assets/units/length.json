@@ -1,0 +1,185 @@
+{
+  "name": "Length",
+  "units": [
+    {
+      "name": {
+        "singular": "Metre",
+        "plural": "Metres",
+        "abbreviations": [ "m" ]
+      },
+      "func_to_base": "x",
+      "func_from_base": "x"
+    },
+    {
+      "name": {
+        "singular": "Nanometre",
+        "plural": "Nanometres",
+        "abbreviations": [ "nm" ]
+      },
+      "func_to_base": "x * 1E-9",
+      "func_from_base": "x * 1E9"
+    },
+    {
+      "name": {
+        "singular": "Micrometre",
+        "plural": "Micrometres",
+        "abbreviations": [ "μm" ]
+      },
+      "func_to_base": "x * 1E-6",
+      "func_from_base": "x * 1E6"
+    },
+    {
+      "name": {
+        "singular": "Millimetre",
+        "plural": "Millimetres",
+        "abbreviations": [ "mm" ]
+      },
+      "func_to_base": "x / 1000",
+      "func_from_base": "x * 1000"
+    },
+    {
+      "name": {
+        "singular": "Centimetre",
+        "plural": "Centimetres",
+        "abbreviations": [ "cm" ]
+      },
+      "func_to_base": "x / 100",
+      "func_from_base": "x * 100"
+    },
+    {
+      "name": {
+        "singular": "Decimetre",
+        "plural": "Decimetres",
+        "abbreviations": [ "dm" ]
+      },
+      "func_to_base": "x / 10",
+      "func_from_base": "x * 10"
+    },
+    {
+      "name": {
+        "singular": "Decametre",
+        "plural": "Decametres",
+        "abbreviations": [ "dam" ]
+      },
+      "func_to_base": "x * 10",
+      "func_from_base": "x / 10"
+    },
+    {
+      "name": {
+        "singular": "Hectometre",
+        "plural": "Hectometres",
+        "abbreviations": [ "hm" ]
+      },
+      "func_to_base": "x * 100",
+      "func_from_base": "x / 100"
+    },
+    {
+      "name": {
+        "singular": "Kilometre",
+        "plural": "Kilometres",
+        "abbreviations": [ "km" ]
+      },
+      "func_to_base": "x * 1000",
+      "func_from_base": "x / 1000"
+    },
+    {
+      "name": {
+        "singular": "Inch",
+        "plural": "Inches",
+        "abbreviations": [ "in" ]
+      },
+      "func_to_base": "x * 0.0254",
+      "func_from_base": "x / 0.0254"
+    },
+    {
+      "name": {
+        "singular": "Mil",
+        "plural": "Mils",
+        "abbreviations": [ "mil" ]
+      },
+      "func_to_base": "x * 2.54E-5",
+      "func_from_base": "x / 2.54E-5"
+    },
+    {
+      "name": {
+        "singular": "Foot",
+        "plural": "Feet",
+        "abbreviations": [ "ft" ]
+      },
+      "func_to_base": "x * 0.3048",
+      "func_from_base": "x / 0.3048"
+    },
+    {
+      "name": {
+        "singular": "Fathom",
+        "plural": "Fathoms",
+        "abbreviations": [ "fathom" ]
+      },
+      "func_to_base": "x * 1.8288",
+      "func_from_base": "x / 1.8288"
+    },
+    {
+      "name": {
+        "singular": "Yard",
+        "plural": "Yards",
+        "abbreviations": [ "yd" ]
+      },
+      "func_to_base": "x * 0.9144",
+      "func_from_base": "x / 0.9144"
+    },
+    {
+      "name": {
+        "singular": "Mile",
+        "plural": "Miles",
+        "abbreviations": [ "mi" ]
+      },
+      "func_to_base": "x * 1609.34",
+      "func_from_base": "x / 1609.34"
+    },
+    {
+      "name": {
+        "singular": "NauticalMile",
+        "plural": "NauticalMiles",
+        "abbreviations": [ "NM" ]
+      },
+      "func_to_base": "x * 1852",
+      "func_from_base": "x / 1852"
+    },
+    {
+      "name": {
+        "singular": "Hand",
+        "plural": "Hands",
+        "abbreviations": [ "h", "hh" ]
+      },
+      "func_to_base": "x * 0.1016",
+      "func_from_base": "x / 0.1016"
+    },
+    {
+      "name": {
+        "singular": "AstronomicalUnit",
+        "plural": "AstronomicalUnits",
+        "abbreviations": [ "au", "ua" ]
+      },
+      "func_to_base": "x * 1.4959787070E11",
+      "func_from_base": "x / 1.4959787070E11"
+    },
+    {
+      "name": {
+        "singular": "Parsec",
+        "plural": "Parsecs",
+        "abbreviations": [ "pc" ]
+      },
+      "func_to_base": "x * 3.08567758128E16",
+      "func_from_base": "x / 3.08567758128E16"
+    },
+    {
+      "name": {
+        "singular": "LightYear",
+        "plural": "LightYears",
+        "abbreviations": [ "ly" ]
+      },
+      "func_to_base": "x * 9.46073047258E15",
+      "func_from_base": "x / 9.46073047258E15"
+    }
+  ]
+}

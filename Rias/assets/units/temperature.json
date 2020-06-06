@@ -1,0 +1,32 @@
+{
+  "name": "Temperature",
+  "units": [
+    {
+      "name": {
+        "singular": "Kelvin",
+        "plural": "Kelvin",
+        "abbreviations": [ "K" ]
+      },
+      "func_to_base": "x",
+      "func_from_base": "x"
+    },
+    {
+      "name": {
+        "singular": "Celsius",
+        "plural": "Celsius",
+        "abbreviations": [ "°C", "C" ]
+      },
+      "func_to_base": "x + 273.15",
+      "func_from_base": "x - 273.15"
+    },
+    {
+      "name": {
+        "singular": "Fahrenheit",
+        "plural": "Fahrenheit",
+        "abbreviations": [ "°F", "F" ]
+      },
+      "func_to_base": "(x - 32) * 5/9 + 273.15",
+      "func_from_base": "(x - 273.15) * 9 / 5 + 32"
+    }
+  ]
+}

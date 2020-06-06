@@ -1,0 +1,192 @@
+{
+  "name": "Mass",
+  "units": [
+    {
+      "name": {
+        "singular": "Kilogram",
+        "plural": "kilograms",
+        "abbreviations": [ "kg" ]
+      },
+      "func_to_base": "x",
+      "func_from_base": "x"
+    },
+    {
+      "name": {
+        "singular": "Gram",
+        "plural": "Grams",
+        "abbreviations": [ "g" ]
+      },
+      "func_to_base": "x / 1000",
+      "func_from_base": "x * 1000"
+    },
+    {
+      "name": {
+        "singular": "Nanogram",
+        "plural": "Nanograms",
+        "abbreviations": [ "ng" ]
+      },
+      "func_to_base": "x * 1E-12",
+      "func_from_base": "x * 1E12"
+    },
+    {
+      "name": {
+        "singular": "Microgram",
+        "plural": "Micrograms",
+        "abbreviations": [ "μg" ]
+      },
+      "func_to_base": "x * 1E-9",
+      "func_from_base": "x * 1E9"
+    },
+    {
+      "name": {
+        "singular": "Milligram",
+        "plural": "Milligrams",
+        "abbreviations": [ "mg" ]
+      },
+      "func_to_base": "x * 1E-6",
+      "func_from_base": "x * 1E6"
+    },
+    {
+      "name": {
+        "singular": "Centigram",
+        "plural": "Centigrams",
+        "abbreviations": [ "cg" ]
+      },
+      "func_to_base": "x * 1E-5",
+      "func_from_base": "x * 1E5"
+    },
+    {
+      "name": {
+        "singular": "Decigram",
+        "plural": "Decigrams",
+        "abbreviations": [ "cg" ]
+      },
+      "func_to_base": "x * 1E-4",
+      "func_from_base": "x * 1E4"
+    },
+    {
+      "name": {
+        "singular": "Tonne",
+        "plural": "Tonnes",
+        "abbreviations": [ "t" ]
+      },
+      "func_to_base": "x * 1000",
+      "func_from_base": "x / 1000"
+    },
+    {
+      "name": {
+        "singular": "Kilotonne",
+        "plural": "Kilotonnes",
+        "abbreviations": [ "kt" ]
+      },
+      "func_to_base": "x * 1E6",
+      "func_from_base": "x * 1E-6"
+    },
+    {
+      "name": {
+        "singular": "Megatonne",
+        "plural": "Megatonnes",
+        "abbreviations": [ "Mt" ]
+      },
+      "func_to_base": "x * 1E9",
+      "func_from_base": "x * 1E-9"
+    },
+    {
+      "name": {
+        "singular": "Grain",
+        "plural": "Grain",
+        "abbreviations": [ "gr" ]
+      },
+      "func_to_base": "x * 6.479891E-5",
+      "func_from_base": "x / 6.479891E-5"
+    },
+    {
+      "name": {
+        "singular": "Ounce",
+        "plural": "Ounces",
+        "abbreviations": [ "oz" ]
+      },
+      "func_to_base": "x * 0.02834952",
+      "func_from_base": "x / 0.02834952"
+    },
+    {
+      "name": {
+        "singular": "Pound",
+        "plural": "Pounds",
+        "abbreviations": [ "lb", "lbs" ]
+      },
+      "func_to_base": "x * 0.45359237",
+      "func_from_base": "x / 0.45359237"
+    },
+    {
+      "name": {
+        "singular": "Stone",
+        "plural": "Stone",
+        "abbreviations": [ "st" ]
+      },
+      "func_to_base": "x * 6.35028811",
+      "func_from_base": "x / 6.35028811"
+    },
+    {
+      "name": {
+        "singular": "ShortHundredweight",
+        "plural": "ShortHundredweight",
+        "abbreviations": [ "cwt" ]
+      },
+      "func_to_base": "x * 45.35924979",
+      "func_from_base": "x / 45.35924979"
+    },
+    {
+      "name": {
+        "singular": "LongHundredweight",
+        "plural": "LongHundredweight",
+        "abbreviations": [ "cwt" ]
+      },
+      "func_to_base": "x * 50.80234686",
+      "func_from_base": "x / 50.80234686"
+    },
+    {
+      "name": {
+        "singular": "ShortTon",
+        "plural": "ShortTons"
+      },
+      "func_to_base": "x * 907.18474",
+      "func_from_base": "x / 907.18474"
+    },
+    {
+      "name": {
+        "singular": "LongTon",
+        "plural": "LongTons",
+        "abbreviations": [ "lt", "wt" ]
+      },
+      "func_to_base": "x * 1016.0469088",
+      "func_from_base": "x / 1016.0469088"
+    },
+    {
+      "name": {
+        "singular": "Slug",
+        "plural": "Slugs"
+      },
+      "func_to_base": "x * 14.593903",
+      "func_from_base": "x / 14.593903"
+    },
+    {
+      "name": {
+        "singular": "EarthMass",
+        "plural": "EarthMasses",
+        "abbreviations": [ "em" ]
+      },
+      "func_to_base": "x * 5.9722E24",
+      "func_from_base": "x / 5.9722E24"
+    },
+    {
+      "name": {
+        "singular": "SolarMass",
+        "plural": "SolarMasses",
+        "abbreviations": [ "M⊙" ]
+      },
+      "func_to_base": "x * 1.98947E30",
+      "func_from_base": "x / 1.98947E30"
+    }
+  ]
+}
