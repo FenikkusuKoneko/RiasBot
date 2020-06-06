@@ -703,7 +703,7 @@
           "name": "currency",
           "commands": [
             {
-              "aliases": "currency $",
+              "aliases": "currency $ hearts",
               "description": "Shows the currency you have or for a user.",
               "remarks": [
                 "{0}$",
@@ -1219,6 +1219,25 @@
           "remarks": [
             "{0}calc 2+2",
             "{0}calc sqrt(2)"
+          ]
+        },
+        {
+          "aliases": "converter convert",
+          "description": "Convert from a unit to another. You don't have to specify the category but for explicit cases you can use it.\nIf abbreviations are used then compatible units will be searched to match with the first unit.",
+          "remarks": [
+            "{0}convert 2 km mi",
+            "{0}convert km mi 2",
+            "{0}convert length 1 km m",
+            "{0}convert length km m 2"
+          ]
+        },
+        {
+          "aliases": "converterlist convertlist",
+          "description": "Shows all the units categories from the converter, paginated.\nIf a category is provided then it shows all the units from that category, paginated.",
+          "remarks": [
+            "{0}convertlist",
+            "{0}convertlist length",
+            "{0}convertlist currency"
           ]
         }
       ],

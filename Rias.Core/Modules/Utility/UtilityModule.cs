@@ -9,6 +9,7 @@ using Disqord;
 using Humanizer;
 using Humanizer.Localisation;
 using ImageMagick;
+using Microsoft.Extensions.DependencyInjection;
 using NCalc;
 using Qmmands;
 using Rias.Core.Attributes;
@@ -16,14 +17,17 @@ using Rias.Core.Commons;
 using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
 using Rias.Core.Models;
+using Rias.Core.Services;
 
 namespace Rias.Core.Modules.Utility
 {
     [Name("Utility")]
     public partial class UtilityModule : RiasModule
     {
+        private readonly UnitsService _unitsService;
         public UtilityModule(IServiceProvider serviceProvider) : base(serviceProvider)
         {
+            _unitsService = serviceProvider.GetRequiredService<UnitsService>();
         }
         
         [Command("prefix"), Context(ContextType.Guild)]
@@ -104,7 +108,7 @@ namespace Rias.Core.Modules.Utility
             
             if (patrons.Count == 0)
             {
-                await ReplyErrorAsync("NoPatrons", Credentials.Patreon, Credentials.Currency);
+                await ReplyErrorAsync(Localization.UtilityNoPatrons, Credentials.Patreon, Credentials.Currency);
                 return;
             }
 
@@ -244,6 +248,110 @@ namespace Rias.Core.Modules.Utility
 
             await ReplyAsync(embed);
         }
+
+        [Command("converter"),
+        Priority(1)]
+        public async Task ConverterAsync(double value, string unit1, string unit2)
+            => await ConverterAsync(unit1, unit2, value);
+
+        [Command("converter"),
+        Priority(0)]
+        public async Task ConverterAsync(string unit1Name, string unit2Name, double value)
+        {
+            var units1 = _unitsService.GetUnits(unit1Name).ToList();
+            if (units1.Count == 0)
+            {
+                await ReplyErrorAsync(Localization.UtilityUnitNotFound, unit1Name);
+                return;
+            }
+            
+            var units2 = _unitsService.GetUnits(unit2Name).ToList();
+            if (units2.Count == 0)
+            {
+                await ReplyErrorAsync(Localization.UtilityUnitNotFound, unit2Name);
+                return;
+            }
+
+            Unit? unit1 = null;
+            Unit? unit2 = null;
+            
+            foreach (var u1 in units1.TakeWhile(u1 => unit1 is null && unit2 is null))
+            {
+                var u2 = units2.FirstOrDefault(x => string.Equals(u1.Category.Name, x.Category.Name));
+                if (u2 is null)
+                    continue;
+                
+                unit1 = u1;
+                unit2 = u2;
+                break;
+            }
+
+            if (unit1 is null || unit2 is null)
+            {
+                await ReplyErrorAsync(Localization.UtilityUnitsIncompatible,
+                    $"{units1[0].Name.Singular} ({units1[0].Category.Name})",
+                    $"{units2[0].Name.Singular} ({units2[0].Category.Name})");
+                
+                return;
+            }
+
+            var result = _unitsService.Convert(unit1, unit2, value);
+
+            unit1Name = value == 1 ? unit1.Name.Singular! : unit1.Name.Plural!;
+            unit2Name = result == 1 ? unit2.Name.Singular! : unit2.Name.Plural!;
+            
+            var embed = new LocalEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                Title = GetText(Localization.UtilityConverter),
+                Description = $"**[{unit1.Category.Name}]**\n" +
+                              $"{value} {unit1Name} = {Format(result)} {unit2Name}"
+            };
+
+            await ReplyAsync(embed);
+        }
+
+        [Command("converterlist")]
+        public async Task ConverterList(string? category = null)
+        {
+            if (category is null)
+            {
+                await SendPaginatedMessageAsync(_unitsService.GetAllUnits().OrderBy(x => x.Name).ToList(), 15,
+                    (items, index) => new LocalEmbedBuilder
+                    {
+                        Color = RiasUtilities.ConfirmColor,
+                        Title = GetText(Localization.UtilityAllUnitsCategories),
+                        Description = string.Join("\n", items.Select(x => $"{++index}. {x.Name}")),
+                        Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.UtilityConvertListFooter, Context.Prefix))
+                    });
+                
+                return;
+            }
+
+            var units = _unitsService.GetUnitsByCategory(category);
+            if (units is null)
+            {
+                await ReplyErrorAsync(Localization.UtilityUnitsCategoryNotFound, category);
+                return;
+            }
+
+            await SendPaginatedMessageAsync(units.Units.ToList(), 15, (items, index) => new LocalEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                Title = GetText(Localization.UtilityCategoryAllUnits, category),
+                Description = string.Join("\n", items.Select(x =>
+                {
+                    var abbreviations = x.Name.Abbreviations?.ToList();
+                    var abbreviationsString = string.Empty;
+                    if (abbreviations != null && abbreviations.Count != 0)
+                    {
+                        abbreviationsString = $" [{string.Join(", ", abbreviations)}]";
+                    }
+                    
+                    return $"{++index}. {x.Name.Singular}{abbreviationsString}";
+                }))
+            });
+        }
         
         private static void ExpressionEvaluateParameter(string name, ParameterArgs args)
         {
@@ -253,6 +361,35 @@ namespace Rias.Core.Modules.Utility
                 "e" => Math.E,
                 _ => default
             };
+        }
+
+        /// <summary>
+        /// If the number is higher than 1 or lower than -1 then it rounds on the first 2 digits.
+        /// Otherwise it rounds after the number of leading zeros.<br/>
+        /// Ex: 0.00234 = 0.0023, 0.0000234 = 2.3E-5, 1.23 = 1.23, 1E20 = 1E+20
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        private string Format(double d)
+        {
+            if (Math.Abs(d) >= 1)
+            {
+                d = Math.Round(d, 2);
+                return d < 1E9 ? d.ToString(CultureInfo.InvariantCulture) : d.ToString("0.##E0");
+            }
+
+            var fractionPart = d % 1.0;
+            if (fractionPart == 0)
+                return d.ToString(CultureInfo.InvariantCulture);
+            
+            var count = -2;
+            while (fractionPart < 10 && count < 7)
+            {
+                fractionPart *= 10;
+                count++;
+            }
+            
+            return count < 7 ? Math.Round(d, count + 2).ToString(CultureInfo.InvariantCulture) : d.ToString("0.##E0");
         }
     }
 }

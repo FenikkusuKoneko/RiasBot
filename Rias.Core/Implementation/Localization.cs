@@ -360,11 +360,7 @@ namespace Rias.Core.Implementation
         public static string NsfwChannelNotNsfw => "nsfw_channel_not_nsfw";
         public static string NsfwCacheNotInitialized => "nsfw_cache_not_initialized";
         public static string NsfwNoHentai => "nsfw_no_hentai";
-        public static string NsfwDanbooru => "nsfw_danbooru";
-        public static string NsfwKonachan => "nsfw_konachan";
-        public static string NsfwYandere => "nsfw_yandere";
-        public static string NsfwGelbooru => "nsfw_gelbooru";
-        
+
         public static string ProfileDefaultBiography => "profile_default_biography";
         public static string ProfileBackgroundPreview => "profile_background_preview";
         public static string ProfileBackgroundSet => "profile_background_set";
@@ -460,7 +456,6 @@ namespace Rias.Core.Implementation
         public static string UtilityUrlNotPngJpg => "utility_url_not_png_jpg";
         public static string UtilityUrlNotPngJpgGif => "utility_url_not_png_jpg_gif";
         public static string UtilityImageOrUrlNotGood => "utility_image_or_url_not_good";
-        public static string UtilityEnabled => "utility_enabled";
         public static string UtilityStatus => "utility_status";
         public static string UtilityPrefixIs => "utility_prefix_is";
         public static string UtilityPrefixLimit => "utility_prefix_limit";
@@ -522,6 +517,13 @@ namespace Rias.Core.Implementation
         public static string UtilityPrice => "utility_price";
         public static string UtilityTimeLowest => "utility_time_lowest";
         public static string UtilityTimeHighest => "utility_time_highest";
+        public static string UtilityConverter => "utility_converter";
+        public static string UtilityUnitNotFound => "utility_unit_not_found";
+        public static string UtilityUnitsCategoryNotFound => "utility_units_category_not_found";
+        public static string UtilityUnitsIncompatible => "utility_units_incompatible";
+        public static string UtilityAllUnitsCategories => "utility_all_units_categories";
+        public static string UtilityCategoryAllUnits => "utility_category_all_units";
+        public static string UtilityConvertListFooter => "utility_convert_list_footer";
         
         public static string WaifuHasWaifu => "waifu_has_waifu";
         public static string WaifuClaimCurrencyNotEnough => "waifu_claim_currency_not_enough";
