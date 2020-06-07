@@ -138,8 +138,8 @@
     },
     {
       "name": {
-        "singular": "NauticalMile",
-        "plural": "NauticalMiles",
+        "singular": "Nautical mile",
+        "plural": "Nautical miles",
         "abbreviations": [ "NM" ]
       },
       "func_to_base": "x * 1852",
@@ -156,8 +156,8 @@
     },
     {
       "name": {
-        "singular": "AstronomicalUnit",
-        "plural": "AstronomicalUnits",
+        "singular": "Astronomical unit",
+        "plural": "Astronomical units",
         "abbreviations": [ "au", "ua" ]
       },
       "func_to_base": "x * 1.4959787070E11",
@@ -174,8 +174,8 @@
     },
     {
       "name": {
-        "singular": "LightYear",
-        "plural": "LightYears",
+        "singular": "Light year",
+        "plural": "Light years",
         "abbreviations": [ "ly" ]
       },
       "func_to_base": "x * 9.46073047258E15",

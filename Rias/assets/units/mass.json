@@ -129,8 +129,8 @@
     },
     {
       "name": {
-        "singular": "ShortHundredweight",
-        "plural": "ShortHundredweight",
+        "singular": "Short hundredweight",
+        "plural": "Short hundredweight",
         "abbreviations": [ "cwt" ]
       },
       "func_to_base": "x * 45.35924979",
@@ -138,8 +138,8 @@
     },
     {
       "name": {
-        "singular": "LongHundredweight",
-        "plural": "LongHundredweight",
+        "singular": "Long hundredweight",
+        "plural": "Long hundredweight",
         "abbreviations": [ "cwt" ]
       },
       "func_to_base": "x * 50.80234686",
@@ -147,16 +147,16 @@
     },
     {
       "name": {
-        "singular": "ShortTon",
-        "plural": "ShortTons"
+        "singular": "Short ton",
+        "plural": "Short tons"
       },
       "func_to_base": "x * 907.18474",
       "func_from_base": "x / 907.18474"
     },
     {
       "name": {
-        "singular": "LongTon",
-        "plural": "LongTons",
+        "singular": "Long ton",
+        "plural": "Long tons",
         "abbreviations": [ "lt", "wt" ]
       },
       "func_to_base": "x * 1016.0469088",
@@ -172,8 +172,8 @@
     },
     {
       "name": {
-        "singular": "EarthMass",
-        "plural": "EarthMasses",
+        "singular": "Earth mass",
+        "plural": "Earth masses",
         "abbreviations": [ "em" ]
       },
       "func_to_base": "x * 5.9722E24",
@@ -181,8 +181,8 @@
     },
     {
       "name": {
-        "singular": "SolarMass",
-        "plural": "SolarMasses",
+        "singular": "Solar mass",
+        "plural": "Solar masses",
         "abbreviations": [ "M⊙" ]
       },
       "func_to_base": "x * 1.98947E30",

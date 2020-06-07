@@ -14,6 +14,8 @@ using Rias.Core.Commons;
 using Rias.Core.Database;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
+using Serilog;
+using StackExchange.Redis;
 
 namespace Rias.Core
 {
@@ -38,12 +40,16 @@ namespace Rias.Core
 
             var interactivity = new InteractivityExtension();
             AddExtensionAsync(interactivity).GetAwaiter().GetResult();
+
+            var redis = ConnectionMultiplexer.Connect("localhost");
+            Log.Information("Redis connected");
             
             _provider = InitializeServices()
                 .AddSingleton(this)
-                .AddSingleton(commandService)
                 .AddSingleton(credentials)
+                .AddSingleton(commandService)
                 .AddSingleton(interactivity)
+                .AddSingleton(redis)
                 .AddSingleton<Localization>()
                 .AddSingleton<HttpClient>()
                 .AddDbContext<RiasDbContext>(x => x.UseNpgsql(databaseConnection).UseSnakeCaseNamingConvention())

@@ -1223,10 +1223,12 @@
         },
         {
           "aliases": "converter convert",
-          "description": "Convert from a unit to another. You don't have to specify the category but for explicit cases you can use it.\nIf abbreviations are used then compatible units will be searched to match with the first unit.",
+          "description": "Convert from a unit to another. You don't have to specify the category but for explicit cases you can use it.\nThe units names can or not contain spaces; if they do use quotes.\nIf abbreviations are used then compatible units will be searched to match with the first unit.",
           "remarks": [
             "{0}convert 2 km mi",
             "{0}convert km mi 2",
+            "{0}convert 5 eur usd",
+            "{0}convert 5 \"euro\" \"united states dollar\"",
             "{0}convert length 1 km m",
             "{0}convert length km m 2"
           ]

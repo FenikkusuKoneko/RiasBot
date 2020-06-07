@@ -1,0 +1,304 @@
+{
+  "name": "Currency",
+  "units": [
+    {
+      "name": {
+        "singular": "Euro",
+        "plural": "Euro",
+        "abbreviations": [
+          "EUR"
+        ]
+      },
+      "func_to_base": "x",
+      "func_from_base": "x"
+    },
+    {
+      "name": {
+        "singular": "Australian dollar",
+        "plural": "Australian dollars",
+        "abbreviations": [
+          "AUD"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Brazilian real",
+        "plural": "Brazilian reais",
+        "abbreviations": [
+          "BRL"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Bulgarian lev",
+        "plural": "Bulgarian leva",
+        "abbreviations": [
+          "BGN"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Canadian dollar",
+        "plural": "Canadian dollars",
+        "abbreviations": [
+          "CAD"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Chinese yuan",
+        "plural": "Chinese yuans",
+        "abbreviations": [
+          "CNY"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Croatian kuna",
+        "plural": "Croatian kune",
+        "abbreviations": [
+          "HRK"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Czech koruna",
+        "plural": "Czech korun",
+        "abbreviations": [
+          "CZK"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Danish krone",
+        "plural": "Danish kroner",
+        "abbreviations": [
+          "DKK"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Hong Kong dollar",
+        "plural": "Hong Kong dollars",
+        "abbreviations": [
+          "HKD"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Hungarian forint",
+        "plural": "Hungarian forints",
+        "abbreviations": [
+          "HUF"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Icelandic króna",
+        "plural": "Icelandic krónur",
+        "abbreviations": [
+          "ISK"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Indian rupee",
+        "plural": "Indian rupees",
+        "abbreviations": [
+          "INR"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Indonesian rupiah",
+        "plural": "Indonesian rupiahs",
+        "abbreviations": [
+          "IDR"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Israeli shekel",
+        "plural": "Israeli shekels",
+        "abbreviations": [
+          "ILS"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Japanese yen",
+        "plural": "Japanese yens",
+        "abbreviations": [
+          "JPY"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "New Zealand dollar",
+        "plural": "New Zealand dollars",
+        "abbreviations": [
+          "NZD"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Norwegian krone",
+        "plural": "Norwegian kroner",
+        "abbreviations": [
+          "NOK"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Malaysian ringgit",
+        "plural": "Malaysian ringgit",
+        "abbreviations": [
+          "MYR"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Mexican peso",
+        "plural": "Mexican pesos",
+        "abbreviations": [
+          "MXN"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Philippine peso",
+        "plural": "Philippine pesos",
+        "abbreviations": [
+          "PHP"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Polish złoty",
+        "plural": "Polish złoty",
+        "abbreviations": [
+          "PLN"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Pound sterling",
+        "plural": "Pounds sterling",
+        "abbreviations": [
+          "GBP"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Romanian leu",
+        "plural": "Romanian lei",
+        "abbreviations": [
+          "RON"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Russian ruble",
+        "plural": "Russian rubles",
+        "abbreviations": [
+          "RUB"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Singapore dollar",
+        "plural": "Singapore dollars",
+        "abbreviations": [
+          "SGD"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "South African rand",
+        "plural": "South African rand",
+        "abbreviations": [
+          "ZAR"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "South Korean won",
+        "plural": "South Korean won",
+        "abbreviations": [
+          "KRW"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Swedish krona",
+        "plural": "Swedish kronor",
+        "abbreviations": [
+          "SEK"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Swiss franc",
+        "plural": "Swiss francs",
+        "abbreviations": [
+          "CHF"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Thai baht",
+        "plural": "Thai baht",
+        "abbreviations": [
+          "THB"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Turkish lira",
+        "plural": "Turkish liras",
+        "abbreviations": [
+          "TRY"
+        ]
+      }
+    },
+    {
+      "name": {
+        "singular": "United States dollar",
+        "plural": "United States dollars",
+        "abbreviations": [
+          "USD"
+        ]
+      }
+    }
+  ]
+}

@@ -258,14 +258,14 @@ namespace Rias.Core.Modules.Utility
         Priority(0)]
         public async Task ConverterAsync(string unit1Name, string unit2Name, double value)
         {
-            var units1 = _unitsService.GetUnits(unit1Name).ToList();
+            var units1 = _unitsService.GetUnits(unit1Name, !unit1Name.Contains(" ")).ToList();
             if (units1.Count == 0)
             {
                 await ReplyErrorAsync(Localization.UtilityUnitNotFound, unit1Name);
                 return;
             }
             
-            var units2 = _unitsService.GetUnits(unit2Name).ToList();
+            var units2 = _unitsService.GetUnits(unit2Name, !unit2Name.Contains(" ")).ToList();
             if (units2.Count == 0)
             {
                 await ReplyErrorAsync(Localization.UtilityUnitNotFound, unit2Name);
