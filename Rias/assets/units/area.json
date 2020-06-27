@@ -1,0 +1,104 @@
+{
+  "name": "Area",
+  "units": [
+    {
+      "name": {
+        "singular": "Square meter",
+        "plural": "Square meters",
+        "abbreviations": [ "m²", "m2" ]
+      },
+      "func_to_base": "x",
+      "func_from_base": "x"
+    },
+    {
+      "name": {
+        "singular": "Square millimeter",
+        "plural": "Square millimeters",
+        "abbreviations": [ "mm²", "mm2" ]
+      },
+      "func_to_base": "x * 1E-6",
+      "func_from_base": "x * 1E6"
+    },
+    {
+      "name": {
+        "singular": "Square centimeter",
+        "plural": "Square centimeters",
+        "abbreviations": [ "cm²", "cm2" ]
+      },
+      "func_to_base": "x * 1E-4",
+      "func_from_base": "x * 1E4"
+    },
+    {
+      "name": {
+        "singular": "Square decimeter",
+        "plural": "Square decimeters",
+        "abbreviations": [ "dm²", "dm2" ]
+      },
+      "func_to_base": "x / 100",
+      "func_from_base": "x * 100"
+    },
+    {
+      "name": {
+        "singular": "Square kilometer",
+        "plural": "Square kilometers",
+        "abbreviations": [ "km²", "km2" ]
+      },
+      "func_to_base": "x * 1E6",
+      "func_from_base": "x / 1E6"
+    },
+    {
+      "name": {
+        "singular": "Square inch",
+        "plural": "Square inches",
+        "abbreviations": [ "in²", "in2" ]
+      },
+      "func_to_base": "x * 6.4516E-4",
+      "func_from_base": "x / 6.4516E-4"
+    },
+    {
+      "name": {
+        "singular": "Square foot",
+        "plural": "Square feet",
+        "abbreviations": [ "ft²", "ft2" ]
+      },
+      "func_to_base": "x * 0.092903",
+      "func_from_base": "x / 0.092903"
+    },
+    {
+      "name": {
+        "singular": "Square yard",
+        "plural": "Square yards",
+        "abbreviations": [ "yd²", "yd2" ]
+      },
+      "func_to_base": "x * 0.836127",
+      "func_from_base": "x / 0.836127"
+    },
+    {
+      "name": {
+        "singular": "Square mile",
+        "plural": "Square miles",
+        "abbreviations": [ "mi²", "mi2" ]
+      },
+      "func_to_base": "x * 2.59E6",
+      "func_from_base": "x / 2.59E6"
+    },
+    {
+      "name": {
+        "singular": "Hectare",
+        "plural": "Hectares",
+        "abbreviations": [ "ha" ]
+      },
+      "func_to_base": "x * 1E4",
+      "func_from_base": "x / 1E4"
+    },
+    {
+      "name": {
+        "singular": "Acre",
+        "plural": "Acres",
+        "abbreviations": [ "ac" ]
+      },
+      "func_to_base": "x * 4046.85642",
+      "func_from_base": "x / 4046.85642"
+    }
+  ]
+}

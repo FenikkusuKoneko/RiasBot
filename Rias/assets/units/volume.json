@@ -1,0 +1,104 @@
+{
+  "name": "Volume",
+  "units": [
+    {
+      "name": {
+        "singular": "Cubic meter",
+        "plural": "Cubic meters",
+        "abbreviations": [ "m³", "m3" ]
+      },
+      "func_to_base": "x",
+      "func_from_base": "x"
+    },
+    {
+      "name": {
+        "singular": "Liter",
+        "plural": "Liters",
+        "abbreviations": [ "l" ]
+      },
+      "func_to_base": "x / 1000",
+      "func_from_base": "x * 1000"
+    },
+    {
+      "name": {
+        "singular": "Milliliter",
+        "plural": "Milliliters",
+        "abbreviations": [ "ml" ]
+      },
+      "func_to_base": "x * 1E-6",
+      "func_from_base": "x * 1E6"
+    },
+    {
+      "name": {
+        "singular": "Cubic millimeter",
+        "plural": "Cubic millimeters",
+        "abbreviations": [ "mm³", "mm3" ]
+      },
+      "func_to_base": "x * 1E-9",
+      "func_from_base": "x * 1E9"
+    },
+    {
+      "name": {
+        "singular": "Cubic centimeter",
+        "plural": "Cubic centimeters",
+        "abbreviations": [ "cm³", "cm3" ]
+      },
+      "func_to_base": "x * 1E-6",
+      "func_from_base": "x * 1E6"
+    },
+    {
+      "name": {
+        "singular": "Cubic decimeter",
+        "plural": "Cubic decimeters",
+        "abbreviations": [ "dm³", "dm3" ]
+      },
+      "func_to_base": "x / 1000",
+      "func_from_base": "x * 1000"
+    },
+    {
+      "name": {
+        "singular": "Cubic hectometer",
+        "plural": "Cubic hectometers",
+        "abbreviations": [ "hm³", "hm3" ]
+      },
+      "func_to_base": "x * 1E6",
+      "func_from_base": "x * 1E-6"
+    },
+    {
+      "name": {
+        "singular": "Cubic kilometer",
+        "plural": "Cubic kilometers",
+        "abbreviations": [ "km³", "km3" ]
+      },
+      "func_to_base": "x * 1E9",
+      "func_from_base": "x * 1E-9"
+    },
+    {
+      "name": {
+        "singular": "Metric Teaspoon",
+        "plural": "Metric Teaspoons",
+        "abbreviations": [ "tspn", "tsp", "ts" ]
+      },
+      "func_to_base": "x * 5E-6",
+      "func_from_base": "x * 5E6"
+    },
+    {
+      "name": {
+        "singular": "UK Teaspoon",
+        "plural": "UK Teaspoons",
+        "abbreviations": [ "uktsp", "ukts" ]
+      },
+      "func_to_base": "x * 5.91938802E-6",
+      "func_from_base": "x / 5.91938802E-6"
+    },
+    {
+      "name": {
+        "singular": "US Teaspoon",
+        "plural": "US Teaspoons",
+        "abbreviations": [ "ustsp", "usts" ]
+      },
+      "func_to_base": "x * 4.92892159E-6",
+      "func_from_base": "x / 4.92892159E-6"
+    }
+  ]
+}

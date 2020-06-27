@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace Rias.Core.Models
 {
     #nullable disable
-    public class UnitsModel
+    public class UnitsCategory
     {
         public string Name { get; set; }
         public IEnumerable<Unit> Units { get; set; }
@@ -13,7 +13,7 @@ namespace Rias.Core.Models
     public class Unit
     {
         [JsonIgnore]
-        public UnitsModel Category { get; set; }
+        public UnitsCategory Category { get; set; }
         
         public UnitName Name { get; set; }
         

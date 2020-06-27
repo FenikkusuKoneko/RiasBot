@@ -23,9 +23,13 @@ namespace Rias.Core.Services
         private readonly HttpClient _httpClient;
         private readonly IDatabase _redisDb;
         
-        private readonly ConcurrentDictionary<string, UnitsModel> _units = new ConcurrentDictionary<string, UnitsModel>();
         private readonly string _unitsPath = Path.Combine(Environment.CurrentDirectory, "assets/units");
         private const string ExchangeRatesApi = "https://api.exchangeratesapi.io/latest";
+        
+        private readonly ConcurrentDictionary<string, UnitsCategory> _units = new ConcurrentDictionary<string, UnitsCategory>();
+        private readonly ConcurrentDictionary<string, List<Unit>> _unitsSingular = new ConcurrentDictionary<string, List<Unit>>();
+        private readonly ConcurrentDictionary<string, List<Unit>> _unitsPlural = new ConcurrentDictionary<string, List<Unit>>();
+        private readonly ConcurrentDictionary<string, List<Unit>> _unitsAbbreviations = new ConcurrentDictionary<string, List<Unit>>();
 
         public UnitsService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
@@ -35,11 +39,37 @@ namespace Rias.Core.Services
             
             foreach (var unitsFile in Directory.GetFiles(_unitsPath))
             {
-                var units = JsonConvert.DeserializeObject<UnitsModel>(File.ReadAllText(unitsFile));
-                foreach (var unit in units.Units!)
-                    unit.Category = units;
+                var unitsCategory = JsonConvert.DeserializeObject<UnitsCategory>(File.ReadAllText(unitsFile));
+                foreach (var unit in unitsCategory.Units)
+                {
+                    unit.Category = unitsCategory;
+                    var nameSingular = unit.Name.Singular.ToLower().Replace(" ", "");
+                    if (_unitsSingular.TryGetValue(nameSingular, out var unitsSingular))
+                        unitsSingular.Add(unit);
+                    else
+                        _unitsSingular[nameSingular] = new List<Unit> {unit};
+                    
+                    var namePlural = unit.Name.Plural.ToLower().Replace(" ", "");
+                    if (_unitsPlural.TryGetValue(namePlural, out var unitsPlural))
+                        unitsPlural.Add(unit);
+                    else
+                        _unitsPlural[namePlural] = new List<Unit> {unit};
+
+                    if (unit.Name.Abbreviations is null)
+                        continue;
+
+                    var isCurrencyCategory = unitsCategory.Name.Equals("currency", StringComparison.CurrentCultureIgnoreCase);
+                    foreach (var abbreviation in unit.Name.Abbreviations)
+                    {
+                        var abb = isCurrencyCategory ? abbreviation.ToLower() : abbreviation; 
+                        if (_unitsAbbreviations.TryGetValue(abb, out var unitsAbbreviations))
+                            unitsAbbreviations.Add(unit);
+                        else
+                            _unitsAbbreviations[abb] = new List<Unit> {unit};
+                    }
+                }
                 
-                _units.TryAdd(units.Name.ToLower(), units);
+                _units.TryAdd(unitsCategory.Name.ToLower(), unitsCategory);
             }
             
             sw.Stop();
@@ -59,47 +89,25 @@ namespace Rias.Core.Services
             return (double) expr.Evaluate();
         }
 
-        public IEnumerable<UnitsModel> GetAllUnits()
+        public IEnumerable<UnitsCategory> GetAllUnits()
             => _units.Values.ToList();
 
-        public UnitsModel? GetUnitsByCategory(string category)
+        public UnitsCategory? GetUnitsByCategory(string category)
             => _units.TryGetValue(category.ToLower(), out var units) ? units : null;
 
-        public IEnumerable<Unit> GetUnits(string name, bool noSpaces)
+        public IEnumerable<Unit> GetUnits(string name)
         {
-            if (name.Length <= 3) return GetUnitsByAbbreviation(name);
+            if (name.Length <= 5 && _unitsAbbreviations.TryGetValue(name, out var unitsAbbreviations))
+                return unitsAbbreviations;
             
-            var unit = GetUnit(name, noSpaces);
-            return unit != null ? new[] {unit} : Enumerable.Empty<Unit>();
+            name = name.ToLower().Replace(" ", "");
+            return _unitsSingular.TryGetValue(name, out var unitsSingular)
+                ? unitsSingular
+                : _unitsPlural.TryGetValue(name, out var unitsPlural)
+                    ? unitsPlural
+                    : Enumerable.Empty<Unit>();
         }
-
-        private Unit? GetUnit(string name, bool noSpaces)
-        {
-            foreach (var (_, unitsModel) in _units)
-            {
-                var unit = unitsModel.Units.FirstOrDefault(x =>
-                    string.Equals(noSpaces ? x.Name.Singular.Replace(" ", "") : x.Name.Singular, name, StringComparison.InvariantCultureIgnoreCase)
-                    || string.Equals(noSpaces ? x.Name.Plural.Replace(" ", "") : x.Name.Plural, name, StringComparison.InvariantCultureIgnoreCase));
-                
-                if (unit != null)
-                    return unit;
-            }
-            
-            return null;
-        }
-
-        private IEnumerable<Unit> GetUnitsByAbbreviation(string abbreviation)
-        {
-            abbreviation = abbreviation.ToLower();
-            foreach (var (_, unitsModel) in _units)
-            {
-                var unit = unitsModel.Units.FirstOrDefault(x => x.Name.Abbreviations != null
-                    && x.Name.Abbreviations.Any(y => string.Equals(y, abbreviation, StringComparison.InvariantCultureIgnoreCase)));
-                if (unit != null)
-                    yield return unit;
-            }
-        }
-
+        
         private async Task UpdateCurrencyUnitsAsync()
         {
             var exchangeRatesDataRedis = _redisDb.StringGetWithExpiry("converter:currency");
@@ -119,7 +127,7 @@ namespace Rias.Core.Services
                 var unitAbbreviation = unit.Name.Abbreviations.ElementAt(0);
                 
                 //ignore EUR because it's the base
-                if (string.Equals(unitAbbreviation, "EUR"))
+                if (string.Equals(unitAbbreviation, "eur", StringComparison.OrdinalIgnoreCase))
                     continue;
                 
                 var rateValue = exchangeRates![unitAbbreviation];

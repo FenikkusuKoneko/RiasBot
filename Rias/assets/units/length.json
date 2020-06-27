@@ -3,8 +3,8 @@
   "units": [
     {
       "name": {
-        "singular": "Metre",
-        "plural": "Metres",
+        "singular": "Meter",
+        "plural": "Meters",
         "abbreviations": [ "m" ]
       },
       "func_to_base": "x",
@@ -12,8 +12,8 @@
     },
     {
       "name": {
-        "singular": "Nanometre",
-        "plural": "Nanometres",
+        "singular": "Nanometer",
+        "plural": "Nanometers",
         "abbreviations": [ "nm" ]
       },
       "func_to_base": "x * 1E-9",
@@ -21,8 +21,8 @@
     },
     {
       "name": {
-        "singular": "Micrometre",
-        "plural": "Micrometres",
+        "singular": "Micrometer",
+        "plural": "Micrometers",
         "abbreviations": [ "μm" ]
       },
       "func_to_base": "x * 1E-6",
@@ -30,8 +30,8 @@
     },
     {
       "name": {
-        "singular": "Millimetre",
-        "plural": "Millimetres",
+        "singular": "Millimeter",
+        "plural": "Millimeters",
         "abbreviations": [ "mm" ]
       },
       "func_to_base": "x / 1000",
@@ -39,8 +39,8 @@
     },
     {
       "name": {
-        "singular": "Centimetre",
-        "plural": "Centimetres",
+        "singular": "Centimeter",
+        "plural": "Centimeters",
         "abbreviations": [ "cm" ]
       },
       "func_to_base": "x / 100",
@@ -48,8 +48,8 @@
     },
     {
       "name": {
-        "singular": "Decimetre",
-        "plural": "Decimetres",
+        "singular": "Decimeter",
+        "plural": "Decimeters",
         "abbreviations": [ "dm" ]
       },
       "func_to_base": "x / 10",
@@ -57,8 +57,8 @@
     },
     {
       "name": {
-        "singular": "Decametre",
-        "plural": "Decametres",
+        "singular": "Decameter",
+        "plural": "Decameters",
         "abbreviations": [ "dam" ]
       },
       "func_to_base": "x * 10",
@@ -66,8 +66,8 @@
     },
     {
       "name": {
-        "singular": "Hectometre",
-        "plural": "Hectometres",
+        "singular": "Hectometer",
+        "plural": "Hectometers",
         "abbreviations": [ "hm" ]
       },
       "func_to_base": "x * 100",
@@ -75,8 +75,8 @@
     },
     {
       "name": {
-        "singular": "Kilometre",
-        "plural": "Kilometres",
+        "singular": "Kilometer",
+        "plural": "Kilometers",
         "abbreviations": [ "km" ]
       },
       "func_to_base": "x * 1000",
@@ -112,8 +112,7 @@
     {
       "name": {
         "singular": "Fathom",
-        "plural": "Fathoms",
-        "abbreviations": [ "fathom" ]
+        "plural": "Fathoms"
       },
       "func_to_base": "x * 1.8288",
       "func_from_base": "x / 1.8288"

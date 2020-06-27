@@ -25,7 +25,7 @@ namespace Rias.Core
         public const string Version = "3.0.0";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
-        private readonly IServiceProvider _provider;
+        private readonly IServiceProvider _serviceProvider;
         private static Credentials? _credentials;
         
         public Rias(Credentials credentials, string databaseConnection) : base(TokenType.Bot, credentials.Token)
@@ -44,7 +44,7 @@ namespace Rias.Core
             var redis = ConnectionMultiplexer.Connect("localhost");
             Log.Information("Redis connected");
             
-            _provider = InitializeServices()
+            _serviceProvider = InitializeServices()
                 .AddSingleton(this)
                 .AddSingleton(credentials)
                 .AddSingleton(commandService)
@@ -57,7 +57,7 @@ namespace Rias.Core
             
             ApplyDatabaseMigrations();
 
-            _provider.GetRequiredService<Localization>();
+            _serviceProvider.GetRequiredService<Localization>();
             var autoStartServices = typeof(Rias).Assembly.GetTypes()
                 .Where(x => typeof(RiasService).IsAssignableFrom(x)
                             && x.GetCustomAttribute<AutoStartAttribute>() != null
@@ -66,7 +66,7 @@ namespace Rias.Core
                 .OrderByDescending(x => x.GetCustomAttribute<AutoStartAttribute>()!.Priority);
             
             foreach (var serviceType in autoStartServices)
-                _provider.GetRequiredService(serviceType);
+                _serviceProvider.GetRequiredService(serviceType);
             
             UpTime.Start();
         }
@@ -122,7 +122,7 @@ namespace Rias.Core
             if (serviceType == typeof(Rias) || serviceType == GetType())
                 return this;
 
-            return _provider?.GetService(serviceType);
+            return _serviceProvider?.GetService(serviceType);
         }
     }
 }

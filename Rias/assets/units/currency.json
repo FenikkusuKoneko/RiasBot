@@ -5,9 +5,7 @@
       "name": {
         "singular": "Euro",
         "plural": "Euro",
-        "abbreviations": [
-          "EUR"
-        ]
+        "abbreviations": [ "EUR" ]
       },
       "func_to_base": "x",
       "func_from_base": "x"
@@ -16,288 +14,224 @@
       "name": {
         "singular": "Australian dollar",
         "plural": "Australian dollars",
-        "abbreviations": [
-          "AUD"
-        ]
+        "abbreviations": [ "AUD" ]
       }
     },
     {
       "name": {
         "singular": "Brazilian real",
         "plural": "Brazilian reais",
-        "abbreviations": [
-          "BRL"
-        ]
+        "abbreviations": [ "BRL" ]
       }
     },
     {
       "name": {
         "singular": "Bulgarian lev",
         "plural": "Bulgarian leva",
-        "abbreviations": [
-          "BGN"
-        ]
+        "abbreviations": [ "BGN" ]
       }
     },
     {
       "name": {
         "singular": "Canadian dollar",
         "plural": "Canadian dollars",
-        "abbreviations": [
-          "CAD"
-        ]
+        "abbreviations": [ "CAD" ]
       }
     },
     {
       "name": {
         "singular": "Chinese yuan",
         "plural": "Chinese yuans",
-        "abbreviations": [
-          "CNY"
-        ]
+        "abbreviations": [ "CNY" ]
       }
     },
     {
       "name": {
         "singular": "Croatian kuna",
         "plural": "Croatian kune",
-        "abbreviations": [
-          "HRK"
-        ]
+        "abbreviations": [ "HRK" ]
       }
     },
     {
       "name": {
         "singular": "Czech koruna",
         "plural": "Czech korun",
-        "abbreviations": [
-          "CZK"
-        ]
+        "abbreviations": [ "CZK" ]
       }
     },
     {
       "name": {
         "singular": "Danish krone",
         "plural": "Danish kroner",
-        "abbreviations": [
-          "DKK"
-        ]
+        "abbreviations": [ "DKK" ]
       }
     },
     {
       "name": {
         "singular": "Hong Kong dollar",
         "plural": "Hong Kong dollars",
-        "abbreviations": [
-          "HKD"
-        ]
+        "abbreviations": [ "HKD" ]
       }
     },
     {
       "name": {
         "singular": "Hungarian forint",
         "plural": "Hungarian forints",
-        "abbreviations": [
-          "HUF"
-        ]
+        "abbreviations": [ "HUF" ]
       }
     },
     {
       "name": {
         "singular": "Icelandic króna",
         "plural": "Icelandic krónur",
-        "abbreviations": [
-          "ISK"
-        ]
+        "abbreviations": [ "ISK" ]
       }
     },
     {
       "name": {
         "singular": "Indian rupee",
         "plural": "Indian rupees",
-        "abbreviations": [
-          "INR"
-        ]
+        "abbreviations": [ "INR" ]
       }
     },
     {
       "name": {
         "singular": "Indonesian rupiah",
         "plural": "Indonesian rupiahs",
-        "abbreviations": [
-          "IDR"
-        ]
+        "abbreviations": [ "IDR" ]
       }
     },
     {
       "name": {
         "singular": "Israeli shekel",
         "plural": "Israeli shekels",
-        "abbreviations": [
-          "ILS"
-        ]
+        "abbreviations": [ "ILS" ]
       }
     },
     {
       "name": {
         "singular": "Japanese yen",
         "plural": "Japanese yens",
-        "abbreviations": [
-          "JPY"
-        ]
+        "abbreviations": [ "JPY" ]
       }
     },
     {
       "name": {
         "singular": "New Zealand dollar",
         "plural": "New Zealand dollars",
-        "abbreviations": [
-          "NZD"
-        ]
+        "abbreviations": [ "NZD" ]
       }
     },
     {
       "name": {
         "singular": "Norwegian krone",
         "plural": "Norwegian kroner",
-        "abbreviations": [
-          "NOK"
-        ]
+        "abbreviations": [ "NOK" ]
       }
     },
     {
       "name": {
         "singular": "Malaysian ringgit",
         "plural": "Malaysian ringgit",
-        "abbreviations": [
-          "MYR"
-        ]
+        "abbreviations": [ "MYR" ]
       }
     },
     {
       "name": {
         "singular": "Mexican peso",
         "plural": "Mexican pesos",
-        "abbreviations": [
-          "MXN"
-        ]
+        "abbreviations": [ "MXN" ]
       }
     },
     {
       "name": {
         "singular": "Philippine peso",
         "plural": "Philippine pesos",
-        "abbreviations": [
-          "PHP"
-        ]
+        "abbreviations": [ "PHP" ]
       }
     },
     {
       "name": {
         "singular": "Polish złoty",
         "plural": "Polish złoty",
-        "abbreviations": [
-          "PLN"
-        ]
+        "abbreviations": [ "PLN" ]
       }
     },
     {
       "name": {
         "singular": "Pound sterling",
         "plural": "Pounds sterling",
-        "abbreviations": [
-          "GBP"
-        ]
+        "abbreviations": [ "GBP" ]
       }
     },
     {
       "name": {
         "singular": "Romanian leu",
         "plural": "Romanian lei",
-        "abbreviations": [
-          "RON"
-        ]
+        "abbreviations": [ "RON" ]
       }
     },
     {
       "name": {
         "singular": "Russian ruble",
         "plural": "Russian rubles",
-        "abbreviations": [
-          "RUB"
-        ]
+        "abbreviations": [ "RUB" ]
       }
     },
     {
       "name": {
         "singular": "Singapore dollar",
         "plural": "Singapore dollars",
-        "abbreviations": [
-          "SGD"
-        ]
+        "abbreviations": [ "SGD" ]
       }
     },
     {
       "name": {
         "singular": "South African rand",
         "plural": "South African rand",
-        "abbreviations": [
-          "ZAR"
-        ]
+        "abbreviations": [ "ZAR" ]
       }
     },
     {
       "name": {
         "singular": "South Korean won",
         "plural": "South Korean won",
-        "abbreviations": [
-          "KRW"
-        ]
+        "abbreviations": [ "KRW" ]
       }
     },
     {
       "name": {
         "singular": "Swedish krona",
         "plural": "Swedish kronor",
-        "abbreviations": [
-          "SEK"
-        ]
+        "abbreviations": [ "SEK" ]
       }
     },
     {
       "name": {
         "singular": "Swiss franc",
         "plural": "Swiss francs",
-        "abbreviations": [
-          "CHF"
-        ]
+        "abbreviations": [ "CHF" ]
       }
     },
     {
       "name": {
         "singular": "Thai baht",
         "plural": "Thai baht",
-        "abbreviations": [
-          "THB"
-        ]
+        "abbreviations": [ "THB" ]
       }
     },
     {
       "name": {
         "singular": "Turkish lira",
         "plural": "Turkish liras",
-        "abbreviations": [
-          "TRY"
-        ]
+        "abbreviations": [ "TRY" ]
       }
     },
     {
       "name": {
         "singular": "United States dollar",
         "plural": "United States dollars",
-        "abbreviations": [
-          "USD"
-        ]
+        "abbreviations": [ "USD" ]
       }
     }
   ]
