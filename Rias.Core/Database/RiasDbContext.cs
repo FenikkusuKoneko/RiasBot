@@ -15,7 +15,7 @@ namespace Rias.Core.Database
     //     public RiasDbContext CreateDbContext(string[] args)
     //     {
     //         var optionsBuilder = new DbContextOptionsBuilder<RiasDbContext>();
-    //         optionsBuilder.UseNpgsql("");
+    //         optionsBuilder.UseNpgsql("Host=;Port=;Username=;Password=;Database=");
     //         optionsBuilder.UseSnakeCaseNamingConvention();
     //         var ctx = new RiasDbContext(optionsBuilder.Options);
     //         return ctx;
@@ -28,7 +28,6 @@ namespace Rias.Core.Database
         public DbSet<CustomCharactersEntity>? CustomCharacters { get; set; }
         public DbSet<CustomWaifusEntity>? CustomWaifus { get; set; }
         public DbSet<GuildsEntity>? Guilds { get; set; }
-        public DbSet<GuildsXpEntity>? GuildsXp { get; set; }
         public DbSet<GuildUsersEntity>? GuildUsers { get; set; }
         public DbSet<GuildXpRolesEntity>? GuildXpRoles { get; set; }
         public DbSet<MuteTimersEntity>? MuteTimers { get; set; }
@@ -48,6 +47,9 @@ namespace Rias.Core.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasPostgresEnum<LastChargeStatus>();
+            modelBuilder.HasPostgresEnum<PatronStatus>();
+            
             modelBuilder.Entity<CharactersEntity>()
                 .HasIndex(x => x.CharacterId)
                 .IsUnique();
@@ -61,17 +63,26 @@ namespace Rias.Core.Database
             modelBuilder.Entity<GuildsEntity>()
                 .HasIndex(x => x.GuildId)
                 .IsUnique();
-
-            modelBuilder.Entity<GuildsXpEntity>();
-            modelBuilder.Entity<GuildUsersEntity>();
-            modelBuilder.Entity<GuildXpRolesEntity>();
-            modelBuilder.Entity<MuteTimersEntity>();
+            
+            modelBuilder.Entity<GuildUsersEntity>()
+                .HasIndex(x => new {x.GuildId, x.UserId})
+                .IsUnique();
+            
+            modelBuilder.Entity<GuildXpRolesEntity>()
+                .HasIndex(x => new {x.GuildId, x.RoleId})
+                .IsUnique();
+            
+            modelBuilder.Entity<MuteTimersEntity>()
+                .HasIndex(x => new {x.GuildId, x.UserId})
+                .IsUnique();
             
             modelBuilder.Entity<ProfileEntity>()
                 .HasIndex(x => x.UserId)
                 .IsUnique();
             
-            modelBuilder.Entity<SelfAssignableRolesEntity>();
+            modelBuilder.Entity<SelfAssignableRolesEntity>()
+                .HasIndex(x => new {x.GuildId, x.RoleId})
+                .IsUnique();
             
             modelBuilder.Entity<UsersEntity>()
                 .HasIndex(x => x.UserId)

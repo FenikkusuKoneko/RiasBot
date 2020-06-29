@@ -7,6 +7,6 @@ namespace Rias.Core.Database.Entities
     {
         [Key]
         public int Id { get; set; }
-        public DateTime? DateAdded { get; set; } = DateTime.UtcNow;
+        public DateTime DateAdded { get; set; } = DateTime.UtcNow;
     }
 }

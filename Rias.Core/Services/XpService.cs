@@ -82,7 +82,7 @@ namespace Rias.Core.Services
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildXpDb = await db.GetOrAddAsync(x => x.GuildId == member.Guild.Id && x.UserId == member.Id,
-                () => new GuildsXpEntity {GuildId = member.Guild.Id, UserId = member.Id});
+                () => new GuildUsersEntity {GuildId = member.Guild.Id, UserId = member.Id});
             
             if (check && guildXpDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
                 return;
@@ -264,7 +264,7 @@ namespace Rias.Core.Services
             var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == member.Id);
             var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == member.Id);
 
-            var serverXpList = (await db.GetOrderedListAsync<GuildsXpEntity, int>(x => x.GuildId == member.Guild.Id, y => y.Xp, true))
+            var serverXpList = (await db.GetOrderedListAsync<GuildUsersEntity, int>(x => x.GuildId == member.Guild.Id, y => y.Xp, true))
                 .Where(x => member.Guild.GetMember(x.UserId) != null)
                 .ToList();
             
