@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Disqord;
 using Humanizer;
@@ -86,7 +87,9 @@ namespace Rias.Core.Modules.Searches
                     .AddField(GetText(Localization.SearchesSource), !string.IsNullOrEmpty(anime.Source) ? anime.Source : "-", true)
                     .AddField(GetText(Localization.SearchesGenres), genres, true)
                     .AddField(GetText(Localization.SearchesIsAdult), anime.IsAdult, true)
-                    .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(anime.Description) ? anime.Description.Truncate(1000) : "-")
+                    .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(anime.Description)
+                        ? $"{anime.Description.Truncate(900)} [{GetText(Localization.More).ToLowerInvariant()}]({anime.SiteUrl})"
+                        : "-")
                     .WithImageUrl(anime.CoverImage.Large);
 
                 await ReplyAsync(embed);
@@ -156,7 +159,9 @@ namespace Rias.Core.Modules.Searches
                     .AddField(GetText(Localization.SearchesGenres), genres, true)
                     .AddField(GetText(Localization.SearchesSynonyms), synonyms, true)
                     .AddField(GetText(Localization.SearchesIsAdult), manga.IsAdult, true)
-                    .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(manga.Description) ? manga.Description.Truncate(1000) : "-")
+                    .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(manga.Description)
+                        ? $"{manga.Description.Truncate(900)} [{GetText(Localization.More.ToLowerInvariant())}]({manga.SiteUrl})"
+                        : "-")
                     .WithImageUrl(manga.CoverImage.Large);
 
                 await ReplyAsync(embed);
@@ -203,7 +208,7 @@ namespace Rias.Core.Modules.Searches
                         Title = character.Name
                     }.AddField(GetText(Localization.CommonId), character.Id, true)
                     .AddField(GetText(Localization.SearchesSource), GetText(Localization.BotDatabase), true)
-                    .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(character.Description) ? character.Description.Truncate(1000) : "-")
+                    .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(character.Description) ? $"{character.Description}" : "-")
                     .WithImageUrl(character.ImageUrl);
 
                 await ReplyAsync(embed);
@@ -229,14 +234,44 @@ namespace Rias.Core.Modules.Searches
                     : "-";
 
                 var mangaList = GetCharacterSources(character, "manga");
-                var manga = mangaList.Count != 0
-                    ? string.Join("\n", mangaList)
-                    : "-";
-                
+                var mangaSb = new StringBuilder(900);
+                if (mangaList.Count != 0)
+                {
+                    foreach (var manga in mangaList)
+                    {
+                        if (mangaSb.Length + manga.Length > 900)
+                        {
+                            mangaSb.Append($"[{GetText(Localization.More).ToLowerInvariant()}]({character.SiteUrl})");
+                            break;
+                        }
+                        
+                        mangaSb.Append(manga).AppendLine();
+                    }
+                }
+                else
+                {
+                    mangaSb.Append("-");
+                }
+
                 var animeList = GetCharacterSources(character, "anime");
-                var anime = animeList.Count != 0
-                    ? string.Join("\n", animeList)
-                    : "-";
+                var animeSb = new StringBuilder(900);
+                if (animeList.Count != 0)
+                {
+                    foreach (var anime in animeList)
+                    {
+                        if (animeSb.Length + anime.Length > 900)
+                        {
+                            animeSb.Append($"[{GetText(Localization.More).ToLowerInvariant()}]({character.SiteUrl})");
+                            break;
+                        }
+                        
+                        animeSb.Append(anime).AppendLine();
+                    }
+                }
+                else
+                {
+                    animeSb.Append("-");
+                }
 
                 var embed = new LocalEmbedBuilder
                 {
@@ -249,10 +284,12 @@ namespace Rias.Core.Modules.Searches
                     .AddField(GetText(Localization.SearchesAlternative), alternative, true)
                     .AddField(GetText(Localization.CommonId), character.Id, true)
                     .AddField(GetText(Localization.SearchesFavourites), character.Favourites.HasValue ? character.Favourites.Value.ToString() : "-", true)
-                    .AddField(GetText(Localization.SearchesFromManga), manga, true)
-                    .AddField(GetText(Localization.SearchesFromAnime), anime, true)
+                    .AddField(GetText(Localization.SearchesFromManga), mangaSb.ToString(), true)
+                    .AddField(GetText(Localization.SearchesFromAnime), animeSb.ToString(), true)
                     .AddField(GetText(Localization.SearchesSource), "AniList", true)
-                    .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(character.Description) ? character.Description.Truncate(1000) : "-")
+                    .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(character.Description)
+                        ? $"{character.Description.Truncate(900)} [{GetText(Localization.More).ToLowerInvariant()}]({character.SiteUrl})"
+                        : "-")
                     .WithImageUrl(character.Image.Large);
 
                 await ReplyAsync(embed);

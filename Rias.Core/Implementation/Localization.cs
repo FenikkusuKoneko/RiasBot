@@ -602,6 +602,7 @@ namespace Rias.Core.Implementation
         public static string CommonGlobal => "common_global";
         public static string CommonServer => "common_server";
         public static string CommonMenuPage => "common_menu_page";
+        public static string More => "common_more";
         
         public static string AttributeOwnerOnly => "attribute_owner_only";
         public static string AttributeUserGuildPermissions => "attribute_user_guild_permissions";
