@@ -244,6 +244,9 @@ namespace Rias.Core.Services
             };
 
             var reasons = new List<string>();
+            var areTooManyArguments = false;
+            var areTooLessArguments = false;
+            
             foreach (var failedResult in failedResults)
             {
                 switch (failedResult)
@@ -252,20 +255,25 @@ namespace Rias.Core.Services
                         reasons.AddRange(checksFailedResult.FailedChecks.Select(x => x.Result.Reason));
                         break;
                     case TypeParseFailedResult typeParseFailedResult:
-                        if (_typeParsers.Any(x => x.BaseType!.GetGenericArguments()[0] == typeParseFailedResult.Parameter.Type))
-                            reasons.Add(typeParseFailedResult.Reason);
-                        else
-                            reasons.Add(GetText(guildId, Localization.TypeParserPrimitiveType,
-                                context.Prefix, typeParseFailedResult.Parameter.Command.Name));
+                        reasons.Add(_typeParsers.Any(x => x.BaseType!.GetGenericArguments()[0] == typeParseFailedResult.Parameter.Type)
+                            ? typeParseFailedResult.Reason
+                            : GetText(guildId, Localization.TypeParserPrimitiveType, context.Prefix, typeParseFailedResult.Parameter.Command.Name));
                         break;
                     case ArgumentParseFailedResult argumentParseFailedResult:
                         var rawArguments = Regex.Matches(argumentParseFailedResult.RawArguments, @"\w+|""[\w\s]*""");
                         var parameters = argumentParseFailedResult.Command.Parameters;
-                        if (rawArguments.Count == parameters.Count)
-                            break;
-                        reasons.Add(GetText(guildId,
-                            rawArguments.Count < parameters.Count ? Localization.ServiceCommandLessArguments : Localization.ServiceCommandManyArguments,
-                            context.Prefix, argumentParseFailedResult.Command.Name));
+
+                        if (!areTooLessArguments && rawArguments.Count < parameters.Count)
+                        {
+                            reasons.Add(GetText(guildId, Localization.ServiceCommandLessArguments, context.Prefix, argumentParseFailedResult.Command.Name));
+                            areTooLessArguments = true;
+                        }
+                        
+                        if (!areTooManyArguments && rawArguments.Count > parameters.Count)
+                        {
+                            reasons.Add(GetText(guildId, Localization.ServiceCommandManyArguments, context.Prefix, argumentParseFailedResult.Command.Name));
+                            areTooManyArguments = true;
+                        }
                         break;
                 }
             }
