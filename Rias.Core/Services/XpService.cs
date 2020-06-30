@@ -107,6 +107,9 @@ namespace Rias.Core.Services
             var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
 
             var currentMember = guild.CurrentMember;
+            if (!currentMember.Permissions.SendMessages)
+                return;
+            
             if (!currentMember.Permissions.ManageRoles)
             {
                 if (guildDb != null && guildDb.GuildXpNotification)

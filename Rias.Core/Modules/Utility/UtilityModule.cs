@@ -288,7 +288,7 @@ namespace Rias.Core.Modules.Utility
 
             if (unit1 is null || unit2 is null)
             {
-                await ReplyErrorAsync(Localization.UtilityUnitsIncompatible,
+                await ReplyErrorAsync(Localization.UtilityUnitsNotCompatible,
                     $"{units1[0].Name.Singular} ({units1[0].Category.Name})",
                     $"{units2[0].Name.Singular} ({units2[0].Category.Name})");
                 
@@ -310,7 +310,7 @@ namespace Rias.Core.Modules.Utility
 
             await ReplyAsync(embed);
         }
-
+        
         [Command("converterlist")]
         public async Task ConverterList(string? category = null)
         {

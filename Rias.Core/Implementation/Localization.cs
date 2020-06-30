@@ -520,7 +520,7 @@ namespace Rias.Core.Implementation
         public static string UtilityConverter => "utility_converter";
         public static string UtilityUnitNotFound => "utility_unit_not_found";
         public static string UtilityUnitsCategoryNotFound => "utility_units_category_not_found";
-        public static string UtilityUnitsIncompatible => "utility_units_incompatible";
+        public static string UtilityUnitsNotCompatible => "utility_units_not_compatible";
         public static string UtilityAllUnitsCategories => "utility_all_units_categories";
         public static string UtilityCategoryAllUnits => "utility_category_all_units";
         public static string UtilityConvertListFooter => "utility_convert_list_footer";

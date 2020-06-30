@@ -452,7 +452,7 @@
   "utility_converter": "Converter",
   "utility_unit_not_found": "I couldn't find the unit **{0}**.",
   "utility_units_category_not_found": "I couldn't find the units category **{0}**.",
-  "utility_units_incompatible": "The unit **{0}** is incompatible with the unit **{1}**.",
+  "utility_units_not_compatible": "The unit **{0}** is not compatible with the unit **{1}**.",
   "utility_all_units_categories": "All units categories",
   "utility_category_all_units": "All units from {0}",
   "utility_convert_list_footer": "To see all the units from a category type {0}convertlist <category>",
