@@ -516,10 +516,17 @@
           ]
         },
         {
-          "aliases": "update restart",
-          "description": "Shuts down the application. If the option to update the project is set on linux it will update and start the application.",
+          "aliases": "shutdown",
+          "description": "Bye bye ;-;",
           "remarks": [
-            "{0}update"
+            "{0}shutdown"
+          ]
+        },
+        {
+          "aliases": "update restart",
+          "description": "Yay, a new update <3",
+          "remarks": [
+            "{0}update" 
           ]
         },
         {

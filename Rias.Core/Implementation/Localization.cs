@@ -253,6 +253,7 @@ namespace Rias.Core.Implementation
          
         public static string BotGuildNotFound => "bot_guild_not_found";
         public static string BotLeftGuild => "bot_left_guild";
+        public static string BotShutdown => "bot_shutdown";
         public static string BotUpdate => "bot_update";
         public static string BotChannelNotTextChannel => "bot_channel_not_text_channel";
         public static string BotTextChannelNoSendMessagesPermission => "bot_text_channel_no_send_messages_permission";

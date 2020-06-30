@@ -41,12 +41,18 @@ namespace Rias.Core.Modules.Bot
             await guild.LeaveAsync();
         }
         
+        [Command("shutdown"), OwnerOnly]
+        public async Task ShutdownAsync()
+        {
+            await ReplyConfirmationAsync(Localization.BotShutdown);
+            Environment.Exit(0);
+        }
+        
         [Command("update"), OwnerOnly]
         public async Task UpdateAsync()
         {
-            //TODO Create a manager for installing/updating and running RiasBot
             await ReplyConfirmationAsync(Localization.BotUpdate);
-            Environment.Exit(0);
+            Environment.Exit(69);
         }
         
         [Command("send"), OwnerOnly]
