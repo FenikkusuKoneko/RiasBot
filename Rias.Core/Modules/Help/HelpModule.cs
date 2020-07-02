@@ -159,16 +159,32 @@ namespace Rias.Core.Modules.Help
                 Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.HelpModulesListFooter, Context.Prefix))
             };
 
-            var modules = _commandService.GetAllModules()
-                .Where(m => m.Parent is null)
-                .OrderBy(m => m.Name)
-                .ToArray();
+            var isOwner = Context.User.Id == Credentials.MasterId;
+
+            var modules = isOwner
+                ? _commandService.GetAllModules()
+                    .Where(m => m.Parent is null)
+                    .OrderBy(m => m.Name)
+                    .ToArray()
+                : _commandService.GetAllModules()
+                    .Where(m => m.Parent is null && m.Commands.All(c => !c.Checks.Any(x => x is OwnerOnlyAttribute)))
+                    .OrderBy(m => m.Name)
+                    .ToArray();
             
             foreach (var module in modules)
             {
                 var fieldValue = "\u200B";
                 if (module.Submodules.Count != 0)
-                    fieldValue = string.Join("\n", module.Submodules.OrderBy(m => m.Name).Select(x => x.Name));
+                {
+                    fieldValue = string.Join("\n", isOwner
+                        ? module.Submodules
+                            .OrderBy(m => m.Name)
+                            .Select(x => x.Name)
+                        : module.Submodules
+                            .Where(m => m.Commands.All(c => !c.Checks.Any(x => x is OwnerOnlyAttribute)))
+                            .OrderBy(m => m.Name)
+                            .Select(x => x.Name));
+                }
 
                 embed.AddField(module.Name, fieldValue, true);
             }
@@ -195,7 +211,15 @@ namespace Rias.Core.Modules.Help
                 return;
             }
 
-            var modulesCommands = GetModuleCommands(module);
+            var isOwner = Context.User.Id == Credentials.MasterId;
+
+            var modulesCommands = GetModuleCommands(module, isOwner);
+            if (modulesCommands.Count == 0)
+            {
+                await ReplyErrorAsync(Localization.HelpModuleNotFound, Context.Prefix);
+                return;
+            }
+            
             var commandsAliases = GetCommandsAliases(modulesCommands, Context.Prefix);
 
             var embed = new LocalEmbedBuilder
@@ -206,7 +230,10 @@ namespace Rias.Core.Modules.Help
 
             foreach (var submodule in module.Submodules)
             {
-                var submoduleCommands = GetModuleCommands(submodule);
+                var submoduleCommands = GetModuleCommands(submodule, isOwner);
+                if (submoduleCommands.Count == 0)
+                    continue;
+                
                 var submoduleCommandsAliases = GetCommandsAliases(submoduleCommands, Context.Prefix);
 
                 embed.AddField(submodule.Name, string.Join("\n", submoduleCommandsAliases), true);
@@ -234,9 +261,14 @@ namespace Rias.Core.Modules.Help
                 .OrderBy(m => m.Name)
                 .ToArray();
             
+            var isOwner = Context.User.Id == Credentials.MasterId;
+            
             foreach (var module in modules)
             {
-                var moduleCommands = GetModuleCommands(module);
+                var moduleCommands = GetModuleCommands(module, isOwner);
+                if (moduleCommands.Count == 0)
+                    continue;
+                
                 var commandsAliases = GetCommandsAliases(moduleCommands, Context.Prefix);
 
                 if (commandsAliases.Count != 0)
@@ -244,7 +276,10 @@ namespace Rias.Core.Modules.Help
 
                 foreach (var submodule in module.Submodules.OrderBy(m => m.Name))
                 {
-                    var submoduleCommands = GetModuleCommands(submodule);
+                    var submoduleCommands = GetModuleCommands(submodule, isOwner);
+                    if (submoduleCommands.Count == 0)
+                        continue;
+                    
                     var submoduleCommandsAliases = GetCommandsAliases(submoduleCommands, Context.Prefix);
                     if (submoduleCommandsAliases.Count != 0)
                         embed.AddField(submodule.Name, string.Join("\n", submoduleCommandsAliases), true);
@@ -280,19 +315,25 @@ namespace Rias.Core.Modules.Help
 
             return x.Module.Aliases.Count == 0 && x.Aliases.Any(y => string.Equals(y, alias, StringComparison.InvariantCultureIgnoreCase));
         });
-        
-        public IReadOnlyList<Command> GetModuleCommands(Module module) =>
-            module.Commands.GroupBy(x => x.Name).Select(x => x.First()).OrderBy(x => x.Name).ToImmutableList();
+
+        public IReadOnlyList<Command> GetModuleCommands(Module module, bool isOwner) => (isOwner
+                ? module.Commands
+                : module.Commands.Where(x => !x.Checks.Any(c => c is OwnerOnlyAttribute)))
+            .GroupBy(x => x.Name)
+            .Select(x => x.First())
+            .OrderBy(x => x.Name)
+            .ToImmutableList();
         
         public IReadOnlyList<string> GetCommandsAliases(IEnumerable<Command> commands, string prefix)
             => commands.Select(x =>
             {
                 var nextAliases = string.Join(", ", x.Aliases.Skip(1));
                 if (!string.IsNullOrEmpty(nextAliases))
-                    nextAliases = $"[{nextAliases}]";
+                    nextAliases = $" [{nextAliases}]";
 
                 var moduleAlias = x.Module.Aliases.Count != 0 ? $"{x.Module.Aliases[0]} " : null;
-                return $"{prefix}{moduleAlias}{x.Aliases.FirstOrDefault()} {nextAliases}";
+                var isOwnerString = x.Checks.Any(c => c is OwnerOnlyAttribute) ? $" **({GetText(Localization.HelpRequiresOwner).ToLowerInvariant()})**" : null;
+                return $"{prefix}{moduleAlias}{x.Aliases.FirstOrDefault()}{nextAliases}{isOwnerString}";
             }).ToImmutableList();
         
         private async Task<bool> SendAllCommandsMessageAsync(LocalEmbed embed)

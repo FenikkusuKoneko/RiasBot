@@ -11,6 +11,7 @@ namespace Rias.Core.Modules.Bot
 {
     public partial class BotModule
     {
+        [Name("Configuration")]
         public class ConfigurationSubmodule : RiasModule
         {
             private readonly HttpClient _httpClient;
