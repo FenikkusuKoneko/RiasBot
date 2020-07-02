@@ -37,9 +37,14 @@ namespace Rias.Core.Modules.Reactions
             };
 
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPatYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPattedBy, member.Mention, Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPattedBy, member.Mention, user), embed: embed.Build());
+            }
         }
         
         [Command("pat"), Context(ContextType.Guild),
@@ -65,11 +70,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("pat"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPatYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPattedBy, value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPattedBy, value.Replace("@everyone", "everyone"), user), embed: embed.Build());
+            }
         }
         
         [Command("hug"), Context(ContextType.Guild),
@@ -91,9 +101,14 @@ namespace Rias.Core.Modules.Reactions
             };
 
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHugYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHuggedBy, member.Mention, Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHuggedBy, member.Mention, user), embed: embed.Build());
+            }
         }
         
         [Command("hug"), Context(ContextType.Guild),
@@ -119,11 +134,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("hug"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHugYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHuggedBy, value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHuggedBy, value.Replace("@everyone", "everyone"), user), embed: embed.Build());
+            }
         }
         
         [Command("kiss"), Context(ContextType.Guild),
@@ -145,9 +165,14 @@ namespace Rias.Core.Modules.Reactions
             };
 
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissedBy, member.Mention, Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissedBy, member.Mention, user), embed: embed.Build());
+            }
         }
         
         [Command("kiss"), Context(ContextType.Guild),
@@ -173,11 +198,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("kiss"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissedBy, value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissedBy, value.Replace("@everyone", "everyone"), user), embed: embed.Build());
+            }
         }
         
         [Command("lick"), Context(ContextType.Guild),
@@ -199,9 +229,14 @@ namespace Rias.Core.Modules.Reactions
             };
 
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickedBy, member.Mention, Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickedBy, member.Mention, user), embed: embed.Build());
+            }
         }
         
         [Command("lick"), Context(ContextType.Guild),
@@ -227,11 +262,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("lick"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickedBy, value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickedBy, value.Replace("@everyone", "everyone"), user), embed: embed.Build());
+            }
         }
         
         [Command("cuddle"), Context(ContextType.Guild),
@@ -253,9 +293,14 @@ namespace Rias.Core.Modules.Reactions
             };
 
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddleYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddledBy, member.Mention, Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddledBy, member.Mention, user), embed: embed.Build());
+            }
         }
         
         [Command("cuddle"), Context(ContextType.Guild),
@@ -281,11 +326,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("cuddle"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddleYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddledBy, value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddledBy, value.Replace("@everyone", "everyone"), user), embed: embed.Build());
+            }
         }
         
         [Command("bite"), Context(ContextType.Guild),
@@ -307,9 +357,14 @@ namespace Rias.Core.Modules.Reactions
             };
 
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBiteYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBittenBy, member.Mention, Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBittenBy, member.Mention, user), embed: embed.Build());
+            }
         }
         
         [Command("bite"), Context(ContextType.Guild),
@@ -335,11 +390,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("bite"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBiteYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBittenBy, value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBittenBy, value.Replace("@everyone", "everyone"), user), embed: embed.Build());
+            }
         }
         
         [Command("slap"), Context(ContextType.Guild),
@@ -361,9 +421,14 @@ namespace Rias.Core.Modules.Reactions
             };
 
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlapYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlappedBy, member.Mention, Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlappedBy, member.Mention, user), embed: embed.Build());
+            }
         }
         
         [Command("slap"), Context(ContextType.Guild),
@@ -389,11 +454,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("slap"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlapYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlappedBy, value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlappedBy, value.Replace("@everyone", "everyone"), user), embed: embed.Build());
+            }
         }
         
         [Command("cry"), Context(ContextType.Guild),
@@ -429,9 +499,14 @@ namespace Rias.Core.Modules.Reactions
             };
 
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropeYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropedBy, member.Mention, Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropedBy, member.Mention, user), embed: embed.Build());
+            }
         }
         
         [Command("grope"), Context(ContextType.Guild),
@@ -451,11 +526,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetGropeUrlAsync(),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} riasbot.me")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropeYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropedBy, value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropedBy, value.Replace("@everyone", "everyone"), user), embed: embed.Build());
+            }
         }
         
         [Command("blush"), Context(ContextType.Guild),
@@ -474,11 +554,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("blush"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlush, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlushAt, Context.User, member.Mention), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlushAt, user, member.Mention), embed: embed.Build());
+            }
         }
         
         [Command("blush"), Context(ContextType.Guild),
@@ -503,11 +588,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("blush"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlush, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlushAt, Context.User, value.Replace("@everyone", "everyone")), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlushAt, user, value.Replace("@everyone", "everyone")), embed: embed.Build());
+            }
         }
         
         [Command("dance"), Context(ContextType.Guild),
@@ -583,9 +673,14 @@ namespace Rias.Core.Modules.Reactions
             };
 
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokeYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokedBy, member.Mention, Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokedBy, member.Mention, user), embed: embed.Build());
+            }
         }
         
         [Command("poke"), Context(ContextType.Guild),
@@ -611,11 +706,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("poke"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokeYou, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokedBy, value.Replace("@everyone", "everyone"), Context.User), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokedBy, value.Replace("@everyone", "everyone"), user), embed: embed.Build());
+            }
         }
         
         [Command("pout"), Context(ContextType.Guild),
@@ -634,11 +734,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("pout"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (member.Id == Context.User.Id)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPout, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPoutAt, Context.User, member.Mention), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPoutAt, user, member.Mention), embed: embed.Build());
+            }
         }
         
         [Command("pout"), Context(ContextType.Guild),
@@ -663,11 +768,16 @@ namespace Rias.Core.Modules.Reactions
                 ImageUrl = await Service.GetReactionUrlAsync("pout"),
                 Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} weeb.sh")
             };
-            
+
             if (value is null)
+            {
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPout, Context.User.Mention), embed: embed.Build());
+            }
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPoutAt, Context.User, value.Replace("@everyone", "everyone")), embed: embed.Build());
+            {
+                var user = ((CachedMember) Context.User).Nick ?? Context.User.Name;
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPoutAt, user, value.Replace("@everyone", "everyone")), embed: embed.Build());
+            }
         }
         
         [Command("sleepy"), Context(ContextType.Guild),
