@@ -70,16 +70,27 @@ namespace Rias.Core.Modules.Utility
         {
             var (locale, lang) = Localization.Locales.FirstOrDefault(x =>
                 string.Equals(x.Locale, language, StringComparison.OrdinalIgnoreCase) || x.Language.StartsWith(language, StringComparison.OrdinalIgnoreCase));
+            
             if (string.IsNullOrEmpty(locale))
             {
                 await ReplyErrorAsync(Localization.UtilityLanguageNotFound);
                 return;
             }
-            
-            Localization.SetGuildLocale(Context.Guild!.Id, locale.ToLowerInvariant());
-            
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity() {GuildId = Context.Guild.Id});
-            guildDb.Locale = locale.ToLower();
+
+            if (string.Equals(locale, "en", StringComparison.OrdinalIgnoreCase))
+            {
+                Localization.RemoveGuildLocale(Context.Guild!.Id);
+                
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity() {GuildId = Context.Guild.Id});
+                guildDb.Locale = null;
+            }
+            else
+            {
+                Localization.SetGuildLocale(Context.Guild!.Id, locale.ToLowerInvariant());
+                
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity() {GuildId = Context.Guild.Id});
+                guildDb.Locale = locale.ToLower();
+            }
             
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.UtilityLanguageSet, $"{lang} ({locale})");

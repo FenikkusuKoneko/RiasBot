@@ -83,7 +83,7 @@ namespace Rias.Core.Implementation
         public string GetText(Snowflake? guildId, string key, params object[] args)
         {
             var locale = guildId.HasValue ? GetGuildLocale(guildId.Value) : _defaultLocale;
-            if (TryGetLocaleString(locale, key, out var @string))
+            if (TryGetLocaleString(locale, key, out var @string) && !string.IsNullOrEmpty(@string))
                 return string.Format(@string!, args);
 
             if (!string.Equals(locale, _defaultLocale)
