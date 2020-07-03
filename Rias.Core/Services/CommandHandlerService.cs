@@ -244,6 +244,7 @@ namespace Rias.Core.Services
             };
 
             var reasons = new List<string>();
+            var parsedPrimitiveType = false;
             var areTooManyArguments = false;
             var areTooLessArguments = false;
             
@@ -255,9 +256,15 @@ namespace Rias.Core.Services
                         reasons.AddRange(checksFailedResult.FailedChecks.Select(x => x.Result.Reason));
                         break;
                     case TypeParseFailedResult typeParseFailedResult:
-                        reasons.Add(_typeParsers.Any(x => x.BaseType!.GetGenericArguments()[0] == typeParseFailedResult.Parameter.Type)
-                            ? typeParseFailedResult.Reason
-                            : GetText(guildId, Localization.TypeParserPrimitiveType, context.Prefix, typeParseFailedResult.Parameter.Command.Name));
+                        if (_typeParsers.Any(x => x.BaseType!.GetGenericArguments()[0] == typeParseFailedResult.Parameter.Type))
+                        {
+                            reasons.Add(typeParseFailedResult.Reason);
+                        }
+                        else if (!parsedPrimitiveType)
+                        {
+                            reasons.Add(GetText(guildId, Localization.TypeParserPrimitiveType, context.Prefix, typeParseFailedResult.Parameter.Command.Name));
+                            parsedPrimitiveType = true;
+                        }
                         break;
                     case ArgumentParseFailedResult argumentParseFailedResult:
                         var rawArguments = Regex.Matches(argumentParseFailedResult.RawArguments, @"\w+|""[\w\s]*""");

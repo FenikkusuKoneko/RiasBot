@@ -520,6 +520,7 @@ namespace Rias.Core.Implementation
         public static string UtilityTimeHighest => "utility_time_highest";
         public static string UtilityConverter => "utility_converter";
         public static string UtilityUnitNotFound => "utility_unit_not_found";
+        public static string UtilityUnitNotFoundInCategory => "utility_unit_not_found_in_category";
         public static string UtilityUnitsCategoryNotFound => "utility_units_category_not_found";
         public static string UtilityUnitsNotCompatible => "utility_units_not_compatible";
         public static string UtilityAllUnitsCategories => "utility_all_units_categories";

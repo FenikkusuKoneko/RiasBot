@@ -452,6 +452,7 @@
   "utility_time_highest": "The time cannot be higher than **{0}**.",
   "utility_converter": "Converter",
   "utility_unit_not_found": "I couldn't find the unit **{0}**.",
+  "utility_unit_not_found_in_category": "I couldn't find the unit **{0}** in the category **{1}**.",
   "utility_units_category_not_found": "I couldn't find the units category **{0}**.",
   "utility_units_not_compatible": "The unit **{0}** is not compatible with the unit **{1}**.",
   "utility_all_units_categories": "All units categories",
@@ -557,6 +558,6 @@
   
   "service_command_not_executed": "The command couldn't be executed",
   "service_command_cooldown": "Hey, calm down! Take a breath and try again in **{0}**.",
-  "service_command_less_arguments": "The arguments provided are less than the required arguments of the command.\nCheck the examples of the command, type `{0}help {1}`",
-  "service_command_many_arguments": "The arguments provided are more than the required arguments of the command.\nCheck the examples of the command, type `{0}help {1}`"
+  "service_command_less_arguments": "The arguments provided are less than the required arguments of the command. Check the examples of the command, type `{0}help {1}`",
+  "service_command_many_arguments": "The arguments provided are more than the required arguments of the command. Check the examples of the command, type `{0}help {1}`"
 }

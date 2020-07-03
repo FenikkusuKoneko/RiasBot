@@ -261,12 +261,12 @@ namespace Rias.Core.Modules.Utility
         }
 
         [Command("converter"),
-        Priority(1)]
+        Priority(3)]
         public async Task ConverterAsync(double value, string unit1, string unit2)
             => await ConverterAsync(unit1, unit2, value);
 
         [Command("converter"),
-        Priority(0)]
+        Priority(2)]
         public async Task ConverterAsync(string unit1Name, string unit2Name, double value)
         {
             var units1 = _unitsService.GetUnits(unit1Name).ToList();
@@ -322,6 +322,66 @@ namespace Rias.Core.Modules.Utility
             await ReplyAsync(embed);
         }
         
+        [Command("converter"),
+         Priority(1)]
+        public async Task ConverterAsync(string category, double value, string unit1, string unit2)
+            => await ConverterAsync(category, unit1, unit2, value);
+
+        [Command("converter"),
+         Priority(0)]
+        public async Task ConverterAsync(string category, string unit1Name, string unit2Name, double value)
+        {
+            var unitsCategory = _unitsService.GetUnitsByCategory(category);
+            if (unitsCategory is null)
+            {
+                await ReplyErrorAsync(Localization.UtilityUnitsCategoryNotFound, category);
+                return;
+            }
+
+            var units1 = _unitsService.GetUnits(unit1Name).ToList();
+            if (units1.Count == 0)
+            {
+                await ReplyErrorAsync(Localization.UtilityUnitNotFound, unit1Name);
+                return;
+            }
+
+            var units2 = _unitsService.GetUnits(unit2Name).ToList();
+            if (units2.Count == 0)
+            {
+                await ReplyErrorAsync(Localization.UtilityUnitNotFound, unit2Name);
+                return;
+            }
+
+            var unit1 = units1.FirstOrDefault(x => string.Equals(x.Category.Name, unitsCategory.Name));
+            if (unit1 is null)
+            {
+                await ReplyErrorAsync(Localization.UtilityUnitNotFoundInCategory, unit1Name, unitsCategory.Name);
+                return;
+            }
+            
+            var unit2 = units2.FirstOrDefault(x => string.Equals(x.Category.Name, unitsCategory.Name));
+            if (unit2 is null)
+            {
+                await ReplyErrorAsync(Localization.UtilityUnitNotFoundInCategory, unit2Name, unitsCategory.Name);
+                return;
+            }
+
+            var result = _unitsService.Convert(unit1, unit2, value);
+
+            unit1Name = value == 1 ? unit1.Name.Singular! : unit1.Name.Plural!;
+            unit2Name = result == 1 ? unit2.Name.Singular! : unit2.Name.Plural!;
+
+            var embed = new LocalEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                Title = GetText(Localization.UtilityConverter),
+                Description = $"**[{unit1.Category.Name}]**\n" +
+                              $"{value} {unit1Name} = {Format(result)} {unit2Name}"
+            };
+
+            await ReplyAsync(embed);
+        }
+
         [Command("converterlist")]
         public async Task ConverterList(string? category = null)
         {
