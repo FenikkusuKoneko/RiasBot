@@ -1,0 +1,77 @@
+{
+  "name": "Time",
+  "units": [
+    {
+      "name": {
+        "singular": "Second",
+        "plural": "Seconds",
+        "abbreviations": [ "s" ]
+      },
+      "func_to_base": "x",
+      "func_from_base": "x"
+    },
+    {
+      "name": {
+        "singular": "Millisecond",
+        "plural": "Milliseconds",
+        "abbreviations": [ "ms" ]
+      },
+      "func_to_base": "x / 1000",
+      "func_from_base": "x * 1000"
+    },
+    {
+      "name": {
+        "singular": "Minute",
+        "plural": "Minutes",
+        "abbreviations": [ "m" ]
+      },
+      "func_to_base": "x * 60",
+      "func_from_base": "x / 60"
+    },
+    {
+      "name": {
+        "singular": "Hour",
+        "plural": "Hours",
+        "abbreviations": [ "h" ]
+      },
+      "func_to_base": "x * 3600",
+      "func_from_base": "x / 3600"
+    },
+    {
+      "name": {
+        "singular": "Day",
+        "plural": "Days",
+        "abbreviations": [ "d" ]
+      },
+      "func_to_base": "x * 86400",
+      "func_from_base": "x / 86400"
+    },
+    {
+      "name": {
+        "singular": "Week",
+        "plural": "Weeks",
+        "abbreviations": [ "w", "wk" ]
+      },
+      "func_to_base": "x * 518400",
+      "func_from_base": "x / 518000"
+    },
+    {
+      "name": {
+        "singular": "Month",
+        "plural": "Months",
+        "abbreviations": [ "mo" ]
+      },
+      "func_to_base": "x * 2629746",
+      "func_from_base": "x / 2629764"
+    },
+    {
+      "name": {
+        "singular": "Year",
+        "plural": "Years",
+        "abbreviations": [ "y", "yr" ]
+      },
+      "func_to_base": "x * 31556952",
+      "func_from_base": "x / 31556952"
+    }
+  ]
+}
