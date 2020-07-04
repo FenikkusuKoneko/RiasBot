@@ -203,24 +203,6 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
         }
 
-        private static string ReplacePlaceholders(IUser user, string message)
-        {
-            var sb = new StringBuilder(message)
-                
-                .Replace("%user%", user.ToString())
-                .Replace("%user_id%", user.Id.ToString())
-                .Replace("%avatar%", user.GetAvatarUrl());
-
-            if (user is CachedMember member)
-            {
-                sb.Replace("%mention%", member.Mention)
-                    .Replace("%guild%", member.Guild.Name)
-                    .Replace("%server%", member.Guild.Name);
-            }
-
-            return sb.ToString();
-        }
-        
         private Task ShardReadyAsync(ShardReadyEventArgs e)
         {
             _shardsReady.AddOrUpdate(e.Client, true, (shardKey, value) => true);
@@ -281,6 +263,24 @@ namespace Rias.Core.Services
 
             userGuildDb.IsMuted = newMember.Roles.FirstOrDefault(x => x.Key == guildDb.MuteRoleId).Value != null;
             await db.SaveChangesAsync();
+        }
+        
+        public static string ReplacePlaceholders(IUser user, string message)
+        {
+            var sb = new StringBuilder(message)
+                
+                .Replace("%user%", user.ToString())
+                .Replace("%user_id%", user.Id.ToString())
+                .Replace("%avatar%", user.GetAvatarUrl());
+
+            if (user is CachedMember member)
+            {
+                sb.Replace("%mention%", member.Mention)
+                    .Replace("%guild%", member.Guild.Name)
+                    .Replace("%server%", member.Guild.Name);
+            }
+
+            return sb.ToString();
         }
         
         public async Task<EvaluationDetails?> EvaluateAsync(RiasCommandContext context, string code)

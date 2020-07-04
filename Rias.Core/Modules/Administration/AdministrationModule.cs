@@ -10,6 +10,7 @@ using Rias.Core.Commons;
 using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
+using Rias.Core.Services;
 
 namespace Rias.Core.Modules.Administration
 {
@@ -58,7 +59,12 @@ namespace Rias.Core.Modules.Administration
             webhook = await ((CachedTextChannel) Context.Channel).CreateWebhookAsync(currentMember.Name, webhookAvatar);
             guildDb.GreetWebhookId = webhook.Id;
             await DbContext.SaveChangesAsync();
-            await ReplyConfirmationAsync(Localization.AdministrationGreetEnabled, guildDb.GreetMessage);
+
+            var greetMessage = BotService.ReplacePlaceholders(Context.User, guildDb.GreetMessage);
+            if (RiasUtilities.TryParseEmbed(greetMessage, out var embed))
+                await Context.Channel.SendMessageAsync(GetText(Localization.AdministrationGreetEnabled), embed: embed.Build());
+            else
+                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetEnabled)}\n\n{greetMessage}");
         }
         
         [Command("greetmessage"), Context(ContextType.Guild),
@@ -75,7 +81,11 @@ namespace Rias.Core.Modules.Administration
             guildDb.GreetMessage = message;
             await DbContext.SaveChangesAsync();
 
-            await ReplyConfirmationAsync(Localization.AdministrationGreetMessageSet);
+            var greetMessage = BotService.ReplacePlaceholders(Context.User, message);
+            if (RiasUtilities.TryParseEmbed(greetMessage, out var embed))
+                await Context.Channel.SendMessageAsync(GetText(Localization.AdministrationGreetMessageSet), embed: embed.Build());
+            else
+                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetMessageSet)}\n\n{greetMessage}");
         }
         
         [Command("setbye"), Context(ContextType.Guild),
@@ -113,7 +123,12 @@ namespace Rias.Core.Modules.Administration
             webhook = await ((CachedTextChannel) Context.Channel).CreateWebhookAsync(currentMember.Name, webhookAvatar);
             guildDb.ByeWebhookId = webhook.Id;
             await DbContext.SaveChangesAsync();
-            await ReplyConfirmationAsync(Localization.AdministrationByeEnabled, guildDb.ByeMessage);
+            
+            var byeMessage = BotService.ReplacePlaceholders(Context.User, guildDb.ByeMessage);
+            if (RiasUtilities.TryParseEmbed(byeMessage, out var embed))
+                await Context.Channel.SendMessageAsync(GetText(Localization.AdministrationByeEnabled), embed: embed.Build());
+            else
+                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeEnabled)}\n\n{byeMessage}");
         }
         
         [Command("byemessage"), Context(ContextType.Guild),
@@ -130,7 +145,11 @@ namespace Rias.Core.Modules.Administration
             guildDb.ByeMessage = message;
             await DbContext.SaveChangesAsync();
 
-            await ReplyConfirmationAsync(Localization.AdministrationByeMessageSet);
+            var byeMessage = BotService.ReplacePlaceholders(Context.User, message);
+            if (RiasUtilities.TryParseEmbed(byeMessage, out var embed))
+                await Context.Channel.SendMessageAsync(GetText(Localization.AdministrationByeEnabled), embed: embed.Build());
+            else
+                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeEnabled)}\n\n{byeMessage}");
         }
         
         [Command("setmodlog"), Context(ContextType.Guild),

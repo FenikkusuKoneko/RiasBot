@@ -123,7 +123,7 @@ namespace Rias.Core.Implementation
         public static LocalEmbedBuilder WithCurrentTimestamp(this LocalEmbedBuilder embedBuilder)
             => embedBuilder.WithTimestamp(DateTimeOffset.UtcNow);
 
-        public static bool TryParseEmbed(string json, out LocalEmbedBuilder embed, Credentials? credentials = null)
+        public static bool TryParseEmbed(string json, out LocalEmbedBuilder embed)
         {
             embed = new LocalEmbedBuilder();
             try
@@ -142,31 +142,16 @@ namespace Rias.Core.Implementation
                 var timestamp = embedDeserialized.Timestamp;
         
                 if (author != null)
-                {
                     embed.WithAuthor(author);
-                }
         
                 if (!string.IsNullOrEmpty(title))
-                {
                     embed.WithTitle(title);
-                }
         
                 if (!string.IsNullOrEmpty(description))
-                {
-                    if (credentials != null)
-                    {
-                        description = description.Replace("[currency]", credentials.Currency);
-                        description = description.Replace("%currency%", credentials.Currency);
-                    }
-        
                     embed.WithDescription(description);
-                }
         
                 if (!string.IsNullOrEmpty(colorString))
-                {
-                    var color = HexToInt(colorString) ?? 0xFFFFFF;
-                    embed.WithColor(color);
-                }
+                    embed.WithColor(HexToInt(colorString) ?? 0xFFFFFF);
         
                 if (!string.IsNullOrEmpty(thumbnail))
                     embed.WithThumbnailUrl(thumbnail);
@@ -189,19 +174,12 @@ namespace Rias.Core.Implementation
                 }
         
                 if (footer != null)
-                {
                     embed.WithFooter(footer);
-                }
         
                 if (timestamp.HasValue)
-                {
                     embed.WithTimestamp(timestamp.Value);
-                }
-                else
-                {
-                    if (embedDeserialized.WithCurrentTimestamp)
-                        embed.WithCurrentTimestamp();
-                }
+                else if (embedDeserialized.WithCurrentTimestamp)
+                    embed.WithCurrentTimestamp();
         
                 return true;
             }

@@ -12,7 +12,7 @@
         },
         {
           "aliases": "greetmessage greetmsg",
-          "description": "Sets the announcement message when someone joins the server.\nPlaceholders:\n`%mention%` - will mention the user\n`%user%` - will write the user's username\n`%server%` or `%guild%` - will put the name of the server\nEmbeds are supported, json form.",
+          "description": "Sets the announcement message when someone joins the server.\nPlaceholders:\n`%mention%` - will mention the user\n`%user%` - will write the user's username\n`%server%` or `%guild%` - will put the name of the server\nEmbeds are supported, json form. If the preview is not an embed, then it means the json message is not correct",
           "remarks": [
             "{0}greetmsg Welcome %mention% to %guild%..."
           ]
