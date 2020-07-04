@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Disqord.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,9 @@ namespace Rias.Core.Services
                 _ => LogEventLevel.Verbose
             };
 
+            if (args.Message != null && (Regex.IsMatch(args.Message, @"Guild.*became available") || args.Message.Contains("MessageUpdated")))
+                return;
+            
             Log.Logger.Write(logEventLevel, $"{args.Source}: {args.Exception?.ToString() ?? args.Message}");
         }
 
