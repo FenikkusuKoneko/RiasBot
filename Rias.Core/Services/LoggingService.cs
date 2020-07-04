@@ -36,7 +36,10 @@ namespace Rias.Core.Services
                 _ => LogEventLevel.Verbose
             };
 
-            if (args.Message != null && (Regex.IsMatch(args.Message, @"Guild.*became available") || args.Message.Contains("MessageUpdated")))
+            if (args.Message != null
+                && (Regex.IsMatch(args.Message, @"Guild.*became available")
+                    || args.Message.Contains("MessageUpdated")
+                    || args.Message.Contains("Requesting offline members for")))
                 return;
             
             Log.Logger.Write(logEventLevel, $"{args.Source}: {args.Exception?.ToString() ?? args.Message}");
