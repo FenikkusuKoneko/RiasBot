@@ -1033,6 +1033,13 @@
           "remarks": [
             "{0}pout"
           ]
+        },
+        {
+          "aliases": "sleepy sleep",
+          "description": "Good night. See you tomorrow.",
+          "remarks": [
+            "{0}sleepy"
+          ]
         }
       ]
     },
