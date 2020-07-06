@@ -312,10 +312,10 @@
   "profile_badge_text_limit": "The badge's text length must be lower than {0} characters.",
   "profile_badge_set": "Profile badge set.",
   "profile_badge_removed": "Profile badge removed.",
-  "profile_no_attach_files_permission": "I cannot send the profile image because I don't have the permission to attach files in this server. Please ask a moderator/administrator to enable this permission for me and then you can use the command.",
-  "profile_no_attach_files_channel_permission": "I cannot send the profile image because I don't have the permission to attach files in this channel. Please ask a moderator/administrator to enable this permission for me in this channel or use the command in another channel where I have this permission.",
-  "profile_background_no_attach_files_permission": "I cannot send the profile background preview image because I don't have the permission to attach files in this server. Please ask a moderator/administrator to enable this permission for me and then you can use the command.",
-  "profile_background_no_attach_files_channel_permission": "I cannot send the profile background preview image because I don't have the permission to attach files in this channel. Please ask a moderator/administrator to enable this permission for me in this channel or use the command in another channel where I have this permission.",
+  "profile_no_attach_files_permission": "I cannot send the profile image because I don't have the permission to attach files in this server. Please ask an administrator or a moderator to enable this permission for me and then you can use the command.",
+  "profile_no_attach_files_channel_permission": "I cannot send the profile image because I don't have the permission to attach files in this channel. Please ask an administrator or a moderator to enable this permission for me in this channel or use the command in another channel where I have this permission.",
+  "profile_background_no_attach_files_permission": "I cannot send the profile background preview image because I don't have the permission to attach files in this server. Please ask an administrator or a moderator to enable this permission for me and then you can use the command.",
+  "profile_background_no_attach_files_channel_permission": "I cannot send the profile background preview image because I don't have the permission to attach files in this channel. Please ask an administrator or a moderator to enable this permission for me in this channel or use the command in another channel where I have this permission.",
 
   "reactions_no_weeb_api": "The Weeb Services API has to be set in order to use this reaction command.",
   "reactions_powered_by": "Powered by",
@@ -462,8 +462,8 @@
   "utility_all_units_categories": "All units categories",
   "utility_category_all_units": "All units from {0}",
   "utility_convert_list_footer": "To see all the units from a category type {0}convertlist <category>",
-  "utility_color_no_attach_files_permission": "I cannot send the color image because I don't have the permission to attach files in this server. Please ask a moderator/administrator to enable this permission for me and then you can use the command.",
-  "utility_color_no_attach_files_channel_permission": "I cannot send the color image because I don't have the permission to attach files in this channel. Please ask a moderator/administrator to enable this permission for me in this channel or use the command in another channel where I have this permission.",
+  "utility_color_no_attach_files_permission": "I cannot send the color image because I don't have the permission to attach files in this server. Please ask an administrator or a moderator to enable this permission for me and then you can use the command.",
+  "utility_color_no_attach_files_channel_permission": "I cannot send the color image because I don't have the permission to attach files in this channel. Please ask an administrator or a moderator to enable this permission for me in this channel or use the command in another channel where I have this permission.",
   
   "waifu_has_waifu": "You already have this waifu. The claim has been canceled.",
   "waifu_claim_currency_not_enough": "Unfortunately you don't have enough {0} to claim this waifu. The claim has been canceled.",
@@ -521,8 +521,8 @@
   "xp_guild_xp_reset": "All users xp on this server has been erased.",
   "xp_guild_level_up": "Congratulations **{0}**, you have reached server level {1}.",
   "xp_guild_level_up_role_reward": "Congratulations **{0}**, you have reached server level {1}. You are now **{2}**.",
-  "xp_no_attach_files_permission": "I cannot send the xp image because I don't have the permission to attach files in this server. Please ask a moderator/administrator to enable this permission for me and then you can use the command.",
-  "xp_no_attach_files_channel_permission": "I cannot send the xp image because I don't have the permission to attach files in this channel. Please ask a moderator/administrator to enable this permission for me in this channel or use the command in another channel where I have this permission.",
+  "xp_no_attach_files_permission": "I cannot send the xp image because I don't have the permission to **attach files** in this server. Please ask an administrator or a moderator to enable this permission for me and then you can use the command.",
+  "xp_no_attach_files_channel_permission": "I cannot send the xp image because I don't have the permission to **attach files** in this channel. Please ask an administrator or a moderator to enable this permission for me in this channel or use the command in another channel where I have this permission.",
   
   "common_yes": "Yes",
   "common_and": "And",
@@ -567,5 +567,7 @@
   "service_command_not_executed": "The command couldn't be executed",
   "service_command_cooldown": "Hey, calm down! Take a breath and try again in **{0}**.",
   "service_command_less_arguments": "The arguments provided are less than the required arguments of the command. Check the examples of the command, type `{0}help {1}`",
-  "service_command_many_arguments": "The arguments provided are more than the required arguments of the command. Check the examples of the command, type `{0}help {1}`"
+  "service_command_many_arguments": "The arguments provided are more than the required arguments of the command. Check the examples of the command, type `{0}help {1}`",
+  "service_no_embed_links_permission": "All of my commands use embed messages to send confirmation, error or information messages. Please ask an administrator or a moderator to enable the **embed links** permission for me in this server then you can use the commands.",
+  "service_no_embed_links_channel_permission": "All of my commands use embed messages to send confirmation, error or information messages. Please ask an administrator or a moderator to enable the **embed links** permission for me in this channel or use the commands in another channel where I have this permission."
 }

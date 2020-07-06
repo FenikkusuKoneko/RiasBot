@@ -634,5 +634,7 @@ namespace Rias.Core.Implementation
         public static string ServiceCommandCooldown => "service_command_cooldown";
         public static string ServiceCommandLessArguments => "service_command_less_arguments";
         public static string ServiceCommandManyArguments => "service_command_many_arguments";
+        public static string ServiceNoEmbedLinksPermission => "service_no_embed_links_permission";
+        public static string ServiceNoEmbedLinksChannelPermission => "service_no_embed_links_channel_permission";
     }
 }

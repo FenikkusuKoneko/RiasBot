@@ -196,9 +196,24 @@ namespace Rias.Core.Services
                 return;
 
             var guildChannel = channel as CachedTextChannel;
-            var channelPermissions = guildChannel?.Guild.CurrentMember.GetPermissionsFor(guildChannel);
-            if (channelPermissions.HasValue && !channelPermissions.Value.SendMessages)
-                return;
+            if (guildChannel != null)
+            {
+                var channelPermissions = guildChannel.Guild.CurrentMember.GetPermissionsFor(guildChannel);
+                if (!channelPermissions.SendMessages)
+                    return;
+
+                if (!guildChannel.Guild.CurrentMember.Permissions.EmbedLinks)
+                {
+                    await guildChannel.SendMessageAsync(GetText(guildChannel.Guild.Id, Localization.ServiceNoEmbedLinksPermission));
+                    return;
+                }
+
+                if (!channelPermissions.EmbedLinks)
+                {
+                    await guildChannel.SendMessageAsync(GetText(guildChannel.Guild.Id, Localization.ServiceNoEmbedLinksChannelPermission));
+                    return;
+                }
+            }
             
             var context = new RiasCommandContext(userMessage, RiasBot, prefix);
             var result = await _commandService.ExecuteAsync(output, context);
