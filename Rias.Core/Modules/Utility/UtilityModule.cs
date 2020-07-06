@@ -207,14 +207,14 @@ namespace Rias.Core.Modules.Utility
          Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.User)]
         public async Task ColorAsync([Remainder] Color color)
         {
-            var currentMember = Context.Guild!.CurrentMember;
-            if (!currentMember.Permissions.AttachFiles)
+            var currentMember = Context.Guild?.CurrentMember;
+            if (currentMember != null && !currentMember.Permissions.AttachFiles)
             {
                 await ReplyErrorAsync(Localization.UtilityColorNoAttachFilesPermission);
                 return;
             }
 
-            if (!currentMember.GetPermissionsFor((CachedTextChannel) Context.Channel).AttachFiles)
+            if (currentMember != null && !currentMember.GetPermissionsFor((CachedTextChannel) Context.Channel).AttachFiles)
             {
                 await ReplyErrorAsync(Localization.UtilityColorNoAttachFilesChannelPermission);
                 return; 

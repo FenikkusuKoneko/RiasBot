@@ -176,26 +176,27 @@ namespace Rias.Core.Services
             }
             
             var prefix = await GetGuildPrefixAsync(guildChannel?.Guild);
-            if (CommandUtilities.HasPrefix(userMessage.Content, prefix, out var output))
+            if (CommandUtilities.HasPrefix(userMessage.Content, prefix, out var output)
+                || RiasUtilities.HasMentionPrefix(userMessage, out output))
             {
-                await RunTaskAsync(ExecuteCommandAsync(userMessage, guildChannel, prefix, output));
+                await RunTaskAsync(ExecuteCommandAsync(userMessage, userMessage.Channel, prefix, output));
                 return;
             }
 
             if (userMessage.Client.CurrentUser is null)
                 return;
             
-            if (CommandUtilities.HasPrefix(userMessage.Content,userMessage.Client.CurrentUser.Name, StringComparison.InvariantCultureIgnoreCase, out output)
-                || RiasUtilities.HasMentionPrefix(userMessage, out output))
-                await RunTaskAsync(ExecuteCommandAsync(userMessage, guildChannel, prefix, output));
+            if (CommandUtilities.HasPrefix(userMessage.Content,userMessage.Client.CurrentUser.Name, StringComparison.InvariantCultureIgnoreCase, out output))
+                await RunTaskAsync(ExecuteCommandAsync(userMessage, userMessage.Channel, prefix, output));
         }
 
-        private async Task ExecuteCommandAsync(CachedUserMessage userMessage, CachedTextChannel? channel, string prefix, string output)
+        private async Task ExecuteCommandAsync(CachedUserMessage userMessage, ICachedMessageChannel? channel, string prefix, string output)
         {
             if (await CheckUserBan(userMessage.Author) && userMessage.Author.Id != Credentials.MasterId)
                 return;
-            
-            var channelPermissions = channel?.Guild.CurrentMember.GetPermissionsFor(channel);
+
+            var guildChannel = channel as CachedTextChannel;
+            var channelPermissions = guildChannel?.Guild.CurrentMember.GetPermissionsFor(guildChannel);
             if (channelPermissions.HasValue && !channelPermissions.Value.SendMessages)
                 return;
             
@@ -204,10 +205,10 @@ namespace Rias.Core.Services
             
             if (result.IsSuccessful)
             {
-                if (channel != null &&
-                    channel.Guild.CurrentMember.Permissions.ManageMessages &&
-                    await CheckGuildCommandMessageDeletion(channel.Guild) &&
-                    !string.Equals(context.Command.Name, "prune"))
+                if (guildChannel != null
+                    && guildChannel.Guild.CurrentMember.Permissions.ManageMessages
+                    && await CheckGuildCommandMessageDeletion(guildChannel.Guild)
+                    && !string.Equals(context.Command.Name, "prune"))
                 {
                     await userMessage.DeleteAsync();
                 }
