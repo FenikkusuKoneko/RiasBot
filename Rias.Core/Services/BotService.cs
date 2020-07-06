@@ -36,7 +36,7 @@ namespace Rias.Core.Services
             RiasBot.MemberUpdated += MemberUpdatedAsync;
         }
 
-        private readonly ConcurrentDictionary<DiscordClientBase, bool> _shardsReady = new ConcurrentDictionary<DiscordClientBase, bool>();
+        private readonly ConcurrentDictionary<string, bool> _shardsReady = new ConcurrentDictionary<string, bool>();
         private readonly ConcurrentDictionary<Snowflake, RestWebhookClient> _webhooks = new ConcurrentDictionary<Snowflake, RestWebhookClient>();
 
         private async Task MemberJoinedAsync(MemberJoinedEventArgs args)
@@ -205,7 +205,7 @@ namespace Rias.Core.Services
 
         private Task ShardReadyAsync(ShardReadyEventArgs e)
         {
-            _shardsReady.AddOrUpdate(e.Client, true, (shardKey, value) => true);
+            _shardsReady.AddOrUpdate(e.SessionId, true, (shardKey, value) => true);
             if (_shardsReady.Count == RiasBot.Shards.Count && _shardsReady.All(x => x.Value))
             {
                 RiasBot.ShardReady -= ShardReadyAsync;
