@@ -764,6 +764,13 @@
           "remarks": [
             "{0}rps rock"
           ]
+        },
+        {
+          "aliases": "8ball 8b",
+          "description": "Ask 8 ball a question.",
+          "remarks": [
+            "{0}8b Should I sleep right now?"
+          ]
         }
       ]
     },
