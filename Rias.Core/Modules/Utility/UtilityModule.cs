@@ -207,6 +207,19 @@ namespace Rias.Core.Modules.Utility
          Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.User)]
         public async Task ColorAsync([Remainder] Color color)
         {
+            var currentMember = Context.Guild!.CurrentMember;
+            if (!currentMember.Permissions.AttachFiles)
+            {
+                await ReplyErrorAsync(Localization.UtilityColorNoAttachFilesPermission);
+                return;
+            }
+
+            if (!currentMember.GetPermissionsFor((CachedTextChannel) Context.Channel).AttachFiles)
+            {
+                await ReplyErrorAsync(Localization.UtilityColorNoAttachFilesChannelPermission);
+                return; 
+            }
+            
             var hexColor = color.ToString();
             var magickColor = new MagickColor(hexColor);
             var hsl = ColorHSL.FromMagickColor(magickColor);

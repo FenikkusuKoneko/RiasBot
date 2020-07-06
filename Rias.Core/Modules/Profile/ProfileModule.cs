@@ -28,6 +28,19 @@ namespace Rias.Core.Modules.Profile
         {
             member ??= (CachedMember) Context.User;
             using var _ = Context.Channel.Typing();
+            
+            var currentMember = Context.Guild!.CurrentMember;
+            if (!currentMember.Permissions.AttachFiles)
+            {
+                await ReplyErrorAsync(Localization.ProfileNoAttachFilesPermission);
+                return;
+            }
+
+            if (!currentMember.GetPermissionsFor((CachedTextChannel) Context.Channel).AttachFiles)
+            {
+                await ReplyErrorAsync(Localization.ProfileNoAttachFilesChannelPermission);
+                return;
+            }
 
             await using var profileImage = await Service.GenerateProfileImageAsync(member);
             await Context.Channel.SendMessageAsync(new[] {new LocalAttachment(profileImage, $"{member.Id}_profile.png")});
@@ -73,6 +86,19 @@ namespace Rias.Core.Modules.Profile
             {
                 await ReplyErrorAsync(Localization.UtilityUrlNotPngJpg);
                 return;
+            }
+            
+            var currentMember = Context.Guild!.CurrentMember;
+            if (!currentMember.Permissions.AttachFiles)
+            {
+                await ReplyErrorAsync(Localization.ProfileBackgroundNoAttachFilesPermission);
+                return;
+            }
+
+            if (!currentMember.GetPermissionsFor((CachedTextChannel) Context.Channel).AttachFiles)
+            {
+                await ReplyErrorAsync(Localization.ProfileBackgroundNoAttachFilesChannelPermission);
+                return; 
             }
 
             backgroundStream.Position = 0;

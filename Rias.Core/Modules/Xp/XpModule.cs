@@ -27,6 +27,19 @@ namespace Rias.Core.Modules.Xp
             member ??= (CachedMember) Context.User;
             using var _ = Context.Channel.Typing();
 
+            var currentMember = Context.Guild!.CurrentMember;
+            if (!currentMember.Permissions.AttachFiles)
+            {
+                await ReplyErrorAsync(Localization.XpNoAttachFilesPermission);
+                return;
+            }
+
+            if (!currentMember.GetPermissionsFor((CachedTextChannel) Context.Channel).AttachFiles)
+            {
+                await ReplyErrorAsync(Localization.XpNoAttachFilesChannelPermission);
+                return;
+            }
+
             await using var xpImage = await Service.GenerateXpImageAsync(member);
             await Context.Channel.SendMessageAsync(new[] {new LocalAttachment(xpImage, $"{member.Id}_xp.png")});
         }

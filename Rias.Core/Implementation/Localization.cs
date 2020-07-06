@@ -380,6 +380,10 @@ namespace Rias.Core.Implementation
         public static string ProfileBadgeTextLimit => "profile_badge_text_limit";
         public static string ProfileBadgeSet => "profile_badge_set";
         public static string ProfileBadgeRemoved => "profile_badge_removed";
+        public static string ProfileNoAttachFilesPermission => "profile_no_attach_files_permission";
+        public static string ProfileNoAttachFilesChannelPermission => "profile_no_attach_files_channel_permission";
+        public static string ProfileBackgroundNoAttachFilesPermission => "profile_background_no_attach_files_permission";
+        public static string ProfileBackgroundNoAttachFilesChannelPermission => "profile_background_no_attach_files_channel_permission";
         
         public static string ReactionsNoWeebApi => "reactions_no_weeb_api";
         public static string ReactionsPoweredBy => "reactions_powered_by";
@@ -526,6 +530,8 @@ namespace Rias.Core.Implementation
         public static string UtilityAllUnitsCategories => "utility_all_units_categories";
         public static string UtilityCategoryAllUnits => "utility_category_all_units";
         public static string UtilityConvertListFooter => "utility_convert_list_footer";
+        public static string UtilityColorNoAttachFilesPermission => "utility_color_no_attach_files_permission";
+        public static string UtilityColorNoAttachFilesChannelPermission => "utility_color_no_attach_files_channel_permission";
         
         public static string WaifuHasWaifu => "waifu_has_waifu";
         public static string WaifuClaimCurrencyNotEnough => "waifu_claim_currency_not_enough";
@@ -583,6 +589,8 @@ namespace Rias.Core.Implementation
         public static string XpGuildXpReset => "xp_guild_xp_reset";
         public static string XpGuildLevelUp => "xp_guild_level_up";
         public static string XpGuildLevelUpRoleReward => "xp_guild_level_up_role_reward";
+        public static string XpNoAttachFilesPermission => "xp_no_attach_files_permission";
+        public static string XpNoAttachFilesChannelPermission => "xp_no_attach_files_channel_permission";
         
         public static string CommonYes => "common_yes";
         public static string CommonAnd => "common_and";
