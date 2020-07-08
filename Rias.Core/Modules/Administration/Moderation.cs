@@ -6,7 +6,7 @@ using Discord.WebSocket;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 
@@ -222,7 +222,7 @@ namespace Rias.Core.Modules.Administration
                     embed.AddField(GetText("#Common_Reason"), reason, true);
 
                 var channel = Context.Channel;
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
                 var modLogChannel = Context.Guild!.GetTextChannel(guildDb.ModLogChannelId);
                 if (modLogChannel != null)
                 {

@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rias.Core.Commons;
 using Rias.Core.Database;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
 using Rias.Core.Services.WebSocket;
 using Serilog;
@@ -56,7 +56,7 @@ namespace Rias.Core.Services
             var votes = await db.Votes.Where(x => !x.Checked).ToListAsync();
             foreach (var vote in votes)
             {
-                var userDb = await db.GetOrAddAsync(x => x.UserId == vote.UserId, () => new Users {UserId = vote.UserId});
+                var userDb = await db.GetOrAddAsync(x => x.UserId == vote.UserId, () => new UsersEntity {UserId = vote.UserId});
                 if (userDb.IsBlacklisted)
                 {
                     db.Remove(vote);
@@ -106,7 +106,7 @@ namespace Rias.Core.Services
             }
 
             var reward = voteDb.IsWeekend ? 50 : 25;
-            var userDb = await db.GetOrAddAsync(x => x.UserId == voteData.UserId, () => new Users {UserId = voteData.UserId});
+            var userDb = await db.GetOrAddAsync(x => x.UserId == voteData.UserId, () => new UsersEntity {UserId = voteData.UserId});
             userDb.Currency += reward;
             
             voteDb.Checked = true;

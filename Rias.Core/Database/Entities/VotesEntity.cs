@@ -1,6 +1,6 @@
-﻿namespace Rias.Core.Database.Models
+﻿namespace Rias.Core.Database.Entities
 {
-    public class Votes : DbEntity
+    public class VotesEntity : DbEntity
     {
         public ulong UserId { get; set; }
         public string? Type { get; set; }

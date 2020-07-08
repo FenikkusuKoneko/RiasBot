@@ -1,6 +1,6 @@
-﻿namespace Rias.Core.Database.Models
+﻿namespace Rias.Core.Database.Entities
 {
-    public interface IWaifus
+    public interface IWaifusEntity
     {
         public int Id { get; }
         public string? Name { get; }

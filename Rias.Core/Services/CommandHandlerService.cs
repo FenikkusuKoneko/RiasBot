@@ -125,9 +125,6 @@ namespace Rias.Core.Services
                         if (command.Aliases.Contains(commandAlias))
                             continue;
 
-                        if (!Creds.IsGlobal && string.Equals(commandAlias, "hearts", StringComparison.Ordinal))
-                            continue;
-
                         command.AddAlias(commandAlias);
                     }
                 }

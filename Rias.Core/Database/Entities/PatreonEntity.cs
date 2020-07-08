@@ -1,9 +1,9 @@
 ﻿using System;
 using Rias.Core.Commons;
 
-namespace Rias.Core.Database.Models
+namespace Rias.Core.Database.Entities
 {
-    public class Patreon : DbEntity
+    public class PatreonEntity : DbEntity
     {
         public ulong UserId { get; set; }
         public int PatreonUserId { get; set; }

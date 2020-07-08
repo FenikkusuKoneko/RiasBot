@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MoreLinq;
 using Qmmands;
 using Rias.Core.Commons;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
 using Rias.Core.Services.Commons;
@@ -175,7 +175,7 @@ namespace Rias.Core.Modules.Searches
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task CharacterAsync([Remainder] string name)
             {
-                CustomCharacters? character;
+                CustomCharactersEntity? character;
                 if (name.StartsWith("@") && int.TryParse(name[1..], out var id))
                 {
                     character = await DbContext.CustomCharacters.FirstOrDefaultAsync(x => x.CharacterId == id);

@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rias.Core.Database;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Services.Commons;
 
 namespace Rias.Core.Services
@@ -24,7 +24,7 @@ namespace Rias.Core.Services
             _httpClient = new HttpClient {Timeout = TimeSpan.FromSeconds(10)};
         }
 
-        public async Task<ICharacter?> GetOrAddCharacterAsync(string name)
+        public async Task<ICharacterEntity?> GetOrAddCharacterAsync(string name)
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -39,7 +39,7 @@ namespace Rias.Core.Services
                       .FirstOrDefault(x =>
                           name.Split(' ')
                               .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)))
-                  ?? (ICharacter?) db.Characters
+                  ?? (ICharacterEntity?) db.Characters
                       .AsEnumerable()
                       .FirstOrDefault(x =>
                           name.Split(' ')
@@ -57,7 +57,7 @@ namespace Rias.Core.Services
                 characterDb = await db.Characters.FirstOrDefaultAsync(x => x.CharacterId == aniListCharacter.Id);
                 if (characterDb is null)
                 {
-                    var newCharacterDb = new Characters
+                    var newCharacterDb = new CharactersEntity
                     {
                         CharacterId = aniListCharacter.Id,
                         Name = $"{aniListCharacter.Name.First} {aniListCharacter.Name.Last}".Trim(),
@@ -72,7 +72,7 @@ namespace Rias.Core.Services
                 }
             }
 
-            if (characterDb is CustomCharacters)
+            if (characterDb is CustomCharactersEntity)
                 return characterDb;
 
             if (!await CheckCharacterImageAsync(characterDb.ImageUrl!))

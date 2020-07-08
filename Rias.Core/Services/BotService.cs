@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Commons;
 using Rias.Core.Database;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Serilog;
@@ -73,7 +73,7 @@ namespace Rias.Core.Services
             }
         }
 
-        private async Task SendGreetMessageAsync(Guilds guildDb, SocketGuildUser user)
+        private async Task SendGreetMessageAsync(GuildsEntity guildDb, SocketGuildUser user)
         {
             if (guildDb is null) return;
             if (!guildDb.GreetNotification) return;
@@ -144,7 +144,7 @@ namespace Rias.Core.Services
             await SendByeMessageAsync(guildDb, user);
         }
 
-        private async Task SendByeMessageAsync(Guilds guildDb, SocketGuildUser user)
+        private async Task SendByeMessageAsync(GuildsEntity guildDb, SocketGuildUser user)
         {
             if (guildDb is null) return;
             if (!guildDb.ByeNotification) return;

@@ -6,7 +6,7 @@ using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Database;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 
 namespace Rias.Core.Services
 {
@@ -31,7 +31,7 @@ namespace Rias.Core.Services
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new Users {UserId = userId});
+            var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity {UserId = userId});
             userDb.Currency += currency;
             await db.SaveChangesAsync();
         }

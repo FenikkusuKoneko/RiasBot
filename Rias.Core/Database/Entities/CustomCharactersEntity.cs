@@ -1,6 +1,6 @@
-﻿namespace Rias.Core.Database.Models
+﻿namespace Rias.Core.Database.Entities
 {
-    public class CustomCharacters : DbEntity, ICharacter
+    public class CustomCharactersEntity : DbEntity, ICharacterEntity
     {
         public int CharacterId { get; set; }
         public string? Name { get; set; }

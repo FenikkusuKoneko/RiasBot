@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
 
 namespace Rias.Core.Modules.Gambling
@@ -29,7 +29,7 @@ namespace Rias.Core.Modules.Gambling
             public async Task CurrencyAsync([Remainder] SocketGuildUser? user = null)
             {
                 user ??= (SocketGuildUser) Context.User;
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 if (user is null || user.Id == Context.User.Id)
                 {
                     if (string.IsNullOrEmpty(Credentials.DiscordBotList))
@@ -53,7 +53,7 @@ namespace Rias.Core.Modules.Gambling
                     return;
                 }
 
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 var currency = userDb.Currency += amount;
 
                 await DbContext.SaveChangesAsync();
@@ -70,7 +70,7 @@ namespace Rias.Core.Modules.Gambling
                     return;
                 }
                 
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 amount = Math.Min(amount, userDb.Currency);
                 userDb.Currency -= amount;
 
@@ -85,7 +85,7 @@ namespace Rias.Core.Modules.Gambling
                 page--;
                 if (page < 0) page = 0;
                 
-                var usersCurrency = await DbContext.GetOrderedListAsync<Users, int>(x => x.Currency, true, (page * 9)..((page + 1) * 9));
+                var usersCurrency = await DbContext.GetOrderedListAsync<UsersEntity, int>(x => x.Currency, true, (page * 9)..((page + 1) * 9));
                 if (usersCurrency.Count == 0)
                 {
                     await ReplyErrorAsync("LeaderboardNoUsers");
@@ -112,7 +112,7 @@ namespace Rias.Core.Modules.Gambling
             [Command("daily"), Context(ContextType.Guild)]
             public async Task DailyAsync()
             {
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Users {UserId = Context.User.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
                 var timeNow = DateTime.UtcNow;
                 var nextDaily = userDb.DailyTaken.AddDays(1);
                 if (nextDaily > timeNow)

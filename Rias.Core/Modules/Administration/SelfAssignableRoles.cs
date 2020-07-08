@@ -10,6 +10,7 @@ using MoreLinq.Extensions;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
+using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Rias.Interactive;
@@ -105,7 +106,7 @@ namespace Rias.Core.Modules.Administration
                 var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
                 if (sarDb is null)
                 {
-                    await DbContext.AddAsync(new Database.Models.SelfAssignableRoles
+                    await DbContext.AddAsync(new SelfAssignableRolesEntity
                     {
                         GuildId = role.Guild.Id,
                         RoleId = role.Id,
@@ -164,9 +165,9 @@ namespace Rias.Core.Modules.Administration
                 await _interactive.SendPaginatedMessageAsync(Context.Message, new PaginatedMessage(pages));
             }
 
-            private async Task<IList<Database.Models.SelfAssignableRoles>> UpdateSelfAssignableRolesAsync()
+            private async Task<IList<SelfAssignableRolesEntity>> UpdateSelfAssignableRolesAsync()
             {
-                var sarList = await DbContext.GetListAsync<Database.Models.SelfAssignableRoles>(x => x.GuildId == Context.Guild!.Id);
+                var sarList = await DbContext.GetListAsync<SelfAssignableRolesEntity>(x => x.GuildId == Context.Guild!.Id);
                 foreach (var sar in sarList.ToArray())
                 {
                     var role = Context.Guild!.GetRole(sar.RoleId);

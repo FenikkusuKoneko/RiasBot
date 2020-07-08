@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Rias.Core.Database.Models
+namespace Rias.Core.Database.Entities
 {
-    public class MuteTimers : DbEntity
+    public class MuteTimersEntity : DbEntity
     {
         public ulong GuildId { get; set; }
         public ulong UserId { get; set; }

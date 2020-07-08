@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
 using Rias.Interactive;
@@ -42,7 +42,7 @@ namespace Rias.Core.Modules.Profile
          Cooldown(1, 30, CooldownMeasure.Seconds, BucketType.User)]
         public async Task BackgroundAsync(string url)
         {
-            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Users {UserId = Context.User.Id});
+            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
             if (userDb.Currency < 1000)
             {
                 await ReplyErrorAsync("#Gambling_CurrencyNotEnough", Credentials.Currency);
@@ -93,7 +93,7 @@ namespace Rias.Core.Modules.Profile
 
             userDb.Currency -= 1000;
             
-            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Database.Models.Profile {UserId = Context.User.Id, BackgroundDim = 50});
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity {UserId = Context.User.Id, BackgroundDim = 50});
             profileDb.BackgroundUrl = url;
             
             await DbContext.SaveChangesAsync();
@@ -109,7 +109,7 @@ namespace Rias.Core.Modules.Profile
                 return;
             }
             
-            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Database.Models.Profile {UserId = Context.User.Id});
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity {UserId = Context.User.Id});
             profileDb.BackgroundDim = dim;
 
             await DbContext.SaveChangesAsync();
@@ -125,7 +125,7 @@ namespace Rias.Core.Modules.Profile
                 return;
             }
             
-            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Database.Models.Profile {UserId = Context.User.Id, BackgroundDim = 50});
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity {UserId = Context.User.Id, BackgroundDim = 50});
             profileDb.Biography = bio;
 
             await DbContext.SaveChangesAsync();
@@ -141,7 +141,7 @@ namespace Rias.Core.Modules.Profile
                 return;
             }
             
-            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Database.Models.Profile {UserId = Context.User.Id, BackgroundDim = 50});
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity {UserId = Context.User.Id, BackgroundDim = 50});
             profileDb.Color = color.ToString();
 
             await DbContext.SaveChangesAsync();
@@ -191,7 +191,7 @@ namespace Rias.Core.Modules.Profile
             }
             
             var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id,
-                () => new Database.Models.Profile {UserId = Context.User.Id, BackgroundDim = 50});
+                () => new ProfileEntity {UserId = Context.User.Id, BackgroundDim = 50});
             if (profileDb.Badges is null)
                 profileDb.Badges = new string[3];
                 

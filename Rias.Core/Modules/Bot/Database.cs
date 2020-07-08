@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Rias.Interactive;
@@ -47,7 +47,7 @@ namespace Rias.Core.Modules.Bot
                 if (userDb != null)
                     DbContext.Remove(userDb);
                 
-                var waifusDbList = await DbContext.GetListAsync<Waifus>(x => x.UserId == user.Id);
+                var waifusDbList = await DbContext.GetListAsync<WaifusEntity>(x => x.UserId == user.Id);
                 if (waifusDbList.Count != 0)
                     DbContext.RemoveRange(waifusDbList);
                 
@@ -113,7 +113,7 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
 
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 userDb.IsBlacklisted = true;
                 
                 await DbContext.SaveChangesAsync();
@@ -130,7 +130,7 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
                 
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 userDb.IsBlacklisted = false;
                 
                 await DbContext.SaveChangesAsync();
@@ -155,7 +155,7 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
                 
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 userDb.IsBanned = true;
                 
                 await DbContext.SaveChangesAsync();
@@ -172,7 +172,7 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
 
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 userDb.IsBanned = false;
                 
                 await DbContext.SaveChangesAsync();

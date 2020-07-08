@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 
 namespace Rias.Core.Modules.Administration
@@ -28,7 +28,7 @@ namespace Rias.Core.Modules.Administration
         Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task SetGreetAsync()
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
             if (string.IsNullOrEmpty(guildDb.GreetMessage))
             {
                 await ReplyErrorAsync("GreetMessageNotSet");
@@ -69,7 +69,7 @@ namespace Rias.Core.Modules.Administration
                 return;
             }
             
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
             guildDb.GreetMessage = message;
             await DbContext.SaveChangesAsync();
 
@@ -81,7 +81,7 @@ namespace Rias.Core.Modules.Administration
          Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task SetByeAsync()
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
             if (string.IsNullOrEmpty(guildDb.ByeMessage))
             {
                 await ReplyErrorAsync("ByeMessageNotSet");
@@ -122,7 +122,7 @@ namespace Rias.Core.Modules.Administration
                 return;
             }
             
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
             guildDb.ByeMessage = message;
             await DbContext.SaveChangesAsync();
 
@@ -134,7 +134,7 @@ namespace Rias.Core.Modules.Administration
         public async Task SetModLogAsync()
         {
             var modLogSet = false;
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
             if (guildDb.ModLogChannelId != Context.Channel.Id)
             {
                 guildDb.ModLogChannelId = Context.Channel.Id;

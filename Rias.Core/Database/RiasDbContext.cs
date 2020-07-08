@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Rias.Core.Commons;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 
 namespace Rias.Core.Database
 {
@@ -15,7 +15,7 @@ namespace Rias.Core.Database
     //     public RiasDbContext CreateDbContext(string[] args)
     //     {
     //         var optionsBuilder = new DbContextOptionsBuilder<RiasDbContext>();
-    //         optionsBuilder.UseNpgsql("");
+    //         optionsBuilder.UseNpgsql("Host=;Port=;Username=;Password=;Database=");
     //         optionsBuilder.UseSnakeCaseNamingConvention();
     //         var ctx = new RiasDbContext(optionsBuilder.Options);
     //         return ctx;
@@ -24,22 +24,21 @@ namespace Rias.Core.Database
     
     public class RiasDbContext : DbContext
     {
-        public DbSet<Characters>? Characters { get; set; }
-        public DbSet<CustomCharacters>? CustomCharacters { get; set; }
-        public DbSet<CustomWaifus>? CustomWaifus { get; set; }
-        public DbSet<Guilds>? Guilds { get; set; }
-        public DbSet<GuildsXp>? GuildsXp { get; set; }
-        public DbSet<GuildUsers>? GuildUsers { get; set; }
-        public DbSet<GuildXpRoles>? GuildXpRoles { get; set; }
-        public DbSet<MuteTimers>? MuteTimers { get; set; }
-        public DbSet<Profile>? Profile { get; set; }
-        public DbSet<SelfAssignableRoles>? SelfAssignableRoles { get; set; }
-        public DbSet<Users>? Users { get; set; }
-        public DbSet<Waifus>? Waifus { get; set; }
-        public DbSet<Warnings>? Warnings { get; set; }
-        public DbSet<Patreon>? Patreon { get; set; }
-        public DbSet<Votes>? Votes { get; set; }
-        
+        public DbSet<CharactersEntity>? Characters { get; set; }
+        public DbSet<CustomCharactersEntity>? CustomCharacters { get; set; }
+        public DbSet<CustomWaifusEntity>? CustomWaifus { get; set; }
+        public DbSet<GuildsEntity>? Guilds { get; set; }
+        public DbSet<GuildUsersEntity>? GuildUsers { get; set; }
+        public DbSet<GuildXpRolesEntity>? GuildXpRoles { get; set; }
+        public DbSet<MuteTimersEntity>? MuteTimers { get; set; }
+        public DbSet<ProfileEntity>? Profile { get; set; }
+        public DbSet<SelfAssignableRolesEntity>? SelfAssignableRoles { get; set; }
+        public DbSet<UsersEntity>? Users { get; set; }
+        public DbSet<WaifusEntity>? Waifus { get; set; }
+        public DbSet<WarningsEntity>? Warnings { get; set; }
+        public DbSet<PatreonEntity>? Patreon { get; set; }
+        public DbSet<VotesEntity>? Votes { get; set; }
+
         public RiasDbContext(DbContextOptions<RiasDbContext> options) : base(options)
         {
             NpgsqlConnection.GlobalTypeMapper.MapEnum<LastChargeStatus>();
@@ -48,36 +47,48 @@ namespace Rias.Core.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Characters>()
+            modelBuilder.HasPostgresEnum<LastChargeStatus>();
+            modelBuilder.HasPostgresEnum<PatronStatus>();
+            
+            modelBuilder.Entity<CharactersEntity>()
                 .HasIndex(x => x.CharacterId)
                 .IsUnique();
             
-            modelBuilder.Entity<CustomCharacters>()
+            modelBuilder.Entity<CustomCharactersEntity>()
                 .HasIndex(x => x.CharacterId)
                 .IsUnique();
             
-            modelBuilder.Entity<CustomWaifus>();
+            modelBuilder.Entity<CustomWaifusEntity>();
             
-            modelBuilder.Entity<Guilds>()
+            modelBuilder.Entity<GuildsEntity>()
                 .HasIndex(x => x.GuildId)
                 .IsUnique();
-
-            modelBuilder.Entity<GuildsXp>();
-            modelBuilder.Entity<GuildUsers>();
-            modelBuilder.Entity<GuildXpRoles>();
-            modelBuilder.Entity<MuteTimers>();
             
-            modelBuilder.Entity<Profile>()
+            modelBuilder.Entity<GuildUsersEntity>()
+                .HasIndex(x => new {x.GuildId, x.UserId})
+                .IsUnique();
+            
+            modelBuilder.Entity<GuildXpRolesEntity>()
+                .HasIndex(x => new {x.GuildId, x.RoleId})
+                .IsUnique();
+            
+            modelBuilder.Entity<MuteTimersEntity>()
+                .HasIndex(x => new {x.GuildId, x.UserId})
+                .IsUnique();
+            
+            modelBuilder.Entity<ProfileEntity>()
                 .HasIndex(x => x.UserId)
                 .IsUnique();
             
-            modelBuilder.Entity<SelfAssignableRoles>();
+            modelBuilder.Entity<SelfAssignableRolesEntity>()
+                .HasIndex(x => new {x.GuildId, x.RoleId})
+                .IsUnique();
             
-            modelBuilder.Entity<Users>()
+            modelBuilder.Entity<UsersEntity>()
                 .HasIndex(x => x.UserId)
                 .IsUnique();
 
-            var waifuEntity = modelBuilder.Entity<Waifus>();
+            var waifuEntity = modelBuilder.Entity<WaifusEntity>();
 
             waifuEntity.HasOne(x => x.Character)
                 .WithMany()
@@ -89,7 +100,7 @@ namespace Rias.Core.Database
                 .HasForeignKey(x => x.CustomCharacterId)
                 .HasPrincipalKey(x => x!.CharacterId);
 
-            modelBuilder.Entity<Warnings>();
+            modelBuilder.Entity<WarningsEntity>();
         }
 
         public async Task<TEntity> GetOrAddAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, Func<TEntity> entityValue) where TEntity : class

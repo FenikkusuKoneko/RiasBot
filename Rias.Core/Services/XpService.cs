@@ -10,7 +10,7 @@ using ImageMagick;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Database;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 
@@ -53,7 +53,7 @@ namespace Rias.Core.Services
             
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = await db.GetOrAddAsync(x => x.UserId == user.Id, () => new Users {UserId = user.Id, Xp = -5});
+            var userDb = await db.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id, Xp = -5});
             
             if (check && userDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
                 return;
@@ -82,16 +82,16 @@ namespace Rias.Core.Services
             
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildXpDb = await db.GetOrAddAsync(x => x.GuildId == user.Guild.Id && x.UserId == user.Id,
-                () => new GuildsXp {GuildId = user.Guild.Id, UserId = user.Id});
+            var guildUserDb = await db.GetOrAddAsync(x => x.GuildId == user.Guild.Id && x.UserId == user.Id,
+                () => new GuildUsersEntity {GuildId = user.Guild.Id, UserId = user.Id});
             
-            if (check && guildXpDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
+            if (check && guildUserDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
                 return;
             
-            var currentLevel = RiasUtils.XpToLevel(guildXpDb.Xp, 30);
-            guildXpDb.Xp += 5;
-            guildXpDb.LastMessageDate = now;
-            var nextLevel = RiasUtils.XpToLevel(guildXpDb.Xp, 30);
+            var currentLevel = RiasUtils.XpToLevel(guildUserDb.Xp, 30);
+            guildUserDb.Xp += 5;
+            guildUserDb.LastMessageDate = now;
+            var nextLevel = RiasUtils.XpToLevel(guildUserDb.Xp, 30);
 
             await db.SaveChangesAsync();
             _guildUsersXp[(user.Guild.Id, user.Id)] = now;
@@ -264,7 +264,7 @@ namespace Rias.Core.Services
             var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
             var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == user.Id);
 
-            var serverXpList = (await db.GetOrderedListAsync<GuildsXp, int>(x => x.GuildId == user.Guild.Id, y => y.Xp, true))
+            var serverXpList = (await db.GetOrderedListAsync<GuildUsersEntity, int>(x => x.GuildId == user.Guild.Id, y => y.Xp, true))
                 .Where(x => user.Guild.GetUser(x.UserId) != null)
                 .ToList();
             var userServerXp = serverXpList.FirstOrDefault(x => x.UserId == user.Id);

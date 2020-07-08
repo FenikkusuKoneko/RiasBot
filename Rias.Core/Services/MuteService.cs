@@ -10,7 +10,7 @@ using Humanizer.Localisation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Database;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Serilog;
@@ -140,7 +140,7 @@ namespace Rias.Core.Services
             }
             else
             {
-                var muteUserGuild = new GuildUsers
+                var muteUserGuild = new GuildUsersEntity
                 {
                     GuildId = guild.Id,
                     UserId = user.Id,
@@ -164,7 +164,7 @@ namespace Rias.Core.Services
             }
             else
             {
-                var newMuteTimerDb = new MuteTimers
+                var newMuteTimerDb = new MuteTimersEntity
                 {
                     GuildId = guild.Id,
                     UserId = user.Id,

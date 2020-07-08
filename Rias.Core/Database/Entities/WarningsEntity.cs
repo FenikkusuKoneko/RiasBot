@@ -1,6 +1,6 @@
-﻿namespace Rias.Core.Database.Models
+﻿namespace Rias.Core.Database.Entities
 {
-    public class Warnings : DbEntity
+    public class WarningsEntity : DbEntity
     {
         public ulong GuildId { get; set; }
         public ulong UserId { get; set; }

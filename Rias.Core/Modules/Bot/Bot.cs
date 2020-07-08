@@ -50,7 +50,7 @@ namespace Rias.Core.Modules.Bot
         public async Task UpdateAsync()
         {
             await ReplyConfirmationAsync("Update");
-            Environment.Exit(0);
+            Environment.Exit(69);
         }
 
         [Command("send"), OwnerOnly]

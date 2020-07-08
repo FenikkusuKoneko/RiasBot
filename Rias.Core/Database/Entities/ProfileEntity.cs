@@ -1,6 +1,6 @@
-﻿namespace Rias.Core.Database.Models
+﻿namespace Rias.Core.Database.Entities
 {
-    public class Profile : DbEntity
+    public class ProfileEntity : DbEntity
     {
         public ulong UserId { get; set; }
         public string? BackgroundUrl { get; set; }

@@ -10,7 +10,7 @@ using ImageMagick;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Database;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Color = Discord.Color;
@@ -315,9 +315,7 @@ namespace Rias.Core.Services
             settings.FillColor = MagickColors.White;
             settings.FontPointsize = 15;
 
-            var currency = Creds.IsGlobal ? "Hearts" : "Currency";
-            
-            using var currencyTextImage = new MagickImage($"caption:{Resources.GetText(guild.Id, "Gambling", currency)}", settings);
+            using var currencyTextImage = new MagickImage($"caption:{Resources.GetText(guild.Id, "Gambling", "Hearts")}", settings);
             image.Draw(new DrawableComposite(segmentLength - (double) currencyTextImage.Width / 2, 315, CompositeOperator.Over, currencyTextImage));
             
             using var waifusTextImage = new MagickImage($"caption:{Resources.GetText(guild.Id, "Waifu", "Waifus")}", settings);
@@ -406,7 +404,7 @@ namespace Rias.Core.Services
             }
         }
 
-        private async Task AddWaifu(MagickImage image, IWaifus waifu, Point position, MagickGeometry waifuSize, MagickReadSettings settings)
+        private async Task AddWaifu(MagickImage image, IWaifusEntity waifu, Point position, MagickGeometry waifuSize, MagickReadSettings settings)
         {
             await using var waifuStream = await GetWaifuStreamAsync(waifu, waifu.IsSpecial);
             if (waifuStream != null)
@@ -437,12 +435,12 @@ namespace Rias.Core.Services
             image.Draw(new DrawableComposite(position.X - waifuNameImage.Width / 2, 690, CompositeOperator.Over, waifuNameImage));
         }
 
-        private async Task<Stream?> GetWaifuStreamAsync(IWaifus waifu, bool useCustomImage = false)
+        private async Task<Stream?> GetWaifuStreamAsync(IWaifusEntity waifu, bool useCustomImage = false)
         {
             try
             {
                 var imageUrl = waifu.ImageUrl;
-                if (useCustomImage && waifu is Waifus waifus && !string.IsNullOrEmpty(waifus.CustomImageUrl))
+                if (useCustomImage && waifu is WaifusEntity waifus && !string.IsNullOrEmpty(waifus.CustomImageUrl))
                     imageUrl = waifus.CustomImageUrl;
 
                 using var response = await _httpClient.GetAsync(imageUrl);
@@ -464,7 +462,7 @@ namespace Rias.Core.Services
                 // ignored
             }
 
-            if (!(waifu is Waifus waifuDb))
+            if (!(waifu is WaifusEntity waifuDb))
                 return null;
 
             if (useCustomImage)
@@ -504,7 +502,7 @@ namespace Rias.Core.Services
                 .Include(x => x.CustomCharacter)
                 .Where(x => x.UserId == user.Id)
                 .AsEnumerable()
-                .Cast<IWaifus>()
+                .Cast<IWaifusEntity>()
                 .ToList();
             
             waifus.AddRange(db.CustomWaifus.Where(x => x.UserId == user.Id));
@@ -554,8 +552,8 @@ namespace Rias.Core.Services
             public string? Biography { get; set; }
             public MagickColor? Color { get; set; }
             public IList<string>? Badges { get; set; }
-            public IList<IWaifus>? Waifus { get; set; }
-            public IWaifus? SpecialWaifu { get; set; }
+            public IList<IWaifusEntity>? Waifus { get; set; }
+            public IWaifusEntity? SpecialWaifu { get; set; }
             public int PatreonTier { get; set; }
         }
     }

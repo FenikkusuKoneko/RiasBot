@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Rias.Core.Database.Models
+namespace Rias.Core.Database.Entities
 {
-    public class Users : DbEntity
+    public class UsersEntity : DbEntity
     {
         public ulong UserId { get; set; }
         public int Currency { get; set; }

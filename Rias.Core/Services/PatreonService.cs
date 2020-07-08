@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rias.Core.Commons;
 using Rias.Core.Database;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
 using Rias.Core.Services.WebSocket;
 using Serilog;
@@ -45,7 +45,7 @@ namespace Rias.Core.Services
             foreach (var patron in patrons)
             {
                 var reward = patron.AmountCents * 5;
-                var userDb = await db.GetOrAddAsync(x => x.UserId == patron.UserId, () => new Users {UserId = patron.UserId});
+                var userDb = await db.GetOrAddAsync(x => x.UserId == patron.UserId, () => new UsersEntity {UserId = patron.UserId});
                 userDb.Currency += reward;
 
                 patron.Checked = true;
@@ -87,7 +87,7 @@ namespace Rias.Core.Services
             }
             
             var reward = pledgeData.AmountCents * 5;
-            var userDb = await db.GetOrAddAsync(x => x.UserId == pledgeData.DiscordId, () => new Users {UserId = pledgeData.DiscordId});
+            var userDb = await db.GetOrAddAsync(x => x.UserId == pledgeData.DiscordId, () => new UsersEntity {UserId = pledgeData.DiscordId});
             userDb.Currency += reward;
             
             patreonDb.Checked = true;

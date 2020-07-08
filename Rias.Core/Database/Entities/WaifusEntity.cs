@@ -1,9 +1,9 @@
-﻿namespace Rias.Core.Database.Models
+﻿namespace Rias.Core.Database.Entities
 {
-    public class Waifus : DbEntity, IWaifus
+    public class WaifusEntity : DbEntity, IWaifusEntity
     {
-        public Characters? Character { get; set; }
-        public CustomCharacters? CustomCharacter { get; set; }
+        public CharactersEntity? Character { get; set; }
+        public CustomCharactersEntity? CustomCharacter { get; set; }
         
         public ulong UserId { get; set; }
         public int? CharacterId { get; set; }

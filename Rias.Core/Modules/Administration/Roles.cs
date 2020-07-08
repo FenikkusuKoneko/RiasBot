@@ -8,7 +8,7 @@ using MoreLinq;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Rias.Interactive;
@@ -286,10 +286,10 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AutoAssignableRoleAsync([Remainder] SocketRole? role = null)
             {
-                Guilds guildDb;
+                GuildsEntity guildDb;
                 if (role is null)
                 {
-                    guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+                    guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
                     guildDb.AutoAssignableRoleId = 0;
                     await DbContext.SaveChangesAsync();
                     await ReplyConfirmationAsync("AarDisabled");
@@ -314,7 +314,7 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
                 
-                guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+                guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
                 guildDb.AutoAssignableRoleId = role.Id;
                 
                 await DbContext.SaveChangesAsync();

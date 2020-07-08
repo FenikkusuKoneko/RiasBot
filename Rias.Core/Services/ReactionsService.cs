@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace Rias.Core.Services
@@ -18,9 +16,7 @@ namespace Rias.Core.Services
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Wolke " + Creds.WeebServicesToken);
 
-            var client = services.GetRequiredService<DiscordShardedClient>();
-            _httpClient.DefaultRequestHeaders.Add("User-Agent",
-                Creds.IsGlobal ? $"Rias v.{Rias.Version}" : $"{client.CurrentUser?.Username ?? "Bot"} v.{Rias.Version}");
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", $"Rias v.{Rias.Version}");
         }
 
         public async Task<string?> GetReactionUrlAsync(string type)

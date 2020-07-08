@@ -1,10 +1,9 @@
-﻿namespace Rias.Core.Database.Models
+﻿namespace Rias.Core.Database.Entities
 {
-    public class Characters : DbEntity, ICharacter
+    public interface ICharacterEntity
     {
         public int CharacterId { get; set; }
         public string? Name { get; set; }
-        public string? Url { get; set; }
         public string? ImageUrl { get; set; }
     }
 }

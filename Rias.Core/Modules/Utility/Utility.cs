@@ -16,7 +16,7 @@ using NCalc;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
 using Rias.Interactive;
 using Rias.Interactive.Paginator;
@@ -51,7 +51,7 @@ namespace Rias.Core.Modules.Utility
                 return;
             }
             
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new Guilds {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
             guildDb.Prefix = prefix;
 
             await DbContext.SaveChangesAsync();
@@ -84,7 +84,7 @@ namespace Rias.Core.Modules.Utility
             
             Resources.SetGuildCulture(Context.Guild!.Id, new CultureInfo(locale));
             
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new Guilds {GuildId = Context.Guild.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity {GuildId = Context.Guild.Id});
             guildDb.Locale = locale.ToLower();
             
             await DbContext.SaveChangesAsync();
@@ -108,7 +108,7 @@ namespace Rias.Core.Modules.Utility
         [Command("patrons")]
         public async Task PatronsAsync()
         {
-            var patrons = await DbContext.GetOrderedListAsync<Patreon, int>(x => x.PatronStatus == PatronStatus.ActivePatron, y => y.AmountCents, true);
+            var patrons = await DbContext.GetOrderedListAsync<PatreonEntity, int>(x => x.PatronStatus == PatronStatus.ActivePatron, y => y.AmountCents, true);
             if (patrons.Count == 0)
             {
                 await ReplyErrorAsync("NoPatrons", Credentials.Patreon, Credentials.Currency);
@@ -149,7 +149,7 @@ namespace Rias.Core.Modules.Utility
             };
 
             var dateAdded = DateTime.UtcNow - timeSpan;
-            var votesGroup = (await DbContext.GetListAsync<Votes>(x => x.DateAdded >= dateAdded))
+            var votesGroup = (await DbContext.GetListAsync<VotesEntity>(x => x.DateAdded >= dateAdded))
                 .GroupBy(x => x.UserId)
                 .ToList();
 

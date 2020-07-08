@@ -5,23 +5,26 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Rias.Core.Commons;
 using Rias.Core.Database;
 
 namespace Rias.Core.Migrations
 {
     [DbContext(typeof(RiasDbContext))]
-    [Migration("20191208133105_RiasInitial")]
+    [Migration("20200627213613_RiasInitial")]
     partial class RiasInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("Npgsql:Enum:last_charge_status", "paid,declined,pending,refunded,fraud,other")
+                .HasAnnotation("Npgsql:Enum:patron_status", "active_patron,declined_patron,former_patron")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.0")
+                .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("Rias.Core.Database.Models.Characters", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.CharactersEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,7 +36,7 @@ namespace Rias.Core.Migrations
                         .HasColumnName("character_id")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -49,15 +52,17 @@ namespace Rias.Core.Migrations
                         .HasColumnName("url")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_characters");
 
                     b.HasIndex("CharacterId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasName("ix_characters_character_id");
 
                     b.ToTable("characters");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.CustomCharacters", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.CustomCharactersEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,7 +74,7 @@ namespace Rias.Core.Migrations
                         .HasColumnName("character_id")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -85,15 +90,17 @@ namespace Rias.Core.Migrations
                         .HasColumnName("name")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_custom_characters");
 
                     b.HasIndex("CharacterId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasName("ix_custom_characters_character_id");
 
                     b.ToTable("custom_characters");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.CustomWaifus", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.CustomWaifusEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -101,7 +108,7 @@ namespace Rias.Core.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -125,12 +132,13 @@ namespace Rias.Core.Migrations
                         .HasColumnName("user_id")
                         .HasColumnType("numeric(20,0)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_custom_waifus");
 
                     b.ToTable("custom_waifus");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.GuildUsers", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.GuildUsersEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,7 +146,7 @@ namespace Rias.Core.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -150,16 +158,29 @@ namespace Rias.Core.Migrations
                         .HasColumnName("is_muted")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime>("LastMessageDate")
+                        .HasColumnName("last_message_date")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<decimal>("UserId")
                         .HasColumnName("user_id")
                         .HasColumnType("numeric(20,0)");
 
-                    b.HasKey("Id");
+                    b.Property<int>("Xp")
+                        .HasColumnName("xp")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id")
+                        .HasName("pk_guild_users");
+
+                    b.HasIndex("GuildId", "UserId")
+                        .IsUnique()
+                        .HasName("ix_guild_users_guild_id_user_id");
 
                     b.ToTable("guild_users");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.GuildXpRoles", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.GuildXpRolesEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -167,7 +188,7 @@ namespace Rias.Core.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -183,12 +204,17 @@ namespace Rias.Core.Migrations
                         .HasColumnName("role_id")
                         .HasColumnType("numeric(20,0)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_guild_xp_roles");
+
+                    b.HasIndex("GuildId", "RoleId")
+                        .IsUnique()
+                        .HasName("ix_guild_xp_roles_guild_id_role_id");
 
                     b.ToTable("guild_xp_roles");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.Guilds", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.GuildsEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,7 +238,7 @@ namespace Rias.Core.Migrations
                         .HasColumnName("bye_webhook_id")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -264,15 +290,17 @@ namespace Rias.Core.Migrations
                         .HasColumnName("warning_punishment")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_guilds");
 
                     b.HasIndex("GuildId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasName("ix_guilds_guild_id");
 
                     b.ToTable("guilds");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.GuildsXp", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.MuteTimersEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -280,40 +308,7 @@ namespace Rias.Core.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTime?>("DateAdded")
-                        .HasColumnName("date_added")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<decimal>("GuildId")
-                        .HasColumnName("guild_id")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<DateTime>("LastMessageDate")
-                        .HasColumnName("last_message_date")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<decimal>("UserId")
-                        .HasColumnName("user_id")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<int>("Xp")
-                        .HasColumnName("xp")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("guilds_xp");
-                });
-
-            modelBuilder.Entity("Rias.Core.Database.Models.MuteTimers", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -337,12 +332,75 @@ namespace Rias.Core.Migrations
                         .HasColumnName("user_id")
                         .HasColumnType("numeric(20,0)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_mute_timers");
+
+                    b.HasIndex("GuildId", "UserId")
+                        .IsUnique()
+                        .HasName("ix_mute_timers_guild_id_user_id");
 
                     b.ToTable("mute_timers");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.Profile", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.PatreonEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("AmountCents")
+                        .HasColumnName("amount_cents")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Checked")
+                        .HasColumnName("checked")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnName("date_added")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTimeOffset?>("LastChargeDate")
+                        .HasColumnName("last_charge_date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<LastChargeStatus?>("LastChargeStatus")
+                        .HasColumnName("last_charge_status")
+                        .HasColumnType("last_charge_status");
+
+                    b.Property<int>("PatreonUserId")
+                        .HasColumnName("patreon_user_id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PatreonUserName")
+                        .HasColumnName("patreon_user_name")
+                        .HasColumnType("text");
+
+                    b.Property<PatronStatus?>("PatronStatus")
+                        .HasColumnName("patron_status")
+                        .HasColumnType("patron_status");
+
+                    b.Property<int>("Tier")
+                        .HasColumnName("tier")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TierAmountCents")
+                        .HasColumnName("tier_amount_cents")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnName("user_id")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("Id")
+                        .HasName("pk_patreon");
+
+                    b.ToTable("patreon");
+                });
+
+            modelBuilder.Entity("Rias.Core.Database.Entities.ProfileEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -370,7 +428,7 @@ namespace Rias.Core.Migrations
                         .HasColumnName("color")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -378,15 +436,17 @@ namespace Rias.Core.Migrations
                         .HasColumnName("user_id")
                         .HasColumnType("numeric(20,0)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_profile");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasName("ix_profile_user_id");
 
                     b.ToTable("profile");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.SelfAssignableRoles", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.SelfAssignableRolesEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -394,7 +454,7 @@ namespace Rias.Core.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -410,12 +470,17 @@ namespace Rias.Core.Migrations
                         .HasColumnName("role_name")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_self_assignable_roles");
+
+                    b.HasIndex("GuildId", "RoleId")
+                        .IsUnique()
+                        .HasName("ix_self_assignable_roles_guild_id_role_id");
 
                     b.ToTable("self_assignable_roles");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.Users", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.UsersEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -431,7 +496,7 @@ namespace Rias.Core.Migrations
                         .HasColumnName("daily_taken")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -455,15 +520,55 @@ namespace Rias.Core.Migrations
                         .HasColumnName("xp")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasName("ix_users_user_id");
 
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.Waifus", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.VotesEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<bool>("Checked")
+                        .HasColumnName("checked")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnName("date_added")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsWeekend")
+                        .HasColumnName("is_weekend")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Query")
+                        .HasColumnName("query")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .HasColumnName("type")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnName("user_id")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("Id")
+                        .HasName("pk_votes");
+
+                    b.ToTable("votes");
+                });
+
+            modelBuilder.Entity("Rias.Core.Database.Entities.WaifusEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -483,7 +588,7 @@ namespace Rias.Core.Migrations
                         .HasColumnName("custom_image_url")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -503,16 +608,19 @@ namespace Rias.Core.Migrations
                         .HasColumnName("user_id")
                         .HasColumnType("numeric(20,0)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_waifus");
 
-                    b.HasIndex("CharacterId");
+                    b.HasIndex("CharacterId")
+                        .HasName("ix_waifus_character_id");
 
-                    b.HasIndex("CustomCharacterId");
+                    b.HasIndex("CustomCharacterId")
+                        .HasName("ix_waifus_custom_character_id");
 
                     b.ToTable("waifus");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.Warnings", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.WarningsEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -520,7 +628,7 @@ namespace Rias.Core.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTime?>("DateAdded")
+                    b.Property<DateTime>("DateAdded")
                         .HasColumnName("date_added")
                         .HasColumnType("timestamp without time zone");
 
@@ -540,21 +648,24 @@ namespace Rias.Core.Migrations
                         .HasColumnName("user_id")
                         .HasColumnType("numeric(20,0)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_warnings");
 
                     b.ToTable("warnings");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Models.Waifus", b =>
+            modelBuilder.Entity("Rias.Core.Database.Entities.WaifusEntity", b =>
                 {
-                    b.HasOne("Rias.Core.Database.Models.Characters", "Character")
+                    b.HasOne("Rias.Core.Database.Entities.CharactersEntity", "Character")
                         .WithMany()
                         .HasForeignKey("CharacterId")
+                        .HasConstraintName("fk_waifus_characters_character_id")
                         .HasPrincipalKey("CharacterId");
 
-                    b.HasOne("Rias.Core.Database.Models.CustomCharacters", "CustomCharacter")
+                    b.HasOne("Rias.Core.Database.Entities.CustomCharactersEntity", "CustomCharacter")
                         .WithMany()
                         .HasForeignKey("CustomCharacterId")
+                        .HasConstraintName("fk_waifus_custom_characters_custom_character_id")
                         .HasPrincipalKey("CharacterId");
                 });
 #pragma warning restore 612, 618

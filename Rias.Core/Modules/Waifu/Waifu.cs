@@ -10,7 +10,7 @@ using MoreLinq;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
-using Rias.Core.Database.Models;
+using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
 using Rias.Interactive;
@@ -52,25 +52,25 @@ namespace Rias.Core.Modules.Waifu
             var embed = new EmbedBuilder
             {
                 Color = RiasUtils.ConfirmColor,
-                Url = character is Characters animeCharacter? animeCharacter.Url : default,
+                Url = character is CharactersEntity animeCharacter? animeCharacter.Url : default,
                 Title = character.Name,
                 ThumbnailUrl = character.ImageUrl
             };
 
             var claimCanceled = false;
 
-            var waifus = (await DbContext.GetListAsync<Waifus, Characters, CustomCharacters>
+            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
             (
                 x => x.UserId == Context.User.Id,
                 x => x.Character!,
                 x => x.CustomCharacter!
-            )).Cast<IWaifus>().ToList();
-            waifus.AddRange(await DbContext.GetListAsync<CustomWaifus>(x => x.UserId == Context.User.Id));
+            )).Cast<IWaifusEntity>().ToList();
+            waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
             
             var waifu = character switch
             {
-                CustomCharacters _ => waifus.FirstOrDefault(x => x is Waifus normalWaifu && normalWaifu.CustomCharacterId == character.CharacterId),
-                _ => waifus.FirstOrDefault(x => x is Waifus normalWaifu && normalWaifu.CharacterId == character.CharacterId)
+                CustomCharactersEntity _ => waifus.FirstOrDefault(x => x is WaifusEntity normalWaifu && normalWaifu.CustomCharacterId == character.CharacterId),
+                _ => waifus.FirstOrDefault(x => x is WaifusEntity normalWaifu && normalWaifu.CharacterId == character.CharacterId)
             };
             
             if (waifu != null)
@@ -79,12 +79,12 @@ namespace Rias.Core.Modules.Waifu
                 claimCanceled = true;
             }
             
-            var waifuUsers = character is CustomCharacters
+            var waifuUsers = character is CustomCharactersEntity
                 ? DbContext.Waifus.Where(x => x.CustomCharacterId == character.CharacterId).ToList()
                 : DbContext.Waifus.Where(x => x.CharacterId == character.CharacterId).ToList();
             
             var waifuPrice = WaifuStartingPrice + waifuUsers.Count * 10;
-            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Users {UserId = Context.User.Id});
+            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
             if (!claimCanceled && userDb.Currency < waifuPrice)
             {
                 embed.WithDescription(GetText("ClaimCurrencyNotEnough", Credentials.Currency));
@@ -112,14 +112,14 @@ namespace Rias.Core.Modules.Waifu
             }
             
             userDb.Currency -= waifuPrice;
-            var waifuDb = new Waifus
+            var waifuDb = new WaifusEntity
             {
                 UserId = Context.User.Id,
                 Price = waifuPrice,
                 Position = waifus.Count != 0 ? waifus.Max(x => x.Position) + 1 : 1
             };
 
-            if (character is CustomCharacters)
+            if (character is CustomCharactersEntity)
                 waifuDb.CustomCharacterId = character.CharacterId;
             else
                 waifuDb.CharacterId = character.CharacterId;
@@ -161,10 +161,10 @@ namespace Rias.Core.Modules.Waifu
                 return;
             }
 
-            if (waifu is CustomWaifus customWaifu)
+            if (waifu is CustomWaifusEntity customWaifu)
                 DbContext.Remove(customWaifu);
             else
-                DbContext.Remove((Waifus) waifu);
+                DbContext.Remove((WaifusEntity) waifu);
             
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("Divorced", waifu.Name!);
@@ -176,13 +176,13 @@ namespace Rias.Core.Modules.Waifu
         {
             user ??= (SocketGuildUser) Context.User;
 
-            var allWaifus = (await DbContext.GetListAsync<Waifus, Characters, CustomCharacters>
+            var allWaifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
             (
                 x => x.UserId == user.Id,
                 x => x.Character!,
                 x => x.CustomCharacter!
-            )).Cast<IWaifus>().ToList();
-            allWaifus.AddRange(await DbContext.GetListAsync<CustomWaifus>(x => x.UserId == user.Id));
+            )).Cast<IWaifusEntity>().ToList();
+            allWaifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == user.Id));
             
             if (allWaifus.Count == 0)
             {
@@ -254,7 +254,7 @@ namespace Rias.Core.Modules.Waifu
                 return;
             }
             
-            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Users {UserId = Context.User.Id});
+            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
             if (userDb.Currency < SpecialWaifuPrice)
             {
                 await ReplyErrorAsync("#Gambling_CurrencyNotEnough", Credentials.Currency);
@@ -279,13 +279,13 @@ namespace Rias.Core.Modules.Waifu
             }
             
             userDb.Currency -= SpecialWaifuPrice;
-            var currentSpecialWaifu = (IWaifus) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
+            var currentSpecialWaifu = (IWaifusEntity) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
                                       ?? await DbContext.CustomWaifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial);
 
             if (currentSpecialWaifu != null)
             {
                 currentSpecialWaifu.IsSpecial = false;
-                if (currentSpecialWaifu is Waifus currentWaifuDb)
+                if (currentSpecialWaifu is WaifusEntity currentWaifuDb)
                     currentWaifuDb.CustomImageUrl = null;
             }
 
@@ -306,7 +306,7 @@ namespace Rias.Core.Modules.Waifu
                 return;
             }
 
-            if (!(waifu.IsSpecial || waifu is CustomWaifus))
+            if (!(waifu.IsSpecial || waifu is CustomWaifusEntity))
             {
                 await ReplyErrorAsync("ImageSetError");
                 Context.Command.ResetCooldowns();
@@ -343,10 +343,10 @@ namespace Rias.Core.Modules.Waifu
                 return;
             }
 
-            if (waifu is Waifus normalWaifuDb)
+            if (waifu is WaifusEntity normalWaifuDb)
                 normalWaifuDb.CustomImageUrl = url;
             else
-                ((CustomWaifus) waifu).ImageUrl = url;
+                ((CustomWaifusEntity) waifu).ImageUrl = url;
                 
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync("ImageSet", waifu.Name!);
@@ -381,13 +381,13 @@ namespace Rias.Core.Modules.Waifu
                 return;
             }
             
-            var waifus = (await DbContext.GetListAsync<Waifus, Characters, CustomCharacters>
+            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
             (
                 x => x.UserId == Context.User.Id,
                 x => x.Character!,
                 x => x.CustomCharacter!
-            )).Cast<IWaifus>().ToList();
-            waifus.AddRange(await DbContext.GetListAsync<CustomWaifus>(x => x.UserId == Context.User.Id));
+            )).Cast<IWaifusEntity>().ToList();
+            waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
             
             waifus = waifus.Where(x => x.Position != 0)
                 .OrderBy(x => x.Position)
@@ -411,7 +411,7 @@ namespace Rias.Core.Modules.Waifu
          Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
         public async Task CreateWaifusAsync(string url, [Remainder] string name)
         {
-            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new Users {UserId = Context.User.Id});
+            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
             if (userDb.Currency < WaifuCreationPrice)
             {
                 await ReplyErrorAsync("#Gambling_CurrencyNotEnough", Credentials.Currency);
@@ -466,25 +466,25 @@ namespace Rias.Core.Modules.Waifu
             }
             
             userDb.Currency -= WaifuCreationPrice;
-            var currentSpecialWaifu = (IWaifus) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
+            var currentSpecialWaifu = (IWaifusEntity) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
                                       ?? await DbContext.CustomWaifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial);
 
             if (currentSpecialWaifu != null)
             {
                 currentSpecialWaifu.IsSpecial = false;
-                if (currentSpecialWaifu is Waifus currentWaifuDb)
+                if (currentSpecialWaifu is WaifusEntity currentWaifuDb)
                     currentWaifuDb.CustomImageUrl = null;
             }
             
-            var waifus = (await DbContext.GetListAsync<Waifus, Characters, CustomCharacters>
+            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
             (
                 x => x.UserId == Context.User.Id,
                 x => x.Character!,
                 x => x.CustomCharacter!
-            )).Cast<IWaifus>().ToList();
-            waifus.AddRange(await DbContext.GetListAsync<CustomWaifus>(x => x.UserId == Context.User.Id));
+            )).Cast<IWaifusEntity>().ToList();
+            waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
 
-            await DbContext.AddAsync(new CustomWaifus
+            await DbContext.AddAsync(new CustomWaifusEntity
             {
                 UserId = Context.User.Id,
                 Name = name,
@@ -498,27 +498,27 @@ namespace Rias.Core.Modules.Waifu
             await ReplyAsync(embed);
         }
         
-        private async Task<IWaifus?> GetWaifuAsync(string name)
+        private async Task<IWaifusEntity?> GetWaifuAsync(string name)
         {
-            var waifus = (await DbContext.GetListAsync<Waifus, Characters, CustomCharacters>
+            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
             (
                 x => x.UserId == Context.User.Id,
                 x => x.Character!,
                 x => x.CustomCharacter!
-            )).Cast<IWaifus>().ToList();
-            waifus.AddRange(await DbContext.GetListAsync<CustomWaifus>(x => x.UserId == Context.User.Id));
+            )).Cast<IWaifusEntity>().ToList();
+            waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
             
-            IWaifus? waifu;
+            IWaifusEntity? waifu;
             if (name.StartsWith("@") && int.TryParse(name[1..], out var id))
             {
-                waifu = waifus.FirstOrDefault(x => x is Waifus normalWaifu && normalWaifu.CustomCharacterId == id);
+                waifu = waifus.FirstOrDefault(x => x is WaifusEntity normalWaifu && normalWaifu.CustomCharacterId == id);
                 if (waifu != null)
                     return waifu;
             }
 
             if (int.TryParse(name, out id))
             {
-                waifu = waifus.FirstOrDefault(x => x is Waifus normalWaifu && normalWaifu.CharacterId == id);
+                waifu = waifus.FirstOrDefault(x => x is WaifusEntity normalWaifu && normalWaifu.CharacterId == id);
                 if (waifu != null)
                     return waifu;
             }
@@ -530,9 +530,9 @@ namespace Rias.Core.Modules.Waifu
             return waifu;
         }
 
-        private string StringifyWaifu(IWaifus waifu)
+        private string StringifyWaifu(IWaifusEntity waifu)
         {
-            if (!(waifu is Waifus normalWaifu))
+            if (!(waifu is WaifusEntity normalWaifu))
                 return $"[{waifu.Name}]({waifu.ImageUrl})\n" +
                        $"{GetText("Position")}: {waifu.Position}";
                 
