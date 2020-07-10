@@ -35,7 +35,7 @@ namespace Rias.Core.Modules.Gambling
                 }
                 else
                 {
-                    await ReplyConfirmationAsync(Localization.GamblingCurrencyYouVote, user, userDb.Currency, Credentials.Currency);
+                    await ReplyConfirmationAsync(Localization.GamblingCurrencyUser, user, userDb.Currency, Credentials.Currency);
                 }
             }
             
