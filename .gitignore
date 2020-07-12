@@ -445,4 +445,3 @@ Rias/logs/
 # Ignore these
 Rias.Core/Master.cs
 Rias.Core/Modules/TestModule.cs
-Disqord
