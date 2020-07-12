@@ -11,12 +11,10 @@
     
     <ItemGroup>
         <PackageReference Include="CoreCLR-NCalc" Version="2.2.80" />
-        <PackageReference Include="Disqord" Version="1.0.0-nightly-00068" />
-        <PackageReference Include="Disqord.Extensions.Interactivity" Version="1.0.0-nightly-00068" />
         <PackageReference Include="EFCore.NamingConventions" Version="1.1.0" />
         <PackageReference Include="Humanizer" Version="2.8.26" />
         <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.20.0.1" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.8.0-1.20325.3" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.8.0-1.20330.5" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.5" />
@@ -30,6 +28,11 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0-dev-00880" />
         <PackageReference Include="StackExchange.Redis" Version="2.1.58" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Disqord\src\Disqord.Core\Disqord.Core.csproj" />
+      <ProjectReference Include="..\Disqord\src\Disqord.Extensions.Interactivity\Disqord.Extensions.Interactivity.csproj" />
     </ItemGroup>
 
 </Project>

@@ -4,6 +4,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rias", "Rias\Rias.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rias.Core", "Rias.Core\Rias.Core.csproj", "{764B8E9A-0F2A-4DCB-802B-C997D38F2092}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disqord", "Disqord\src\Disqord\Disqord.csproj", "{65DEB475-176B-49DF-B1D0-6FF21F1D0830}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disqord.Core", "Disqord\src\Disqord.Core\Disqord.Core.csproj", "{C502E136-B9BD-4C45-9DEE-4C16E920CD6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disqord.Extensions.Interactivity", "Disqord\src\Disqord.Extensions.Interactivity\Disqord.Extensions.Interactivity.csproj", "{DD3C0575-3711-4C42-821A-AA888B0217FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disqord.Rest", "Disqord\src\Disqord.Rest\Disqord.Rest.csproj", "{8E4FA8FD-224B-44BA-89E2-BCE57C627B95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disqord.Serialization.Json.Newtonsoft", "Disqord\src\Disqord.Serialization.Newtonsoft\Disqord.Serialization.Json.Newtonsoft.csproj", "{42C5C44C-ACF1-43C9-826A-C6A74650BF31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +28,25 @@ Global
 		{764B8E9A-0F2A-4DCB-802B-C997D38F2092}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{764B8E9A-0F2A-4DCB-802B-C997D38F2092}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{764B8E9A-0F2A-4DCB-802B-C997D38F2092}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65DEB475-176B-49DF-B1D0-6FF21F1D0830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65DEB475-176B-49DF-B1D0-6FF21F1D0830}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65DEB475-176B-49DF-B1D0-6FF21F1D0830}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65DEB475-176B-49DF-B1D0-6FF21F1D0830}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C502E136-B9BD-4C45-9DEE-4C16E920CD6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C502E136-B9BD-4C45-9DEE-4C16E920CD6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C502E136-B9BD-4C45-9DEE-4C16E920CD6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C502E136-B9BD-4C45-9DEE-4C16E920CD6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD3C0575-3711-4C42-821A-AA888B0217FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD3C0575-3711-4C42-821A-AA888B0217FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD3C0575-3711-4C42-821A-AA888B0217FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD3C0575-3711-4C42-821A-AA888B0217FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E4FA8FD-224B-44BA-89E2-BCE57C627B95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E4FA8FD-224B-44BA-89E2-BCE57C627B95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E4FA8FD-224B-44BA-89E2-BCE57C627B95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E4FA8FD-224B-44BA-89E2-BCE57C627B95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42C5C44C-ACF1-43C9-826A-C6A74650BF31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42C5C44C-ACF1-43C9-826A-C6A74650BF31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42C5C44C-ACF1-43C9-826A-C6A74650BF31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42C5C44C-ACF1-43C9-826A-C6A74650BF31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
