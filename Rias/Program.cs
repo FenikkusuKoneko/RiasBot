@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Rias.Core.Implementation;
 using Serilog;
-using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Rias
@@ -21,9 +20,11 @@ namespace Rias
             Log.Logger = new LoggerConfiguration()
 #if DEBUG
                 .MinimumLevel.Verbose()
+#else
+                .MinimumLevel.Information()
 #endif
                 .WriteTo.Console(theme: SystemConsoleTheme.Literate)
-                .WriteTo.Async(x => x.File(LogPath, LogEventLevel.Information,  shared: true, rollingInterval: RollingInterval.Day))
+                .WriteTo.Async(x => x.File(LogPath,  shared: true, rollingInterval: RollingInterval.Day))
                 .CreateLogger();
 
             var masterType = typeof(Core.Rias).Assembly
