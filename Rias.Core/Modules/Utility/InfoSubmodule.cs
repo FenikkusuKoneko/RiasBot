@@ -93,7 +93,7 @@ namespace Rias.Core.Modules.Utility
 
 
                 var activity = "-";
-                if (member.Presence.Activities.Count != 0)
+                if (member.Presence != null && member.Presence.Activities.Count != 0)
                 {
                     activity = string.Join("\n", member.Presence.Activities.Select(x => x switch
                     {
