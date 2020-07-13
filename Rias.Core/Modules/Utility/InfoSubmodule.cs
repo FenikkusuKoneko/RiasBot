@@ -172,7 +172,7 @@ namespace Rias.Core.Modules.Utility
                 await ReplyAsync(embed);
             }
             
-            // Disabled until DiscordShard has a property for it's connection status
+            // Removed until DiscordShard has a property for it's connection status
             // [Command("shardsinfo")]
             // public async Task ShardsInfo()
             // {
@@ -230,7 +230,7 @@ namespace Rias.Core.Modules.Utility
             {
                 var usersActivities = Context.Guild!.Members
                     .Select(x => x.Value)
-                    .Where(x => x.Presence.Activity != null && x.Presence.Activity.Name.StartsWith(game, StringComparison.InvariantCultureIgnoreCase))
+                    .Where(x => x.Presence?.Activity != null && x.Presence.Activity.Name.StartsWith(game, StringComparison.InvariantCultureIgnoreCase))
                     .ToList();
 
                 if (usersActivities.Count == 0)
