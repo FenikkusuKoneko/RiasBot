@@ -147,9 +147,9 @@ namespace Rias.Core.Modules.Administration
 
             var byeMessage = BotService.ReplacePlaceholders(Context.User, message);
             if (RiasUtilities.TryParseEmbed(byeMessage, out var embed))
-                await Context.Channel.SendMessageAsync(GetText(Localization.AdministrationByeEnabled), embed: embed.Build());
+                await Context.Channel.SendMessageAsync(GetText(Localization.AdministrationByeMessageSet), embed: embed.Build());
             else
-                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeEnabled)}\n\n{byeMessage}");
+                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeMessageSet)}\n\n{byeMessage}");
         }
         
         [Command("setmodlog"), Context(ContextType.Guild),
