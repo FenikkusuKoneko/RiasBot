@@ -447,8 +447,6 @@
   "utility_vanity_url": "Vanity URL",
   "utility_features": "Features",
   "utility_emojis": "Emojis",
-  "utility_shards_info": "Shards info: {0} shards connected of {1} shards",
-  "utility_shard_state": "Shard #{0} is {1}",
   "utility_users_play": "The users who play {0}",
   "utility_no_user_is_playing": "No user is playing {0}.",
   "utility_price": "Price",

@@ -515,8 +515,6 @@ namespace Rias.Core.Implementation
         public static string UtilityVanityUrl => "utility_vanity_url";
         public static string UtilityFeatures => "utility_features";
         public static string UtilityEmojis => "utility_emojis";
-        public static string UtilityShardsInfo => "utility_shards_info";
-        public static string UtilityShardState => "utility_shard_state";
         public static string UtilityUsersPlay => "utility_users_play";
         public static string UtilityNoUserIsPlaying => "utility_no_user_is_playing";
         public static string UtilityPrice => "utility_price";

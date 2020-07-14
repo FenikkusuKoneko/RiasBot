@@ -171,21 +171,6 @@ namespace Rias.Core.Modules.Utility
                 await ReplyAsync(embed);
             }
             
-            // Removed until DiscordShard has a property for it's connection status
-            // [Command("shardsinfo")]
-            // public async Task ShardsInfo()
-            // {
-            //     var shards = RiasBot.Shards;
-            //     var connectedShards = shards.Count(x => x.ConnectionState == ConnectionState.Connected);
-            //
-            //     await SendPaginatedMessageAsync(shards, 15, (items, index) => new LocalEmbedBuilder
-            //     {
-            //         Color = RiasUtilities.ConfirmColor,
-            //         Title = GetText(Localization.UtilityShardsInfo, connectedShards, shards.Count),
-            //         Description = string.Join("\n", items.Select(shard => GetText(Localization.UtilityShardState, index++, shard.ConnectionState)))
-            //     });
-            // }
-            
             [Command("avatar"), Context(ContextType.Guild)]
             public async Task AvatarAsync([Remainder] CachedMember? member = null)
             {
