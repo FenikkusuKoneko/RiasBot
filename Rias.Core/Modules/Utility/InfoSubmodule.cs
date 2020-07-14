@@ -112,7 +112,7 @@ namespace Rias.Core.Modules.Utility
                     .AddField(GetText(Localization.UtilityNickname), member.Nick ?? "-", true)
                     .AddField(GetText(Localization.CommonId), member.Id, true)
                     .AddField(GetText(Localization.UtilityActivity), activity, true)
-                    .AddField(GetText(Localization.UtilityStatus), member.Presence.Status, true)
+                    .AddField(GetText(Localization.UtilityStatus), member.Presence?.Status.ToString() ?? "-", true)
                     .AddField(GetText(Localization.UtilityJoinedServer), member.JoinedAt.ToString("yyyy-MM-dd hh:mm:ss tt") ?? "-", true)
                     .AddField(GetText(Localization.UtilityJoinedDiscord), member.CreatedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField($"{GetText(Localization.UtilityRoles)} ({userRoles.Count})", userRoles.Count != 0 ? string.Join("\n", userRoles) : "-", true);
