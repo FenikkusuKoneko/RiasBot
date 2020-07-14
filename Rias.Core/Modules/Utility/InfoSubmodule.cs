@@ -91,7 +91,6 @@ namespace Rias.Core.Modules.Utility
                     .Select(x => x.Mention)
                     .ToList();
 
-
                 var activity = "-";
                 if (member.Presence != null && member.Presence.Activities.Count != 0)
                 {
