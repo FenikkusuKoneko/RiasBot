@@ -106,7 +106,7 @@ namespace Rias.Core.Modules.Waifu
             }
             
             userDb.Currency -= waifuPrice;
-            var waifuDb = new WaifusEntity()
+            var waifuDb = new WaifusEntity
             {
                 UserId = Context.User.Id,
                 Price = waifuPrice,

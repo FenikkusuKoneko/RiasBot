@@ -64,7 +64,7 @@ namespace Rias.Core.Modules.Searches
                         : "-"
                     : "-";
 
-                var embed = new LocalEmbedBuilder()
+                var embed = new LocalEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
                         Url = anime.SiteUrl,

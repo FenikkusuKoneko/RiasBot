@@ -100,7 +100,7 @@ namespace Rias.Core.Modules.Administration
                 });
                 
                 await DbContext.SaveChangesAsync();
-                var embed = new LocalEmbedBuilder()
+                var embed = new LocalEmbedBuilder
                     {
                         Color = RiasUtilities.Yellow,
                         Title = GetText(Localization.AdministrationWarn)

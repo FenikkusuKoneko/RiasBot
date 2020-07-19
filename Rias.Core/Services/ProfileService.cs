@@ -310,7 +310,7 @@ namespace Rias.Core.Services
             var xBadge = user.Id == Credentials.MasterId ? "Master" : "Supporter";
 
             if (profileInfo.Badges is null)
-                profileInfo.Badges = new List<string>() {xBadge};
+                profileInfo.Badges = new List<string> {xBadge};
             else if (user.Id != Credentials.MasterId)
             {
                 if (profileInfo.PatreonTier < PatreonService.ProfileThirdBadgeTier && profileInfo.Badges.Count > 2)

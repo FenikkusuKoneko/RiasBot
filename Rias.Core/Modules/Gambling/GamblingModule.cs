@@ -51,7 +51,7 @@ namespace Rias.Core.Modules.Gambling
                 ? GetText(Localization.GamblingYouWon, win, Credentials.Currency)
                 : GetText(Localization.GamblingYouLost, Math.Abs(win), Credentials.Currency);
             
-            var embed = new LocalEmbedBuilder()
+            var embed = new LocalEmbedBuilder
             {
                 Color = win >= 0 ? RiasUtilities.Green : RiasUtilities.Red,
                 Title = $"{Context.User} {winString}",

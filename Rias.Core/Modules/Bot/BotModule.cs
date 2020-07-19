@@ -31,7 +31,7 @@ namespace Rias.Core.Modules.Bot
                 return;
             }
 
-            var embed = new LocalEmbedBuilder()
+            var embed = new LocalEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Description = GetText(Localization.BotLeftGuild, guild.Name)

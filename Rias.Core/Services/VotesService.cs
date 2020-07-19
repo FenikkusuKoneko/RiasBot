@@ -26,7 +26,7 @@ namespace Rias.Core.Services
         
         public VotesService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
+            _httpClient = new HttpClient();
             
             var credentials = serviceProvider.GetRequiredService<Credentials>();
             if (credentials.VotesConfig != null)

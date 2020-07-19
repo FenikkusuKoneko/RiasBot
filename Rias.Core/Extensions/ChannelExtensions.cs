@@ -17,7 +17,7 @@ namespace Rias.Core.Extensions
 
         private static async Task<IUserMessage> SendMessageAsync(IMessageChannel channel, string message, string? title, Color color)
         {
-            var embed = new LocalEmbedBuilder()
+            var embed = new LocalEmbedBuilder
             {
                 Color = color,
                 Title = title,

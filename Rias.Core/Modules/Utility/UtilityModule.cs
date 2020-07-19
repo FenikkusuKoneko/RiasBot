@@ -81,14 +81,14 @@ namespace Rias.Core.Modules.Utility
             {
                 Localization.RemoveGuildLocale(Context.Guild!.Id);
                 
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity() {GuildId = Context.Guild.Id});
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity {GuildId = Context.Guild.Id});
                 guildDb.Locale = null;
             }
             else
             {
                 Localization.SetGuildLocale(Context.Guild!.Id, locale.ToLowerInvariant());
                 
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity() {GuildId = Context.Guild.Id});
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity {GuildId = Context.Guild.Id});
                 guildDb.Locale = locale.ToLower();
             }
             
