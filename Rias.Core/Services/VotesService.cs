@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Disqord.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -14,9 +13,7 @@ using Rias.Core.Database;
 using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
 using Rias.Core.Models;
-using Rias.Core.Services.WebSocket;
 using Serilog;
-using Serilog.Events;
 
 namespace Rias.Core.Services
 {
@@ -24,7 +21,7 @@ namespace Rias.Core.Services
     public class VotesService : RiasService
     {
         private readonly HttpClient _httpClient;
-        
+        private readonly WebSocketClient? _webSocket;
         private Timer? DblTimer { get; }
         
         public VotesService(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -34,20 +31,19 @@ namespace Rias.Core.Services
             var credentials = serviceProvider.GetRequiredService<Credentials>();
             if (credentials.VotesConfig != null)
             {
-                var websocket = new RiasWebSocket(credentials.VotesConfig, "VotesWebSocket");
-                RunTaskAsync(websocket.ConnectAsync());
-
-                websocket.Log += LogAsync;
-                websocket.DataReceived += VoteReceivedAsync;
+                _webSocket = new WebSocketClient(credentials.VotesConfig);
+                RunTaskAsync(ConnectWebSocket());
+                _webSocket.DataReceived += VoteReceivedAsync;
+                _webSocket.Closed += WebSocketClosed;
+                
+                RunTaskAsync(CheckVotesAsync());
             }
 
             if (!string.IsNullOrEmpty(credentials.DiscordBotListToken))
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Credentials.DiscordBotListToken);
-                DblTimer = new Timer(async _ => await PostDiscordBotListStats(), null, new TimeSpan(0, 0, 30), new TimeSpan(0, 0, 30));
+                DblTimer = new Timer(async _ => await PostDiscordBotListStats(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             }
-
-            RunTaskAsync(CheckVotesAsync());
         }
         
         private async Task CheckVotesAsync()
@@ -75,22 +71,22 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
         }
 
-        private Task LogAsync(MessageLoggedEventArgs args)
+        private async Task ConnectWebSocket()
         {
-            var logEventLevel = args.Severity switch
+            while (true)
             {
-                LogMessageSeverity.Trace => LogEventLevel.Verbose,
-                LogMessageSeverity.Information => LogEventLevel.Information,
-                LogMessageSeverity.Debug => LogEventLevel.Debug,
-                LogMessageSeverity.Warning => LogEventLevel.Warning,
-                LogMessageSeverity.Error => LogEventLevel.Error,
-                LogMessageSeverity.Critical => LogEventLevel.Fatal,
-                _ => LogEventLevel.Verbose
-            };
-
-            Log.Logger.Write(logEventLevel, $"{args.Source}: {args.Message}");
-
-            return Task.CompletedTask;
+                try
+                {
+                    await _webSocket!.ConnectAsync();
+                    Log.Information("Votes WebSocket connected.");
+                    break;
+                }
+                catch
+                {
+                    Log.Warning("Votes WebSocket couldn't connect. Retrying in 10 seconds...");
+                    await Task.Delay(10000);
+                }
+            }
         }
         
         private async Task VoteReceivedAsync(string data)
@@ -114,6 +110,13 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
             
             Log.Information($"Vote discord user with ID {voteDb.UserId} was rewarded with {reward} hearts");
+        }
+        
+        private async Task WebSocketClosed()
+        {
+            Log.Warning("Votes WebSocket was closed. Retrying in 10 seconds...");
+            await Task.Delay(10000);
+            await RunTaskAsync(ConnectWebSocket());
         }
         
         private async Task PostDiscordBotListStats()

@@ -24,20 +24,22 @@ namespace Rias.Core.Database
     
     public class RiasDbContext : DbContext
     {
-        public DbSet<CharactersEntity>? Characters { get; set; }
-        public DbSet<CustomCharactersEntity>? CustomCharacters { get; set; }
-        public DbSet<CustomWaifusEntity>? CustomWaifus { get; set; }
-        public DbSet<GuildsEntity>? Guilds { get; set; }
-        public DbSet<GuildUsersEntity>? GuildUsers { get; set; }
-        public DbSet<GuildXpRolesEntity>? GuildXpRoles { get; set; }
-        public DbSet<MuteTimersEntity>? MuteTimers { get; set; }
-        public DbSet<ProfileEntity>? Profile { get; set; }
-        public DbSet<SelfAssignableRolesEntity>? SelfAssignableRoles { get; set; }
-        public DbSet<UsersEntity>? Users { get; set; }
-        public DbSet<WaifusEntity>? Waifus { get; set; }
-        public DbSet<WarningsEntity>? Warnings { get; set; }
-        public DbSet<PatreonEntity>? Patreon { get; set; }
-        public DbSet<VotesEntity>? Votes { get; set; }
+#nullable disable
+        public DbSet<CharactersEntity> Characters { get; set; }
+        public DbSet<CustomCharactersEntity> CustomCharacters { get; set; }
+        public DbSet<CustomWaifusEntity> CustomWaifus { get; set; }
+        public DbSet<GuildsEntity> Guilds { get; set; }
+        public DbSet<GuildUsersEntity> GuildUsers { get; set; }
+        public DbSet<GuildXpRolesEntity> GuildXpRoles { get; set; }
+        public DbSet<MuteTimersEntity> MuteTimers { get; set; }
+        public DbSet<ProfileEntity> Profile { get; set; }
+        public DbSet<SelfAssignableRolesEntity> SelfAssignableRoles { get; set; }
+        public DbSet<UsersEntity> Users { get; set; }
+        public DbSet<WaifusEntity> Waifus { get; set; }
+        public DbSet<WarningsEntity> Warnings { get; set; }
+        public DbSet<PatreonEntity> Patreon { get; set; }
+        public DbSet<VotesEntity> Votes { get; set; }
+#nullable enable
 
         public RiasDbContext(DbContextOptions<RiasDbContext> options) : base(options)
         {

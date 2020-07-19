@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Disqord.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -10,9 +9,7 @@ using Rias.Core.Database;
 using Rias.Core.Database.Entities;
 using Rias.Core.Implementation;
 using Rias.Core.Models;
-using Rias.Core.Services.WebSocket;
 using Serilog;
-using Serilog.Events;
 using PatronStatus = Rias.Core.Models.PatronStatus;
 
 namespace Rias.Core.Services
@@ -25,19 +22,23 @@ namespace Rias.Core.Services
         public const int ProfileSecondBadgeTier = 3;
         public const int ProfileThirdBadgeTier = 4;
 
+        private readonly WebSocketClient? _webSocket;
+
         public PatreonService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             var credentials = serviceProvider.GetRequiredService<Credentials>();
             if (credentials.PatreonConfig != null)
             {
-                var websocket = new RiasWebSocket(credentials.PatreonConfig, "PatreonWebSocket");
-                RunTaskAsync(websocket.ConnectAsync());
-                websocket.Log += LogAsync;
-                websocket.DataReceived += PledgeReceivedAsync;
+                _webSocket = new WebSocketClient(credentials.PatreonConfig);
+                RunTaskAsync(ConnectWebSocket());
+                _webSocket.DataReceived += PledgeReceivedAsync;
+                _webSocket.Closed += WebSocketClosed;
+                
+                RunTaskAsync(CheckPatronsAsync());
             }
         }
-        
-        public async Task CheckPatronsAsync()
+
+        private async Task CheckPatronsAsync()
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -57,23 +58,23 @@ namespace Rias.Core.Services
             
             await db.SaveChangesAsync();
         }
-        
-        private Task LogAsync(MessageLoggedEventArgs args)
+
+        private async Task ConnectWebSocket()
         {
-            var logEventLevel = args.Severity switch
+            while (true)
             {
-                LogMessageSeverity.Trace => LogEventLevel.Verbose,
-                LogMessageSeverity.Information => LogEventLevel.Information,
-                LogMessageSeverity.Debug => LogEventLevel.Debug,
-                LogMessageSeverity.Warning => LogEventLevel.Warning,
-                LogMessageSeverity.Error => LogEventLevel.Error,
-                LogMessageSeverity.Critical => LogEventLevel.Fatal,
-                _ => LogEventLevel.Verbose
-            };
-
-            Log.Logger.Write(logEventLevel, $"{args.Source}: {args.Message}");
-
-            return Task.CompletedTask;
+                try
+                {
+                    await _webSocket!.ConnectAsync();
+                    Log.Information("Patreon WebSocket connected.");
+                    break;
+                }
+                catch
+                {
+                    Log.Warning("Patreon WebSocket couldn't connect. Retrying in 10 seconds...");
+                    await Task.Delay(10000);
+                }
+            }
         }
         
         private async Task PledgeReceivedAsync(string data)
@@ -97,6 +98,13 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
             
             Log.Information($"Patreon discord user with ID {patreonDb.UserId} was rewarded with {reward} hearts");
+        }
+
+        private async Task WebSocketClosed()
+        {
+            Log.Warning("Patreon WebSocket was closed. Retrying in 10 seconds...");
+            await Task.Delay(10000);
+            await RunTaskAsync(ConnectWebSocket());
         }
     }
 }

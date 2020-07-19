@@ -1,6 +1,6 @@
 namespace Rias.Core.Configuration
 {
-    public class VotesConfiguration : IWebsocketConfiguration
+    public class VotesConfiguration : IWebSocketConfiguration
     {
         public string? WebSocketHost { get; set; }
         public ushort WebSocketPort { get; set; }
