@@ -35,16 +35,34 @@ namespace Rias.Core.Services
             _ = Task.Run(ReceiveAsync);
         }
 
+        public async Task SendAsync(string data)
+        {
+            if (_webSocket is null)
+                return;
+            
+            if (_webSocket.State != WebSocketState.Open)
+                return;
+            
+            var buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(data));
+
+            try
+            {
+                await _webSocket.SendAsync(buffer, WebSocketMessageType.Binary, true, CancellationToken.None);
+            }
+            catch
+            {
+            }
+        }
+
         private async Task ReceiveAsync()
         {
-            var buffer = new byte[4096];
-            var bufferMemory = buffer.AsMemory();
+            var buffer = new ArraySegment<byte>(new byte[4096]);
 
             try
             {
                 while (_webSocket!.State == WebSocketState.Open)
                 {
-                    var result = await _webSocket.ReceiveAsync(bufferMemory, CancellationToken.None);
+                    var result = await _webSocket.ReceiveAsync(buffer, CancellationToken.None);
 
                     if (result.MessageType == WebSocketMessageType.Close)
                     {

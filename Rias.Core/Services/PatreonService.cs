@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,7 @@ namespace Rias.Core.Services
         public const int ProfileThirdBadgeTier = 4;
 
         private readonly WebSocketClient? _webSocket;
+        private readonly Timer? _sendPatronsTimer;
 
         public PatreonService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
@@ -35,6 +37,7 @@ namespace Rias.Core.Services
                 _webSocket.Closed += WebSocketClosed;
                 
                 RunTaskAsync(CheckPatronsAsync());
+                _sendPatronsTimer = new Timer(async _ => await SendPatronsAsync(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             }
         }
 
@@ -105,6 +108,33 @@ namespace Rias.Core.Services
             Log.Warning("Patreon WebSocket was closed. Retrying in 10 seconds...");
             await Task.Delay(10000);
             await RunTaskAsync(ConnectWebSocket());
+        }
+
+        private async Task SendPatronsAsync()
+        {
+            using var scope = RiasBot.CreateScope();
+            await using var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var patrons = (await db.GetOrderedListAsync<PatreonEntity, int>(x => x.PatronStatus == PatronStatus.ActivePatron && x.Tier > 0,
+                    x => x.Tier, true))
+                .Where(x => RiasBot.Users.ContainsKey(x.UserId))
+                .Select(x =>
+                {
+                    var user = RiasBot.Users[x.UserId];
+                    return new PatreonDiscordUser
+                    {
+                        PatreonId = x.PatreonUserId,
+                        DiscordId = x.UserId,
+                        PatreonUsername = x.PatreonUserName,
+                        DiscordUsername = user.Name,
+                        DiscordDiscriminator = user.Discriminator,
+                        DiscordAvatar = user.GetAvatarUrl(),
+                        Tier = x.Tier
+                    };
+                });
+
+            var data = JsonConvert.SerializeObject(patrons, Formatting.Indented);
+            await _webSocket!.SendAsync(data);
+            Log.Debug("Patrons sent over the WebSocket");
         }
     }
 }
