@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Rias.Core.Configuration;
+using Serilog;
 
 namespace Rias.Core.Services
 {
@@ -27,8 +28,6 @@ namespace Rias.Core.Services
         {
             _webSocket?.Dispose();
             _webSocket = new ClientWebSocket();
-            _webSocket.Options.Proxy = null;
-            _webSocket.Options.KeepAliveInterval = TimeSpan.Zero;
             _webSocket.Options.SetRequestHeader("Authorization", _configuration.Authorization);
             
             await _webSocket.ConnectAsync(_url, CancellationToken.None);
@@ -56,7 +55,8 @@ namespace Rias.Core.Services
 
         private async Task ReceiveAsync()
         {
-            var buffer = new ArraySegment<byte>(new byte[4096]);
+            var bytes = new byte[4096];
+            var buffer = new ArraySegment<byte>(bytes);
 
             try
             {
@@ -68,7 +68,7 @@ namespace Rias.Core.Services
                     {
                         try
                         {
-                            await _webSocket.CloseAsync(_webSocket.CloseStatus ?? WebSocketCloseStatus.EndpointUnavailable, _webSocket.CloseStatusDescription, CancellationToken.None);
+                            await _webSocket.CloseAsync(_webSocket.CloseStatus.GetValueOrDefault(), _webSocket.CloseStatusDescription, CancellationToken.None);
                         }
                         catch
                         {
@@ -81,8 +81,9 @@ namespace Rias.Core.Services
                     DataReceived?.Invoke(Encoding.UTF8.GetString(buffer));
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Error(ex, "Exception in Rias WebSocketClient");
                 Closed?.Invoke();
             }
         }
