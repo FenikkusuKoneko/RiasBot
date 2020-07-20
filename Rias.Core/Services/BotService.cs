@@ -214,8 +214,11 @@ namespace Rias.Core.Services
                 RiasBot.GetRequiredService<MuteService>();
                 
                 var reactionsService =  RiasBot.GetRequiredService<ReactionsService>();
-                reactionsService.WeebUserAgent = $"{RiasBot.CurrentUser.Name}/{Rias.Version}";
-                reactionsService.AddWeebUserAgent();
+#if DEBUG
+                reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser.Name}/{Rias.Version} (development)");
+#else
+                reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser.Name}/{Rias.Version}");
+#endif
             }
 
             return Task.CompletedTask;

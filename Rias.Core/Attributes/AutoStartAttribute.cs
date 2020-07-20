@@ -8,6 +8,5 @@ namespace Rias.Core.Attributes
     [AttributeUsage(AttributeTargets.Class)]
     public class AutoStartAttribute : Attribute
     {
-        public int Priority { get; set; }
     }
 }

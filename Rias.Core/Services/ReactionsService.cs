@@ -9,8 +9,6 @@ namespace Rias.Core.Services
     public class ReactionsService : RiasService
     {
         private readonly HttpClient _httpClient;
-
-        public string? WeebUserAgent;
         
         public ReactionsService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
@@ -19,12 +17,12 @@ namespace Rias.Core.Services
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Wolke " + Credentials.WeebServicesToken);
         }
 
-        public void AddWeebUserAgent()
+        public void AddWeebUserAgent(string weebUserAgent)
         {
             if (_httpClient.DefaultRequestHeaders.Contains("User-Agent"))
                 return;
             
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", WeebUserAgent);
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", weebUserAgent);
         }
         
         public async Task<string?> GetReactionUrlAsync(string type)

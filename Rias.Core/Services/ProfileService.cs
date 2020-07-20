@@ -29,8 +29,6 @@ namespace Rias.Core.Services
                 Timeout = TimeSpan.FromSeconds(10)
             };
         }
-
-        public string CurrencyLocalization = Localization.GamblingCurrency;
         
         private readonly string _defaultBackgroundPath = Path.Combine(Environment.CurrentDirectory, "assets/images/default_background.png");
 
@@ -108,7 +106,7 @@ namespace Rias.Core.Services
             settings.FontPointsize = 15;
 
             var guildId = member.Guild.Id;
-            using var currencyTextImage = new MagickImage($"caption:{GetText(guildId, CurrencyLocalization)}", settings);
+            using var currencyTextImage = new MagickImage($"caption:{GetText(guildId, Localization.GamblingHearts)}", settings);
             image.Draw(new DrawableComposite(segmentLength - (double) currencyTextImage.Width / 2, 315, CompositeOperator.Over, currencyTextImage));
             
             using var waifusTextImage = new MagickImage($"caption:{GetText(guildId, Localization.WaifuWaifus)}", settings);

@@ -22,7 +22,7 @@ namespace Rias.Core
     public class Rias : DiscordSharder, IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.0.15";
+        public const string Version = "3.0.16";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         private readonly IServiceProvider _serviceProvider;
@@ -62,8 +62,7 @@ namespace Rias.Core
                 .Where(x => typeof(RiasService).IsAssignableFrom(x)
                             && x.GetCustomAttribute<AutoStartAttribute>() != null
                             && !x.GetTypeInfo().IsInterface
-                            && !x.GetTypeInfo().IsAbstract)
-                .OrderByDescending(x => x.GetCustomAttribute<AutoStartAttribute>()!.Priority);
+                            && !x.GetTypeInfo().IsAbstract);
             
             foreach (var serviceType in autoStartServices)
                 _serviceProvider.GetRequiredService(serviceType);
@@ -122,7 +121,7 @@ namespace Rias.Core
             if (serviceType == typeof(Rias) || serviceType == GetType())
                 return this;
 
-            return _serviceProvider?.GetService(serviceType);
+            return _serviceProvider.GetService(serviceType);
         }
     }
 }
