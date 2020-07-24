@@ -171,7 +171,6 @@ namespace Rias.Core.Services
             var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
                     
             guildDb.XpNotification = false;
-            guildDb.XpWebhookId = 0;
             await db.SaveChangesAsync();
         }
 
