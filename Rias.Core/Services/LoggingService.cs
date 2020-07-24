@@ -14,6 +14,9 @@ namespace Rias.Core.Services
     [AutoStart]
     public class LoggingService : RiasService
     {
+        private static readonly Regex LogRegex = new Regex(@"(Guild.*became available)|(Requesting offline members)|(MessageUpdate)",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        
         public LoggingService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             var commandService = serviceProvider.GetRequiredService<CommandService>();
@@ -35,11 +38,8 @@ namespace Rias.Core.Services
                 LogMessageSeverity.Critical => LogEventLevel.Fatal,
                 _ => LogEventLevel.Verbose
             };
-
-            if (args.Message != null
-                && (Regex.IsMatch(args.Message, @"Guild.*became available")
-                    || args.Message.Contains("MessageUpdated")
-                    || args.Message.Contains("Requesting offline members for")))
+            
+            if (args.Message != null && LogRegex.IsMatch(args.Message))
                 return;
             
             Log.Logger.Write(logEventLevel, $"{args.Source}: {args.Exception?.ToString() ?? args.Message}");

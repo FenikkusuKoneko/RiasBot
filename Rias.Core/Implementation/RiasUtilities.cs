@@ -20,6 +20,10 @@ namespace Rias.Core.Implementation
         
         public static Color ConfirmColor = Green;
         public static Color ErrorColor = Red;
+
+        private static readonly Regex TimeSpanRegex = new Regex(
+            @"^(?:(?<months>\d{1,2})mo)?(?:(?<weeks>\d{1,3})w)?(?:(?<days>\d{1,3})d)?(?:(?<hours>\d{1,4})h)?(?:(?<minutes>\d{1,5})m)?(?:(?<seconds>\d{1,5})s)?$",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
         
         /// <summary>
         /// Checks if the user's message has the bot mention
@@ -58,26 +62,22 @@ namespace Rias.Core.Implementation
         /// <param name="input"></param>
         public static TimeSpan? ConvertToTimeSpan(string input)
         {
-            var regex = new Regex(@"^(?:(?<months>\d{1,2})mo)?(?:(?<weeks>\d{1,3})w)?(?:(?<days>\d{1,3})d)?(?:(?<hours>\d{1,4})h)?(?:(?<minutes>\d{1,5})m)?(?:(?<seconds>\d{1,5})s)?$",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
-
-            var match = regex.Match(input);
+            var match = TimeSpanRegex.Match(input);
 
             if (match.Length == 0)
                 return null;
 
             var timeValues = new Dictionary<string, int>();
 
-            foreach (var group in regex.GetGroupNames())
+            foreach (var group in match.Groups.Values)
             {
-                if (group == "0") continue;
-                if (!int.TryParse(match.Groups[group].Value, out var value))
+                if (!int.TryParse(group.Value, out var value))
                 {
-                    timeValues[group] = 0;
+                    timeValues[group.Name] = 0;
                     continue;
                 }
 
-                timeValues[group] = value;
+                timeValues[group.Name] = value;
             }
 
             var now = DateTime.UtcNow;
