@@ -113,7 +113,7 @@ namespace Rias.Core.Services
         private async Task SendPatronsAsync()
         {
             using var scope = RiasBot.CreateScope();
-            await using var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var patrons = (await db.GetOrderedListAsync<PatreonEntity, int>(x => x.PatronStatus == PatronStatus.ActivePatron && x.Tier > 0,
                     x => x.Tier, true))
                 .Where(x => RiasBot.Users.ContainsKey(x.UserId))

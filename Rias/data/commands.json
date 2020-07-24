@@ -1424,9 +1424,10 @@
         },
         {
           "aliases": "xpnotification xpnotify xpn",
-          "description": "Enables or disables the server xp notifications.",
+          "description": "Enables or disables the server xp notifications. By default the notifications will be sent in the channel where the user leveled up. You can provide a channel and the notifications will be sent there.",
           "remarks": [
-            "{0}xpnotify"
+            "{0}xpnotify",
+            "{0}xpnotify #xp"
           ]
         },
         {

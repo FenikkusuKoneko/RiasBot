@@ -11,7 +11,10 @@
         public bool ByeNotification { get; set; }
         public string? ByeMessage { get; set; }
         public ulong ByeWebhookId { get; set; }
-        public bool GuildXpNotification { get; set; }
+        public bool XpNotification { get; set; }
+        public ulong XpWebhookId { get; set; }
+        public string? XpLevelUpMessage { get; set; }
+        public string? XpLevelUpRoleRewardMessage { get; set; }
         public ulong AutoAssignableRoleId { get; set; }
         public int PunishmentWarningsRequired { get; set; }
         public string? WarningPunishment { get; set; }

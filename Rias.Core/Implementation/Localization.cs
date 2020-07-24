@@ -575,6 +575,7 @@ namespace Rias.Core.Implementation
         public static string XpLeaderboard => "xp_leaderboard";
         public static string XpGuildLeaderboard => "xp_guild_leaderboard";
         public static string XpNotificationEnabled => "xp_notification_enabled";
+        public static string XpNotificationEnabledChannel => "xp_notification_enabled_channel";
         public static string XpNotificationDisabled => "xp_notification_disabled";
         public static string XpLevelUpRoleRewardLimit => "xp_level_up_role_reward_limit";
         public static string XpLevelUpRoleRewardRemoved => "xp_level_up_role_reward_removed";

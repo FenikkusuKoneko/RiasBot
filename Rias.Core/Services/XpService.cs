@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Disqord;
+using Disqord.Rest;
 using ImageMagick;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,61 +95,77 @@ namespace Rias.Core.Services
 
             await db.SaveChangesAsync();
             _guildUsersXp[(member.Guild.Id, member.Id)] = now;
+
+            if (currentLevel == nextLevel)
+                return;
             
-            if (currentLevel != nextLevel)
-                await UserLevelUpAsync(member, channel, nextLevel);
+            var guild = member.Guild;
+            CachedRole? role = null;
+            
+            var currentMember = guild.CurrentMember;
+            if (currentMember.Permissions.ManageRoles)
+            {
+                var xpRoleDb = await db.GuildXpRoles.FirstOrDefaultAsync(x => x.GuildId == guild.Id && x.Level == nextLevel);
+                if (xpRoleDb != null)
+                {
+                    role = guild.GetRole(xpRoleDb.RoleId);
+                    if (role != null && member.Roles.All(x => x.Key != role.Id))
+                        await member.GrantRoleAsync(role.Id);
+                }
+            }
+            
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
+            if (guildDb != null && guildDb.XpNotification)
+                await SendXpNotificationAsync(member, (CachedTextChannel) channel, role, nextLevel, guildDb.XpWebhookId);
         }
         
-        private async Task UserLevelUpAsync(CachedMember member, IMessageChannel channel, int level)
+        private async Task SendXpNotificationAsync(CachedMember member, CachedTextChannel channel, CachedRole? role, int level, ulong xpWebhookId)
         {
             var guild = member.Guild;
-            using var scope = RiasBot.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
-
             var currentMember = guild.CurrentMember;
-            if (!currentMember.Permissions.SendMessages)
-                return;
             
-            if (!currentMember.Permissions.ManageRoles)
+            if (xpWebhookId == 0)
             {
-                if (guildDb != null && guildDb.GuildXpNotification)
-                    await ReplyConfirmationAsync(channel, member.Guild.Id, Localization.XpGuildLevelUp, member, level);
+                if (role is null)
+                {
+                    if (currentMember.GetPermissionsFor(channel).SendMessages)
+                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUp, member, level);
+                }
+                else
+                {
+                    if (currentMember.Permissions.ManageWebhooks)
+                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUpRoleReward, member, level, role);
+                }
+            }
+            else if (currentMember.Permissions.ManageWebhooks)
+            {
+                var webhook = await guild.GetWebhookAsync(xpWebhookId);
+                if (webhook is null)
+                {
+                    using var scope = RiasBot.CreateScope();
+                    var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+                    var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
+                    
+                    guildDb.XpNotification = false;
+                    guildDb.XpWebhookId = 0;
+                    await db.SaveChangesAsync();
+                    return;
+                }
                 
-                return;
-            }
-            
-            var xpRoleDb = await db.GuildXpRoles.FirstOrDefaultAsync(x => x.GuildId == guild.Id && x.Level == level);
-            if (xpRoleDb is null)
-            {
-                if (guildDb != null && guildDb.GuildXpNotification)
-                    await ReplyConfirmationAsync(channel, member.Guild.Id, Localization.XpGuildLevelUp, member, level);
+                var description = role is null
+                    ? GetText(guild.Id, Localization.XpGuildLevelUp, member, level)
+                    : GetText(guild.Id, Localization.XpGuildLevelUpRoleReward, member, level, role);
                 
-                return;
-            }
-
-            var role = guild.GetRole(xpRoleDb.RoleId);
-            if (role is null)
-            {
-                if (guildDb != null && guildDb.GuildXpNotification)
-                    await ReplyConfirmationAsync(channel, member.Guild.Id, Localization.XpGuildLevelUp, member, level);
+                var embed = new LocalEmbedBuilder
+                {
+                    Color = RiasUtilities.ConfirmColor,
+                    Description = description
+                };
                 
-                return;
-            }
-
-            if (currentMember.CheckRoleHierarchy(role) > 0 && !role.IsManaged && member.Roles.All(x => x.Key != role.Id))
-            {
-                await member.GrantRoleAsync(role.Id);
-                if (guildDb != null && guildDb.GuildXpNotification)
-                    await ReplyConfirmationAsync(channel, member.Guild.Id, Localization.XpGuildLevelUpRoleReward, member, level, role);
-            }
-            else
-            {
-                if (guildDb != null && guildDb.GuildXpNotification)
-                    await ReplyConfirmationAsync(channel, member.Guild.Id, Localization.XpGuildLevelUp, member, level);
+                await new RestWebhookClient(webhook).ExecuteAsync(embeds: new []{embed.Build()});
             }
         }
-        
+
         public async Task<Stream> GenerateXpImageAsync(CachedMember member)
         {
             var xpInfo = await GetXpInfo(member);

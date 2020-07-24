@@ -1,8 +1,12 @@
 using System;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Disqord;
+using Disqord.Rest;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
@@ -16,8 +20,11 @@ namespace Rias.Core.Modules.Xp
     [Name("Xp")]
     public class XpModule : RiasModule<XpService>
     {
+        private readonly HttpClient _httpClient;
+        
         public XpModule(IServiceProvider serviceProvider) : base(serviceProvider)
         {
+            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
         
         [Command("xp"), Context(ContextType.Guild),
@@ -115,17 +122,50 @@ namespace Rias.Core.Modules.Xp
         }
         
         [Command("xpnotification"), Context(ContextType.Guild),
-         UserPermission(Permission.Administrator)]
-        public async Task XpNotificationAsync()
+         UserPermission(Permission.Administrator), BotPermission(Permission.ManageWebhooks),
+         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+        public async Task XpNotificationAsync(CachedTextChannel? channel = null)
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
-            var guildXpNotification = guildDb.GuildXpNotification = !guildDb.GuildXpNotification;
+            
+            if (channel is null)
+            {
+                guildDb.XpNotification = !guildDb.XpNotification;
+                if (guildDb.XpNotification)
+                {
+                    await DbContext.SaveChangesAsync();
+                    await ReplyConfirmationAsync(Localization.XpNotificationEnabled);
+                }
+                else
+                {
+                    var webhook = guildDb.XpWebhookId > 0 ? await Context.Guild!.GetWebhookAsync(guildDb.XpWebhookId) : null;
+                    if (webhook != null)
+                        await webhook.DeleteAsync();
 
-            await DbContext.SaveChangesAsync();
-            if (guildXpNotification)
-                await ReplyConfirmationAsync(Localization.XpNotificationEnabled);
+                    guildDb.XpWebhookId = 0;
+                    await DbContext.SaveChangesAsync();
+                    await ReplyConfirmationAsync(Localization.XpNotificationDisabled);
+                }
+            }
             else
-                await ReplyConfirmationAsync(Localization.XpNotificationDisabled);
+            {
+                var currentMember = Context.CurrentMember!;
+                await using var stream = await _httpClient.GetStreamAsync(currentMember.GetAvatarUrl());
+                await using var webhookAvatar = new MemoryStream();
+                await stream.CopyToAsync(webhookAvatar);
+                webhookAvatar.Position = 0;
+                
+                var webhook = guildDb.XpWebhookId > 0 ? await Context.Guild!.GetWebhookAsync(guildDb.XpWebhookId) : null;
+                if (webhook != null && webhook.ChannelId != channel.Id)
+                    await webhook.ModifyAsync(x => x.ChannelId = channel.Id);
+                else
+                    webhook = await channel.CreateWebhookAsync(currentMember.Name, webhookAvatar);
+
+                guildDb.XpNotification = true;
+                guildDb.XpWebhookId = webhook.Id;
+                await DbContext.SaveChangesAsync();
+                await ReplyConfirmationAsync(Localization.XpNotificationEnabledChannel, channel.Mention);
+            }
         }
         
         [Command("leveluprolereward"), Context(ContextType.Guild),
