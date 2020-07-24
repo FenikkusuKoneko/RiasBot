@@ -22,10 +22,7 @@ namespace Rias.Core.TypeParsers
             
             if (user != null)
                 return TypeParserResult<IUser>.Successful(user);
-                
-            if (parameter.IsOptional)
-                return TypeParserResult<IUser>.Successful((CachedMember) parameter.DefaultValue);
-            
+
             return TypeParserResult<IUser>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
         }
     }

@@ -55,10 +55,7 @@ namespace Rias.Core.TypeParsers
             member = members.FirstOrDefault(u => string.Equals(u.Value.Nick, value, StringComparison.OrdinalIgnoreCase)).Value;
             if (member != null)
                 return TypeParserResult<CachedMember>.Successful(member);
-
-            if (parameter.IsOptional)
-                return TypeParserResult<CachedMember>.Successful((CachedMember) parameter.DefaultValue);
-
+            
             return TypeParserResult<CachedMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
         }
     }

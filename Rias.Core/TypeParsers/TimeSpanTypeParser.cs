@@ -15,9 +15,6 @@ namespace Rias.Core.TypeParsers
             if (timespan.HasValue)
                 return TypeParserResult<TimeSpan>.Successful(timespan.Value);
 
-            if (parameter.IsOptional)
-                return TypeParserResult<TimeSpan>.Successful((TimeSpan) parameter.DefaultValue);
-
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
             return TypeParserResult<TimeSpan>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserTimeSpanUnsuccessful));
         }

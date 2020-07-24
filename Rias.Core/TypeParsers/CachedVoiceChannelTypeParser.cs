@@ -29,9 +29,6 @@ namespace Rias.Core.TypeParsers
             if (channel != null)
                 return TypeParserResult<CachedVoiceChannel>.Successful(channel);
 
-            if (parameter.IsOptional)
-                return TypeParserResult<CachedVoiceChannel>.Successful((CachedVoiceChannel) parameter.DefaultValue);
-
             return TypeParserResult<CachedVoiceChannel>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationVoiceChannelNotFound));
         }
     }

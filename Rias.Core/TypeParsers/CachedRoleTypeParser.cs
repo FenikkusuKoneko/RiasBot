@@ -35,9 +35,6 @@ namespace Rias.Core.TypeParsers
             if (role != null)
                 return TypeParserResult<CachedRole>.Successful(role);
 
-            if (parameter.IsOptional)
-                return TypeParserResult<CachedRole>.Successful((CachedRole)parameter.DefaultValue);
-
             return TypeParserResult<CachedRole>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationRoleNotFound));
         }
     }

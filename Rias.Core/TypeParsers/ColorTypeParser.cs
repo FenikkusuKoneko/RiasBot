@@ -22,9 +22,6 @@ namespace Rias.Core.TypeParsers
             if (!color.IsEmpty)
                 return TypeParserResult<Color>.Successful(new Color(color.R, color.G, color.B));
 
-            if (parameter.IsOptional)
-                return TypeParserResult<Color>.Successful((Color) parameter.DefaultValue);
-
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
             return TypeParserResult<Color>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserInvalidColor));
         }

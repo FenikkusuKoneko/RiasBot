@@ -36,9 +36,6 @@ namespace Rias.Core.TypeParsers
             if (channel != null)
                 return TypeParserResult<CachedCategoryChannel>.Successful(channel);
 
-            if (parameter.IsOptional)
-                return TypeParserResult<CachedCategoryChannel>.Successful((CachedCategoryChannel) parameter.DefaultValue);
-
             return TypeParserResult<CachedCategoryChannel>.Unsuccessful(localization.GetText(context.Guild.Id, Localization.AdministrationCategoryChannelNotFound));
         }
     }
