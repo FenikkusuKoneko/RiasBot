@@ -142,13 +142,7 @@ namespace Rias.Core.Services
                 var webhook = await guild.GetWebhookAsync(xpWebhookId);
                 if (webhook is null)
                 {
-                    using var scope = RiasBot.CreateScope();
-                    var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-                    var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
-                    
-                    guildDb.XpNotification = false;
-                    guildDb.XpWebhookId = 0;
-                    await db.SaveChangesAsync();
+                    await DisableXpNotificationAsync(guild);
                     return;
                 }
                 
@@ -162,8 +156,23 @@ namespace Rias.Core.Services
                     Description = description
                 };
                 
-                await new RestWebhookClient(webhook).ExecuteAsync(embeds: new []{embed.Build()});
+                await new RestWebhookClient(webhook).ExecuteAsync(embeds: new[] {embed.Build()});
             }
+            else
+            {
+                await DisableXpNotificationAsync(guild);
+            }
+        }
+
+        private async Task DisableXpNotificationAsync(CachedGuild guild)
+        {
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
+                    
+            guildDb.XpNotification = false;
+            guildDb.XpWebhookId = 0;
+            await db.SaveChangesAsync();
         }
 
         public async Task<Stream> GenerateXpImageAsync(CachedMember member)
