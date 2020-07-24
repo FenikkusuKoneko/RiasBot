@@ -75,15 +75,18 @@ namespace Rias.Core.Services
         
         private async Task SendGreetMessageAsync(GuildsEntity guildDb, CachedMember member)
         {
+            var guild = member.Guild;
+            var currentMember = guild.CurrentMember;
+            if (!currentMember.Permissions.ManageWebhooks)
+            {
+                await DisableGreetAsync(guild);
+                return;
+            }
+            
             if (guildDb is null) return;
             if (!guildDb.GreetNotification) return;
             if (string.IsNullOrEmpty(guildDb.GreetMessage)) return;
             if (guildDb.GreetWebhookId == 0) return;
-
-            var guild = member.Guild;
-            var currentMember = guild.CurrentMember;
-            if (!currentMember.Permissions.ManageWebhooks)
-                return;
 
             var guildWebhook = await guild.GetWebhookAsync(guildDb.GreetWebhookId);
             if (_webhooks.TryGetValue(guildDb.GreetWebhookId, out var webhook))
@@ -146,15 +149,18 @@ namespace Rias.Core.Services
 
         private async Task SendByeMessageAsync(GuildsEntity guildDb, CachedUser user, CachedGuild guild)
         {
+            var currentMember = guild.CurrentMember;
+            if (!currentMember.Permissions.ManageWebhooks)
+            {
+                await DisableByeAsync(guild);
+                return;
+            }
+            
             if (guildDb is null) return;
             if (!guildDb.ByeNotification) return;
             if (string.IsNullOrEmpty(guildDb.ByeMessage)) return;
             if (guildDb.ByeWebhookId == 0) return;
-            
-            var currentMember = guild.CurrentMember;
-            if (!currentMember.Permissions.ManageWebhooks)
-                return;
-            
+
             var guildWebhook = await guild.GetWebhookAsync(guildDb.ByeWebhookId);
             if (_webhooks.TryGetValue(guildDb.ByeWebhookId, out var webhook))
             {
