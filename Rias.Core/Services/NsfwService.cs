@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace Rias.Core.Services
         private const string YandereApi = "https://yande.re/post.json?limit=100&tags=rating:explicit+";
         private const string GelbooruApi = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=100&tags=rating:explicit+";
 
-        private readonly List<string> _blacklistTags = new List<string> {"loli", "shota", "cub"};
+        private readonly ImmutableHashSet<string> _blacklistTags = ImmutableHashSet.Create("loli", "shota", "cub");
         
         public bool CacheInitialized { get; private set; }
         
@@ -50,6 +51,7 @@ namespace Rias.Core.Services
         
         public async Task<NsfwImage?> GetNsfwImageAsync(NsfwImageApiProvider provider, string? tags = null)
         {
+            tags = tags?.ToLower();
             var random = new Random();
             if (provider == NsfwImageApiProvider.Random)
                 provider = (NsfwImageApiProvider) random.Next(4);
@@ -64,7 +66,7 @@ namespace Rias.Core.Services
             }
 
             var tagsList = tags.Split(",", StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => x.Trim().ToLower().Replace(" ", "_"))
+                .Select(x => x.Trim().Replace(" ", "_"))
                 .Where(y => !_blacklistTags.Contains(y))
                 .ToList();
 
@@ -76,7 +78,7 @@ namespace Rias.Core.Services
                 await PopulateCacheTagAsync(provider, tag);
             }
 
-            nsfwImagesList = nsfwImages.Where(x => tagsList.All(tag1 => x.Tags.Any(tag2 => string.Equals(tag1, tag2)))).ToList();
+            nsfwImagesList = nsfwImages.Where(x => tagsList.All(tag1 => x.Tags!.Any(tag2 => string.Equals(tag1, tag2)))).ToList();
             
             if (nsfwImagesList.Count == 0)
                 return null;
@@ -84,19 +86,26 @@ namespace Rias.Core.Services
             return nsfwImagesList[random.Next(nsfwImagesList.Count)];
         }
         
-        private async Task PopulateCacheAsync(IEnumerable<NsfwImageApi>? nsfwImagesApi, NsfwImageApiProvider provider)
+        private async Task PopulateCacheAsync(IList<NsfwImageApi>? nsfwImagesApi, NsfwImageApiProvider provider)
         {
             if (nsfwImagesApi is null)
                 return;
-            
-            var imagesApi = nsfwImagesApi.Select(x => new NsfwImage
+
+            var imagesApi = new List<NsfwImage>();
+            foreach (var nsfwImageApi in nsfwImagesApi)
             {
-                Url = x.FileUrl,
-                Tags = (string.IsNullOrEmpty(x.Tags) ? x.TagString! : x.Tags)
-                    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
-                    .Where(y => !_blacklistTags.Contains(y)),
-                Provider = provider
-            }).ToList();
+                var imageTags = string.IsNullOrEmpty(nsfwImageApi.Tags) ? nsfwImageApi.TagString! : nsfwImageApi.Tags;
+                var tags = imageTags.ToLower().Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                if (tags.Any(x => _blacklistTags.Contains(x)))
+                    continue;
+                
+                imagesApi.Add(new NsfwImage
+                {
+                    Url = nsfwImageApi.FileUrl,
+                    Tags = tags.ToList(),
+                    Provider = provider
+                });
+            }
 
             foreach (var image in imagesApi)
             {
@@ -130,7 +139,7 @@ namespace Rias.Core.Services
             Log.Debug($"NSFW tag <{tag}> downloaded");
         }
         
-        private async Task<List<NsfwImageApi>?> DeserializeJsonHentaiAsync(string url)
+        private async Task<IList<NsfwImageApi>?> DeserializeJsonHentaiAsync(string url)
         {
             try
             {
@@ -149,7 +158,7 @@ namespace Rias.Core.Services
             }
         }
         
-        private async Task<List<NsfwImageApi>?> DeserializeXmlHentaiAsync(string url)
+        private async Task<IList<NsfwImageApi>?> DeserializeXmlHentaiAsync(string url)
         {
             try
             {
@@ -188,7 +197,7 @@ namespace Rias.Core.Services
         public class NsfwImage
         {
             public string? Url { get; set; }
-            public IEnumerable<string>? Tags { get; set; }
+            public IList<string>? Tags { get; set; }
             public NsfwImageApiProvider? Provider { get; set; }
         }
         
@@ -196,8 +205,10 @@ namespace Rias.Core.Services
         {
             [JsonProperty("file_url")]
             public string? FileUrl { get; set; }
+            
             [JsonProperty("tags")]
             public string? Tags { get; set; }
+            
             [JsonProperty("tag_string")]
             public string? TagString { get; set; }
         }
