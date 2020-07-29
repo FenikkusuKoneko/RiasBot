@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Disqord;
 using Disqord.Rest;
@@ -165,6 +166,112 @@ namespace Rias.Core.Modules.Xp
                 guildDb.XpWebhookId = webhook.Id;
                 await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync(Localization.XpNotificationEnabledChannel, channel.Mention);
+            }
+        }
+
+        [Command("xpmessage"), Context(ContextType.Guild),
+         UserPermission(Permission.Administrator)]
+        public async Task XpMessageAsync([Remainder] string? message = null)
+        {
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            if (string.IsNullOrEmpty(message))
+            {
+                guildDb.XpLevelUpMessage = null;
+                await DbContext.SaveChangesAsync();
+                await ReplyConfirmationAsync(Localization.XpNotificationMessageRemoved);
+                return;
+            }
+            
+            if (message.Length > 1500)
+            {
+                await ReplyErrorAsync(Localization.XpNotificationMessageLengthLimit, 1500);
+                return;
+            }
+
+            guildDb.XpLevelUpMessage = message;
+            await DbContext.SaveChangesAsync();
+            
+            var reply = $"{GetText(Localization.XpNotificationMessageSet)}\n";
+            if (guildDb.XpNotification && guildDb.XpWebhookId > 0)
+            {
+                var webhook = await Context.Guild!.GetWebhookAsync(guildDb.XpWebhookId);
+                if (webhook is null)
+                {
+                    reply += GetText(Localization.XpNotificationNotEnabled);
+                }
+                else
+                {
+                    var webhookChannel = Context.Guild!.GetTextChannel(webhook.ChannelId);
+                    reply += GetText(Localization.XpNotificationSetChannel, webhookChannel.Mention);
+                }
+            }
+            else if (guildDb.XpNotification)
+                reply += GetText(Localization.XpNotificationSet);
+            else
+                reply += GetText(Localization.XpNotificationNotEnabled);
+
+            if (RiasUtilities.TryParseEmbed(message, out var embed))
+            {
+                reply += $"\n{GetText(Localization.XpNotificationMessage)}";
+                await Context.Channel.SendMessageAsync(reply, embed: embed.Build());
+            }
+            else
+            {
+                reply += $"\n{GetText(Localization.XpNotificationMessage)}\n\n{message}";
+                await Context.Channel.SendMessageAsync(reply);
+            }
+        }
+        
+        [Command("xpmessagereward"), Context(ContextType.Guild),
+         UserPermission(Permission.Administrator)]
+        public async Task XpMessageRewardAsync([Remainder] string? message = null)
+        {
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            if (string.IsNullOrEmpty(message))
+            {
+                guildDb.XpLevelUpRoleRewardMessage = null;
+                await DbContext.SaveChangesAsync();
+                await ReplyConfirmationAsync(Localization.XpNotificationRewardMessageRemoved);
+                return;
+            }
+            
+            if (message.Length > 1500)
+            {
+                await ReplyErrorAsync(Localization.XpNotificationMessageLengthLimit, 1500);
+                return;
+            }
+
+            guildDb.XpLevelUpRoleRewardMessage = message;
+            await DbContext.SaveChangesAsync();
+            
+            var reply = $"{GetText(Localization.XpNotificationRewardMessageSet)}\n";
+            if (guildDb.XpNotification && guildDb.XpWebhookId > 0)
+            {
+                var webhook = await Context.Guild!.GetWebhookAsync(guildDb.XpWebhookId);
+                if (webhook is null)
+                {
+                    reply += GetText(Localization.XpNotificationNotEnabled);
+                }
+                else
+                {
+                    var webhookChannel = Context.Guild!.GetTextChannel(webhook.ChannelId);
+                    reply += GetText(Localization.XpNotificationSetChannel, webhookChannel.Mention);
+                }
+            }
+            else if (guildDb.XpNotification)
+                reply += GetText(Localization.XpNotificationSet);
+            else
+                reply += GetText(Localization.XpNotificationNotEnabled);
+
+            if (RiasUtilities.TryParseEmbed(message, out var embed))
+            {
+                reply += $"\n{GetText(Localization.XpNotificationMessage)}";
+                await Context.Channel.SendMessageAsync(reply, embed: embed.Build());
+            }
+            else
+            {
+                reply += $"\n{GetText(Localization.XpNotificationMessage)}\n\n{message}";
+                await Context.Channel.SendMessageAsync(reply);
             }
         }
         

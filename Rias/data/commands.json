@@ -1431,6 +1431,23 @@
           ]
         },
         {
+          "aliases": "xpmessage xpm",
+          "description": "Sets the xp notification message. Provide no arguments to clear the set xp notification message and use the default one.\nPlaceholders:\n`%mention%` - will mention the user\n`%user%` - will write the user's username\n`%server%` or `%guild%` - will put the name of the server\n`%avatar%` - will put the user's avatar url (or preview if used in an embed thumbnail or image)\n`%level%` - will put the user's reached level\nEmbeds are supported, json form. If the preview is not an embed, then it means the json message is not correct.",
+          "remarks": [
+            "{0}xpm",
+            "{0}xpm Congratulations %mention%! You are now level %level%."
+          ]
+        },
+        {
+          "aliases": "xpmessagereward xpmr",
+          "description": "Sets the xp notification message for a level up role reward. Provide no arguments to clear the set xp notification message level up role reward and use the default one.\nPlaceholders:\n`%mention%` - will mention the user\n`%user%` - will write the user's username\n`%server%` or `%guild%` - will put the name of the server\n`%avatar%` - will put the user's avatar url (or preview if used in an embed thumbnail or image)\n`%level%` - will put the user's reached level\n`%role%` - will put the rewarded role's name\n`%role_mention%` - will put the rewarded role's mention\nEmbeds are supported, json form. If the preview is not an embed, then it means the json message is not correct.",
+          "remarks": [
+            "{0}xpmr",
+            "{0}xpmr Congratulations %mention%! You are now level %level% and received role %role%.",
+            "{0}xpmr Congratulations %mention%! You reached level %level%. You are now %role%."
+          ]
+        },
+        {
           "aliases": "leveluprolereward lurr",
           "description": "Adds a role in the level up role reward list.\nWhen a user reaches the level it will be rewarded with the role.\nTo remove a role from the list provide no role for the respective level.",
           "remarks": [

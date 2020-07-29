@@ -577,6 +577,15 @@ namespace Rias.Core.Implementation
         public static string XpNotificationEnabled => "xp_notification_enabled";
         public static string XpNotificationEnabledChannel => "xp_notification_enabled_channel";
         public static string XpNotificationDisabled => "xp_notification_disabled";
+        public static string XpNotificationNotEnabled => "xp_notification_not_enabled";
+        public static string XpNotificationMessageSet => "xp_notification_message_set";
+        public static string XpNotificationRewardMessageSet => "xp_notification_reward_message_set";
+        public static string XpNotificationMessageRemoved => "xp_notification_message_removed";
+        public static string XpNotificationRewardMessageRemoved => "xp_notification_reward_message_removed";
+        public static string XpNotificationMessageLengthLimit => "xp_notification_message_length_limit";
+        public static string XpNotificationSet => "xp_notification_set";
+        public static string XpNotificationSetChannel => "xp_notification_set_channel";
+        public static string XpNotificationMessage => "xp_notification_message";
         public static string XpLevelUpRoleRewardLimit => "xp_level_up_role_reward_limit";
         public static string XpLevelUpRoleRewardRemoved => "xp_level_up_role_reward_removed";
         public static string XpLevelUpRoleRewardNotSet => "xp_level_up_role_reward_not_set";
