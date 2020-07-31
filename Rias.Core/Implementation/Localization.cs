@@ -323,6 +323,7 @@ namespace Rias.Core.Implementation
         public static string GamblingHearts => "gambling_hearts";
         public static string GamblingCurrencyYou => "gambling_currency_you";
         public static string GamblingCurrencyYouVote => "gambling_currency_you_vote";
+        public static string GamblingCurrencyYouVoted => "gambling_currency_you_voted";
         public static string GamblingCurrencyUser => "gambling_currency_user";
         public static string GamblingUserRewarded => "gambling_user_rewarded";
         public static string GamblingUserTook => "gambling_user_took";
@@ -330,8 +331,10 @@ namespace Rias.Core.Implementation
         public static string GamblingLeaderboardNoUsers => "gambling_leaderboard_no_users";
         public static string GamblingDailyWait => "gambling_daily_wait";
         public static string GamblingDailyWaitVote => "gambling_daily_wait_vote";
+        public static string GamblingDailyWaitVoted => "gambling_daily_wait_voted";
         public static string GamblingDailyReceived => "gambling_daily_received";
         public static string GamblingDailyReceivedVote => "gambling_daily_received_vote";
+        public static string GamblingDailyReceivedVoted => "gambling_daily_received_voted";
         public static string GamesRpsWon => "games_rps_won";
         public static string GamesRpsLost => "games_rps_lost";
         public static string GamesRpsDraw => "games_rps_draw";
@@ -474,6 +477,7 @@ namespace Rias.Core.Implementation
         public static string UtilityNoPatrons => "utility_no_patrons";
         public static string UtilityAllPatrons => "utility_all_patrons";
         public static string UtilityVoteInfo => "utility_vote_info";
+        public static string UtilityVotedInfo => "utility_voted_info";
         public static string UtilityNoVotes => "utility_no_votes";
         public static string UtilityAllVotes => "utility_all_votes";
         public static string UtilityVotes => "utility_votes";

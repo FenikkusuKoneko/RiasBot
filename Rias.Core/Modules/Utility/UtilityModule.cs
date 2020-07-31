@@ -134,7 +134,15 @@ namespace Rias.Core.Modules.Utility
         [Command("vote")]
         public async Task VoteAsync()
         {
-            await ReplyConfirmationAsync(Localization.UtilityVoteInfo, $"{Credentials.DiscordBotList}/vote", Credentials.Currency);
+            var timeNow = DateTime.UtcNow;
+            var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == Context.User.Id, x => x.DateAdded, true);
+            if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
+                await ReplyConfirmationAsync(Localization.UtilityVoteInfo, $"{Credentials.DiscordBotList}/vote", Credentials.Currency);
+            else
+            {
+                var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
+                await ReplyConfirmationAsync(Localization.UtilityVotedInfo, $"{Credentials.DiscordBotList}/vote", nextVoteHumanized);
+            }
         }
         
         [Command("votes")]

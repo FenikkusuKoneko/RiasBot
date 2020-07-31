@@ -26,12 +26,23 @@ namespace Rias.Core.Modules.Gambling
             {
                 user ??= (CachedMember) Context.User;
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
-                if (user is null || user.Id == Context.User.Id)
+                if (user.Id == Context.User.Id)
                 {
+                    var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == user.Id, x => x.DateAdded, true);
+
                     if (string.IsNullOrEmpty(Credentials.DiscordBotList))
                         await ReplyConfirmationAsync(Localization.GamblingCurrencyYou, userDb.Currency, Credentials.Currency);
                     else
-                        await ReplyConfirmationAsync(Localization.GamblingCurrencyYouVote, userDb.Currency, Credentials.Currency, $"{Credentials.DiscordBotList}/vote");
+                    {
+                        var timeNow = DateTime.UtcNow;
+                        if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
+                            await ReplyConfirmationAsync(Localization.GamblingCurrencyYouVote, userDb.Currency, Credentials.Currency, $"{Credentials.DiscordBotList}/vote", Credentials.Patreon);
+                        else
+                        {
+                            var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
+                            await ReplyConfirmationAsync(Localization.GamblingCurrencyYouVoted, userDb.Currency, Credentials.Currency, $"{Credentials.DiscordBotList}/vote", nextVoteHumanized, Credentials.Patreon);
+                        }
+                    }
                 }
                 else
                 {
@@ -95,6 +106,8 @@ namespace Rias.Core.Modules.Gambling
             public async Task DailyAsync()
             {
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
+                var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == Context.User.Id, x => x.DateAdded, true);
+                
                 var timeNow = DateTime.UtcNow;
                 var nextDaily = userDb.DailyTaken.AddDays(1);
                 if (nextDaily > timeNow)
@@ -103,7 +116,15 @@ namespace Rias.Core.Modules.Gambling
                     if (string.IsNullOrEmpty(Credentials.DiscordBotList))
                         await ReplyErrorAsync(Localization.GamblingDailyWait, timeLeftHumanized);
                     else
-                        await ReplyErrorAsync(Localization.GamblingDailyWaitVote, timeLeftHumanized, $"{Credentials.DiscordBotList}/vote", Credentials.Currency);
+                    {
+                        if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
+                            await ReplyErrorAsync(Localization.GamblingDailyWaitVote, timeLeftHumanized, $"{Credentials.DiscordBotList}/vote", Credentials.Currency, Credentials.Patreon);
+                        else
+                        {
+                            var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
+                            await ReplyErrorAsync(Localization.GamblingDailyWaitVoted, timeLeftHumanized, $"{Credentials.DiscordBotList}/vote", nextVoteHumanized, Credentials.Patreon);
+                        }
+                    }
                     return;
                 }
 
@@ -114,7 +135,15 @@ namespace Rias.Core.Modules.Gambling
                 if (string.IsNullOrEmpty(Credentials.DiscordBotList))
                     await ReplyConfirmationAsync(Localization.GamblingDailyReceived, 100, Credentials.Currency, userDb.Currency);
                 else
-                    await ReplyConfirmationAsync(Localization.GamblingDailyReceivedVote, 100, Credentials.Currency, userDb.Currency, $"{Credentials.DiscordBotList}/vote");
+                {
+                    if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
+                        await ReplyConfirmationAsync(Localization.GamblingDailyReceivedVote, 100, Credentials.Currency, userDb.Currency, $"{Credentials.DiscordBotList}/vote", Credentials.Patreon);
+                    else
+                    {
+                        var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
+                        await ReplyConfirmationAsync(Localization.GamblingDailyReceivedVoted, 100, Credentials.Currency, userDb.Currency, $"{Credentials.DiscordBotList}/vote", nextVoteHumanized, Credentials.Patreon);
+                    }
+                }
             }
         }
     }
