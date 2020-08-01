@@ -16,7 +16,7 @@ namespace Rias.Core.Models
         [JsonProperty("query")]
         public string? Query { get; set; }
         
-        [JsonProperty("is_weekend")]
+        [JsonProperty("isWeekend")]
         public bool IsWeekend { get; set; }
     }
 }

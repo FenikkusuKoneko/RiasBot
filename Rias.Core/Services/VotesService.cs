@@ -109,7 +109,7 @@ namespace Rias.Core.Services
             voteDb.Checked = true;
             await db.SaveChangesAsync();
             
-            Log.Information($"Vote discord user with ID {voteDb.UserId} was rewarded with {reward} hearts");
+            Log.Information($"Vote discord user with ID {voteData.UserId} was rewarded with {reward} hearts");
         }
         
         private async Task WebSocketClosed()
