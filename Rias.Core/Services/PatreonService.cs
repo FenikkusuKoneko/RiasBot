@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Rias.Core.Attributes;
 using Rias.Core.Database;
 using Rias.Core.Database.Entities;
@@ -82,25 +83,34 @@ namespace Rias.Core.Services
         
         private async Task PledgeReceivedAsync(string data)
         {
-            var pledgeData = JsonConvert.DeserializeObject<PatreonPledge>(data);
-            using var scope = RiasBot.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var patreonDb = await db.Patreon.FirstOrDefaultAsync(x => x.UserId == pledgeData.DiscordId);
-            
-            if (patreonDb is null)
+            try
             {
-                Log.Error($"Couldn't take the patreon data from the database for user {pledgeData.DiscordId}");
-                return;
+                var pledgeData = JsonConvert.DeserializeObject<JToken>(data);
+                var userId = pledgeData.Value<ulong>("discord_id");
+                
+                using var scope = RiasBot.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+                var patreonDb = await db.Patreon.FirstOrDefaultAsync(x => x.UserId == userId);
+
+                if (patreonDb is null)
+                {
+                    Log.Error($"Couldn't take the patreon data from the database for user {userId}");
+                    return;
+                }
+
+                var reward = patreonDb.AmountCents * 5;
+                var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity {UserId = userId});
+                userDb.Currency += reward;
+
+                patreonDb.Checked = true;
+                await db.SaveChangesAsync();
+
+                Log.Information($"Patreon discord user with ID {userId} was rewarded with {reward} hearts");
             }
-            
-            var reward = pledgeData.AmountCents * 5;
-            var userDb = await db.GetOrAddAsync(x => x.UserId == pledgeData.DiscordId, () => new UsersEntity {UserId = pledgeData.DiscordId});
-            userDb.Currency += reward;
-            
-            patreonDb.Checked = true;
-            await db.SaveChangesAsync();
-            
-            Log.Information($"Patreon discord user with ID {patreonDb.UserId} was rewarded with {reward} hearts");
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Exception on receiving a pledge");
+            }
         }
 
         private async Task WebSocketClosed()

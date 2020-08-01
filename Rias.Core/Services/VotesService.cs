@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Rias.Core.Attributes;
 using Rias.Core.Database;
 using Rias.Core.Database.Entities;
@@ -91,25 +92,34 @@ namespace Rias.Core.Services
         
         private async Task VoteReceivedAsync(string data)
         {
-            var voteData = JsonConvert.DeserializeObject<Vote>(data);
-            using var scope = RiasBot.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var voteDb = await db.Votes.FirstOrDefaultAsync(x => x.UserId == voteData.UserId && !x.Checked);
-            
-            if (voteDb is null)
+            try
             {
-                Log.Error($"Couldn't take the vote data from the database for user {voteData.UserId}");
-                return;
-            }
+                var voteData = JsonConvert.DeserializeObject<JToken>(data);
+                var userId = voteData.Value<ulong>("user");
+                
+                using var scope = RiasBot.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+                var voteDb = await db.Votes.FirstOrDefaultAsync(x => x.UserId == userId && !x.Checked);
 
-            var reward = voteDb.IsWeekend ? 50 : 25;
-            var userDb = await db.GetOrAddAsync(x => x.UserId == voteData.UserId, () => new UsersEntity {UserId = voteData.UserId});
-            userDb.Currency += reward;
-            
-            voteDb.Checked = true;
-            await db.SaveChangesAsync();
-            
-            Log.Information($"Vote discord user with ID {voteData.UserId} was rewarded with {reward} hearts");
+                if (voteDb is null)
+                {
+                    Log.Error($"Couldn't take the vote data from the database for user {userId}");
+                    return;
+                }
+
+                var reward = voteDb.IsWeekend ? 50 : 25;
+                var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity {UserId = userId});
+                userDb.Currency += reward;
+
+                voteDb.Checked = true;
+                await db.SaveChangesAsync();
+
+                Log.Information($"Vote discord user with ID {userId} was rewarded with {reward} hearts");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Exception on receiving a vote");
+            }
         }
         
         private async Task WebSocketClosed()

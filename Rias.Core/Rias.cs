@@ -22,7 +22,7 @@ namespace Rias.Core
     public class Rias : DiscordSharder, IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.1.2";
+        public const string Version = "3.1.3";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         private readonly IServiceProvider _serviceProvider;

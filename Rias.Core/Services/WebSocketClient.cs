@@ -78,7 +78,7 @@ namespace Rias.Core.Services
                         return;
                     }
 
-                    DataReceived?.Invoke(Encoding.UTF8.GetString(buffer));
+                    DataReceived?.Invoke(Encoding.UTF8.GetString(bytes, 0, result.Count));
                 }
             }
             catch (Exception ex)
