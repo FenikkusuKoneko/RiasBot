@@ -2,14 +2,15 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rias.Core.Attributes;
+using Rias.Core.Configuration;
 using Rias.Core.Database;
 using Rias.Core.Database.Entities;
-using Rias.Core.Implementation;
 using Rias.Core.Models;
 using Serilog;
 using PatronStatus = Rias.Core.Models.PatronStatus;
@@ -124,20 +125,21 @@ namespace Rias.Core.Services
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var members = RiasBot.Members;
             var patrons = (await db.GetOrderedListAsync<PatreonEntity, int>(x => x.PatronStatus == PatronStatus.ActivePatron && x.Tier > 0,
                     x => x.Tier, true))
-                .Where(x => RiasBot.Users.ContainsKey(x.UserId))
+                .Where(x => members.ContainsKey(x.UserId))
                 .Select(x =>
                 {
-                    var user = RiasBot.Users[x.UserId];
+                    var user = members[x.UserId];
                     return new PatreonDiscordUser
                     {
                         PatreonId = x.PatreonUserId,
                         DiscordId = x.UserId,
                         PatreonUsername = x.PatreonUserName,
-                        DiscordUsername = user.Name,
+                        DiscordUsername = user.Username,
                         DiscordDiscriminator = user.Discriminator,
-                        DiscordAvatar = user.GetAvatarUrl(),
+                        DiscordAvatar = user.GetAvatarUrl(ImageFormat.Auto),
                         Tier = x.Tier
                     };
                 });

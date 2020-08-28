@@ -4,7 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Humanizer;
 using Humanizer.Localisation;
 using Qmmands;
@@ -28,29 +29,30 @@ namespace Rias.Core.Modules.Utility
             [Command("stats")]
             public async Task StatsAsync()
             {
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
-                        Author = new LocalEmbedAuthorBuilder
+                        Author = new DiscordEmbedBuilder.EmbedAuthor
                         {
-                            Name = GetText(Localization.UtilityStats, RiasBot.CurrentUser.Name, Rias.Version),
-                            IconUrl = RiasBot.CurrentUser.GetAvatarUrl()
+                            Name = GetText(Localization.UtilityStats, RiasBot.CurrentUser!.Username, RiasBot.Version),
+                            IconUrl = RiasBot.CurrentUser.GetAvatarUrl(ImageFormat.Auto)
                         },
-                        ThumbnailUrl = RiasBot.CurrentUser.GetAvatarUrl(),
-                        Footer = new LocalEmbedFooterBuilder().WithText("© 2018-2020 Copyright: Koneko#0001")
-                    }.AddField(GetText(Localization.UtilityAuthor), Rias.Author, true)
-                    .AddField(GetText(Localization.UtilityBotId), RiasBot.CurrentUser.Id, true)
-                    .AddField(GetText(Localization.UtilityMasterId), Credentials.MasterId, true)
-                    .AddField(GetText(Localization.UtilityShard), $"{RiasBot.GetShardId(Context.Guild?.Id ?? 0) + 1}/{RiasBot.Shards.Count}", true)
+                        Footer = new DiscordEmbedBuilder.EmbedFooter
+                        {
+                            Text = "© 2018-2020 Copyright: Koneko#0001"
+                        }
+                    }.WithThumbnail(RiasBot.CurrentUser.GetAvatarUrl(ImageFormat.Auto))
+                    .AddField(GetText(Localization.UtilityAuthor), RiasBot.Author, true)
+                    .AddField(GetText(Localization.UtilityBotId), RiasBot.CurrentUser.Id.ToString(), true)
+                    .AddField(GetText(Localization.UtilityMasterId), Credentials.MasterId.ToString(), true)
+                    .AddField(GetText(Localization.UtilityShard), $"{RiasBot.GetShardId(Context.Guild) + 1}/{RiasBot.Client.ShardClients.Count}", true)
                     .AddField(GetText(Localization.UtilityInServer), Context.Guild?.Name ?? "-", true)
-                    .AddField(GetText(Localization.UtilityCommandsAttempted), CommandHandlerService.CommandsAttempted, true)
-                    .AddField(GetText(Localization.UtilityCommandsExecuted), CommandHandlerService.CommandsExecuted, true)
-                    .AddField(GetText(Localization.UtilityUptime), Rias.UpTime.Elapsed.Humanize(5, new CultureInfo(Localization.GetGuildLocale(Context.Guild?.Id)),
+                    .AddField(GetText(Localization.UtilityCommandsAttempted), CommandHandlerService.CommandsAttempted.ToString(), true)
+                    .AddField(GetText(Localization.UtilityCommandsExecuted), CommandHandlerService.CommandsExecuted.ToString(), true)
+                    .AddField(GetText(Localization.UtilityUptime), RiasBot.UpTime.Elapsed.Humanize(5, new CultureInfo(Localization.GetGuildLocale(Context.Guild?.Id)),
                         TimeUnit.Month, TimeUnit.Second), true)
                     .AddField(GetText(Localization.UtilityPresence), $"{RiasBot.Guilds.Count} {GetText(Localization.UtilityServers)}\n" +
-                                                   $"{RiasBot.Guilds.Sum(x => x.Value.TextChannels.Count)} {GetText(Localization.UtilityTextChannels)}\n" +
-                                                   $"{RiasBot.Guilds.Sum(x => x.Value.TextChannels.Count)} {GetText(Localization.UtilityVoiceChannels)}\n" +
-                                                   $"{RiasBot.Users.Count} {GetText(Localization.CommonUsers)}\n", true);
+                                                                     $"{RiasBot.Members.Count} {GetText(Localization.CommonUsers)}\n", true);
 
                 var links = new StringBuilder();
                 const string delimiter = " • ";
@@ -59,7 +61,7 @@ namespace Rias.Core.Modules.Utility
                 {
                     var ownerServer = RiasBot.GetGuild(Credentials.OwnerServerId);
                     links.Append(delimiter)
-                        .Append(GetText(Localization.HelpSupportServer, ownerServer.Name, Credentials.OwnerServerInvite))
+                        .Append(GetText(Localization.HelpSupportServer, ownerServer!.Name, Credentials.OwnerServerInvite))
                         .Append("\n");
                 }
 
@@ -81,40 +83,25 @@ namespace Rias.Core.Modules.Utility
             }
             
             [Command("userinfo"), Context(ContextType.Guild)]
-            public async Task UserInfoAsync([Remainder] CachedMember? member = null)
+            public async Task UserInfoAsync([Remainder] DiscordMember? member = null)
             {
-                member ??= (CachedMember) Context.User;
+                member ??= (DiscordMember) Context.User;
 
-                var userRoles = member.Roles.Select(x => x.Value).Where(x => !x.IsDefault)
+                var userRoles = member.Roles.Where(x => x.Id != Context.Guild!.EveryoneRole.Id)
                     .OrderByDescending(x => x.Position)
                     .Take(10)
                     .Select(x => x.Mention)
                     .ToList();
 
-                var activity = "-";
-                if (member.Presence != null && member.Presence.Activities.Count != 0)
-                {
-                    activity = string.Join("\n", member.Presence.Activities.Select(x => x switch
-                    {
-                        CustomActivity customActivity => $"{customActivity.Emoji} {customActivity.Text}",
-                        RichActivity richActivity => GetText(Localization.BotActivity(richActivity.Type.ToString().ToLower()), richActivity.Name),
-                        StreamingActivity streamingActivity => GetText(Localization.BotActivity(streamingActivity.Type.ToString().ToLower()), streamingActivity.Name),
-                        SpotifyActivity spotifyActivity => $"{GetText(Localization.BotActivity(spotifyActivity.Type.ToString().ToLower()), spotifyActivity.Name)}\n" +
-                                                           $"{spotifyActivity.Artists.Humanize()} - {spotifyActivity.TrackTitle}",
-                        _ => GetText(Localization.BotActivity(x.Type.ToString().ToLower()), x.Name)
-                    }));
-                }
-
-                var embed = new LocalEmbedBuilder()
+                var embed = new DiscordEmbedBuilder()
                     .WithColor(RiasUtilities.ConfirmColor)
-                    .WithThumbnailUrl(member.GetAvatarUrl())
-                    .AddField(GetText(Localization.UtilityUsername), member, true)
-                    .AddField(GetText(Localization.UtilityNickname), member.Nick ?? "-", true)
-                    .AddField(GetText(Localization.CommonId), member.Id, true)
-                    .AddField(GetText(Localization.UtilityActivity), activity, true)
+                    .WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto))
+                    .AddField(GetText(Localization.UtilityUsername), member.FullName(), true)
+                    .AddField(GetText(Localization.UtilityNickname), member.Nickname ?? "-", true)
+                    .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
                     .AddField(GetText(Localization.UtilityStatus), member.Presence?.Status.ToString() ?? "-", true)
-                    .AddField(GetText(Localization.UtilityJoinedServer), member.JoinedAt.ToString("yyyy-MM-dd hh:mm:ss tt") ?? "-", true)
-                    .AddField(GetText(Localization.UtilityJoinedDiscord), member.CreatedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                    .AddField(GetText(Localization.UtilityJoinedServer), member.JoinedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                    .AddField(GetText(Localization.UtilityJoinedDiscord), member.CreationTimestamp.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField($"{GetText(Localization.UtilityRoles)} ({userRoles.Count})", userRoles.Count != 0 ? string.Join("\n", userRoles) : "-", true);
 
                 await ReplyAsync(embed);
@@ -123,30 +110,30 @@ namespace Rias.Core.Modules.Utility
             [Command("serverinfo"), Context(ContextType.Guild)]
             public async Task ServerInfo()
             {
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
-                        Title = Context.Guild!.Name,
-                        ThumbnailUrl = Context.Guild.GetRealIconUrl()
-                    }.AddField(GetText(Localization.CommonId), Context.Guild.Id, true)
-                    .AddField(GetText(Localization.UtilityOwner), Context.Guild.Owner, true)
-                    .AddField(GetText(Localization.CommonUsers), Context.Guild.MemberCount, true)
+                        Title = Context.Guild!.Name
+                    }.WithThumbnail(Context.Guild.GetIconUrl())
+                    .AddField(GetText(Localization.CommonId), Context.Guild.Id.ToString(), true)
+                    .AddField(GetText(Localization.UtilityOwner), Context.Guild.Owner.FullName(), true)
+                    .AddField(GetText(Localization.CommonUsers), Context.Guild.MemberCount.ToString(), true)
                     .AddField(GetText(Localization.UtilityCurrentlyOnline),
                         Context.Guild.Members.Count(x => x.Value.Presence?.Status == UserStatus.Online ||
-                                                         x.Value.Presence?.Status == UserStatus.Idle || x.Value.Presence?.Status == UserStatus.DoNotDisturb), true)
-                    .AddField(GetText(Localization.UtilityBots), Context.Guild.Members.Count(x => x.Value.IsBot), true)
-                    .AddField(GetText(Localization.UtilityCreatedAt), Context.Guild.CreatedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
-                    .AddField(GetText(Localization.UtilityTextChannels), Context.Guild.TextChannels.Count, true)
-                    .AddField(GetText(Localization.UtilityVoiceChannels), Context.Guild.VoiceChannels.Count, true)
-                    .AddField(GetText(Localization.UtilitySystemChannel), Context.Guild.SystemChannel?.ToString() ?? "-", true)
-                    .AddField(GetText(Localization.UtilityAfkChannel), Context.Guild.GetChannel(Context.Guild.AfkChannelId ?? 0)?.Name ?? "-", true)
-                    .AddField(GetText(Localization.UtilityRegion), Context.Guild.VoiceRegionId, true)
-                    .AddField(GetText(Localization.UtilityVerificationLevel), Context.Guild.VerificationLevel, true)
-                    .AddField(GetText(Localization.UtilityBoostTier), Context.Guild.BoostTier, true)
-                    .AddField(GetText(Localization.UtilityBoosts), Context.Guild.BoostingMemberCount, true);
+                                                         x.Value.Presence?.Status == UserStatus.Idle || x.Value.Presence?.Status == UserStatus.DoNotDisturb).ToString(), true)
+                    .AddField(GetText(Localization.UtilityBots), Context.Guild.Members.Count(x => x.Value.IsBot).ToString(), true)
+                    .AddField(GetText(Localization.UtilityCreatedAt), Context.Guild.CreationTimestamp.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                    .AddField(GetText(Localization.UtilityTextChannels), Context.Guild.Channels.Count(x => x.Value.Type == ChannelType.Text).ToString(), true)
+                    .AddField(GetText(Localization.UtilityVoiceChannels), Context.Guild.Channels.Count(x => x.Value.Type == ChannelType.Voice).ToString(), true)
+                    .AddField(GetText(Localization.UtilitySystemChannel), Context.Guild.SystemChannel?.Mention ?? "-", true)
+                    .AddField(GetText(Localization.UtilityAfkChannel), Context.Guild.AfkChannel?.Name ?? "-", true)
+                    .AddField(GetText(Localization.UtilityRegion), Context.Guild.VoiceRegion.Id, true)
+                    .AddField(GetText(Localization.UtilityVerificationLevel), Context.Guild.VerificationLevel.ToString(), true)
+                    .AddField(GetText(Localization.UtilityBoostTier), Context.Guild.PremiumTier.ToString(), true)
+                    .AddField(GetText(Localization.UtilityBoosts), Context.Guild.PremiumSubscriptionCount?.ToString() ?? "0", true);
 
                 if (!string.IsNullOrEmpty(Context.Guild.VanityUrlCode))
-                    embed.AddField(GetText(Localization.UtilityVanityUrl), Context.Guild.GetVanityInviteAsync());
+                    embed.AddField(GetText(Localization.UtilityVanityUrl), (await Context.Guild.GetVanityInviteAsync()).ToString());
 
                 if (Context.Guild.Features.Count != 0)
                     embed.AddField(GetText(Localization.UtilityFeatures, Context.Guild.Features.Count), string.Join("\n", Context.Guild.Features), true);
@@ -154,7 +141,7 @@ namespace Rias.Core.Modules.Utility
                 var emotes = new StringBuilder();
                 foreach (var (_, emote) in Context.Guild.Emojis)
                 {
-                    var emoteString = emote.MessageFormat;
+                    var emoteString = emote.ToString();
                     if (emotes.Length + emoteString.Length > 1024)
                         break;
 
@@ -163,29 +150,29 @@ namespace Rias.Core.Modules.Utility
 
                 embed.AddField(GetText(Localization.UtilityEmojis, Context.Guild.Emojis.Count), emotes.Length != 0 ? emotes.ToString() : "-", true);
 
-                if (!string.IsNullOrEmpty(Context.Guild.BannerHash))
-                    embed.WithImageUrl(Context.Guild.GetBannerUrl());
+                if (!string.IsNullOrEmpty(Context.Guild.Banner))
+                    embed.WithImageUrl($"{Context.Guild.BannerUrl}?size=2048");
                 else if (!string.IsNullOrEmpty(Context.Guild.SplashHash))
-                    embed.WithImageUrl(Context.Guild.GetSplashUrl());
+                    embed.WithImageUrl($"{Context.Guild.SplashUrl}?size=2048");
 
                 await ReplyAsync(embed);
             }
             
             [Command("avatar"), Context(ContextType.Guild)]
-            public async Task AvatarAsync([Remainder] CachedMember? member = null)
+            public async Task AvatarAsync([Remainder] DiscordMember? member = null)
             {
-                member ??= (CachedMember) Context.User;
+                member ??= (DiscordMember) Context.User;
 
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
-                    Author = new LocalEmbedAuthorBuilder
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
-                        Name = member.ToString(),
-                        IconUrl = member.GetAvatarUrl(),
-                        Url = member.GetAvatarUrl()
+                        Name = member.FullName(),
+                        IconUrl = member.GetAvatarUrl(ImageFormat.Auto),
+                        Url = member.GetAvatarUrl(ImageFormat.Auto)
                     },
-                    ImageUrl = member.GetAvatarUrl()
+                    ImageUrl = member.GetAvatarUrl(ImageFormat.Auto)
                 };
 
                 await ReplyAsync(embed);
@@ -194,16 +181,16 @@ namespace Rias.Core.Modules.Utility
             [Command("servericon"), Context(ContextType.Guild)]
             public async Task ServerIconAsync()
             {
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
-                    Author = new LocalEmbedAuthorBuilder
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = Context.Guild!.Name,
-                        IconUrl = Context.Guild.GetRealIconUrl(),
-                        Url = Context.Guild.GetRealIconUrl()
+                        IconUrl = Context.Guild.GetIconUrl(),
+                        Url = Context.Guild.GetIconUrl()
                     },
-                    ImageUrl = Context.Guild.GetRealIconUrl()
+                    ImageUrl = Context.Guild.GetIconUrl()
                 };
 
                 await ReplyAsync(embed);
@@ -224,16 +211,16 @@ namespace Rias.Core.Modules.Utility
                 }
 
                 var usersActivitiesList = new List<string>();
-                var usersActivitiesGroup = usersActivities.OrderBy(x => x.Name)
+                var usersActivitiesGroup = usersActivities.OrderBy(x => x.Username)
                     .GroupBy(x => x.Presence.Activity.Name);
 
                 foreach (var userActivity in usersActivitiesGroup)
                 {
                     usersActivitiesList.Add($"•**{userActivity.Key}**");
-                    usersActivitiesList.AddRange(userActivity.Select(x => $"\t~>{x.Name}"));
+                    usersActivitiesList.AddRange(userActivity.Select(x => $"\t~>{x.Username}"));
                 }
 
-                await SendPaginatedMessageAsync(usersActivitiesList, 15, (items, index) => new LocalEmbedBuilder
+                await SendPaginatedMessageAsync(usersActivitiesList, 15, (items, index) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.UtilityUsersPlay, game),

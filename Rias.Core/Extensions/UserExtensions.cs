@@ -1,11 +1,27 @@
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 
 namespace Rias.Core.Extensions
 {
     public static class UserExtensions
     {
+        public static Permissions GetPermissions(this DiscordMember member)
+        {
+            if (member.IsOwner)
+                return Permissions.All;
+            
+            var permissions = member.Roles.Aggregate(Permissions.None, (p, r) => p | r.Permissions);
+            return (permissions & Permissions.Administrator) == Permissions.Administrator ? Permissions.All : permissions;
+        }
+
+        public static IReadOnlyDictionary<ulong, DiscordGuild> GetMutualGuilds(this DiscordMember member, RiasBot bot)
+            => bot.Guilds.Where(x => x.Value.Members.ContainsKey(member.Id))
+                .Select(x => x.Value)
+                .ToImmutableDictionary(x => x.Id);
+
         /// <summary>
         /// Check the hierarchy between the current member and another member in the roles hierarchy
         /// </summary>
@@ -13,21 +29,8 @@ namespace Rias.Core.Extensions
         /// A value equal with 0 if both members are in the highest role<br/>
         /// A value greater than 0 if current member is above the other member<br/>
         /// The value returned is the difference between their highest role position</returns>
-        public static int CheckHierarchy(this CachedMember currentMember, CachedMember member)
-        {
-            if (member.Id != member.Guild.OwnerId)
-                return currentMember.Hierarchy - member.Hierarchy;
-
-            var memberHighestRole = member.Roles
-                .OrderByDescending(x => x.Value.Position)
-                .First().Value;
-                
-            var currentMemberHighestRole = currentMember.Roles
-                .OrderByDescending(x => x.Value.Position)
-                .First().Value;
-
-            return currentMemberHighestRole.Position - memberHighestRole.Position;
-        }
+        public static int CheckHierarchy(this DiscordMember currentMember, DiscordMember member)
+            => currentMember.Hierarchy - member.Hierarchy;
 
         /// <summary>
         /// Check the hierarchy between the current member and a role in the roles hierarchy
@@ -36,10 +39,10 @@ namespace Rias.Core.Extensions
         /// A value equal with 0 if the current member's highest role is the role that is checked<br/>
         /// A value greater than 0 if current member's highest role is above the role<br/>
         /// The value returned is the difference between the member's highest role position and the role's position</returns>
-        public static int CheckRoleHierarchy(this CachedMember member, IRole role)
+        public static int CheckRoleHierarchy(this DiscordMember member, DiscordRole role)
             => member.Hierarchy - role.Position;
 
-        public static async Task<IUserMessage> SendMessageAsync(this CachedMember user, LocalEmbedBuilder embed)
-            => await user.SendMessageAsync(embed: embed.Build());
+        public static string FullName(this DiscordUser user)
+            => $"{user.Username}#{user.Discriminator}";
     }
 }

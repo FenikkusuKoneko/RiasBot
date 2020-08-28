@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
@@ -17,7 +17,7 @@ namespace Rias.Core.Modules.Commands
         }
         
         [Command("deletecommandmessage"), Context(ContextType.Guild),
-         UserPermission(Permission.Administrator)]
+         UserPermission(Permissions.Administrator)]
         public async Task DeleteCommandMessageAsync()
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});

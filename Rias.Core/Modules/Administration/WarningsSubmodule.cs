@@ -1,7 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -27,11 +28,11 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("warn"), Context(ContextType.Guild)]
-            public async Task WarnAsync(CachedMember member, [Remainder] string? reason = null)
+            public async Task WarnAsync(DiscordMember member, [Remainder] string? reason = null)
             {
                 var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
 
-                var userRequiredPermissions = CheckRequiredPermissions((CachedMember) Context.User, guildDb);
+                var userRequiredPermissions = CheckRequiredPermissions((DiscordMember) Context.User, guildDb);
                 if (userRequiredPermissions != PermissionRequired.NoPermission)
                 {
                     await SendMissingPermissionsAsync("user", userRequiredPermissions, guildDb);
@@ -48,7 +49,7 @@ namespace Rias.Core.Modules.Administration
                 if (member.Id == Context.User.Id)
                     return;
 
-                if (member.Id == Context.Guild!.OwnerId)
+                if (member.Id == Context.Guild!.Owner.Id)
                 {
                     await ReplyErrorAsync(Localization.AdministrationCannotWarnOwner);
                     return;
@@ -60,7 +61,7 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
                 
-                if (((CachedMember) Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
@@ -100,24 +101,24 @@ namespace Rias.Core.Modules.Administration
                 });
                 
                 await DbContext.SaveChangesAsync();
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.Yellow,
                         Title = GetText(Localization.AdministrationWarn)
-                    }.AddField(GetText(Localization.CommonUser), member, true)
+                    }.WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto))
+                    .AddField(GetText(Localization.CommonUser), member.FullName(), true)
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
-                    .AddField(GetText(Localization.AdministrationWarningNumber), warnsCount + 1, true)
-                    .AddField(GetText(Localization.AdministrationModerator), Context.User, true)
-                    .WithThumbnailUrl(member.GetAvatarUrl());
+                    .AddField(GetText(Localization.AdministrationWarningNumber), (warnsCount + 1).ToString(), true)
+                    .AddField(GetText(Localization.AdministrationModerator), Context.User.FullName(), true);
                 if (!string.IsNullOrEmpty(reason))
                     embed.AddField(GetText(Localization.CommonReason), reason, true);
 
                 var channel = Context.Channel;
-                var modLogChannel = Context.Guild!.GetTextChannel(guildDb.ModLogChannelId);
+                var modLogChannel = Context.Guild!.GetChannel(guildDb.ModLogChannelId);
                 if (modLogChannel != null)
                 {
-                    var preconditions = Context.CurrentMember!.GetPermissionsFor(modLogChannel);
-                    if (preconditions.ViewChannel && preconditions.SendMessages)
+                    var preconditions = Context.CurrentMember!.PermissionsIn(modLogChannel);
+                    if (preconditions.HasPermission(Permissions.AccessChannels) && preconditions.HasPermission(Permissions.SendMessages))
                         channel = modLogChannel;
                 }
 
@@ -130,8 +131,9 @@ namespace Rias.Core.Modules.Administration
             {
                 var warnings = (await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == Context.Guild!.Id))
                     .GroupBy(x => x.UserId)
-                    .Select(x => Context.Guild!.GetMember(x.First().UserId)).Where(y => y != null)
-                    .OrderBy(u => u.Name)
+                    .Where(x => Context.Guild!.Members.ContainsKey(x.First().UserId))
+                    .Select(x => Context.Guild!.Members[x.First().UserId])
+                    .OrderBy(u => u.Username)
                     .ToList();
 
                 if (warnings.Count == 0)
@@ -140,37 +142,40 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
                 
-                await SendPaginatedMessageAsync(warnings, 15, (items, index) => new LocalEmbedBuilder
+                await SendPaginatedMessageAsync(warnings, 15, (items, index) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.AdministrationWarnedUsers),
                     Description = string.Join("\n", items.Select(x => $"{++index}. {x} | {x.Id}")),
-                    Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.AdministrationWarningListFooter, Context.Prefix))
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = GetText(Localization.AdministrationWarningListFooter, Context.Prefix)
+                    }
                 });
             }
             
             [Command("warnings"), Context(ContextType.Guild),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task WarningsAsync([Remainder] CachedMember member)
+            public async Task WarningsAsync([Remainder] DiscordMember member)
             {
-                var warnings = (await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id))
-                    .Select(x => new
-                    {
-                        Moderator = Context.Guild!.GetMember(x.ModeratorId),
-                        x.Reason
-                    })
-                    .ToList();
+                var warningsDb = await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
+                var moderators = (await Task.WhenAll(warningsDb.Select(x => Context.Guild!.GetMemberAsync(x.ModeratorId)))).ToList();
+                var warnings = warningsDb.Select((x, i) => new
+                {
+                    Moderator = moderators[i],
+                    x.Reason
+                }).ToList();
 
                 if (warnings.Count == 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserNoWarnings, member);
+                    await ReplyErrorAsync(Localization.AdministrationUserNoWarnings, member.FullName());
                     return;
                 }
                 
-                await SendPaginatedMessageAsync(warnings, 5, (items, index) => new LocalEmbedBuilder
+                await SendPaginatedMessageAsync(warnings, 5, (items, index) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
-                    Title = GetText(Localization.AdministrationUserWarnings, member),
+                    Title = GetText(Localization.AdministrationUserWarnings, member.FullName()),
                     Description = string.Join("\n",
                         items.Select(x => $"{++index}. {GetText(Localization.CommonReason)}: {x.Reason ?? "-"}\n" +
                                           $"{GetText(Localization.AdministrationModerator)}: {x.Moderator}\n"))
@@ -179,16 +184,16 @@ namespace Rias.Core.Modules.Administration
             
             [Command("clearwarning"), Context(ContextType.Guild),
              Priority(1)]
-            public async Task ClearWarningAsync(CachedMember member, int warningIndex)
+            public async Task ClearWarningAsync(DiscordMember member, int warningIndex)
             {
                 if (--warningIndex < 0)
                     return;
 
-                var commandUser = (CachedMember) Context.User;
-                if (!(commandUser.Permissions.Administrator
-                      || commandUser.Permissions.MuteMembers
-                      || commandUser.Permissions.KickMembers
-                      || commandUser.Permissions.BanMembers))
+                var permissions = ((DiscordMember) Context.User).GetPermissions();
+                if (!(permissions.HasPermission(Permissions.Administrator)
+                      || permissions.HasPermission(Permissions.MuteMembers)
+                      || permissions.HasPermission(Permissions.KickMembers)
+                      || permissions.HasPermission(Permissions.BanMembers)))
                 {
                     var permsHumanized = PermissionRequired.MuteKickBan.Humanize()
                         .Split(" ")
@@ -201,20 +206,20 @@ namespace Rias.Core.Modules.Administration
                 var warnings = (await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id));
                 if (warnings.Count == 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserNoWarnings, member);
+                    await ReplyErrorAsync(Localization.AdministrationUserNoWarnings, member.FullName());
                     return;
                 }
 
                 if (warningIndex >= warnings.Count)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationClearWarningIndexAbove, member);
+                    await ReplyErrorAsync(Localization.AdministrationClearWarningIndexAbove, member.FullName());
                     return;
                 }
 
                 var warning = warnings[warningIndex];
-                if (commandUser.Id != warning.ModeratorId && !commandUser.Permissions.Administrator)
+                if (Context.User.Id != warning.ModeratorId && !permissions.HasPermission(Permissions.Administrator))
                 {
-                    await ReplyErrorAsync(Localization.AdministrationClearWarningNotUserWarning, member);
+                    await ReplyErrorAsync(Localization.AdministrationClearWarningNotUserWarning, member.FullName());
                     return;
                 }
 
@@ -225,16 +230,16 @@ namespace Rias.Core.Modules.Administration
             
             [Command("clearwarning"), Context(ContextType.Guild),
              Priority(0)]
-            public async Task ClearWarningAsync(CachedMember member, string all)
+            public async Task ClearWarningAsync(DiscordMember member, string all)
             {
                 if (!string.Equals(all, "all", StringComparison.InvariantCultureIgnoreCase))
                     return;
 
-                var commandMember = (CachedMember) Context.User;
-                if (!(commandMember.Permissions.Administrator
-                      || commandMember.Permissions.MuteMembers
-                      || commandMember.Permissions.KickMembers
-                      || commandMember.Permissions.BanMembers))
+                var permissions = ((DiscordMember) Context.User).GetPermissions();
+                if (!(permissions.HasPermission(Permissions.Administrator)
+                      || permissions.HasPermission(Permissions.MuteMembers)
+                      || permissions.HasPermission(Permissions.KickMembers)
+                      || permissions.HasPermission(Permissions.BanMembers)))
                 {
                     var permsHumanized = PermissionRequired.MuteKickBan.Humanize()
                         .Split(" ")
@@ -247,27 +252,27 @@ namespace Rias.Core.Modules.Administration
                 var warnings = (await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id));
                 if (warnings.Count == 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserNoWarnings, member);
+                    await ReplyErrorAsync(Localization.AdministrationUserNoWarnings, member.FullName());
                     return;
                 }
 
-                var moderatorWarnings = commandMember.Permissions.Administrator ? warnings : warnings.Where(x => x.ModeratorId == commandMember.Id).ToList();
+                var moderatorWarnings = permissions.HasPermission(Permissions.Administrator) ? warnings : warnings.Where(x => x.ModeratorId == Context.User.Id).ToList();
                 if (moderatorWarnings.Count == 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationClearWarningNotModWarnings, member);
+                    await ReplyErrorAsync(Localization.AdministrationClearWarningNotModWarnings, member.FullName());
                     return;
                 }
                 
                 DbContext.RemoveRange(moderatorWarnings);
                 await DbContext.SaveChangesAsync();
-                if (commandMember.Permissions.Administrator || moderatorWarnings.Count == warnings.Count)
+                if (permissions.HasPermission(Permissions.Administrator) || moderatorWarnings.Count == warnings.Count)
                 {
-                    await ReplyConfirmationAsync(Localization.AdministrationAllWarningsCleared, member);
+                    await ReplyConfirmationAsync(Localization.AdministrationAllWarningsCleared, member.FullName());
                 }
                 else
                 {
                     var warningsString = moderatorWarnings.Count > 1 ? GetText(Localization.AdministrationWarnings) : GetText(Localization.AdministrationWarning);
-                    await ReplyConfirmationAsync(Localization.AdministrationWarningsCleared, moderatorWarnings.Count, warningsString.ToLowerInvariant(), member);
+                    await ReplyConfirmationAsync(Localization.AdministrationWarningsCleared, moderatorWarnings.Count, warningsString.ToLowerInvariant(), member.FullName());
                 }
             }
             
@@ -281,18 +286,18 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
                         Description = GetText(Localization.AdministrationWarningPunishment)
-                    }.AddField(GetText(Localization.AdministrationWarnings), guildDb.PunishmentWarningsRequired, true)
+                    }.AddField(GetText(Localization.AdministrationWarnings), guildDb.PunishmentWarningsRequired.ToString(), true)
                     .AddField(GetText(Localization.AdministrationPunishment), guildDb.WarningPunishment.Titleize(), true);
 
                 await ReplyAsync(embed);
             }
 
             [Command("setwarningpunishment"), Context(ContextType.Guild),
-            UserPermission(Permission.Administrator)]
+            UserPermission(Permissions.Administrator)]
             public async Task SetWarningPunishmentAsync(int number, string? punishment = null)
             {
                 if (number < 0)
@@ -332,50 +337,53 @@ namespace Rias.Core.Modules.Administration
                 guildDb.WarningPunishment = punishment;
 
                 await DbContext.SaveChangesAsync();
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
                         Description = GetText(Localization.AdministrationWarningPunishmentSet)
-                    }.AddField(GetText(Localization.AdministrationWarnings), number, true)
+                    }.AddField(GetText(Localization.AdministrationWarnings), number.ToString(), true)
                     .AddField(GetText(Localization.AdministrationPunishment), punishment.Titleize(), true);
 
                 await ReplyAsync(embed);
             }
             
-            private PermissionRequired CheckRequiredPermissions(CachedMember member, GuildsEntity guildDb)
+            private PermissionRequired CheckRequiredPermissions(DiscordMember member, GuildsEntity? guildDb)
             {
-                if (member.Id == member.Guild.OwnerId || member.Permissions.Administrator)
+                var permissions = member.GetPermissions();
+                if (member.Id == member.Guild.Owner.Id || permissions.HasPermission(Permissions.Administrator))
                     return PermissionRequired.NoPermission;
 
                 var warnPunishment = guildDb?.WarningPunishment;
                 if (string.IsNullOrEmpty(warnPunishment))
-                    return member.Permissions.MuteMembers || member.Permissions.KickMembers || member.Permissions.BanMembers
+                    return permissions.HasPermission(Permissions.MuteMembers)
+                           || permissions.HasPermission(Permissions.KickMembers)
+                           || permissions.HasPermission(Permissions.BanMembers)
                         ? PermissionRequired.NoPermission
                         : PermissionRequired.MuteKickBan;
 
                 if (string.Equals(warnPunishment, "mute", StringComparison.InvariantCultureIgnoreCase))
-                    return member.Permissions.MuteMembers ? PermissionRequired.NoPermission : PermissionRequired.Mute;
+                    return permissions.HasPermission(Permissions.MuteMembers) ? PermissionRequired.NoPermission : PermissionRequired.Mute;
 
                 if (string.Equals(warnPunishment, "kick", StringComparison.InvariantCultureIgnoreCase))
-                    return member.Permissions.KickMembers ? PermissionRequired.NoPermission : PermissionRequired.Kick;
+                    return permissions.HasPermission(Permissions.KickMembers) ? PermissionRequired.NoPermission : PermissionRequired.Kick;
 
                 if (string.Equals(warnPunishment, "ban", StringComparison.InvariantCultureIgnoreCase))
-                    return member.Permissions.BanMembers ? PermissionRequired.NoPermission : PermissionRequired.Ban;
+                    return permissions.HasPermission(Permissions.BanMembers) ? PermissionRequired.NoPermission : PermissionRequired.Ban;
 
                 if (string.Equals(warnPunishment, "softban", StringComparison.InvariantCultureIgnoreCase))
                 {
                     if (member.Id == member.Guild.CurrentMember.Id)
                     {
-                        return member.Permissions.KickMembers && member.Permissions.BanMembers
+                        return permissions.HasPermission(Permissions.KickMembers) && permissions.HasPermission(Permissions.BanMembers)
                             ? PermissionRequired.NoPermission
                             : PermissionRequired.KickBan;
                     }
 
-                    return member.Permissions.KickMembers ? PermissionRequired.NoPermission : PermissionRequired.Kick;
+                    return permissions.HasPermission(Permissions.KickMembers) ? PermissionRequired.NoPermission : PermissionRequired.Kick;
                 }
 
                 if (string.Equals(warnPunishment, "pruneban", StringComparison.InvariantCultureIgnoreCase))
-                    return member.Permissions.BanMembers ? PermissionRequired.NoPermission : PermissionRequired.Ban;
+                    return permissions.HasPermission(Permissions.BanMembers) ? PermissionRequired.NoPermission : PermissionRequired.Ban;
 
                 return default;
             }
@@ -409,7 +417,7 @@ namespace Rias.Core.Modules.Administration
                 await ReplyErrorAsync(Localization.AdministrationWarningUserTypeNoPermissionsPunishment(userType), punishmentHumanized, permHumanized);
             }
             
-            private async Task ApplyWarnPunishmentAsync(CachedMember member, PunishmentMethod punishment, GuildsEntity guildDb)
+            private async Task ApplyWarnPunishmentAsync(DiscordMember member, PunishmentMethod punishment, GuildsEntity guildDb)
             {
                 switch (punishment)
                 {
@@ -418,7 +426,7 @@ namespace Rias.Core.Modules.Administration
                         break;
                     case PunishmentMethod.Kick:
                         await SendMessageAsync(member, guildDb, Localization.AdministrationUserKicked, Localization.AdministrationKickedFrom, GetText(Localization.AdministrationWarningKick));
-                        await member.KickAsync();
+                        await member.RemoveAsync();
                         break;
                     case PunishmentMethod.Ban:
                         await SendMessageAsync(member, guildDb, Localization.AdministrationUserBanned, Localization.AdministrationBannedFrom, GetText(Localization.AdministrationWarningBan));
@@ -426,45 +434,45 @@ namespace Rias.Core.Modules.Administration
                         break;
                     case PunishmentMethod.SoftBan:
                         await SendMessageAsync(member, guildDb, Localization.AdministrationUserSoftBanned, Localization.AdministrationKickedFrom, GetText(Localization.AdministrationWarningKick));
-                        await member.BanAsync(messageDeleteDays: 7);
+                        await member.BanAsync(7);
                         await member.UnbanAsync();
                         break;
                     case PunishmentMethod.PruneBan:
                         await SendMessageAsync(member, guildDb, Localization.AdministrationUserBanned, Localization.AdministrationBannedFrom, GetText(Localization.AdministrationWarningBan));
-                        await member.BanAsync(messageDeleteDays: 7);
+                        await member.BanAsync(7);
                         break;
                 }
             }
             
-            private async Task SendMessageAsync(CachedMember member, GuildsEntity guildDb, string moderationType, string fromWhere, string? reason)
+            private async Task SendMessageAsync(DiscordMember member, GuildsEntity guildDb, string moderationType, string fromWhere, string? reason)
             {
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ErrorColor,
-                        Title = GetText(moderationType),
-                        ThumbnailUrl = member.GetAvatarUrl()
-                    }.AddField(GetText(Localization.CommonUser), member, true)
+                        Title = GetText(moderationType)
+                    }.WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto))
+                    .AddField(GetText(Localization.CommonUser), member.FullName(), true)
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
-                    .AddField(GetText(Localization.AdministrationModerator), Context.User, true);
+                    .AddField(GetText(Localization.AdministrationModerator), Context.User.FullName(), true);
 
                 if (!string.IsNullOrEmpty(reason))
                     embed.AddField(GetText(Localization.CommonReason), reason, true);
 
                 var channel = Context.Channel;
-                var modLogChannel = Context.Guild!.GetTextChannel(guildDb.ModLogChannelId);
+                var modLogChannel = Context.Guild!.GetChannel(guildDb.ModLogChannelId);
                 if (modLogChannel != null)
                 {
-                    var preconditions = Context.CurrentMember!.GetPermissionsFor(modLogChannel);
-                    if (preconditions.ViewChannel && preconditions.SendMessages)
+                    var preconditions = Context.CurrentMember!.PermissionsIn(modLogChannel);
+                    if (preconditions.HasPermission(Permissions.AccessChannels) && preconditions.HasPermission(Permissions.SendMessages))
                         channel = modLogChannel;
                 }
 
                 if (channel.Id != Context.Channel.Id)
-                    await Context.Message.AddReactionAsync(new LocalEmoji("✅"));
+                    await Context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("✅"));
 
                 await channel.SendMessageAsync(embed);
 
-                var reasonEmbed = new LocalEmbedBuilder
+                var reasonEmbed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ErrorColor,
                     Description = GetText(fromWhere, Context.Guild.Name)
@@ -476,7 +484,7 @@ namespace Rias.Core.Modules.Administration
                 try
                 {
                     if (!member.IsBot)
-                        await member.SendMessageAsync(reasonEmbed);
+                        await member.SendMessageAsync(embed: reasonEmbed);
                 }
                 catch
                 {

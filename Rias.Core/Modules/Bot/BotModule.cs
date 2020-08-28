@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Disqord;
-using Disqord.Rest;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Extensions;
@@ -21,7 +21,7 @@ namespace Rias.Core.Modules.Bot
         [Command("leaveguild"), OwnerOnly]
         public async Task LeaveGuildAsync(string name)
         {
-            var guild = Snowflake.TryParse(name, out var guildId)
+            var guild = ulong.TryParse(name, out var guildId)
                 ? RiasBot.GetGuild(guildId)
                 : RiasBot.Guilds.FirstOrDefault(x => string.Equals(x.Value.Name, name)).Value;
 
@@ -31,11 +31,11 @@ namespace Rias.Core.Modules.Bot
                 return;
             }
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Description = GetText(Localization.BotLeftGuild, guild.Name)
-            }.AddField(GetText(Localization.CommonId), guild.Id, true).AddField(GetText(Localization.CommonUsers), guild.MemberCount, true);
+            }.AddField(GetText(Localization.CommonId), guild.Id.ToString(), true).AddField(GetText(Localization.CommonUsers), guild.MemberCount.ToString(), true);
 
             await ReplyAsync(embed);
             await guild.LeaveAsync();
@@ -61,46 +61,38 @@ namespace Rias.Core.Modules.Bot
             var isEmbed = RiasUtilities.TryParseEmbed(message, out var embed);
             if (id.StartsWith("c:", StringComparison.InvariantCultureIgnoreCase))
             {
-                CachedChannel channel;
-                if (Snowflake.TryParse(id[2..], out var channelId))
-                {
-                    channel = RiasBot.GetChannel(channelId);
-                }
+                DiscordChannel channel;
+                if (ulong.TryParse(id[2..], out var channelId) && RiasBot.Channels.TryGetValue(channelId, out var c))
+                    channel = c;
                 else
                 {
                     await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
                     return;
                 }
 
-                if (channel is null)
-                {
-                    await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
-                    return;
-                }
-
-                if (!(channel is CachedTextChannel textChannel))
+                if (channel.Type != ChannelType.Text)
                 {
                     await ReplyErrorAsync(Localization.BotChannelNotTextChannel);
                     return;
                 }
 
-                var permissions = Context.CurrentMember!.GetPermissionsFor(textChannel);
-                if (!permissions.ViewChannel)
+                var permissions = Context.CurrentMember!.PermissionsIn(channel);
+                if (!permissions.HasPermission(Permissions.AccessChannels))
                 {
                     await ReplyErrorAsync(Localization.AdministrationTextChannelNoViewPermission);
                     return;
                 }
 
-                if (!permissions.SendMessages)
+                if (!permissions.HasPermission(Permissions.SendMessages))
                 {
                     await ReplyErrorAsync(Localization.BotTextChannelNoSendMessagesPermission);
                     return;
                 }
 
                 if (isEmbed)
-                    await textChannel.SendMessageAsync(embed);
+                    await channel.SendMessageAsync(embed);
                 else
-                    await textChannel.SendMessageAsync(message);
+                    await channel.SendMessageAsync(message);
                 
                 await ReplyConfirmationAsync(Localization.BotMessageSent);
                 return;
@@ -108,24 +100,16 @@ namespace Rias.Core.Modules.Bot
 
             if (id.StartsWith("u:", StringComparison.InvariantCultureIgnoreCase))
             {
-                CachedUser user;
-                if (Snowflake.TryParse(id[2..], out var userId))
-                {
-                    user = RiasBot.GetUser(userId);
-                }
+                DiscordMember member;
+                if (ulong.TryParse(id[2..], out var userId) && RiasBot.Members.TryGetValue(userId, out var m))
+                    member = m;
                 else
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserNotFound);
                     return;
                 }
-
-                if (user is null)
-                {
-                    await ReplyErrorAsync(Localization.AdministrationUserNotFound);
-                    return;
-                }
                 
-                if (user.IsBot)
+                if (member.IsBot)
                 {
                     await ReplyErrorAsync(Localization.BotUserIsBot);
                     return;
@@ -134,9 +118,9 @@ namespace Rias.Core.Modules.Bot
                 try
                 {
                     if (isEmbed)
-                        await user.SendMessageAsync(embed: embed.Build());
+                        await member.SendMessageAsync(embed: embed);
                     else
-                        await user.SendMessageAsync(message);
+                        await member.SendMessageAsync(message);
                     
                     await ReplyConfirmationAsync(Localization.BotMessageSent);
                 }
@@ -157,87 +141,65 @@ namespace Rias.Core.Modules.Bot
                 return;
             }
 
-            CachedChannel channel;
-            if (Snowflake.TryParse(ids[0], out var channelId))
-            {
-                channel = RiasBot.GetChannel(channelId);
-            }
+            DiscordChannel channel;
+            if (ulong.TryParse(ids[0], out var channelId) && RiasBot.Channels.TryGetValue(channelId, out var c))
+                channel = c;
             else
             {
                 await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
                 return;
             }
 
-            if (channel is null)
-            {
-                await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
-                return;
-            }
-            
-            if (!(channel is CachedTextChannel textChannel))
+            if (channel.Type != ChannelType.Text)
             {
                 await ReplyErrorAsync(Localization.BotChannelNotTextChannel);
                 return;
             }
             
-            var permissions = Context.CurrentMember!.GetPermissionsFor(textChannel);
-            if (!permissions.ViewChannel)
+            var permissions = Context.CurrentMember!.PermissionsIn(channel);
+            if (!permissions.HasPermission(Permissions.AccessChannels))
             {
                 await ReplyErrorAsync(Localization.AdministrationTextChannelNoViewPermission);
                 return;
             }
 
-            if (!permissions.SendMessages)
+            if (!permissions.HasPermission(Permissions.SendMessages))
             {
                 await ReplyErrorAsync(Localization.BotTextChannelNoSendMessagesPermission);
                 return;
             }
 
-            IMessage restMessage;
-            if (Snowflake.TryParse(ids[1], out var messageId))
-            {
-                restMessage = await textChannel.GetMessageAsync(messageId);
-            }
+            DiscordMessage discordMessage;
+            if (ulong.TryParse(ids[1], out var messageId))
+                discordMessage = await channel.GetMessageAsync(messageId);
             else
             {
                 await ReplyErrorAsync(Localization.BotMessageNotFound);
                 return;
             }
 
-            if (restMessage is null)
+            if (discordMessage is null)
             {
                 await ReplyErrorAsync(Localization.BotMessageNotFound);
                 return;
             }
 
-            if (!(restMessage is RestUserMessage restUserMessage))
+            if (discordMessage.MessageType != MessageType.Default)
             {
                 await ReplyErrorAsync(Localization.BotMessageNotUserMessage);
                 return;
             }
 
-            if (restUserMessage.Author.Id != Context.CurrentMember.Id)
+            if (discordMessage.Author.Id != Context.CurrentMember.Id)
             {
                 await ReplyErrorAsync(Localization.BotMessageNotSelf);
                 return;
             }
 
             if (RiasUtilities.TryParseEmbed(message, out var embed))
-            {
-                await restUserMessage.ModifyAsync(x =>
-                {
-                    x.Content = null;
-                    x.Embed = embed.Build();
-                });
-            }
+                await discordMessage.ModifyAsync(embed: embed.Build());
             else
-            {
-                await restUserMessage.ModifyAsync(x =>
-                {
-                    x.Content = message;
-                    x.Embed = null;
-                });
-            }
+                await discordMessage.ModifyAsync(message);
 
             await ReplyConfirmationAsync(Localization.BotMessageEdited);
         }
@@ -245,19 +207,19 @@ namespace Rias.Core.Modules.Bot
         [Command("finduser"), OwnerOnly]
         public async Task FindUserAsync([Remainder] string value)
         {
-            IUser? user = null;
-            if (Snowflake.TryParse(value, out var userId))
+            DiscordUser? user = null;
+            if (ulong.TryParse(value, out var userId))
             {
-                user = RiasBot.GetUser(userId) ?? (IUser) await RiasBot.GetUserAsync(userId);
+                user = RiasBot.Members.TryGetValue(userId, out var u)
+                    ? u
+                    : await RiasBot.Client.ShardClients[0].GetUserAsync(userId);
             }
             else
             {
                 var index = value.LastIndexOf("#", StringComparison.Ordinal);
                 if (index >= 0)
-                {
-                    user = RiasBot.Users.FirstOrDefault(x => string.Equals(x.Value.Name, value[..index])
-                                                             && string.Equals(x.Value.Discriminator, value[(index + 1)..])).Value;
-                }
+                    user = RiasBot.Members.FirstOrDefault(x => string.Equals(x.Value.Username, value[..index])
+                                                               && string.Equals(x.Value.Discriminator, value[(index + 1)..])).Value;
             }
             
             if (user is null)
@@ -265,16 +227,16 @@ namespace Rias.Core.Modules.Bot
                 await ReplyErrorAsync(Localization.AdministrationUserNotFound);
                 return;
             }
-
-            var mutualGuilds = user is CachedUser cachedUser ? cachedUser.MutualGuilds.Count : 0;
-
-            var embed = new LocalEmbedBuilder()
+            
+            var mutualGuilds = user is DiscordMember member ? member.GetMutualGuilds(RiasBot).Count : 0;
+            
+            var embed = new DiscordEmbedBuilder()
                 .WithColor(RiasUtilities.ConfirmColor)
-                .AddField(GetText(Localization.CommonUser), user, true)
-                .AddField(GetText(Localization.CommonId), user.Id, true)
-                .AddField(GetText(Localization.UtilityJoinedDiscord), user.CreatedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
-                .AddField(GetText(Localization.BotMutualGuilds), mutualGuilds, true)
-                .WithImageUrl(user.GetAvatarUrl());
+                .AddField(GetText(Localization.CommonUser), user.FullName(), true)
+                .AddField(GetText(Localization.CommonId), user.Id.ToString(), true)
+                .AddField(GetText(Localization.UtilityJoinedDiscord), user.CreationTimestamp.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                .AddField(GetText(Localization.BotMutualGuilds), mutualGuilds.ToString(), true)
+                .WithImageUrl(user.GetAvatarUrl(ImageFormat.Auto));
 
             await ReplyAsync(embed);
         }
@@ -282,17 +244,12 @@ namespace Rias.Core.Modules.Bot
         [Command("evaluate"), OwnerOnly]
         public async Task EvaluateAsync([Remainder] string code)
         {
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                Author = new LocalEmbedAuthorBuilder
-                {
-                    Name = GetText(Localization.BotRoslynCompiler),
-                    IconUrl = Context.User.GetAvatarUrl()
-                },
                 Description = GetText(Localization.BotEvaluatingCode),
                 Timestamp = DateTimeOffset.UtcNow
-            };
+            }.WithAuthor(GetText(Localization.BotRoslynCompiler), Context.User.GetAvatarUrl(ImageFormat.Auto));
             
             var message = await ReplyAsync(embed);
             var evaluation = await Service.EvaluateAsync(Context, code);
@@ -330,7 +287,7 @@ namespace Rias.Core.Modules.Bot
                 embed.AddField(GetText(Localization.BotCompilationTime), $"{evaluation.CompilationTime?.TotalMilliseconds:F2} ms", true);
             }
             
-            await message.ModifyAsync(m => m.Embed = embed.Build());
+            await message.ModifyAsync(embed: embed.Build());
         }
     }
 }

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Disqord;
-using Disqord.Events;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Services.Commons;
 using Serilog;
@@ -18,32 +18,32 @@ namespace Rias.Core.Services
         {
             _gamblingService = serviceProvider.GetRequiredService<GamblingService>();
             _cards = InitializeCards();
-            RiasBot.ReactionAdded += ReactionAddedAsync;
-            RiasBot.ReactionRemoved += ReactionRemovedAsync;
+            RiasBot.Client.MessageReactionAdded += MessageReactionAddedAsync;
+            RiasBot.Client.MessageReactionRemoved += MessageReactionRemovedAsync;
         }
 
         private readonly IEnumerable<(int, string)> _cards;
         private readonly string[] _suits = {"♠", "♥", "♣", "♦"};
         private readonly string[] _highCards = {"A", "J", "Q", "K"};
         
-        private readonly ConcurrentDictionary<Snowflake, BlackjackGame> _sessions = new ConcurrentDictionary<Snowflake, BlackjackGame>();
+        private readonly ConcurrentDictionary<ulong, BlackjackGame> _sessions = new ConcurrentDictionary<ulong, BlackjackGame>();
         
-        public readonly IEmoji CardEmoji = new LocalEmoji("🎴");
-        public readonly IEmoji HandEmoji = new LocalEmoji("🤚");
-        public readonly IEmoji SplitEmoji = new LocalEmoji("↔");
+        public readonly DiscordEmoji CardEmoji = DiscordEmoji.FromUnicode("🎴");
+        public readonly DiscordEmoji HandEmoji = DiscordEmoji.FromUnicode("🤚");
+        public readonly DiscordEmoji SplitEmoji = DiscordEmoji.FromUnicode("↔");
         
-        public bool TryGetBlackjack(Snowflake userId, out BlackjackGame? blackjack)
+        public bool TryGetBlackjack(ulong userId, out BlackjackGame? blackjack)
             => _sessions.TryGetValue(userId, out blackjack);
         
-        public async Task CreateBlackjackAsync(CachedMember member, CachedTextChannel channel, int bet)
+        public async Task CreateBlackjackAsync(DiscordMember member, DiscordChannel channel, int bet)
         {
             var blackjack = new BlackjackGame(this, member, bet, _suits, _cards);
             await blackjack.CreateAsync(channel);
 
-            await blackjack.Message!.AddReactionAsync(CardEmoji);
-            await blackjack.Message!.AddReactionAsync(HandEmoji);
+            await blackjack.Message!.CreateReactionAsync(CardEmoji);
+            await blackjack.Message!.CreateReactionAsync(HandEmoji);
             if (blackjack.PlayerCanSplit)
-                await blackjack.Message!.AddReactionAsync(SplitEmoji);
+                await blackjack.Message!.CreateReactionAsync(SplitEmoji);
 
             await TakeUserCurrencyAsync(member.Id, bet);
             _sessions[member.Id] = blackjack;
@@ -51,16 +51,16 @@ namespace Rias.Core.Services
             Log.Debug("Blackjack: Session created");
         }
         
-        public bool TryRemoveBlackjack(Snowflake userId, out BlackjackGame? blackjack)
+        public bool TryRemoveBlackjack(ulong userId, out BlackjackGame? blackjack)
             => _sessions.TryRemove(userId, out blackjack);
 
-        public int GetUserCurrency(Snowflake userId)
-            => _gamblingService.GetUserCurrency(userId);
+        public Task<int> GetUserCurrencyAsync(ulong userId)
+            => _gamblingService.GetUserCurrencyAsync(userId);
 
-        public Task AddUserCurrencyAsync(Snowflake userId, int currency)
+        public Task AddUserCurrencyAsync(ulong userId, int currency)
             => _gamblingService.AddUserCurrencyAsync(userId, currency);
         
-        public Task TakeUserCurrencyAsync(Snowflake userId, int currency)
+        public Task TakeUserCurrencyAsync(ulong userId, int currency)
             => _gamblingService.RemoveUserCurrencyAsync(userId, currency);
         
         private IEnumerable<(int, string)> InitializeCards()
@@ -85,31 +85,27 @@ namespace Rias.Core.Services
             }
         }
 
-        private async Task ReactionAddedAsync(ReactionAddedEventArgs args)
+        private async Task MessageReactionAddedAsync(MessageReactionAddEventArgs args)
         {
-            if (!args.Reaction.HasValue)
-                return;
             if (!_sessions.TryGetValue(args.User.Id, out var blackjack))
                 return;
             if (blackjack.Message!.Id != args.Message.Id)
                 return;
 
-            await ProcessGameAsync(blackjack, args.Reaction.Value.Emoji);
+            await ProcessGameAsync(blackjack, args.Emoji);
         }
 
-        private async Task ReactionRemovedAsync(ReactionRemovedEventArgs args)
+        private async Task MessageReactionRemovedAsync(MessageReactionRemoveEventArgs args)
         {
-            if (!args.Reaction.HasValue)
-                return;
             if (!_sessions.TryGetValue(args.User.Id, out var blackjack))
                 return;
             if (blackjack.Message!.Id != args.Message.Id)
                 return;
 
-            await ProcessGameAsync(blackjack, args.Reaction.Value.Emoji);
+            await ProcessGameAsync(blackjack, args.Emoji);
         }
         
-        private async Task ProcessGameAsync(BlackjackGame blackjack, IEmoji emoji)
+        private async Task ProcessGameAsync(BlackjackGame blackjack, DiscordEmoji emoji)
         {
             
             if (emoji.Equals(CardEmoji))

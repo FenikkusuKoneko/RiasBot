@@ -4,7 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Humanizer;
 using Humanizer.Localisation;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ namespace Rias.Core.Services
             LoadTimers = new Timer(_ => LoadTimersAsync(), null, TimeSpan.Zero, TimeSpan.FromDays(7));
         }
         
-        private readonly ConcurrentDictionary<(Snowflake GuildId, Snowflake UserId), Timer> _timers = new ConcurrentDictionary<(Snowflake, Snowflake), Timer>();
+        private readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), Timer> _timers = new ConcurrentDictionary<(ulong, ulong), Timer>();
 
 #if DEBUG
         public const string MuteRole = "rias-mute-dev";
@@ -57,7 +58,7 @@ namespace Rias.Core.Services
             Log.Debug("Mute timers loaded");
         }
         
-        public async Task MuteUserAsync(IMessageChannel channel, CachedMember moderator, CachedMember member,
+        public async Task MuteUserAsync(DiscordChannel channel, DiscordMember moderator, DiscordMember member,
             string? reason, TimeSpan? timeout = null)
         {
             var guild = member.Guild;
@@ -68,7 +69,7 @@ namespace Rias.Core.Services
 
             var role = (guild.GetRole(guildDb?.MuteRoleId ?? 0)
                         ?? guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole) && !x.Value.IsManaged).Value)
-                       ?? (IRole) await guild.CreateRoleAsync(x => x.Name = MuteRole);
+                       ?? await guild.CreateRoleAsync(MuteRole);
 
             var currentMember = guild.CurrentMember;
             if (currentMember.CheckRoleHierarchy(role) <= 0)
@@ -77,30 +78,30 @@ namespace Rias.Core.Services
                 return;
             }
 
-            if (member.Roles.Any(r => r.Key == role.Id))
+            if (member.Roles.Any(r => r.Id == role.Id))
             {
-                await ReplyErrorAsync(channel, guild.Id, Localization.AdministrationUserAlreadyMuted, member);
+                await ReplyErrorAsync(channel, guild.Id, Localization.AdministrationUserAlreadyMuted, member.FullName());
                 return;
             }
 
             await RunTaskAsync(AddMuteRoleToChannelsAsync(role, guild));
-            await member.GrantRoleAsync(role.Id);
+            await member.GrantRoleAsync(role);
 
             await RunTaskAsync(AddMuteAsync(channel, moderator, member, timeout));
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.Yellow,
                     Description = GetText(guild.Id, Localization.AdministrationUserMuted)
                 }
-                .AddField(GetText(guild.Id, Localization.CommonUser), member, true)
-                .AddField(GetText(guild.Id, Localization.CommonId), member.Id, true)
-                .AddField(GetText(guild.Id, Localization.AdministrationModerator), moderator, true);
+                .AddField(GetText(guild.Id, Localization.CommonUser), member.FullName(), true)
+                .AddField(GetText(guild.Id, Localization.CommonId), member.Id.ToString(), true)
+                .AddField(GetText(guild.Id, Localization.AdministrationModerator), moderator.FullName(), true);
 
             if (!string.IsNullOrEmpty(reason))
                 embed.AddField(GetText(guild.Id, Localization.CommonReason), reason, true);
 
-            embed.WithThumbnailUrl(member.GetAvatarUrl());
+            embed.WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto));
             embed.WithCurrentTimestamp();
 
             if (timeout.HasValue)
@@ -110,18 +111,18 @@ namespace Rias.Core.Services
                     timeout.Value.Humanize(5, new CultureInfo(locale), TimeUnit.Year), true);
             }
 
-            var modLogChannel = guild.GetTextChannel(guildDb?.ModLogChannelId ?? 0);
+            var modLogChannel = guild.GetChannel(guildDb?.ModLogChannelId ?? 0);
             if (modLogChannel != null && channel.Id != modLogChannel.Id)
             {
-                var preconditions = currentMember.GetPermissionsFor(modLogChannel);
-                if (preconditions.ViewChannel && preconditions.SendMessages)
+                var preconditions = currentMember.PermissionsIn(modLogChannel);
+                if (preconditions.HasPermission(Permissions.AccessChannels) && preconditions.HasPermission(Permissions.SendMessages))
                     channel = modLogChannel;
             }
 
             await channel.SendMessageAsync(embed);
         }
         
-        private async Task AddMuteAsync(IMessageChannel channel, CachedMember moderator, CachedMember member, TimeSpan? timeout)
+        private async Task AddMuteAsync(DiscordChannel channel, DiscordMember moderator, DiscordMember member, TimeSpan? timeout)
         {
             var guild = member.Guild;
             
@@ -233,7 +234,7 @@ namespace Rias.Core.Services
                 return;
             }
 
-            if (context.Member.Roles.All(r => r.Key != role.Id))
+            if (context.Member.Roles.All(r => r.Id != role.Id))
             {
                 if (!context.SentByTimer)
                     await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationUserNotMuted, context.Member);
@@ -242,17 +243,17 @@ namespace Rias.Core.Services
             }
 
             await RunTaskAsync(RemoveMuteAsync(context));
-            await context.Member.RevokeRoleAsync(role.Id);
+            await context.Member.RevokeRoleAsync(role);
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.Yellow,
                     Description = GetText(context.Guild.Id, Localization.AdministrationUserUnmuted)
                 }
-                .AddField(GetText(context.Guild.Id, Localization.CommonUser), context.Member, true)
-                .AddField(GetText(context.Guild.Id, Localization.CommonId), context.UserId, true)
+                .AddField(GetText(context.Guild.Id, Localization.CommonUser), context.Member.FullName(), true)
+                .AddField(GetText(context.Guild.Id, Localization.CommonId), context.MemberId.ToString(), true)
                 .AddField(GetText(context.Guild.Id, Localization.AdministrationModerator),
-                    context.SentByTimer ? currentMember : context.Moderator, true);
+                    context.SentByTimer ? currentMember.FullName() : context.Moderator?.FullName() ?? "-", true);
 
             if (!string.IsNullOrEmpty(context.Reason))
                 embed.AddField(GetText(context.Guild.Id, Localization.CommonReason), context.Reason, true);
@@ -261,29 +262,29 @@ namespace Rias.Core.Services
                 embed.AddField(GetText(context.Guild.Id, Localization.CommonReason),
                     GetText(context.Guild.Id, Localization.CommonTimesUp), true);
 
-            embed.WithThumbnailUrl(context.Member.GetAvatarUrl());
+            embed.WithThumbnail(context.Member.GetAvatarUrl(ImageFormat.Auto));
             embed.WithCurrentTimestamp();
 
             var channel = context.SourceChannel;
-            var modLogChannel = context.Guild.GetTextChannel(guildDb?.ModLogChannelId ?? 0);
+            var modLogChannel = context.Guild.GetChannel(guildDb?.ModLogChannelId ?? 0);
             if (modLogChannel != null)
             {
-                var preconditionsModLog = currentMember.GetPermissionsFor(modLogChannel);
-                if (preconditionsModLog.ViewChannel && preconditionsModLog.SendMessages)
+                var preconditionsModLog = currentMember.PermissionsIn(modLogChannel);
+                if (preconditionsModLog.HasPermission(Permissions.AccessChannels) && preconditionsModLog.HasPermission(Permissions.SendMessages))
                     channel = modLogChannel;
             }
 
             if (channel is null)
                 return;
 
-            var preconditionsChannel = currentMember.GetPermissionsFor((CachedTextChannel) channel);
-            if (preconditionsChannel.ViewChannel && preconditionsChannel.SendMessages)
+            var preconditionsChannel = currentMember.PermissionsIn(channel);
+            if (preconditionsChannel.HasPermission(Permissions.AccessChannels) && preconditionsChannel.HasPermission(Permissions.SendMessages))
                 await channel.SendMessageAsync(embed);
         }
         
         private async Task RemoveMuteAsync(MuteContext context)
         {
-            if (_timers.TryRemove((context.GuildId, context.UserId), out var muteTimer))
+            if (_timers.TryRemove((context.GuildId, context.MemberId), out var muteTimer))
             {
                 await muteTimer.DisposeAsync();
                 Log.Debug("Mute timer removed");
@@ -291,116 +292,111 @@ namespace Rias.Core.Services
 
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == context.GuildId && x.UserId == context.UserId);
+            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == context.GuildId && x.UserId == context.MemberId);
             if (userGuildDb != null)
                 userGuildDb.IsMuted = false;
 
-            var muteTimerDb = await db.MuteTimers.FirstOrDefaultAsync(x => x.GuildId == context.GuildId && x.UserId == context.UserId);
+            var muteTimerDb = await db.MuteTimers.FirstOrDefaultAsync(x => x.GuildId == context.GuildId && x.UserId == context.MemberId);
             if (muteTimerDb != null)
                 db.Remove(muteTimerDb);
 
             await db.SaveChangesAsync();
         }
 
-        public async Task AddMuteRoleToChannelsAsync(IRole role, CachedGuild guild)
+        public async Task AddMuteRoleToChannelsAsync(DiscordRole role, DiscordGuild guild)
         {
-            var categories = guild.CategoryChannels;
+            var categories = guild.Channels.Where(x => x.Value.Type == ChannelType.Category);
             foreach (var (_, category) in categories)
             {
-                if (guild.CurrentMember.GetPermissionsFor(category).ViewChannel)
+                if (guild.CurrentMember.PermissionsIn(category).HasPermission(Permissions.AccessChannels))
                     await AddPermissionOverwriteAsync(category, role);
             }
 
             var channels = guild.Channels;
             foreach (var (_, channel) in channels)
             {
-                if (guild.CurrentMember.GetPermissionsFor(channel).ViewChannel)
+                if (guild.CurrentMember.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
                     await AddPermissionOverwriteAsync(channel, role);
             }
         }
 
-        private static async Task AddPermissionOverwriteAsync(CachedGuildChannel channel, IRole role)
+        private static async Task AddPermissionOverwriteAsync(DiscordChannel channel, DiscordRole role)
         {
-            var roleOverwrites = channel.Overwrites
-                .FirstOrDefault(x => x.TargetType == OverwriteTargetType.Role && x.TargetId == role.Id);
-
+            var roleOverwrites = channel.PermissionOverwrites.FirstOrDefault(x => x.Type == OverwriteType.Role && x.Id == role.Id);
             if (roleOverwrites is null)
             {
-                await channel.AddOrModifyOverwriteAsync(new LocalOverwrite(role, new OverwritePermissions()
-                - Permission.SendMessages
-                - Permission.AddReactions
-                - Permission.Speak));
+                await channel.AddOverwriteAsync(role, deny: Permissions.SendMessages | Permissions.AddReactions | Permissions.Speak);
                 return;
             }
-            
-            var permissions = roleOverwrites.Permissions;
-            var addPermissionOverwrite = false;
-            
-            if (!roleOverwrites.Permissions.Denied.SendMessages)
-            {
-                permissions -= Permission.SendMessages;
-                addPermissionOverwrite = true;
-            }
-            
-            if (!roleOverwrites.Permissions.Denied.Speak)
-            {
-                permissions -= Permission.Speak;
-                addPermissionOverwrite = true;
-            }
 
-            if (!roleOverwrites.Permissions.Denied.AddReactions)
-            {
-                permissions -= Permission.AddReactions;
-                addPermissionOverwrite = true;
-            }
+            var permissions = roleOverwrites.Denied;
+
+            if (!permissions.HasPermission(Permissions.SendMessages))
+                permissions |= Permissions.SendMessages;
             
-            if (addPermissionOverwrite)
-                await channel.AddOrModifyOverwriteAsync(new LocalOverwrite(role, permissions));
+            if (!permissions.HasPermission(Permissions.Speak))
+                permissions |= Permissions.Speak;
+
+            if (!permissions.HasPermission(Permissions.AddReactions))
+                permissions |= Permissions.AddReactions;
+            
+            if (permissions > 0)
+                await channel.AddOverwriteAsync(role, deny: permissions);
         }
         
         public class MuteContext
         {
-            public CachedGuild? Guild { get; private set; }
-            public Snowflake GuildId { get; }
-            public CachedMember? Moderator { get; private set; }
-            public CachedMember? Member { get; private set; }
-            public Snowflake UserId { get; }
-            public IMessageChannel? SourceChannel { get; private set; }
+            public DiscordGuild? Guild { get; }
+            public ulong GuildId { get; }
+            public DiscordMember? Moderator { get; private set; }
+            public ulong ModeratorId { get; private set; }
+            public DiscordMember? Member { get; private set; }
+            public ulong MemberId { get; }
+            public DiscordChannel? SourceChannel { get; }
             public string? Reason { get; }
             public bool SentByTimer { get; }
-
-            private readonly Rias? _riasBot;
-
-            public MuteContext(CachedGuild guild, CachedMember moderator, CachedMember member, IMessageChannel channel, string? reason)
+            
+            public MuteContext(DiscordGuild guild, DiscordMember moderator, DiscordMember member, DiscordChannel channel, string? reason)
             {
                 Guild = guild;
                 GuildId = guild.Id;
                 Moderator = moderator;
+                ModeratorId = moderator.Id;
                 Member = member;
-                UserId = member.Id;
+                MemberId = member.Id;
                 SourceChannel = channel;
                 Reason = reason;
             }
 
-            public MuteContext(Rias riasBot, Snowflake guildId, Snowflake moderatorId, Snowflake userId, Snowflake channelId)
+            public MuteContext(RiasBot riasBot, ulong guildId, ulong moderatorId, ulong memberId, ulong channelId)
             {
-                _riasBot = riasBot;
-
                 Guild = riasBot.GetGuild(guildId);
                 GuildId = guildId;
-                Moderator = Guild?.GetMember(moderatorId);
-                Member = Guild?.GetMember(userId);
-                UserId = userId;
-                SourceChannel = Guild?.GetTextChannel(channelId);
+                MemberId = memberId;
+
+                if (Guild != null)
+                {
+                    if (Guild.Members.TryGetValue(moderatorId, out var moderator))
+                        Moderator = moderator;
+                    
+                    if (Guild.Members.TryGetValue(memberId, out var member))
+                        Member = member;
+                    
+                    SourceChannel = Guild.GetChannel(channelId);
+                }
+
                 SentByTimer = true;
             }
 
             public void Update()
             {
-                Guild = _riasBot?.GetGuild(GuildId);
-                Moderator = Guild?.GetMember(Moderator?.Id ?? 0);
-                Member = Guild?.GetMember(UserId);
-                SourceChannel = Guild?.GetTextChannel(SourceChannel?.Id ?? 0);
+                if (Guild == null) return;
+                
+                if (Guild.Members.TryGetValue(ModeratorId, out var moderator))
+                    Moderator = moderator;
+                    
+                if (Guild.Members.TryGetValue(MemberId, out var member))
+                    Member = member;
             }
         }
     }

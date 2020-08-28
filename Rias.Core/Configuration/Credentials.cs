@@ -1,22 +1,22 @@
 using System;
 using System.IO;
-using Disqord;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.Configuration;
-using Rias.Core.Configuration;
+using Rias.Core.Implementation;
 
-namespace Rias.Core.Implementation
+namespace Rias.Core.Configuration
 {
     public class Credentials
     {
         public readonly string Prefix;
         public readonly string Token;
 
-        public Snowflake MasterId { get; }
+        public ulong MasterId { get; }
         public string Currency { get; }
 
         public readonly string Invite;
         public readonly string OwnerServerInvite;
-        public Snowflake OwnerServerId { get; }
+        public ulong OwnerServerId { get; }
 
         public readonly string Patreon;
         public readonly string Website;
@@ -50,11 +50,11 @@ namespace Rias.Core.Implementation
 
             var confirmColor = RiasUtilities.HexToInt(config.GetValue<string>(nameof(RiasUtilities.ConfirmColor)));
             if (confirmColor.HasValue)
-                RiasUtilities.ConfirmColor = new Color(confirmColor.Value);
+                RiasUtilities.ConfirmColor = new DiscordColor(confirmColor.Value);
 
             var errorColor = RiasUtilities.HexToInt(config.GetValue<string>(nameof(RiasUtilities.ErrorColor)));
             if (errorColor.HasValue)
-                RiasUtilities.ErrorColor = new Color(errorColor.Value);
+                RiasUtilities.ErrorColor = new DiscordColor(errorColor.Value);
 
             Patreon = config.GetValue<string>(nameof(Patreon));
             Website = config.GetValue<string>(nameof(Website));

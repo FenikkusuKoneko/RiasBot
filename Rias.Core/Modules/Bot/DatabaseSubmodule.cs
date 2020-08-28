@@ -1,10 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Database.Entities;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 
 namespace Rias.Core.Modules.Bot
@@ -19,11 +21,11 @@ namespace Rias.Core.Modules.Bot
             }
             
             [Command("delete"), OwnerOnly]
-            public async Task DeleteAsync([Remainder] IUser user)
+            public async Task DeleteAsync([Remainder] DiscordUser user)
             {
-                await ReplyConfirmationAsync(Localization.BotDeleteDialog, user);
+                await ReplyConfirmationAsync(Localization.BotDeleteDialog, user.FullName());
                 var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived?.Message.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+                if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
                 {
                     await ReplyErrorAsync(Localization.BotDeleteCanceled);
                     return;
@@ -42,11 +44,11 @@ namespace Rias.Core.Modules.Bot
                     DbContext.Remove(profileDb);
                 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.BotUserDeleted, user);
+                await ReplyConfirmationAsync(Localization.BotUserDeleted, user.FullName());
             }
             
             [Command("database"), OwnerOnly]
-            public async Task DatabaseAsync([Remainder] IUser user)
+            public async Task DatabaseAsync([Remainder] DiscordUser user)
             {
                 var userDb = await DbContext.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
                 if (userDb is null)
@@ -55,29 +57,29 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
 
-                var mutualGuilds = user is CachedUser cachedUser ? cachedUser.MutualGuilds.Count : 0;
+                var mutualGuilds = user is DiscordMember cachedUser ? cachedUser.GetMutualGuilds(RiasBot).Count : 0;
                 
-                var embed = new LocalEmbedBuilder()
+                var embed = new DiscordEmbedBuilder()
                     .WithColor(RiasUtilities.ConfirmColor)
-                    .WithAuthor(user)
-                    .AddField(GetText(Localization.CommonId), user.Id, true)
-                    .AddField(GetText(Localization.GamblingCurrency), $"{userDb.Currency} {Credentials.Currency}", true)
-                    .AddField(GetText(Localization.XpGlobalLevel), RiasUtilities.XpToLevel(userDb.Xp, 30), true)
-                    .AddField(GetText(Localization.XpGlobalXp), userDb.Xp, true)
-                    .AddField(GetText(Localization.BotIsBlacklisted), userDb.IsBlacklisted, true)
-                    .AddField(GetText(Localization.BotIsBanned), userDb.IsBanned, true)
-                    .AddField(GetText(Localization.BotMutualGuilds), mutualGuilds, true)
-                    .WithImageUrl(user.GetAvatarUrl());
+                    .WithAuthor(user.FullName(), user.GetAvatarUrl(ImageFormat.Auto))
+                    .AddField(GetText(Localization.CommonId), user.Id.ToString(), true)
+                    .AddField(GetText(Localization.GamblingHearts), $"{userDb.Currency} {Credentials.Currency}", true)
+                    .AddField(GetText(Localization.XpGlobalLevel), RiasUtilities.XpToLevel(userDb.Xp, 30).ToString(), true)
+                    .AddField(GetText(Localization.XpGlobalXp), userDb.Xp.ToString(), true)
+                    .AddField(GetText(Localization.BotIsBlacklisted), userDb.IsBlacklisted.ToString(), true)
+                    .AddField(GetText(Localization.BotIsBanned), userDb.IsBanned.ToString(), true)
+                    .AddField(GetText(Localization.BotMutualGuilds), mutualGuilds.ToString(), true)
+                    .WithImageUrl(user.GetAvatarUrl(ImageFormat.Auto));
 
                 await ReplyAsync(embed);
             }
             
             [Command("blacklist"), OwnerOnly]
-            public async Task BlacklistAsync([Remainder] IUser user)
+            public async Task BlacklistAsync([Remainder] DiscordUser user)
             {
                 await ReplyConfirmationAsync(Localization.BotBlacklistDialog);
                 var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived?.Message.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+                if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
                 {
                     await ReplyErrorAsync(Localization.BotBlacklistCanceled);
                     return;
@@ -87,25 +89,25 @@ namespace Rias.Core.Modules.Bot
                 userDb.IsBlacklisted = true;
                 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.BotUserBlacklisted, user);
+                await ReplyConfirmationAsync(Localization.BotUserBlacklisted, user.FullName());
             }
             
             [Command("removeblacklist"), OwnerOnly]
-            public async Task RemoveBlacklistAsync([Remainder] IUser user)
+            public async Task RemoveBlacklistAsync([Remainder] DiscordUser user)
             {
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 userDb.IsBlacklisted = false;
                 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.BotUserBlacklistRemoved, user);
+                await ReplyConfirmationAsync(Localization.BotUserBlacklistRemoved, user.FullName());
             }
             
             [Command("botban"), OwnerOnly]
-            public async Task BotBanAsync([Remainder] IUser user)
+            public async Task BotBanAsync([Remainder] DiscordUser user)
             {
                 await ReplyConfirmationAsync(Localization.BotBotBanDialog);
                 var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived?.Message.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+                if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
                 {
                     await ReplyErrorAsync(Localization.BotBotBanCanceled);
                     return;
@@ -115,17 +117,17 @@ namespace Rias.Core.Modules.Bot
                 userDb.IsBanned = true;
                 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.BotUserBotBanned, user);
+                await ReplyConfirmationAsync(Localization.BotUserBotBanned, user.FullName());
             }
             
             [Command("removebotban"), OwnerOnly]
-            public async Task RemoveBotBanAsync([Remainder] IUser user)
+            public async Task RemoveBotBanAsync([Remainder] DiscordUser user)
             {
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 userDb.IsBanned = false;
                 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.BotUserBotBanRemoved, user);
+                await ReplyConfirmationAsync(Localization.BotUserBotBanRemoved, user.FullName());
             }
         }
     }

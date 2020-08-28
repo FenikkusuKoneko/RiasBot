@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
@@ -37,7 +37,7 @@ namespace Rias.Core.Modules.Gambling
                     return;
                 }
 
-                var currency = _gamblingService.GetUserCurrency(Context.User.Id);
+                var currency = await _gamblingService.GetUserCurrencyAsync(Context.User.Id);
                 if (currency < bet)
                 {
                     await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Credentials.Currency);
@@ -50,7 +50,7 @@ namespace Rias.Core.Modules.Gambling
                     return;
                 }
                 
-                await Service.CreateBlackjackAsync((CachedMember) Context.User, (CachedTextChannel) Context.Channel, bet);
+                await Service.CreateBlackjackAsync((DiscordMember) Context.User, Context.Channel, bet);
             }
             
             [Command("resume"), Context(ContextType.Guild)]
@@ -62,7 +62,7 @@ namespace Rias.Core.Modules.Gambling
                     return;
                 }
 
-                await blackjack!.ResendMessageAsync((CachedTextChannel) Context.Channel);
+                await blackjack!.ResendMessageAsync(Context.Channel);
             }
             
             [Command("stop"), Context(ContextType.Guild)]

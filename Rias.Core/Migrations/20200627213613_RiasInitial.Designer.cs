@@ -24,7 +24,7 @@ namespace Rias.Core.Migrations
                 .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.CharactersEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.CharactersEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +62,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("characters");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.CustomCharactersEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.CustomCharactersEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -100,7 +100,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("custom_characters");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.CustomWaifusEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.CustomWaifusEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,7 +138,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("custom_waifus");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.GuildUsersEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.GuildUsersEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -180,7 +180,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("guild_users");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.GuildXpRolesEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.GuildXpRolesEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -214,7 +214,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("guild_xp_roles");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.GuildsEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.GuildsEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -300,7 +300,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("guilds");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.MuteTimersEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.MuteTimersEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -342,7 +342,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("mute_timers");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.PatreonEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.PatreonEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -400,7 +400,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("patreon");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.ProfileEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.ProfileEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -446,7 +446,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("profile");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.SelfAssignableRolesEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.SelfAssignableRolesEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -480,7 +480,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("self_assignable_roles");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.UsersEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.UsersEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -530,7 +530,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.VotesEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.VotesEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -568,7 +568,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("votes");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.WaifusEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.WaifusEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -620,7 +620,7 @@ namespace Rias.Core.Migrations
                     b.ToTable("waifus");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.WarningsEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.WarningsEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -654,15 +654,15 @@ namespace Rias.Core.Migrations
                     b.ToTable("warnings");
                 });
 
-            modelBuilder.Entity("Rias.Core.Database.Entities.WaifusEntity", b =>
+            modelBuilder.Entity("RiasBot.Core.Database.Entities.WaifusEntity", b =>
                 {
-                    b.HasOne("Rias.Core.Database.Entities.CharactersEntity", "Character")
+                    b.HasOne("RiasBot.Core.Database.Entities.CharactersEntity", "Character")
                         .WithMany()
                         .HasForeignKey("CharacterId")
                         .HasConstraintName("fk_waifus_characters_character_id")
                         .HasPrincipalKey("CharacterId");
 
-                    b.HasOne("Rias.Core.Database.Entities.CustomCharactersEntity", "CustomCharacter")
+                    b.HasOne("RiasBot.Core.Database.Entities.CustomCharactersEntity", "CustomCharacter")
                         .WithMany()
                         .HasForeignKey("CustomCharacterId")
                         .HasConstraintName("fk_waifus_custom_characters_custom_character_id")

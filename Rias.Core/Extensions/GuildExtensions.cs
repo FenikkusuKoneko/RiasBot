@@ -1,20 +1,21 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Disqord;
-using Disqord.Rest;
+using DSharpPlus;
+using DSharpPlus.Entities;
+using Rias.Core.Implementation;
 
 namespace Rias.Core.Extensions
 {
     public static class GuildExtensions
     {
-        public static int GetGuildEmotesSlots(this CachedGuild guild)
+        public static int GetGuildEmotesSlots(this DiscordGuild guild)
         {
-            return guild.BoostTier switch
+            return guild.PremiumTier switch
             {
-                BoostTier.First => 100,
-                BoostTier.Second => 150,
-                BoostTier.Third => 250,
+                PremiumTier.Tier_1 => 100,
+                PremiumTier.Tier_2 => 150,
+                PremiumTier.Tier_3 => 250,
                 _ => 50    //default is PremiumTier.None
             };
         }
@@ -22,36 +23,40 @@ namespace Rias.Core.Extensions
         /// <summary>
         /// Gets a category channel by id or name (ordinal ignore case).
         /// </summary>
-        public static CachedCategoryChannel? GetCategoryChannel(this CachedGuild guild, string value)
-            => Snowflake.TryParse(value, out var channelId)
-                ? guild.CategoryChannels.FirstOrDefault(x => x.Key == channelId).Value
-                : guild.CategoryChannels.FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
+        public static DiscordChannel? GetCategoryChannel(this DiscordGuild guild, string value)
+            => ulong.TryParse(value, out var channelId)
+                ? guild.Channels.Where(x => x.Value.Type == ChannelType.Category)
+                    .FirstOrDefault(x => x.Key == channelId).Value
+                : guild.Channels.Where(x => x.Value.Type == ChannelType.Category)
+                    .FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
 
         /// <summary>
         /// Gets a text channel by mention, id or name (ordinal ignore case).
         /// </summary>
-        public static CachedTextChannel? GetTextChannel(this CachedGuild guild, string value)
+        public static DiscordChannel? GetTextChannel(this DiscordGuild guild, string value)
         {
-            if (Discord.TryParseChannelMention(value, out var channelSnowflake))
-                return guild.GetTextChannel(channelSnowflake);
+            if (RiasUtilities.TryParseChannelMention(value, out var channelId))
+                return guild.GetChannel(channelId);
 
-            return Snowflake.TryParse(value, out var channelId)
-                ? guild.GetTextChannel(channelId)
-                : guild.TextChannels.FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
+            return ulong.TryParse(value, out channelId)
+                ? guild.GetChannel(channelId)
+                : guild.Channels.Where(x => x.Value.Type == ChannelType.Text)
+                    .FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
         }
 
         /// <summary>
         /// Gets a voice channel by id or name (ordinal ignore case)
         /// </summary>
-        public static CachedVoiceChannel? GetVoiceChannel(this CachedGuild guild, string value)
-            => Snowflake.TryParse(value, out var channelId)
-                ? guild.GetVoiceChannel(channelId)
-                : guild.VoiceChannels.FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
+        public static DiscordChannel? GetVoiceChannel(this DiscordGuild guild, string value)
+            => ulong.TryParse(value, out var channelId)
+                ? guild.GetChannel(channelId)
+                : guild.Channels.Where(x => x.Value.Type == ChannelType.Voice)
+                    .FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
 
-        public static string GetRealIconUrl(this CachedGuild guild)
-            => guild.GetIconUrl(guild.IconHash.StartsWith("a_") ? ImageFormat.Gif : ImageFormat.Default);
+        public static async Task<DiscordWebhook?> GetWebhookAsync(this DiscordGuild guild, ulong id)
+            => (await guild.GetWebhooksAsync())?.FirstOrDefault(x => x.Id == id);
 
-        public static async Task<RestWebhook?> GetWebhookAsync(this CachedGuild guild, Snowflake id)
-            => (await guild.GetWebhooksAsync()).FirstOrDefault(x => x.Id == id);
+        public static string GetIconUrl(this DiscordGuild guild)
+            => $"https://cdn.discordapp.com/icons/{guild.Id}/{guild.IconHash}.{(guild.IconHash.StartsWith("a_") ? "gif" : "png")}?size=2048";
     }
 }

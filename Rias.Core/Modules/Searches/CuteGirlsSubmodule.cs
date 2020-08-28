@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Qmmands;
@@ -32,12 +32,15 @@ namespace Rias.Core.Modules.Searches
                     ? JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())["url"]
                     : null;
                 
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                 {
                     Title = GetText(Localization.SearchesNeko),
                     Color = RiasUtilities.ConfirmColor,
                     ImageUrl = nekoImage,
-                    Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} riasbot.me")
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
+                    }
                 };
 
                 await ReplyAsync(embed);
@@ -52,12 +55,15 @@ namespace Rias.Core.Modules.Searches
                     ? JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())["url"]
                     : null;
                 
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                 {
                     Title = GetText(Localization.SearchesKitsune),
                     Color = RiasUtilities.ConfirmColor,
                     ImageUrl = kitsuneImage,
-                    Footer = new LocalEmbedFooterBuilder().WithText($"{GetText(Localization.ReactionsPoweredBy)} riasbot.me")
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
+                    }
                 };
 
                 await ReplyAsync(embed);

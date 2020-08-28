@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using Disqord;
+using DSharpPlus.Entities;
 using Newtonsoft.Json;
 using Rias.Core.Models;
 
@@ -14,27 +14,29 @@ namespace Rias.Core.Implementation
         // these are the color used by the confirmation message embed and error message embed
         // these are modified from the Credentials class
         
-        public static Color Red = new Color(0xFF0000);
-        public static Color Green = new Color(0x00FF00);
-        public static Color Yellow = new Color(0xFFFF00);
+        public static DiscordColor Red = new DiscordColor(0xFF0000);
+        public static DiscordColor Green = new DiscordColor(0x00FF00);
+        public static DiscordColor Yellow = new DiscordColor(0xFFFF00);
         
-        public static Color ConfirmColor = Green;
-        public static Color ErrorColor = Red;
+        public static DiscordColor ConfirmColor = Green;
+        public static DiscordColor ErrorColor = Red;
 
         private static readonly Regex TimeSpanRegex = new Regex(
             @"^(?:(?<months>\d{1,2})mo)?(?:(?<weeks>\d{1,3})w)?(?:(?<days>\d{1,3})d)?(?:(?<hours>\d{1,4})h)?(?:(?<minutes>\d{1,5})m)?(?:(?<seconds>\d{1,5})s)?$",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
-        
+            RegexOptions.ECMAScript | RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+
+        private static readonly Regex UserRegex = new Regex(@"^<@\!?(\d+?)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
+        private static readonly Regex RoleRegex = new Regex(@"^<@&(\d+?)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
+        private static readonly Regex ChannelRegex = new Regex(@"^<#(\d+)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
+        private static readonly Regex EmojiRegex = new Regex(@"^<a?:.+:(\d+)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
+
         /// <summary>
         /// Checks if the user's message has the bot mention
-        /// Source: Disqord.Bot
         /// </summary>
-        public static bool HasMentionPrefix(CachedUserMessage message, out string output)
+        public static bool HasMentionPrefix(this DiscordMessage message, DiscordUser currentUser, out string output)
         {
             var contentSpan = message.Content.AsSpan();
-            if (contentSpan.Length > 17
-                && contentSpan[0] == '<'
-                && contentSpan[1] == '@')
+            if (contentSpan.Length > 17 && contentSpan[0] == '<' && contentSpan[1] == '@')
             {
                 var closingBracketIndex = contentSpan.IndexOf('>');
                 if (closingBracketIndex != -1)
@@ -42,7 +44,7 @@ namespace Rias.Core.Implementation
                     var idSpan = contentSpan[2] == '!'
                         ? contentSpan.Slice(3, closingBracketIndex - 3)
                         : contentSpan.Slice(2, closingBracketIndex - 2);
-                    if (Snowflake.TryParse(idSpan, out var id) && id == message.Client.CurrentUser.Id)
+                    if (ulong.TryParse(idSpan, out var id) && id == currentUser.Id)
                     {
                         output = new string(contentSpan.Slice(closingBracketIndex + 1));
                         return true;
@@ -51,6 +53,46 @@ namespace Rias.Core.Implementation
             }
 
             output = string.Empty;
+            return false;
+        }
+
+        public static bool TryParseUserMention(string value, out ulong userId)
+        {
+            var user = UserRegex.Match(value);
+            if (user.Success && ulong.TryParse(user.Groups[1].Value, out userId))
+                return true;
+            
+            userId = 0;
+            return false;
+        }
+        
+        public static bool TryParseRoleMention(string value, out ulong roleId)
+        {
+            var role = RoleRegex.Match(value);
+            if (role.Success && ulong.TryParse(role.Groups[1].Value, out roleId))
+                return true;
+
+            roleId = 0;
+            return false;
+        }
+        
+        public static bool TryParseChannelMention(string value, out ulong channelId)
+        {
+            var channel = ChannelRegex.Match(value);
+            if (channel.Success && ulong.TryParse(channel.Groups[1].Value, out channelId))
+                return true;
+
+            channelId = 0;
+            return false;
+        }
+        
+        public static bool TryParseEmoji(string value, out ulong emojiId)
+        {
+            var emoji = EmojiRegex.Match(value);
+            if (emoji.Success && ulong.TryParse(emoji.Groups[1].Value, out emojiId))
+                return true;
+
+            emojiId = 0;
             return false;
         }
 
@@ -120,12 +162,12 @@ namespace Rias.Core.Implementation
             while (--size > 0 && enumerator.MoveNext());
         }
 
-        public static LocalEmbedBuilder WithCurrentTimestamp(this LocalEmbedBuilder embedBuilder)
+        public static DiscordEmbedBuilder WithCurrentTimestamp(this DiscordEmbedBuilder embedBuilder)
             => embedBuilder.WithTimestamp(DateTimeOffset.UtcNow);
 
-        public static bool TryParseEmbed(string json, out LocalEmbedBuilder embed)
+        public static bool TryParseEmbed(string json, out DiscordEmbedBuilder embed)
         {
-            embed = new LocalEmbedBuilder();
+            embed = new DiscordEmbedBuilder();
             try
             {
                 var embedDeserialized = JsonConvert.DeserializeObject<JsonEmbed>(json);
@@ -142,7 +184,7 @@ namespace Rias.Core.Implementation
                 var timestamp = embedDeserialized.Timestamp;
         
                 if (author != null)
-                    embed.WithAuthor(author);
+                    embed.WithAuthor(author.Name, author.Url, author.IconUrl);
         
                 if (!string.IsNullOrEmpty(title))
                     embed.WithTitle(title);
@@ -154,7 +196,7 @@ namespace Rias.Core.Implementation
                     embed.WithColor(HexToInt(colorString) ?? 0xFFFFFF);
         
                 if (!string.IsNullOrEmpty(thumbnail))
-                    embed.WithThumbnailUrl(thumbnail);
+                    embed.WithThumbnail(thumbnail);
                 if (!string.IsNullOrEmpty(image))
                     embed.WithImageUrl(image);
         
@@ -164,7 +206,7 @@ namespace Rias.Core.Implementation
                     {
                         var fieldName = field.Name;
                         var fieldValue = field.Value;
-                        var fieldInline = field.IsInline;
+                        var fieldInline = field.Inline;
         
                         if (!string.IsNullOrEmpty(fieldName) && !string.IsNullOrEmpty(fieldValue))
                         {
@@ -174,7 +216,7 @@ namespace Rias.Core.Implementation
                 }
         
                 if (footer != null)
-                    embed.WithFooter(footer);
+                    embed.WithFooter(footer.Text, footer.IconUrl);
         
                 if (timestamp.HasValue)
                     embed.WithTimestamp(timestamp.Value);

@@ -1,10 +1,11 @@
 using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Disqord.Logging;
+using DSharpPlus;
+using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Serilog;
 using Serilog.Events;
@@ -14,35 +15,31 @@ namespace Rias.Core.Services
     [AutoStart]
     public class LoggingService : RiasService
     {
-        private static readonly Regex LogRegex = new Regex(@"(Guild.*became available)|(Requesting offline members)|(MessageUpdate)",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        
         public LoggingService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             var commandService = serviceProvider.GetRequiredService<CommandService>();
             
-            RiasBot.Logger.MessageLogged += DisqordLog;
+            RiasBot.Client.DebugLogger.LogMessageReceived += LogMessageReceived;
             commandService.CommandExecuted += CommandExecutedAsync;
             commandService.CommandExecutionFailed += CommandExecutionFailedAsync;
         }
         
-        private void DisqordLog(object? sender, MessageLoggedEventArgs args)
+        private void LogMessageReceived(object? sender, DebugLogMessageEventArgs args)
         {
-            var logEventLevel = args.Severity switch
+            var logEventLevel = args.Level switch
             {
-                LogMessageSeverity.Trace => LogEventLevel.Verbose,
-                LogMessageSeverity.Information => LogEventLevel.Information,
-                LogMessageSeverity.Debug => LogEventLevel.Debug,
-                LogMessageSeverity.Warning => LogEventLevel.Warning,
-                LogMessageSeverity.Error => LogEventLevel.Error,
-                LogMessageSeverity.Critical => LogEventLevel.Fatal,
+                LogLevel.Info => LogEventLevel.Information,
+                LogLevel.Debug => LogEventLevel.Debug,
+                LogLevel.Warning => LogEventLevel.Warning,
+                LogLevel.Error => LogEventLevel.Error,
+                LogLevel.Critical => LogEventLevel.Fatal,
                 _ => LogEventLevel.Verbose
             };
             
-            if (args.Message != null && LogRegex.IsMatch(args.Message))
-                return;
-            
-            Log.Logger.Write(logEventLevel, $"{args.Source}: {args.Exception?.ToString() ?? args.Message}");
+            if (args.Exception is null)
+                Log.Logger.Write(logEventLevel, args.Message);
+            else
+                Log.Logger.Write(logEventLevel, args.Exception, args.Message);
         }
 
         private Task CommandExecutedAsync(CommandExecutedEventArgs args)
@@ -52,7 +49,7 @@ namespace Rias.Core.Services
 
             Log.Logger.Information($"[Command] \"{command.Name}\"\n" +
                             $"\t\t[Arguments] \"{string.Join(" ", context.Arguments)}\"\n" +
-                            $"\t\t[User] \"{context.User}\" ({context.User.Id})\n" +
+                            $"\t\t[User] \"{context.User.FullName()}\" ({context.User.Id})\n" +
                             $"\t\t[Channel] \"{context.Channel.Name}\" ({context.Channel.Id})\n" +
                             $"\t\t[Guild] \"{context.Guild?.Name ?? "DM"}\" ({context.Guild?.Id ?? 0})");
 
@@ -67,7 +64,7 @@ namespace Rias.Core.Services
 
             Log.Error($"[Command] \"{command.Name}\"\n" +
                             $"\t\t[Arguments] \"{context.RawArguments}\"\n" +
-                            $"\t\t[User] \"{context.User}\" ({context.User.Id})\n" +
+                            $"\t\t[User] \"{context.User.FullName()}\" ({context.User.Id})\n" +
                             $"\t\t[Channel] \"{context.Channel.Name}\" ({context.Channel.Id})\n" +
                             $"\t\t[Guild] \"{context.Guild?.Name ?? "DM"}\" ({context.Guild?.Id ?? 0})\n" +
                             $"\t\t[Error Reason] {result.Reason}\n" +

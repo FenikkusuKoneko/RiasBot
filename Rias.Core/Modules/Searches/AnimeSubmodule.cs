@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Qmmands;
@@ -64,7 +64,7 @@ namespace Rias.Core.Modules.Searches
                         : "-"
                     : "-";
 
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
                         Url = anime.SiteUrl,
@@ -72,7 +72,7 @@ namespace Rias.Core.Modules.Searches
                     }.AddField(GetText(Localization.SearchesTitleRomaji), !string.IsNullOrEmpty(anime.Title.Romaji) ? anime.Title.Romaji : "-", true)
                     .AddField(GetText(Localization.SearchesTitleEnglish), !string.IsNullOrEmpty(anime.Title.English) ? anime.Title.English : "-", true)
                     .AddField(GetText(Localization.SearchesTitleNative), !string.IsNullOrEmpty(anime.Title.Native) ? anime.Title.Native : "-", true)
-                    .AddField(GetText(Localization.CommonId), anime.Id, true)
+                    .AddField(GetText(Localization.CommonId), anime.Id.ToString(), true)
                     .AddField(GetText(Localization.SearchesFormat), !string.IsNullOrEmpty(anime.Format) ? anime.Format : "-", true)
                     .AddField(GetText(Localization.SearchesEpisodes), anime.Episodes.HasValue ? anime.Episodes.Value.ToString() : "-", true)
                     .AddField(GetText(Localization.SearchesEpisodeDuration), episodeDuration, true)
@@ -86,7 +86,7 @@ namespace Rias.Core.Modules.Searches
                     .AddField(GetText(Localization.SearchesFavourites), anime.Favourites.HasValue ? anime.Favourites.Value.ToString() : "-", true)
                     .AddField(GetText(Localization.SearchesSource), !string.IsNullOrEmpty(anime.Source) ? anime.Source : "-", true)
                     .AddField(GetText(Localization.SearchesGenres), genres, true)
-                    .AddField(GetText(Localization.SearchesIsAdult), anime.IsAdult, true)
+                    .AddField(GetText(Localization.SearchesIsAdult), anime.IsAdult.ToString(), true)
                     .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(anime.Description)
                         ? $"{anime.Description.Truncate(900)} [{GetText(Localization.More).ToLowerInvariant()}]({anime.SiteUrl})"
                         : "-")
@@ -136,7 +136,7 @@ namespace Rias.Core.Modules.Searches
                         : "-"
                     : "-";
 
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
                         Url = manga.SiteUrl,
@@ -144,7 +144,7 @@ namespace Rias.Core.Modules.Searches
                     }.AddField(GetText(Localization.SearchesTitleRomaji), !string.IsNullOrEmpty(manga.Title.Romaji) ? manga.Title.Romaji : "-", true)
                     .AddField(GetText(Localization.SearchesTitleEnglish), !string.IsNullOrEmpty(manga.Title.English) ? manga.Title.English : "-", true)
                     .AddField(GetText(Localization.SearchesTitleNative), !string.IsNullOrEmpty(manga.Title.Native) ? manga.Title.Native : "-", true)
-                    .AddField(GetText(Localization.CommonId), manga.Id, true)
+                    .AddField(GetText(Localization.CommonId), manga.Id.ToString(), true)
                     .AddField(GetText(Localization.SearchesFormat), !string.IsNullOrEmpty(manga.Format) ? manga.Format : "-", true)
                     .AddField(GetText(Localization.SearchesChapters), manga.Chapters.HasValue ? manga.Chapters.Value.ToString() : "-", true)
                     .AddField(GetText(Localization.SearchesVolumes), manga.Volumes.HasValue ? manga.Volumes.Value.ToString() : "-", true)
@@ -158,7 +158,7 @@ namespace Rias.Core.Modules.Searches
                     .AddField(GetText(Localization.SearchesSource), !string.IsNullOrEmpty(manga.Source) ? manga.Source : "-", true)
                     .AddField(GetText(Localization.SearchesGenres), genres, true)
                     .AddField(GetText(Localization.SearchesSynonyms), synonyms, true)
-                    .AddField(GetText(Localization.SearchesIsAdult), manga.IsAdult, true)
+                    .AddField(GetText(Localization.SearchesIsAdult), manga.IsAdult.ToString(), true)
                     .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(manga.Description)
                         ? $"{manga.Description.Truncate(900)} [{GetText(Localization.More.ToLowerInvariant())}]({manga.SiteUrl})"
                         : "-")
@@ -202,11 +202,11 @@ namespace Rias.Core.Modules.Searches
                     return;
                 }
                 
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
                         Title = character.Name
-                    }.AddField(GetText(Localization.CommonId), character.Id, true)
+                    }.AddField(GetText(Localization.CommonId), character.Id.ToString(), true)
                     .AddField(GetText(Localization.SearchesSource), GetText(Localization.BotDatabase), true)
                     .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(character.Description) ? $"{character.Description}" : "-")
                     .WithImageUrl(character.ImageUrl);
@@ -273,7 +273,7 @@ namespace Rias.Core.Modules.Searches
                     animeSb.Append("-");
                 }
 
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Url = character.SiteUrl,
@@ -282,7 +282,7 @@ namespace Rias.Core.Modules.Searches
                     .AddField(GetText(Localization.SearchesLastName), !string.IsNullOrEmpty(character.Name.Last) ? character.Name.Last : "-", true)
                     .AddField(GetText(Localization.SearchesNativeName), !string.IsNullOrEmpty(character.Name.Native) ? character.Name.Native : "-", true)
                     .AddField(GetText(Localization.SearchesAlternative), alternative, true)
-                    .AddField(GetText(Localization.CommonId), character.Id, true)
+                    .AddField(GetText(Localization.CommonId), character.Id.ToString(), true)
                     .AddField(GetText(Localization.SearchesFavourites), character.Favourites.HasValue ? character.Favourites.Value.ToString() : "-", true)
                     .AddField(GetText(Localization.SearchesFromManga), mangaSb.ToString(), true)
                     .AddField(GetText(Localization.SearchesFromAnime), animeSb.ToString(), true)
@@ -306,7 +306,7 @@ namespace Rias.Core.Modules.Searches
                     return;
                 }
 
-                await SendPaginatedMessageAsync(animeList, 10, (items, index) => new LocalEmbedBuilder
+                await SendPaginatedMessageAsync(animeList, 10, (items, index) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.SearchesAnimeList, title, Context.Prefix),
@@ -326,7 +326,7 @@ namespace Rias.Core.Modules.Searches
                     return;
                 }
                 
-                await SendPaginatedMessageAsync(mangaList, 10, (items, index) => new LocalEmbedBuilder
+                await SendPaginatedMessageAsync(mangaList, 10, (items, index) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.SearchesMangaList, title, Context.Prefix),
@@ -346,7 +346,7 @@ namespace Rias.Core.Modules.Searches
                     return;
                 }
 
-                await SendPaginatedMessageAsync(characters, 10, (items, index) => new LocalEmbedBuilder
+                await SendPaginatedMessageAsync(characters, 10, (items, index) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.SearchesCharacterList, name, Context.Prefix),

@@ -1,13 +1,15 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Database.Entities;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
 
@@ -24,26 +26,26 @@ namespace Rias.Core.Modules.Profile
         
         [Command, Context(ContextType.Guild),
          Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
-        public async Task ProfileAsync(CachedMember? member = null)
+        public async Task ProfileAsync(DiscordMember? member = null)
         {
-            member ??= (CachedMember) Context.User;
-            using var _ = Context.Channel.Typing();
+            member ??= (DiscordMember) Context.User;
+            await Context.Channel.TriggerTypingAsync();
             
             var currentMember = Context.Guild!.CurrentMember;
-            if (!currentMember.Permissions.AttachFiles)
+            if (!UserExtensions.GetPermissions(currentMember).HasPermission(Permissions.AttachFiles))
             {
                 await ReplyErrorAsync(Localization.ProfileNoAttachFilesPermission);
                 return;
             }
 
-            if (!currentMember.GetPermissionsFor((CachedTextChannel) Context.Channel).AttachFiles)
+            if (!currentMember.PermissionsIn(Context.Channel).HasPermission(Permissions.AttachFiles))
             {
                 await ReplyErrorAsync(Localization.ProfileNoAttachFilesChannelPermission);
                 return;
             }
 
             await using var profileImage = await Service.GenerateProfileImageAsync(member);
-            await Context.Channel.SendMessageAsync(new[] {new LocalAttachment(profileImage, $"{member.Id}_profile.png")});
+            await Context.Channel.SendFileAsync($"{member.Id}_profile.png", profileImage);
         }
         
         [Command("background"), Context(ContextType.Guild),
@@ -70,8 +72,8 @@ namespace Rias.Core.Modules.Profile
                 Context.Command.ResetCooldowns();
                 return;
             }
-            
-            using var _ = Context.Channel.Typing();
+
+            await Context.Channel.TriggerTypingAsync();
             
             using var result = await _httpClient.GetAsync(backgroundUri);
             if (!result.IsSuccessStatusCode)
@@ -89,13 +91,13 @@ namespace Rias.Core.Modules.Profile
             }
             
             var currentMember = Context.Guild!.CurrentMember;
-            if (!currentMember.Permissions.AttachFiles)
+            if (!currentMember.GetPermissions().HasPermission(Permissions.AttachFiles))
             {
                 await ReplyErrorAsync(Localization.ProfileBackgroundNoAttachFilesPermission);
                 return;
             }
 
-            if (!currentMember.GetPermissionsFor((CachedTextChannel) Context.Channel).AttachFiles)
+            if (!currentMember.PermissionsIn(Context.Channel).HasPermission(Permissions.AttachFiles))
             {
                 await ReplyErrorAsync(Localization.ProfileBackgroundNoAttachFilesChannelPermission);
                 return; 
@@ -103,10 +105,10 @@ namespace Rias.Core.Modules.Profile
 
             backgroundStream.Position = 0;
             await using var profilePreview = await Service.GenerateProfileBackgroundAsync(Context.User, backgroundStream);
-            await Context.Channel.SendMessageAsync(new[] {new LocalAttachment(profilePreview, $"{Context.User.Id}_profile_preview.png")}, GetText(Localization.ProfileBackgroundPreview));
+            await Context.Channel.SendFileAsync($"{Context.User.Id}_profile_preview.png", profilePreview, GetText(Localization.ProfileBackgroundPreview));
             
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Message.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.ProfileBackgroundCanceled);
                 return;
@@ -154,7 +156,7 @@ namespace Rias.Core.Modules.Profile
         }
         
         [Command("color"), Context(ContextType.Guild)]
-        public async Task ColorAsync([Remainder] Color color)
+        public async Task ColorAsync([Remainder] DiscordColor color)
         {
             if (!await Service.CheckColorAsync(Context.User, color))
             {

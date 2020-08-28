@@ -1,7 +1,5 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Disqord;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Database;
@@ -21,14 +19,14 @@ namespace Rias.Core.Services
         public readonly string[] Arrows = {"⬆", "↗", "➡", "↘", "⬇", "↙", "⬅", "↖"};
         public readonly float[] Multipliers = {1.7f, 2.0f, 1.2f, 0.5f, 0.3f, 0.0f, 0.2f, 1.5f};
 
-        public int GetUserCurrency(Snowflake userId)
+        public async Task<int> GetUserCurrencyAsync(ulong userId)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            return db.Users.FirstOrDefault(x => x.UserId == userId)?.Currency ?? 0;
+            return (await db.Users.FirstOrDefaultAsync(x => x.UserId == userId))?.Currency ?? 0;
         }
 
-        public async Task AddUserCurrencyAsync(Snowflake userId, int currency)
+        public async Task AddUserCurrencyAsync(ulong userId, int currency)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -37,7 +35,7 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
         }
         
-        public async Task<int> RemoveUserCurrencyAsync(Snowflake userId, int currency)
+        public async Task<int> RemoveUserCurrencyAsync(ulong userId, int currency)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();

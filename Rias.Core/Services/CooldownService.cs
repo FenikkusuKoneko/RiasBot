@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Disqord;
 using Serilog;
 
 namespace Rias.Core.Services
@@ -42,7 +41,7 @@ namespace Rias.Core.Services
             Log.Debug("Cooldown removed");
         }
 
-        public string GenerateKey(string name, Snowflake id, Snowflake? secondId = null)
+        public string GenerateKey(string name, ulong id, ulong? secondId = null)
             => secondId.HasValue ? $"{name}_{id}_{secondId}" : $"{name}_{id}";
     }
 }

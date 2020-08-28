@@ -1,14 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Disqord;
-using Disqord.Events;
-using Disqord.Rest;
-using Disqord.Sharding;
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -30,16 +30,16 @@ namespace Rias.Core.Services
     {
         public BotService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            RiasBot.ShardReady += ShardReadyAsync;
-            RiasBot.MemberJoined += MemberJoinedAsync;
-            RiasBot.MemberLeft += MemberLeftAsync;
-            RiasBot.MemberUpdated += MemberUpdatedAsync;
+            RiasBot.Client.Ready += ShardReadyAsync;
+            RiasBot.Client.GuildMemberAdded += GuildMemberAddedAsync;
+            RiasBot.Client.GuildMemberRemoved += GuildMemberRemovedAsync;
+            RiasBot.Client.GuildMemberUpdated += GuildMemberUpdatedAsync;
         }
 
-        private readonly ConcurrentDictionary<string, bool> _shardsReady = new ConcurrentDictionary<string, bool>();
-        private readonly ConcurrentDictionary<Snowflake, RestWebhookClient> _webhooks = new ConcurrentDictionary<Snowflake, RestWebhookClient>();
-
-        private async Task MemberJoinedAsync(MemberJoinedEventArgs args)
+        public readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks = new ConcurrentDictionary<ulong, List<DiscordWebhook>>();
+        private readonly ConcurrentDictionary<int, bool> _shardsReady = new ConcurrentDictionary<int, bool>();
+        
+        private async Task GuildMemberAddedAsync(GuildMemberAddEventArgs args)
         {
             var member = args.Member;
             if (RiasBot.CurrentUser != null && member.Id == RiasBot.CurrentUser.Id)
@@ -53,7 +53,7 @@ namespace Rias.Core.Services
             await SendGreetMessageAsync(guildDb, member);
 
             var currentUser = member.Guild.CurrentMember;
-            if (!currentUser.Permissions.ManageRoles) return;
+            if (!currentUser.GetPermissions().HasPermission(Permissions.ManageRoles)) return;
 
             var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
             if (userGuildDb is null) return;
@@ -63,9 +63,7 @@ namespace Rias.Core.Services
                        ?? member.Guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteService.MuteRole)).Value;
             
             if (role != null)
-            {
-                await member.GrantRoleAsync(role.Id);
-            }
+                await member.GrantRoleAsync(role);
             else
             {
                 userGuildDb.IsMuted = false;
@@ -73,11 +71,11 @@ namespace Rias.Core.Services
             }
         }
         
-        private async Task SendGreetMessageAsync(GuildsEntity guildDb, CachedMember member)
+        private async Task SendGreetMessageAsync(GuildsEntity? guildDb, DiscordMember member)
         {
             var guild = member.Guild;
             var currentMember = guild.CurrentMember;
-            if (!currentMember.Permissions.ManageWebhooks)
+            if (!currentMember.GetPermissions().HasPermission(Permissions.ManageWebhooks))
             {
                 await DisableGreetAsync(guild);
                 return;
@@ -86,45 +84,41 @@ namespace Rias.Core.Services
             if (guildDb is null) return;
             if (!guildDb.GreetNotification) return;
             if (string.IsNullOrEmpty(guildDb.GreetMessage)) return;
-            if (guildDb.GreetWebhookId == 0) return;
 
-            var guildWebhook = await guild.GetWebhookAsync(guildDb.GreetWebhookId);
-            if (_webhooks.TryGetValue(guildDb.GreetWebhookId, out var webhook))
+            if (!Webhooks.TryGetValue(guild.Id, out var webhooks))
             {
-                if (guildWebhook is null)
-                {
-                    _webhooks.TryRemove(guildDb.GreetWebhookId, out _);
-                    webhook.Dispose();
-                    await DisableGreetAsync(guild);
+                webhooks = new List<DiscordWebhook>();
+                Webhooks.TryAdd(guild.Id, webhooks);
+            }
 
-                    return;
-                }
-            }
-            else
-            {
-                if (guildWebhook != null)
-                {
-                    webhook = new RestWebhookClient(guildWebhook);
-                    _webhooks.TryAdd(guildWebhook.Id, webhook);
-                }
-                else
-                {
-                    await DisableGreetAsync(guild);
-                    return;
-                }
-            }
-            
+            var webhook = webhooks.FirstOrDefault(x => x.Id == guildDb.GreetWebhookId);
             if (webhook is null)
-                return;
-            
-            var greetMsg = ReplacePlaceholders(member, guildDb.GreetMessage);
-            if (RiasUtilities.TryParseEmbed(greetMsg, out var embed))
-                await webhook.ExecuteAsync(embeds: new[] {embed.Build()});
-            else
-                await webhook.ExecuteAsync(greetMsg);
+            {
+                webhook = await guild.GetWebhookAsync(guildDb.GreetWebhookId);
+                if (webhook is null)
+                {
+                    await DisableGreetAsync(guild);
+                    return;
+                }
+                
+                webhooks.Add(webhook);
+            }
+
+            try
+            {
+                var greetMsg = ReplacePlaceholders(member, guildDb.GreetMessage);
+                if (RiasUtilities.TryParseEmbed(greetMsg, out var embed))
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().AddEmbed(embed));
+                else
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(greetMsg));
+            }
+            catch
+            {
+                await DisableGreetAsync(guild);
+            }
         }
         
-        private async Task DisableGreetAsync(CachedGuild guild)
+        private async Task DisableGreetAsync(DiscordGuild guild)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -136,21 +130,22 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
         }
         
-        private async Task MemberLeftAsync(MemberLeftEventArgs args)
+        private async Task GuildMemberRemovedAsync(GuildMemberRemoveEventArgs args)
         {
-            if (RiasBot.CurrentUser != null && args.User.Id == RiasBot.CurrentUser.Id)
+            if (RiasBot.CurrentUser != null && args.Member.Id == RiasBot.CurrentUser.Id)
                 return;
 
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == args.Guild.Id);
-            await SendByeMessageAsync(guildDb, args.User, args.Guild);
+            await SendByeMessageAsync(guildDb, args.Member);
         }
 
-        private async Task SendByeMessageAsync(GuildsEntity guildDb, CachedUser user, CachedGuild guild)
+        private async Task SendByeMessageAsync(GuildsEntity? guildDb, DiscordMember member)
         {
+            var guild = member.Guild;
             var currentMember = guild.CurrentMember;
-            if (!currentMember.Permissions.ManageWebhooks)
+            if (!currentMember.GetPermissions().HasPermission(Permissions.ManageWebhooks))
             {
                 await DisableByeAsync(guild);
                 return;
@@ -159,45 +154,41 @@ namespace Rias.Core.Services
             if (guildDb is null) return;
             if (!guildDb.ByeNotification) return;
             if (string.IsNullOrEmpty(guildDb.ByeMessage)) return;
-            if (guildDb.ByeWebhookId == 0) return;
-
-            var guildWebhook = await guild.GetWebhookAsync(guildDb.ByeWebhookId);
-            if (_webhooks.TryGetValue(guildDb.ByeWebhookId, out var webhook))
+            
+            if (!Webhooks.TryGetValue(guild.Id, out var webhooks))
             {
-                if (guildWebhook is null)
-                {
-                    _webhooks.TryRemove(guildDb.ByeWebhookId, out _);
-                    webhook.Dispose();
-                    await DisableByeAsync(guild);
-
-                    return;
-                }
-            }
-            else
-            {
-                if (guildWebhook != null)
-                {
-                    webhook = new RestWebhookClient(guildWebhook);
-                    _webhooks.TryAdd(guildWebhook.Id, webhook);
-                }
-                else
-                {
-                    await DisableByeAsync(guild);
-                    return;
-                }
+                webhooks = new List<DiscordWebhook>();
+                Webhooks.TryAdd(guild.Id, webhooks);
             }
             
+            var webhook = webhooks.FirstOrDefault(x => x.Id == guildDb.ByeWebhookId);
             if (webhook is null)
-                return;
-            
-            var byeMsg = ReplacePlaceholders(user, guildDb.ByeMessage);
-            if (RiasUtilities.TryParseEmbed(byeMsg, out var embed))
-                await webhook.ExecuteAsync(embeds: new[] {embed.Build()});
-            else
-                await webhook.ExecuteAsync(byeMsg);
+            {
+                webhook = await guild.GetWebhookAsync(guildDb.ByeWebhookId);
+                if (webhook is null)
+                {
+                    await DisableByeAsync(guild);
+                    return;
+                }
+                
+                webhooks.Add(webhook);
+            }
+
+            try
+            {
+                var byeMsg = ReplacePlaceholders(member, guildDb.ByeMessage);
+                if (RiasUtilities.TryParseEmbed(byeMsg, out var embed))
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().AddEmbed(embed));
+                else
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(byeMsg));
+            }
+            catch
+            {
+                await DisableByeAsync(guild);
+            }
         }
         
-        private async Task DisableByeAsync(CachedGuild guild)
+        private async Task DisableByeAsync(DiscordGuild guild)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -209,34 +200,35 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
         }
 
-        private Task ShardReadyAsync(ShardReadyEventArgs e)
+        private Task ShardReadyAsync(ReadyEventArgs e)
         {
-            _shardsReady.AddOrUpdate(e.SessionId, true, (shardKey, value) => true);
-            if (_shardsReady.Count == RiasBot.Shards.Count && _shardsReady.All(x => x.Value))
+            _shardsReady.AddOrUpdate(e.Client.ShardId, true, (shardKey, value) => true);
+            if (_shardsReady.Count == RiasBot.Client.ShardClients.Count && _shardsReady.All(x => x.Value))
             {
-                RiasBot.ShardReady -= ShardReadyAsync;
+                RiasBot.Client.Ready -= ShardReadyAsync;
                 Log.Information("All shards are connected");
 
                 RiasBot.GetRequiredService<MuteService>();
                 
                 var reactionsService =  RiasBot.GetRequiredService<ReactionsService>();
 #if DEBUG
-                reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser.Name}/{Rias.Version} (development)");
+                reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser!.Username}/{RiasBot.Version} (development)");
 #else
-                reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser.Name}/{Rias.Version}");
+                reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser.Name}/{RiasBot.Version}");
 #endif
             }
 
             return Task.CompletedTask;
         }
         
-        public async Task AddAssignableRoleAsync(CachedMember member)
+        public async Task AddAssignableRoleAsync(DiscordMember member)
         {
             var currentMember = member.Guild.CurrentMember;
-            if (!currentMember.Permissions.ManageRoles)
+            if (!currentMember.GetPermissions().HasPermission(Permissions.ManageRoles))
                 return;
 
-            if (member.Roles.Count > 1) return;
+            var memberRoles = member.Roles.ToList();
+            if (memberRoles.Count > 1) return;
 
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -248,41 +240,38 @@ namespace Rias.Core.Services
             if (aar is null)
                 return;
 
-            if (currentMember.CheckRoleHierarchy(aar) > 0 && !aar.IsManaged && member.GetRole(aar.Id) is null)
-                await member.GrantRoleAsync(aar.Id);
+            if (currentMember.CheckRoleHierarchy(aar) > 0 && !aar.IsManaged && memberRoles.All(x => x.Id != aar.Id))
+                await member.GrantRoleAsync(aar);
         }
 
-        private async Task MemberUpdatedAsync(MemberUpdatedEventArgs args)
+        private async Task GuildMemberUpdatedAsync(GuildMemberUpdateEventArgs args)
         {
-            var oldMember = args.OldMember;
-            var newMember = args.NewMember;
-            
             // we care only about the mute role
-            if (oldMember.Roles.Count == newMember.Roles.Count)
+            if (args.RolesBefore.Count == args.RolesAfter.Count)
                 return;
 
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == newMember.Guild.Id);
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == args.Guild.Id);
 
             if (guildDb is null) return;
 
-            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == newMember.Guild.Id && x.UserId == newMember.Id);
+            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == args.Guild.Id && x.UserId == args.Member.Id);
             if (userGuildDb is null) return;
 
-            userGuildDb.IsMuted = newMember.Roles.FirstOrDefault(x => x.Key == guildDb.MuteRoleId).Value != null;
+            userGuildDb.IsMuted = args.Member.Roles.FirstOrDefault(x => x.Id == guildDb.MuteRoleId) != null;
             await db.SaveChangesAsync();
         }
         
-        public static string ReplacePlaceholders(IUser user, string message)
+        public static string ReplacePlaceholders(DiscordUser user, string message)
         {
             var sb = new StringBuilder(message)
                 
-                .Replace("%user%", user.ToString())
+                .Replace("%user%", user.FullName())
                 .Replace("%user_id%", user.Id.ToString())
-                .Replace("%avatar%", user.GetAvatarUrl());
+                .Replace("%avatar%", user.GetAvatarUrl(ImageFormat.Auto));
 
-            if (user is CachedMember member)
+            if (user is DiscordMember member)
             {
                 sb.Replace("%mention%", member.Mention)
                     .Replace("%guild%", member.Guild.Name)
@@ -296,18 +285,18 @@ namespace Rias.Core.Services
         {
             var globals = new RoslynGlobals
             {
-                Rias = RiasBot,
+                RiasBot = RiasBot,
                 Context = context
             };
 
             var imports = new[]
             {
-                "System", "System.Collections.Generic", "System.Linq", "Disqord", "Disqord.WebSocket",
+                "System", "System.Collections.Generic", "System.Linq", "DSharpPlus", "DSharpPlus.Interactivity",
                 "System.Threading.Tasks", "System.Text", "Microsoft.Extensions.DependencyInjection", "System.Net.Http",
-                "Rias.Core.Extensions", "Rias.Core.Database", "Qmmands"
+                "Rias.Core", "Rias.Core.Extensions", "Rias.Core.Database", "Qmmands"
             };
             
-            var scriptOptions = ScriptOptions.Default.WithReferences(typeof(Rias).Assembly).AddImports(imports);
+            var scriptOptions = ScriptOptions.Default.WithReferences(typeof(RiasBot).Assembly).AddImports(imports);
             code = SanitizeCode(code);
             
             using var loader = new InteractiveAssemblyLoader();
@@ -416,7 +405,7 @@ namespace Rias.Core.Services
             return code;
         }
     }
-    
+
     public class EvaluationDetails
     {
         public TimeSpan? CompilationTime { get; set; }

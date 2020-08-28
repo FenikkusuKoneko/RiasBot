@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 
@@ -11,12 +11,12 @@ namespace Rias.Core.Services.Commons
 {
     public class BlackjackGame
     {
-        public readonly CachedMember Member;
-        public IUserMessage? Message { get; private set; }
+        public readonly DiscordMember Member;
+        public DiscordMessage? Message { get; private set; }
         public bool PlayerCanSplit { get; private set; }
 
         private readonly BlackjackService _service;
-        private readonly LocalEmbedBuilder _embed;
+        private readonly DiscordEmbedBuilder _embed;
 
         private readonly Queue<(int, string, string)> _deck;
         private readonly string _arrowIndex = "➡";
@@ -27,11 +27,11 @@ namespace Rias.Core.Services.Commons
         private BlackjackHand? _playerSecondHand;
         private readonly BlackjackHand _houseHand;
         
-        public BlackjackGame(BlackjackService service, CachedMember member, int bet, IEnumerable<string> suits, IEnumerable<(int Value, string Card)> cards)
+        public BlackjackGame(BlackjackService service, DiscordMember member, int bet, IEnumerable<string> suits, IEnumerable<(int Value, string Card)> cards)
         {
             Member = member;
             _service = service;
-            _embed = new LocalEmbedBuilder();
+            _embed = new DiscordEmbedBuilder();
             _deck = new Queue<(int, string, string)>();
             _guildId = member.Guild.Id;
             _bet = bet;
@@ -55,15 +55,15 @@ namespace Rias.Core.Services.Commons
             _houseHand = new BlackjackHand().AddCard(_deck.Dequeue()).AddCard(_deck.Dequeue());
         }
         
-        public async Task CreateAsync(CachedTextChannel channel)
+        public async Task CreateAsync(DiscordChannel channel)
         {
             _embed.WithColor(RiasUtilities.Yellow)
                 .WithTitle($"{_service.GetText(_guildId, Localization.GamblingBlackjack)} | {_service.GetText(_guildId, Localization.GamblingBet)}: {_bet} {_service.Credentials.Currency}")
-                .AddField($"{Member} ({_playerFirstHand.Score})", _playerFirstHand.ShowCards());
+                .AddField($"{Member.FullName()} ({_playerFirstHand.Score})", _playerFirstHand.ShowCards());
 
             var playerCards = _playerFirstHand.Cards;
             if (Math.Min(playerCards[0].Value, 10) == Math.Min(playerCards[1].Value, 10)
-                && _service.GetUserCurrency(Member.Id) >= _bet)
+                && await _service.GetUserCurrencyAsync(Member.Id) >= _bet)
                 PlayerCanSplit = true;
 
             var houseFirstCard = _houseHand.Cards[0].Value;
@@ -72,18 +72,18 @@ namespace Rias.Core.Services.Commons
             if (houseFirstCard == 1)
                 houseFirstCard = 11;
             
-            _embed.AddField($"{Member.Guild.CurrentMember} ({houseFirstCard})", _houseHand.ShowFirstCard("🎴"));
+            _embed.AddField($"{Member.Guild.CurrentMember.FullName()} ({houseFirstCard})", _houseHand.ShowFirstCard("🎴"));
 
             Message = await channel.SendMessageAsync(_embed);
         }
         
-        public async Task ResendMessageAsync(CachedTextChannel channel)
+        public async Task ResendMessageAsync(DiscordChannel channel)
         {
             Message = await channel.SendMessageAsync(_embed);
-            await Message!.AddReactionAsync(_service.CardEmoji);
-            await Message!.AddReactionAsync(_service.HandEmoji);
+            await Message!.CreateReactionAsync(_service.CardEmoji);
+            await Message!.CreateReactionAsync(_service.HandEmoji);
             if (PlayerCanSplit)
-                await Message!.AddReactionAsync(_service.SplitEmoji);
+                await Message!.CreateReactionAsync(_service.SplitEmoji);
         }
         
         public async Task HitAsync()
@@ -95,17 +95,16 @@ namespace Rias.Core.Services.Commons
                     if (PlayerCanSplit)
                     {
                         PlayerCanSplit = false;
-                        await Message!.RemoveMemberReactionAsync(Member.Id, _service.SplitEmoji);
-                        await Message!.RemoveOwnReactionAsync(_service.SplitEmoji);
+                        await Message!.DeleteReactionsEmojiAsync(_service.SplitEmoji);
                     }
-                    await Message!.ModifyAsync(x => x.Embed = EditEmbed().Build());
+                    await Message!.ModifyAsync(embed: EditEmbed().Build());
                     break;
                 case BlackjackHand.HandState.Blackjack:
                 case BlackjackHand.HandState.Bust:
                     if (_playerSecondHand is null)
                         await GameOverAsync();
                     if (hand != _playerSecondHand)
-                        await Message!.ModifyAsync(x => x.Embed = EditEmbed().Build());
+                        await Message!.ModifyAsync(embed: EditEmbed().Build());
                     else
                         await GameOverAsync();
                     return;
@@ -119,7 +118,7 @@ namespace Rias.Core.Services.Commons
             if (_playerSecondHand is null)
                 await GameOverAsync();
             if (currentHand != _playerSecondHand)
-                await Message!.ModifyAsync(x => x.Embed = EditEmbed().Build()); 
+                await Message!.ModifyAsync(embed: EditEmbed().Build()); 
             else
                 await GameOverAsync();
         }
@@ -127,8 +126,7 @@ namespace Rias.Core.Services.Commons
         public async Task SplitAsync()
         {
             PlayerCanSplit = false;
-            await Message!.RemoveMemberReactionAsync(Member.Id, _service.SplitEmoji);
-            await Message!.RemoveOwnReactionAsync(_service.SplitEmoji);
+            await Message!.DeleteReactionsEmojiAsync(_service.SplitEmoji);
             
             var card = _playerFirstHand.RemoveLastCard();
             _playerFirstHand.AddCard(_deck.Dequeue());
@@ -138,7 +136,7 @@ namespace Rias.Core.Services.Commons
             _bet += _bet;
 
             EditEmbed().Title = $"{_service.GetText(_guildId, Localization.GamblingBlackjack)} | {_service.GetText(_guildId, Localization.GamblingBet)}: {_bet} {_service.Credentials.Currency}";
-            await Message!.ModifyAsync(x => x.Embed = EditEmbed().Build());
+            await Message!.ModifyAsync(embed: EditEmbed().Build());
         }
         
         private BlackjackHand GetCurrentHand()
@@ -163,29 +161,29 @@ namespace Rias.Core.Services.Commons
                 _houseHand.State = _houseHand.Score < 21 ? BlackjackHand.HandState.Standing : BlackjackHand.HandState.Bust;
         }
         
-        private LocalEmbedBuilder EditEmbed(bool showHouseCards = false)
+        private DiscordEmbedBuilder EditEmbed(bool showHouseCards = false)
         {
             var index = _playerSecondHand != null && _playerFirstHand.State == BlackjackHand.HandState.Playing ? _arrowIndex : null;
             var playerField = _embed.Fields[0];
-            playerField.Name = $"{index}{Member} ({_playerFirstHand.Score})";
+            playerField.Name = $"{index}{Member.FullName()} ({_playerFirstHand.Score})";
             playerField.Value = _playerFirstHand.ShowCards();
 
             if (_playerSecondHand != null)
             {
                 index = _playerFirstHand.State != BlackjackHand.HandState.Playing && _playerSecondHand.State == BlackjackHand.HandState.Playing ? _arrowIndex : null;
-                var playerSecondField = _embed.Fields.Count == 2 ? new LocalEmbedFieldBuilder() : _embed.Fields[1];
 
-                playerSecondField.Name = $"{index}{Member} ({_playerSecondHand.Score})";
-                playerSecondField.Value = _playerSecondHand.ShowCards();
-                
                 if (_embed.Fields.Count == 2)
-                    _embed.Fields.Insert(1, playerSecondField);
+                {
+                    var dealerField = _embed.Fields[1];
+                    _embed.AddField($"{index}{Member.FullName()} ({_playerSecondHand.Score})", _playerSecondHand.ShowCards());
+                    _embed.AddField(dealerField.Name, dealerField.Value);
+                }
             }
 
             if (showHouseCards)
             {
                 var dealerField = _embed.Fields[^1];
-                dealerField.Name = $"{Member.Guild.CurrentMember} ({_houseHand.Score})";
+                dealerField.Name = $"{Member.Guild.CurrentMember.FullName()} ({_houseHand.Score})";
                 dealerField.Value = _houseHand.ShowCards();
             }
 
@@ -194,7 +192,7 @@ namespace Rias.Core.Services.Commons
         
         private async Task GameOverAsync(bool busted = false)
         {
-            await Message!.ClearReactionsAsync();
+            await Message!.DeleteAllReactionsAsync();
             if (!busted)
             {
                 while (_houseHand.State == BlackjackHand.HandState.Playing)
@@ -209,7 +207,7 @@ namespace Rias.Core.Services.Commons
                 ? _service.GetText(_guildId, Localization.GamblingBlackjackDraw, _service.Credentials.Currency)
                 : _service.GetText(_guildId, win > 0 ? Localization.GamblingYouWon : Localization.GamblingYouLost, Math.Abs(win), _service.Credentials.Currency);
 
-            await Message.ModifyAsync(x => x.Embed = embed.Build());
+            await Message.ModifyAsync(embed: embed.Build());
             
             if (win > 0)
                 await _service.AddUserCurrencyAsync(Member.Id, win + _bet);

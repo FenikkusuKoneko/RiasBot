@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
@@ -19,7 +20,7 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("createcategory"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateCategoryAsync([Remainder] string name)
             {
@@ -29,14 +30,14 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                await Context.Guild!.CreateCategoryChannelAsync(name);
+                await Context.Guild!.CreateChannelAsync(name, ChannelType.Category);
                 await ReplyConfirmationAsync(Localization.AdministrationCategoryChannelCreated, name);
             }
             
             [Command("deletecategory"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task DeleteCategoryAsync([Remainder] CachedCategoryChannel category)
+            public async Task DeleteCategoryAsync([Channel(ChannelType.Category), Remainder] DiscordChannel category)
             {
                 if (!ChannelExtensions.CheckViewChannelPermission(Context.CurrentMember!, category))
                 {
@@ -49,7 +50,7 @@ namespace Rias.Core.Modules.Administration
             }
 
             [Command("renamecategory"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameCategoryAsync([Remainder] string names)
             {
@@ -86,7 +87,7 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("addtextchanneltocategory"),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AddTextChannelToCategoryAsync([Remainder] string names)
             {
@@ -126,12 +127,12 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                await channel.ModifyAsync(x => x.CategoryId = category.Id);
+                await channel.ModifyAsync(x => x.Parent = category);
                 await ReplyConfirmationAsync(Localization.AdministrationTextChannelAddedToCategory, channel.Name, category.Name);
             }
             
             [Command("addvoicechanneltocategory"),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AddVoiceChannelToCategoryAsync([Remainder] string names)
             {
@@ -171,7 +172,7 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                await channel.ModifyAsync(x => x.CategoryId = category.Id);
+                await channel.ModifyAsync(x => x.Parent = category);
                 await ReplyConfirmationAsync(Localization.AdministrationVoiceChannelAddedToCategory, channel.Name, category.Name);
             }
         }

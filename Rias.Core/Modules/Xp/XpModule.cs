@@ -2,10 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Disqord;
-using Disqord.Rest;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -30,26 +29,26 @@ namespace Rias.Core.Modules.Xp
         
         [Command("xp"), Context(ContextType.Guild),
          Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
-        public async Task XpAsync(CachedMember? member = null)
+        public async Task XpAsync(DiscordMember? member = null)
         {
-            member ??= (CachedMember) Context.User;
-            using var _ = Context.Channel.Typing();
+            member ??= (DiscordMember) Context.User;
+            await Context.Channel.TriggerTypingAsync();
 
             var currentMember = Context.Guild!.CurrentMember;
-            if (!currentMember.Permissions.AttachFiles)
+            if (!currentMember.GetPermissions().HasPermission(Permissions.AttachFiles))
             {
                 await ReplyErrorAsync(Localization.XpNoAttachFilesPermission);
                 return;
             }
 
-            if (!currentMember.GetPermissionsFor((CachedTextChannel) Context.Channel).AttachFiles)
+            if (!currentMember.PermissionsIn(Context.Channel).HasPermission(Permissions.AttachFiles))
             {
                 await ReplyErrorAsync(Localization.XpNoAttachFilesChannelPermission);
                 return;
             }
 
             await using var xpImage = await Service.GenerateXpImageAsync(member);
-            await Context.Channel.SendMessageAsync(new[] {new LocalAttachment(xpImage, $"{member.Id}_xp.png")});
+            await Context.Channel.SendFileAsync($"{member.Id}_xp.png", xpImage);
         }
         
         [Command("globalxpleaderboard"),
@@ -67,7 +66,7 @@ namespace Rias.Core.Modules.Xp
                 return;
             }
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.XpLeaderboard)
@@ -76,12 +75,15 @@ namespace Rias.Core.Modules.Xp
             var index = page * 15;
             foreach (var userDb in xpLeaderboard)
             {
-                var user = (IUser) RiasBot.GetUser(userDb.UserId) ?? await RiasBot.GetUserAsync(userDb.UserId);
-                embed.AddField($"{++index}. {user}",
+                var member = RiasBot.Members.TryGetValue(userDb.UserId, out var m)
+                    ? m
+                    : await RiasBot.Client.ShardClients[0].GetUserAsync(userDb.UserId);
+                
+                embed.AddField($"{++index}. {member.FullName()}",
                     $"{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} | {GetText(Localization.XpXp)} {userDb.Xp}",
                     true);
             }
-
+            
             await ReplyAsync(embed);
         }
         
@@ -94,7 +96,7 @@ namespace Rias.Core.Modules.Xp
                 page = 0;
             
             var xpLeaderboard = (await DbContext.GetOrderedListAsync<GuildUsersEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Xp, true))
-                .Where(x => Context.Guild!.GetMember(x.UserId) != null)
+                .Where(x => Context.Guild!.Members.ContainsKey(x.UserId))
                 .Skip(page * 15)
                 .Take(15)
                 .ToList();
@@ -105,7 +107,7 @@ namespace Rias.Core.Modules.Xp
                 return;
             }
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.XpGuildLeaderboard)
@@ -114,7 +116,11 @@ namespace Rias.Core.Modules.Xp
             var index = page * 15;
             foreach (var userDb in xpLeaderboard)
             {
-                embed.AddField($"{++index}. {Context.Guild!.GetMember(userDb.UserId)}",
+                var member = await Context.Guild!.GetMemberAsync(userDb.UserId);
+                if (member is null)
+                    continue;
+                
+                embed.AddField($"{++index}. {member.FullName()}",
                     $"{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} | {GetText(Localization.XpXp)} {userDb.Xp}",
                     true);
             }
@@ -123,9 +129,9 @@ namespace Rias.Core.Modules.Xp
         }
         
         [Command("xpnotification"), Context(ContextType.Guild),
-         UserPermission(Permission.Administrator), BotPermission(Permission.ManageWebhooks),
+         UserPermission(Permissions.Administrator), BotPermission(Permissions.ManageWebhooks),
          Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-        public async Task XpNotificationAsync(CachedTextChannel? channel = null)
+        public async Task XpNotificationAsync([Channel(ChannelType.Text), Remainder] DiscordChannel? channel = null)
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
             
@@ -151,16 +157,16 @@ namespace Rias.Core.Modules.Xp
             else
             {
                 var currentMember = Context.CurrentMember!;
-                await using var stream = await _httpClient.GetStreamAsync(currentMember.GetAvatarUrl());
+                await using var stream = await _httpClient.GetStreamAsync(currentMember.GetAvatarUrl(ImageFormat.Auto));
                 await using var webhookAvatar = new MemoryStream();
                 await stream.CopyToAsync(webhookAvatar);
                 webhookAvatar.Position = 0;
                 
                 var webhook = guildDb.XpWebhookId > 0 ? await Context.Guild!.GetWebhookAsync(guildDb.XpWebhookId) : null;
                 if (webhook != null && webhook.ChannelId != channel.Id)
-                    await webhook.ModifyAsync(x => x.ChannelId = channel.Id);
+                    await webhook.ModifyAsync(channelId: channel.Id);
                 else
-                    webhook = await channel.CreateWebhookAsync(currentMember.Name, webhookAvatar);
+                    webhook = await channel.CreateWebhookAsync(currentMember.Username, webhookAvatar);
 
                 guildDb.XpNotification = true;
                 guildDb.XpWebhookId = webhook.Id;
@@ -170,7 +176,7 @@ namespace Rias.Core.Modules.Xp
         }
 
         [Command("xpmessage"), Context(ContextType.Guild),
-         UserPermission(Permission.Administrator)]
+         UserPermission(Permissions.Administrator)]
         public async Task XpMessageAsync([Remainder] string? message = null)
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
@@ -201,7 +207,7 @@ namespace Rias.Core.Modules.Xp
                 }
                 else
                 {
-                    var webhookChannel = Context.Guild!.GetTextChannel(webhook.ChannelId);
+                    var webhookChannel = Context.Guild!.GetChannel(webhook.ChannelId);
                     reply += GetText(Localization.XpNotificationSetChannel, webhookChannel.Mention);
                 }
             }
@@ -213,7 +219,7 @@ namespace Rias.Core.Modules.Xp
             if (RiasUtilities.TryParseEmbed(message, out var embed))
             {
                 reply += $"\n{GetText(Localization.XpNotificationMessage)}";
-                await Context.Channel.SendMessageAsync(reply, embed: embed.Build());
+                await Context.Channel.SendMessageAsync(reply, embed: embed);
             }
             else
             {
@@ -223,7 +229,7 @@ namespace Rias.Core.Modules.Xp
         }
         
         [Command("xpmessagereward"), Context(ContextType.Guild),
-         UserPermission(Permission.Administrator)]
+         UserPermission(Permissions.Administrator)]
         public async Task XpMessageRewardAsync([Remainder] string? message = null)
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
@@ -254,7 +260,7 @@ namespace Rias.Core.Modules.Xp
                 }
                 else
                 {
-                    var webhookChannel = Context.Guild!.GetTextChannel(webhook.ChannelId);
+                    var webhookChannel = Context.Guild!.GetChannel(webhook.ChannelId);
                     reply += GetText(Localization.XpNotificationSetChannel, webhookChannel.Mention);
                 }
             }
@@ -266,7 +272,7 @@ namespace Rias.Core.Modules.Xp
             if (RiasUtilities.TryParseEmbed(message, out var embed))
             {
                 reply += $"\n{GetText(Localization.XpNotificationMessage)}";
-                await Context.Channel.SendMessageAsync(reply, embed: embed.Build());
+                await Context.Channel.SendMessageAsync(reply, embed: embed);
             }
             else
             {
@@ -276,8 +282,8 @@ namespace Rias.Core.Modules.Xp
         }
         
         [Command("leveluprolereward"), Context(ContextType.Guild),
-         UserPermission(Permission.ManageRoles), BotPermission(Permission.ManageRoles)]
-        public async Task LevelUpRoleRewardAsync(int level, CachedRole? role = null)
+         UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles)]
+        public async Task LevelUpRoleRewardAsync(int level, [Remainder] DiscordRole? role = null)
         {
             if (level < 1)
             {
@@ -298,7 +304,7 @@ namespace Rias.Core.Modules.Xp
                 return;
             }
             
-            if (role.IsDefault) return;
+            if (role.Id == Context.Guild!.EveryoneRole.Id) return;
             if (role.IsManaged)
             {
                 await ReplyErrorAsync(Localization.XpLevelUpRoleRewardNotSet, role.Name);
@@ -321,7 +327,7 @@ namespace Rias.Core.Modules.Xp
         }
         
         [Command("leveluprolerewardlist"), Context(ContextType.Guild),
-         BotPermission(Permission.ManageRoles)]
+         BotPermission(Permissions.ManageRoles)]
         public async Task LevelUpRoleRewardListAsync()
         {
             var levelRoles = await DbContext.GetOrderedListAsync<GuildXpRolesEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Level);
@@ -334,7 +340,7 @@ namespace Rias.Core.Modules.Xp
                 return;
             }
 
-            await SendPaginatedMessageAsync(levelRoles, 15, (items, indes) => new LocalEmbedBuilder
+            await SendPaginatedMessageAsync(levelRoles, 15, (items, indes) => new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.XpLevelUpRoleRewardList),
@@ -343,13 +349,13 @@ namespace Rias.Core.Modules.Xp
         }
         
         [Command("resetserverxp"), Context(ContextType.Guild),
-         UserPermission(Permission.Administrator)]
+         UserPermission(Permissions.Administrator)]
         public async Task ResetGuildXpAsync()
         {
             await ReplyConfirmationAsync(Localization.XpResetGuildXpConfirmation);
             
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Message.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.XpResetGuildXpCanceled);
                 return;

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
@@ -19,7 +20,7 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("createtextchannel"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateTextChannelAsync([Remainder] string name)
             {
@@ -34,9 +35,9 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("deletetextchannel"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task DeleteTextChannelAsync([Remainder] CachedTextChannel channel)
+            public async Task DeleteTextChannelAsync([Channel(ChannelType.Text), Remainder] DiscordChannel channel)
             {
                 if (!ChannelExtensions.CheckViewChannelPermission(Context.CurrentMember!, channel))
                 {
@@ -50,7 +51,7 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("renametextchannel"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameTextChannelAsync([Remainder] string names)
             {
@@ -89,25 +90,24 @@ namespace Rias.Core.Modules.Administration
             [Command("channeltopic"), Context(ContextType.Guild)]
             public async Task ChannelTopicAsync()
             {
-                var channel = (CachedTextChannel) Context.Channel;
-                if (string.IsNullOrEmpty(channel.Topic))
+                if (string.IsNullOrEmpty(Context.Channel.Topic))
                 {
                     await ReplyErrorAsync(Localization.AdministrationChannelNoTopic);
                     return;
                 }
 
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.AdministrationChannelTopicTitle),
-                    Description = channel.Topic
+                    Description = Context.Channel.Topic
                 };
 
                 await ReplyAsync(embed);
             }
 
             [Command("setchanneltopic"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetChannelTopic([Remainder] string? topic = null)
             {
@@ -117,15 +117,14 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                var channel = (CachedTextChannel) Context.Channel;
-                await channel.ModifyAsync(x => x.Topic = topic);
+                await Context.Channel.ModifyAsync(x => x.Topic = topic);
                 if (string.IsNullOrEmpty(topic))
                 {
                     await ReplyConfirmationAsync(Localization.AdministrationChannelTopicRemoved);
                 }
                 else
                 {
-                    var embed = new LocalEmbedBuilder
+                    var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
                         Title = GetText(Localization.AdministrationChannelTopicSet),
@@ -137,23 +136,20 @@ namespace Rias.Core.Modules.Administration
             }
 
             [Command("setnsfwchannel"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task SetNsfwChannelAsync([Remainder] CachedTextChannel? channel = null)
+            public async Task SetNsfwChannelAsync([Channel(ChannelType.Text), Remainder] DiscordChannel? channel = null)
             {
-                if (channel is null)
-                {
-                    channel = (CachedTextChannel) Context.Channel;
-                }
+                channel ??= Context.Channel;
 
                 if (!ChannelExtensions.CheckViewChannelPermission(Context.CurrentMember!, channel))
                 {
                     await ReplyErrorAsync(Localization.AdministrationTextChannelNoViewPermission);
                 }
 
-                if (channel.IsNsfw)
+                if (channel.IsNSFW)
                 {
-                    await channel.ModifyAsync(x => x.IsNsfw = false);
+                    await channel.ModifyAsync(x => x.Nsfw = false);
                     if (channel.Id == Context.Channel.Id)
                         await ReplyConfirmationAsync(Localization.AdministrationCurrentChannelNsfwDisabled);
                     else
@@ -161,7 +157,7 @@ namespace Rias.Core.Modules.Administration
                 }
                 else
                 {
-                    await channel.ModifyAsync(x => x.IsNsfw = true);
+                    await channel.ModifyAsync(x => x.Nsfw = true);
                     if (channel.Id == Context.Channel.Id)
                         await ReplyConfirmationAsync(Localization.AdministrationCurrentChannelNsfwEnabled);
                     else

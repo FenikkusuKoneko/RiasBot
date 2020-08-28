@@ -10,10 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rias.Core.Attributes;
+using Rias.Core.Configuration;
 using Rias.Core.Database;
 using Rias.Core.Database.Entities;
-using Rias.Core.Implementation;
-using Rias.Core.Models;
 using Serilog;
 
 namespace Rias.Core.Services
@@ -136,10 +135,10 @@ namespace Rias.Core.Services
             
             try
             {
-                using var content = new FormUrlEncodedContent(new Dictionary<string, string>
+                using var content = new FormUrlEncodedContent(new[]
                 {
-                    {"shard_count", RiasBot.Shards.Count.ToString()},
-                    {"server_count", RiasBot.Guilds.Count.ToString()}
+                    new KeyValuePair<string?, string?>("shard_count", RiasBot.Client.ShardClients.Count.ToString()),
+                    new KeyValuePair<string?, string?>("server_count", RiasBot.Guilds.Count.ToString())
                 });
                 await _httpClient.PostAsync($"https://top.gg/api/bots/{RiasBot.CurrentUser.Id}/stats", content);
             }

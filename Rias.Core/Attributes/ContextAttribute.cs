@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -10,6 +10,7 @@ using Rias.Core.Implementation;
 
 namespace Rias.Core.Attributes
 {
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class ContextAttribute : RiasCheckAttribute
     {
         private readonly ContextType _contexts;
@@ -26,9 +27,13 @@ namespace Rias.Core.Attributes
             var isValid = false;
 
             if ((_contexts & ContextType.Guild) != 0)
-                isValid = context.Channel is CachedGuildChannel;
+                isValid = context.Channel.Type == ChannelType.Category
+                    || context.Channel.Type == ChannelType.Text
+                    || context.Channel.Type == ChannelType.Voice
+                    || context.Channel.Type == ChannelType.News;
+            
             if ((_contexts & ContextType.DM) != 0)
-                isValid = isValid || context.Channel is CachedDmChannel;
+                isValid = isValid || context.Channel.Type == ChannelType.Private;
 
             if (isValid)
                 return CheckResult.Successful;

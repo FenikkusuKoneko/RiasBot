@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
@@ -35,7 +35,7 @@ namespace Rias.Core.Modules.Games
             }
             else
             {
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.Yellow,
                     Description = GetText(Localization.GamesRpsDraw, botRpsString)

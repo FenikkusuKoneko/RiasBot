@@ -1,7 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
@@ -21,13 +22,13 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("kick"), Context(ContextType.Guild),
-             UserPermission(Permission.KickMembers), BotPermission(Permission.KickMembers)]
-            public async Task KickAsync(CachedMember member, [Remainder] string? reason = null)
+             UserPermission(Permissions.KickMembers), BotPermission(Permissions.KickMembers)]
+            public async Task KickAsync(DiscordMember member, [Remainder] string? reason = null)
             {
                 if (member.Id == Context.User.Id)
                     return;
 
-                if (member.Id == Context.Guild!.OwnerId)
+                if (member.Id == Context.Guild!.Owner.Id)
                 {
                     await ReplyErrorAsync(Localization.AdministrationCannotKickOwner);
                     return;
@@ -39,24 +40,24 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
                 
-                if (((CachedMember) Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
                 }
 
                 await SendMessageAsync(member, Localization.AdministrationUserKicked, Localization.AdministrationKickedFrom, reason);
-                await member.KickAsync();
+                await member.RemoveAsync(reason);
             }
             
             [Command("ban"), Context(ContextType.Guild),
-             UserPermission(Permission.BanMembers), BotPermission(Permission.BanMembers)]
-            public async Task BanAsync(CachedMember member, [Remainder] string? reason = null)
+             UserPermission(Permissions.BanMembers), BotPermission(Permissions.BanMembers)]
+            public async Task BanAsync(DiscordMember member, [Remainder] string? reason = null)
             {
                 if (member.Id == Context.User.Id)
                     return;
 
-                if (member.Id == Context.Guild!.OwnerId)
+                if (member.Id == Context.Guild!.Owner.Id)
                 {
                     await ReplyErrorAsync(Localization.AdministrationCannotBanOwner);
                     return;
@@ -68,24 +69,24 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
                 
-                if (((CachedMember) Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
                 }
 
                 await SendMessageAsync(member, Localization.AdministrationUserBanned, Localization.AdministrationBannedFrom, reason);
-                await member.BanAsync(reason);
+                await member.BanAsync(reason: reason);
             }
             
             [Command("softban"), Context(ContextType.Guild),
-             UserPermission(Permission.KickMembers), BotPermission(Permission.KickMembers | Permission.BanMembers)]
-            public async Task SoftBanAsync(CachedMember member, [Remainder] string? reason = null)
+             UserPermission(Permissions.KickMembers), BotPermission(Permissions.KickMembers | Permissions.BanMembers)]
+            public async Task SoftBanAsync(DiscordMember member, [Remainder] string? reason = null)
             {
                 if (member.Id == Context.User.Id)
                     return;
 
-                if (member.Id == Context.Guild!.OwnerId)
+                if (member.Id == Context.Guild!.Owner.Id)
                 {
                     await ReplyErrorAsync(Localization.AdministrationCannotSoftbanOwner);
                     return;
@@ -97,25 +98,25 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
                 
-                if (((CachedMember) Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
                 }
 
                 await SendMessageAsync(member, Localization.AdministrationUserSoftBanned, Localization.AdministrationKickedFrom, reason);
-                await member.BanAsync(reason, 7);
+                await member.BanAsync(7, reason);
                 await member.UnbanAsync();
             }
             
             [Command("pruneban"), Context(ContextType.Guild),
-             UserPermission(Permission.BanMembers), BotPermission(Permission.BanMembers)]
-            public async Task PruneBanAsync(CachedMember member, [Remainder] string? reason = null)
+             UserPermission(Permissions.BanMembers), BotPermission(Permissions.BanMembers)]
+            public async Task PruneBanAsync(DiscordMember member, [Remainder] string? reason = null)
             {
                 if (member.Id == Context.User.Id)
                     return;
 
-                if (member.Id == Context.Guild!.OwnerId)
+                if (member.Id == Context.Guild!.Owner.Id)
                 {
                     await ReplyErrorAsync(Localization.AdministrationCannotPrunebanOwner);
                     return;
@@ -127,24 +128,22 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
                 
-                if (((CachedMember) Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
                 }
 
                 await SendMessageAsync(member, Localization.AdministrationUserBanned, Localization.AdministrationBannedFrom, reason);
-                await member.BanAsync(reason, 7);
+                await member.BanAsync(7, reason);
             }
             
             [Command("prune"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageMessages), BotPermission(Permission.ManageMessages),
+             UserPermission(Permissions.ManageMessages), BotPermission(Permissions.ManageMessages),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild),
              Priority(2)]
             public async Task PruneAsync(int amount = 100)
             {
-                var channel = (CachedTextChannel) Context.Channel;
-
                 if (amount < 1)
                     return;
                 if (amount < 100)
@@ -152,55 +151,51 @@ namespace Rias.Core.Modules.Administration
                 else
                     amount = 100;
 
-                var messages = (await channel.GetMessagesAsync(amount))
-                    .Where(m => DateTimeOffset.UtcNow.Subtract(m.CreatedAt.ToUniversalTime()).Days < 14)
-                    .Select(x => x.Id)
+                var messages = (await Context.Channel.GetMessagesAsync(amount))
+                    .Where(m => DateTimeOffset.UtcNow.Subtract(m.CreationTimestamp.ToUniversalTime()).Days < 14)
                     .ToList();
 
                 if (messages.Count != 0)
                 {
-                    await channel.DeleteMessagesAsync(messages);
+                    await Context.Channel.DeleteMessagesAsync(messages);
                 }
                 else
                     await ReplyErrorAsync(Localization.AdministrationPruneLimit);
             }
 
             [Command("prune"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageMessages), BotPermission(Permission.ManageMessages),
+             UserPermission(Permissions.ManageMessages), BotPermission(Permissions.ManageMessages),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild),
              Priority(1)]
-            public async Task PruneAsync(int amount, CachedMember member)
+            public async Task PruneAsync(int amount, DiscordMember member)
                 => await PruneUserMessagesAsync(member, amount);
 
             [Command("prune"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageMessages), BotPermission(Permission.ManageMessages),
+             UserPermission(Permissions.ManageMessages), BotPermission(Permissions.ManageMessages),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild),
              Priority(0)]
-            public async Task PruneAsync(CachedMember member, int amount = 100)
+            public async Task PruneAsync(DiscordMember member, int amount = 100)
                 => await PruneUserMessagesAsync(member, amount);
 
-            private async Task PruneUserMessagesAsync(CachedMember member, int amount)
+            private async Task PruneUserMessagesAsync(DiscordMember member, int amount)
             {
-                var channel = (CachedTextChannel) Context.Channel;
-
                 if (amount < 1)
                     return;
-                if (amount < 100)
+                if (member.Id == Context.User.Id && amount < 100)
                     amount++;
-                else
+                else if (amount > 100)
                     amount = 100;
 
-                var messages = (await channel.GetMessagesAsync())
-                    .Where(m => m.Author.Id == member.Id && DateTimeOffset.UtcNow.Subtract(m.CreatedAt.ToUniversalTime()).Days < 14)
+                var messages = (await Context.Channel.GetMessagesAsync())
+                    .Where(m => m.Author.Id == member.Id && DateTimeOffset.UtcNow.Subtract(m.CreationTimestamp.ToUniversalTime()).Days < 14)
                     .Take(amount)
-                    .Select(x => x.Id)
                     .ToList();
 
                 if (messages.Count != 0)
                 {
                     if (Context.User.Id != member.Id)
-                        messages.Add(Context.Message.Id);
-                    await channel.DeleteMessagesAsync(messages);
+                        messages.Add(Context.Message);
+                    await Context.Channel.DeleteMessagesAsync(messages);
                 }
                 else
                 {
@@ -208,36 +203,36 @@ namespace Rias.Core.Modules.Administration
                 }
             }
             
-            private async Task SendMessageAsync(CachedMember member, string moderationType, string fromWhere, string? reason)
+            private async Task SendMessageAsync(DiscordMember member, string moderationType, string fromWhere, string? reason)
             {
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ErrorColor,
-                        Title = GetText(moderationType),
-                        ThumbnailUrl = member.GetAvatarUrl()
-                    }.AddField(GetText(Localization.CommonUser), member, true)
-                    .AddField(GetText(Localization.CommonId), member.Id, true)
-                    .AddField(GetText(Localization.AdministrationModerator), Context.User, true);
+                        Title = GetText(moderationType)
+                    }.WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto))
+                    .AddField(GetText(Localization.CommonUser), member.FullName(), true)
+                    .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
+                    .AddField(GetText(Localization.AdministrationModerator), Context.User.FullName(), true);
 
                 if (!string.IsNullOrEmpty(reason))
                     embed.AddField(GetText(Localization.CommonReason), reason, true);
 
                 var channel = Context.Channel;
                 var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
-                var modLogChannel = Context.Guild!.GetTextChannel(guildDb.ModLogChannelId);
+                var modLogChannel = Context.Guild!.GetChannel(guildDb.ModLogChannelId);
                 if (modLogChannel != null)
                 {
-                    var preconditions = Context.CurrentMember!.GetPermissionsFor(modLogChannel);
-                    if (preconditions.ViewChannel && preconditions.SendMessages)
+                    var preconditions = Context.CurrentMember!.PermissionsIn(modLogChannel);
+                    if (preconditions.HasPermission(Permissions.AccessChannels) && preconditions.HasPermission(Permissions.SendMessages))
                         channel = modLogChannel;
                 }
 
                 if (channel.Id != Context.Channel.Id)
-                    await Context.Message.AddReactionAsync(new LocalEmoji("✅"));
+                    await Context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("✅"));
 
                 await channel.SendMessageAsync(embed);
 
-                var reasonEmbed = new LocalEmbedBuilder
+                var reasonEmbed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ErrorColor,
                     Description = GetText(fromWhere, Context.Guild.Name)
@@ -249,7 +244,7 @@ namespace Rias.Core.Modules.Administration
                 try
                 {
                     if (!member.IsBot)
-                        await member.SendMessageAsync(reasonEmbed);
+                        await member.SendMessageAsync(embed: reasonEmbed);
                 }
                 catch
                 {

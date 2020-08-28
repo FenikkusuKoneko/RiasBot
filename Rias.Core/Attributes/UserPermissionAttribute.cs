@@ -1,19 +1,21 @@
 using System;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 
 namespace Rias.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class UserPermissionAttribute : RiasCheckAttribute
     {
-        public readonly GuildPermissions? GuildPermissions;
+        public readonly Permissions? GuildPermissions;
 
-        public UserPermissionAttribute(Permission permissions)
+        public UserPermissionAttribute(Permissions permissions)
         {
             GuildPermissions = permissions;
         }
@@ -25,13 +27,13 @@ namespace Rias.Core.Attributes
 
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
 
-            if (!(context.User is CachedMember member))
+            if (!(context.User is DiscordMember member))
                 return CheckResult.Unsuccessful(localization.GetText(null, Localization.AttributeUserPermissionNotGuild));
 
-            if (member.Permissions.Has(GuildPermissions.Value))
+            if (member.GetPermissions().HasPermission(GuildPermissions.Value))
                 return CheckResult.Successful;
 
-            var userPerms = member.Permissions.Permissions;
+            var userPerms = member.GetPermissions();
             var requiredPerms = GuildPermissions ^ (GuildPermissions & userPerms);
 
             var requiredPermsList = requiredPerms

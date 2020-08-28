@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
@@ -46,7 +46,7 @@ namespace Rias.Core.Modules.Nsfw
          Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Channel)]
         public async Task HentaiPlusAsync([Remainder] string? tags = null)
         {
-            if (!((CachedTextChannel) Context.Channel).IsNsfw)
+            if (!Context.Channel.IsNSFW)
             {
                 await ReplyErrorAsync(Localization.NsfwChannelNotNsfw);
                 return;
@@ -84,7 +84,7 @@ namespace Rias.Core.Modules.Nsfw
         
         private async Task PostHentaiAsync(NsfwService.NsfwImageApiProvider provider, string? tags = null)
         {
-            if (!((CachedTextChannel) Context.Channel).IsNsfw)
+            if (!Context.Channel.IsNSFW)
             {
                 await ReplyErrorAsync(Localization.NsfwChannelNotNsfw);
                 return;
@@ -103,10 +103,10 @@ namespace Rias.Core.Modules.Nsfw
                 return;
             }
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                Author = new LocalEmbedAuthorBuilder
+                Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
                     Name = $"{GetText(Localization.SearchesSource)}: {nsfwImage.Provider}",
                     Url = nsfwImage.Url

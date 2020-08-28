@@ -5,7 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Humanizer;
 using Humanizer.Localisation;
 using ImageMagick;
@@ -15,6 +16,7 @@ using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Database.Entities;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Rias.Core.Models;
 using Rias.Core.Services;
@@ -35,7 +37,7 @@ namespace Rias.Core.Modules.Utility
         => await ReplyConfirmationAsync(Localization.UtilityPrefixIs, Context.Prefix);
         
         [Command("setprefix"), Context(ContextType.Guild),
-         UserPermission(Permission.Administrator)]
+         UserPermission(Permissions.Administrator)]
         public async Task SetPrefixAsync([Remainder] string prefix)
         {
             if (prefix.Length > 15)
@@ -54,12 +56,15 @@ namespace Rias.Core.Modules.Utility
         [Command("languages"), Context(ContextType.Guild)]
         public async Task LanguagesAsync()
         {
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityLanguages),
                 Description = string.Join("\n", Localization.Locales.Select(x => $"{x.Language} ({x.Locale})")),
-                Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.UtilityLanguagesFooter, Credentials.Prefix))
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = GetText(Localization.UtilityLanguagesFooter, Credentials.Prefix)
+                }
             };
 
             await ReplyAsync(embed);
@@ -123,11 +128,11 @@ namespace Rias.Core.Modules.Utility
                 return;
             }
 
-            await SendPaginatedMessageAsync(patrons, 15, (items, index) => new LocalEmbedBuilder
+            await SendPaginatedMessageAsync(patrons, 15, (items, index) => new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityAllPatrons),
-                Description = string.Join("\n", items.Select(p => $"{++index}. {RiasBot.GetUser(p.UserId)?.ToString() ?? p.UserId.ToString()}"))
+                Description = string.Join("\n", items.Select(p => $"{++index}. {RiasBot.GetMember(p.UserId)?.Mention ?? p.UserId.ToString()}"))
             });
         }
         
@@ -174,8 +179,8 @@ namespace Rias.Core.Modules.Utility
 
             var index = 0;
             var votesList = (from votes in votesGroup
-                let user = RiasBot.GetUser(votes.Key)
-                select $"{++index}. {(user != null ? user.ToString() : votes.Key.ToString())} | {GetText(Localization.UtilityVotes)}: {votes.Count()}").ToList();
+                let user = RiasBot.GetMember(votes.Key)
+                select $"{++index}. {(user != null ? user.FullName() : votes.Key.ToString())} | {GetText(Localization.UtilityVotes)}: {votes.Count()}").ToList();
 
             if (votesList.Count == 0)
             {
@@ -184,7 +189,7 @@ namespace Rias.Core.Modules.Utility
             }
 
             var timeSpanHumanized = timeSpan.Value.Humanize(5, new CultureInfo(Localization.GetGuildLocale(Context.Guild?.Id)), TimeUnit.Month);
-            await SendPaginatedMessageAsync(votesList, 15, (items, _) => new LocalEmbedBuilder
+            await SendPaginatedMessageAsync(votesList, 15, (items, _) => new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityAllVotes, timeSpanHumanized),
@@ -199,7 +204,7 @@ namespace Rias.Core.Modules.Utility
             await Context.Channel.TriggerTypingAsync();
             sw.Stop();
 
-            await ReplyConfirmationAsync(Localization.UtilityPingInfo, RiasBot.Latency.GetValueOrDefault().TotalMilliseconds.ToString("F3"), sw.ElapsedMilliseconds);
+            await ReplyConfirmationAsync(Localization.UtilityPingInfo, RiasBot.Latency.ToString("F3"), sw.ElapsedMilliseconds);
         }
 
         [Command("choose")]
@@ -213,16 +218,16 @@ namespace Rias.Core.Modules.Utility
         
         [Command("color"),
          Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.User)]
-        public async Task ColorAsync([Remainder] Color color)
+        public async Task ColorAsync([Remainder] DiscordColor color)
         {
             var currentMember = Context.Guild?.CurrentMember;
-            if (currentMember != null && !currentMember.Permissions.AttachFiles)
+            if (currentMember != null && !currentMember.GetPermissions().HasPermission(Permissions.AttachFiles))
             {
                 await ReplyErrorAsync(Localization.UtilityColorNoAttachFilesPermission);
                 return;
             }
 
-            if (currentMember != null && !currentMember.GetPermissionsFor((CachedTextChannel) Context.Channel).AttachFiles)
+            if (currentMember != null && !currentMember.PermissionsIn(Context.Channel).HasPermission(Permissions.AttachFiles))
             {
                 await ReplyErrorAsync(Localization.UtilityColorNoAttachFilesChannelPermission);
                 return; 
@@ -243,8 +248,8 @@ namespace Rias.Core.Modules.Utility
                 .Append($"**Yuv:** {yuv.Y:F2} {yuv.U:F2} {yuv.V:F2}").AppendLine()
                 .Append($"**Cmyk:** {cmyk.C / ushortMax * byteMax} {cmyk.M / ushortMax * byteMax} {cmyk.Y / ushortMax * byteMax} {cmyk.K / ushortMax * byteMax}");
 
-            var fileName = $"{color.RawValue.ToString()}.png";
-            var embed = new LocalEmbedBuilder()
+            var fileName = $"{color.Value.ToString()}.png";
+            var embed = new DiscordEmbedBuilder()
                 .WithColor(color)
                 .WithDescription(colorDetails.ToString())
                 .WithImageUrl($"attachment://{fileName}");
@@ -253,7 +258,7 @@ namespace Rias.Core.Modules.Utility
             var image = new MemoryStream();
             magickImage.Write(image, MagickFormat.Png);
             image.Position = 0;
-            await Context.Channel.SendMessageAsync(new LocalAttachment(image, fileName), embed: embed.Build());
+            await Context.Channel.SendFileAsync(fileName, image, embed: embed);
         }
         
         [Command("calculator")]
@@ -262,7 +267,7 @@ namespace Rias.Core.Modules.Utility
             var expr = new Expression(expression, EvaluateOptions.IgnoreCase);
             expr.EvaluateParameter += ExpressionEvaluateParameter;
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityCalculator)
@@ -271,7 +276,7 @@ namespace Rias.Core.Modules.Utility
             try
             {
                 var result = expr.Evaluate();
-                embed.AddField(GetText(Localization.UtilityResult), result);
+                embed.AddField(GetText(Localization.UtilityResult), result.ToString());
             }
             catch
             {
@@ -332,7 +337,7 @@ namespace Rias.Core.Modules.Utility
             unit1Name = value == 1 ? unit1.Name.Singular! : unit1.Name.Plural!;
             unit2Name = result == 1 ? unit2.Name.Singular! : unit2.Name.Plural!;
             
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityConverter),
@@ -392,7 +397,7 @@ namespace Rias.Core.Modules.Utility
             unit1Name = value == 1 ? unit1.Name.Singular! : unit1.Name.Plural!;
             unit2Name = result == 1 ? unit2.Name.Singular! : unit2.Name.Plural!;
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityConverter),
@@ -409,12 +414,15 @@ namespace Rias.Core.Modules.Utility
             if (category is null)
             {
                 await SendPaginatedMessageAsync(_unitsService.GetAllUnits().OrderBy(x => x.Name).ToList(), 15,
-                    (items, index) => new LocalEmbedBuilder
+                    (items, index) => new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
                         Title = GetText(Localization.UtilityAllUnitsCategories),
                         Description = string.Join("\n", items.Select(x => $"{++index}. {x.Name}")),
-                        Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.UtilityConvertListFooter, Context.Prefix))
+                        Footer = new DiscordEmbedBuilder.EmbedFooter
+                        {
+                            Text = GetText(Localization.UtilityConvertListFooter, Context.Prefix)
+                        }
                     });
                 
                 return;
@@ -427,7 +435,7 @@ namespace Rias.Core.Modules.Utility
                 return;
             }
 
-            await SendPaginatedMessageAsync(units.Units.ToList(), 15, (items, index) => new LocalEmbedBuilder
+            await SendPaginatedMessageAsync(units.Units.ToList(), 15, (items, index) => new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityCategoryAllUnits, category),

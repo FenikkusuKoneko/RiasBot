@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
+using Rias.Core.Configuration;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Serilog;
@@ -10,13 +11,13 @@ namespace Rias.Core.Services
 {
     public class RiasService
     {
-        public readonly Rias RiasBot;
+        public readonly RiasBot RiasBot;
         public readonly Credentials Credentials;
         public readonly Localization Localization;
 
         public RiasService(IServiceProvider serviceProvider)
         {
-            RiasBot = serviceProvider.GetRequiredService<Rias>();
+            RiasBot = serviceProvider.GetRequiredService<RiasBot>();
             Credentials = serviceProvider.GetRequiredService<Credentials>();
             Localization = serviceProvider.GetRequiredService<Localization>();
         }
@@ -26,7 +27,7 @@ namespace Rias.Core.Services
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module name of this class.
         /// </summary>
-        public Task<IUserMessage> ReplyConfirmationAsync(IMessageChannel channel, Snowflake guildId, string key, params object[] args)
+        public Task<DiscordMessage> ReplyConfirmationAsync(DiscordChannel channel, ulong guildId, string key, params object[] args)
         {
             return channel.SendConfirmationMessageAsync(Localization.GetText(guildId, key, args));
         }
@@ -36,7 +37,7 @@ namespace Rias.Core.Services
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
-        public Task<IUserMessage> ReplyErrorAsync(IMessageChannel channel, Snowflake guildId, string key, params object[] args)
+        public Task<DiscordMessage> ReplyErrorAsync(DiscordChannel channel, ulong guildId, string key, params object[] args)
         {
             return channel.SendErrorMessageAsync(Localization.GetText(guildId, key, args));
         }
@@ -46,7 +47,7 @@ namespace Rias.Core.Services
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
-        public string GetText(Snowflake? guildId, string key, params object[] args)
+        public string GetText(ulong? guildId, string key, params object[] args)
         {
             return Localization.GetText(guildId, key, args);
         }
@@ -70,15 +71,6 @@ namespace Rias.Core.Services
             });
 
             return Task.CompletedTask;
-        }
-        
-        public void SplitPrefixKey(ref string? prefix, ref string key)
-        {
-            if (!key.StartsWith('#')) return;
-
-            var index = key.IndexOf('_');
-            prefix = key[1..index];
-            key = key[++index..];
         }
     }
 }

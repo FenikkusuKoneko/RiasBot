@@ -83,7 +83,7 @@ namespace Rias.Core.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception in Rias WebSocketClient");
+                Log.Error(ex, "Exception in RiasBot WebSocketClient");
                 Closed?.Invoke();
             }
         }

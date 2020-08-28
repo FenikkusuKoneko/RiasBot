@@ -2,7 +2,8 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
@@ -25,11 +26,11 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("setnickname"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageNicknames), BotPermission(Permission.ManageNicknames),
+             UserPermission(Permissions.ManageNicknames), BotPermission(Permissions.ManageNicknames),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task SetNicknameAsync(CachedMember user, [Remainder] string? nickname = null)
+            public async Task SetNicknameAsync(DiscordMember user, [Remainder] string? nickname = null)
             {
-                if (user.Id == Context.Guild!.OwnerId)
+                if (user.Id == Context.Guild!.Owner.Id)
                 {
                     await ReplyErrorAsync(Localization.AdministrationNicknameOwner);
                     return;
@@ -41,54 +42,54 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
                 
-                if (((CachedMember) Context.User).CheckHierarchy(user) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(user) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
                 }
 
-                await user.ModifyAsync(x => x.Nick = nickname);
+                await user.ModifyAsync(x => x.Nickname = nickname);
 
                 if (string.IsNullOrEmpty(nickname))
-                    await ReplyConfirmationAsync(Localization.AdministrationNicknameRemoved, user);
+                    await ReplyConfirmationAsync(Localization.AdministrationNicknameRemoved, user.FullName());
                 else
-                    await ReplyConfirmationAsync(Localization.AdministrationNicknameChanged, user, nickname);
+                    await ReplyConfirmationAsync(Localization.AdministrationNicknameChanged, user.FullName(), nickname);
             }
             
             [Command("setmynickname"), Context(ContextType.Guild),
-             BotPermission(Permission.ManageNicknames),
+             BotPermission(Permissions.ManageNicknames),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetMyNicknameAsync([Remainder] string? nickname = null)
             {
-                var user = (CachedMember) Context.User;
-                if (user.Id == Context.Guild!.OwnerId)
+                var member = (DiscordMember) Context.User;
+                if (member.Id == Context.Guild!.Owner.Id)
                 {
                     await ReplyErrorAsync(Localization.AdministrationNicknameYouOwner);
                     return;
                 }
 
-                if (Context.CurrentMember!.CheckHierarchy(user) <= 0)
+                if (Context.CurrentMember!.CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationYouAboveMe);
                     return;
                 }
 
-                if (!user.Permissions.ChangeNickname)
+                if (!member.GetPermissions().HasPermission(Permissions.ChangeNickname))
                 {
                     await ReplyErrorAsync(Localization.AdministrationChangeNicknamePermission);
                     return;
                 }
                 
-                await user.ModifyAsync(x => x.Nick = nickname);
+                await member.ModifyAsync(x => x.Nickname = nickname);
 
                 if (string.IsNullOrEmpty(nickname))
-                    await ReplyConfirmationAsync(Localization.AdministrationYourNicknameRemoved, user);
+                    await ReplyConfirmationAsync(Localization.AdministrationYourNicknameRemoved, member.FullName());
                 else
-                    await ReplyConfirmationAsync(Localization.AdministrationYourNicknameChanged, user, nickname);
+                    await ReplyConfirmationAsync(Localization.AdministrationYourNicknameChanged, member.FullName(), nickname);
             }
             
             [Command("setservername"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageGuild), BotPermission(Permission.ManageGuild),
+             UserPermission(Permissions.ManageGuild), BotPermission(Permissions.ManageGuild),
              Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetServerNameAsync([Remainder] string name)
             {
@@ -103,7 +104,7 @@ namespace Rias.Core.Modules.Administration
             }
 
             [Command("setservericon"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageGuild), BotPermission(Permission.ManageGuild),
+             UserPermission(Permissions.ManageGuild), BotPermission(Permissions.ManageGuild),
              Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetServerIconAsync(string url)
             {

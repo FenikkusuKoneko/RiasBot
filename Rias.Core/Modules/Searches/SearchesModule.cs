@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -93,11 +93,11 @@ namespace Rias.Core.Modules.Searches
             await SendPaginatedMessageAsync(definitions, 1, (items, _) =>
             {
                 var definition = items.First();
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Url = definition.Permalink,
-                    Author = new LocalEmbedAuthorBuilder
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = definition.Word,
                         IconUrl = "https://i.imgur.com/re5jokL.jpg"

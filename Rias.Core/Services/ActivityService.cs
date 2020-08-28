@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 
 namespace Rias.Core.Services
 {
@@ -14,29 +14,29 @@ namespace Rias.Core.Services
         }
         
         private Timer? _activityTimer;
-        private LocalActivity[]? _activities;
+        private DiscordActivity[]? _activities;
         private int _activityIndex;
 
-        public LocalActivity GetActivity(string name, string type)
+        public DiscordActivity GetActivity(string name, string type)
         {
             if (!Enum.TryParse<ActivityType>(type, true, out var activityType))
-                return new LocalActivity(name, ActivityType.Playing);
+                return new DiscordActivity(name, ActivityType.Playing);
 
             if (activityType != ActivityType.Streaming)
-                return new LocalActivity(name, activityType);
+                return new DiscordActivity(name, activityType);
 
             var streamUrlIndex = name.IndexOf(" ", StringComparison.Ordinal);
             if (streamUrlIndex <= 0)
-                return new LocalActivity(name, ActivityType.Playing);
+                return new DiscordActivity(name, ActivityType.Playing);
             
             var streamUrl = name[..streamUrlIndex];
             if (Uri.IsWellFormedUriString(streamUrl, UriKind.Absolute))
-                return new LocalActivity(name[streamUrlIndex..].TrimStart(), streamUrl);
-
-            return new LocalActivity(name, ActivityType.Playing);
+                return new DiscordActivity(name[streamUrlIndex..].TrimStart(), ActivityType.Streaming) {StreamUrl = streamUrl};
+            
+            return new DiscordActivity(name, ActivityType.Playing);
         }
 
-        public Task StartActivityRotationAsync(TimeSpan period, IEnumerable<LocalActivity> activities)
+        public Task StartActivityRotationAsync(TimeSpan period, IEnumerable<DiscordActivity> activities)
         {
             _activities = activities.ToArray();
             _activityTimer = new Timer(async _ => await SetNextActivityAsync(), null, TimeSpan.Zero, period);
@@ -54,7 +54,7 @@ namespace Rias.Core.Services
             if (_activityIndex == _activities!.Length)
                 _activityIndex = 0;
             
-            return RiasBot.SetPresenceAsync(_activities[_activityIndex++]);
+            return RiasBot.Client.UpdateStatusAsync(_activities[_activityIndex++], RiasBot.Client.CurrentUser.Presence.Status);
         }
     }
 }

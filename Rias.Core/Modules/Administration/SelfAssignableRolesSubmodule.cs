@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Qmmands;
 using Rias.Core.Attributes;
@@ -23,9 +24,9 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("iam"), Context(ContextType.Guild),
-             BotPermission(Permission.ManageRoles),
+             BotPermission(Permissions.ManageRoles),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Member)]
-            public async Task IamAsync([Remainder] CachedRole role)
+            public async Task IamAsync([Remainder] DiscordRole role)
             {
                 if (Context.CurrentMember!.CheckRoleHierarchy(role) <= 0)
                 {
@@ -40,21 +41,21 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                var member = (CachedMember) Context.User;
-                if (member.GetRole(sarDb.RoleId) != null)
+                var member = (DiscordMember) Context.User;
+                if (member.Roles.Any(x => x.Id == sarDb.RoleId))
                 {
                     await ReplyErrorAsync(Localization.AdministrationYouAlreadyAre, role.Name);
                     return;
                 }
 
-                await member.GrantRoleAsync(role.Id);
+                await member.GrantRoleAsync(role);
                 await ReplyConfirmationAsync(Localization.AdministrationYouAre, role.Name);
             }
             
             [Command("iamnot"), Context(ContextType.Guild),
-             BotPermission(Permission.ManageRoles),
+             BotPermission(Permissions.ManageRoles),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Member)]
-            public async Task IamNotAsync([Remainder] CachedRole role)
+            public async Task IamNotAsync([Remainder] DiscordRole role)
             {
                 if (Context.CurrentMember!.CheckRoleHierarchy(role) <= 0)
                 {
@@ -69,20 +70,20 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
 
-                var member = (CachedMember) Context.User;
-                if (member.GetRole(sarDb.RoleId) != null)
+                var member = (DiscordMember) Context.User;
+                if (member.Roles.Any(x => x.Id == sarDb.RoleId))
                 {
-                    await member.RevokeRoleAsync(role.Id);
+                    await member.RevokeRoleAsync(role);
                 }
 
                 await ReplyConfirmationAsync(Localization.AdministrationYouAreNot, role.Name);
             }
             
             [Command("addselfassignablerole"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageRoles), BotPermission(Permission.ManageRoles)]
-            public async Task AddSelfAssignableRoleAsync([Remainder] CachedRole role)
+             UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles)]
+            public async Task AddSelfAssignableRoleAsync([Remainder] DiscordRole role)
             {
-                if (role.IsDefault) return;
+                if (role.Id == Context.Guild!.EveryoneRole.Id) return;
                 if (role.IsManaged)
                 {
                     await ReplyErrorAsync(Localization.AdministrationSarNotAdded, role.Name);
@@ -100,7 +101,7 @@ namespace Rias.Core.Modules.Administration
                 {
                     await DbContext.AddAsync(new SelfAssignableRolesEntity
                     {
-                        GuildId = role.Guild.Id,
+                        GuildId = Context.Guild.Id,
                         RoleId = role.Id,
                         RoleName = role.Name
                     });
@@ -115,8 +116,8 @@ namespace Rias.Core.Modules.Administration
             }
 
             [Command("removeselfassignablerole"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageRoles), BotPermission(Permission.ManageRoles)]
-            public async Task RemoveSelfAssignableRoleAsync([Remainder] CachedRole role)
+             UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles)]
+            public async Task RemoveSelfAssignableRoleAsync([Remainder] DiscordRole role)
             {
                 var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
                 if (sarDb != null)
@@ -132,7 +133,7 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("listselfassignableroles"), Context(ContextType.Guild),
-             BotPermission(Permission.ManageRoles),
+             BotPermission(Permissions.ManageRoles),
              Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task ListSelfAssignableRolesAsync()
             {
@@ -143,7 +144,7 @@ namespace Rias.Core.Modules.Administration
                     return;
                 }
                 
-                await SendPaginatedMessageAsync(sarList, 15, (items, index) => new LocalEmbedBuilder
+                await SendPaginatedMessageAsync(sarList, 15, (items, index) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.AdministrationSarList),

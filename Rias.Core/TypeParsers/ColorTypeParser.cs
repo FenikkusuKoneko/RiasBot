@@ -1,29 +1,29 @@
 using System;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Implementation;
 
 namespace Rias.Core.TypeParsers
 {
-    public class ColorTypeParser : RiasTypeParser<Color>
+    public class ColorTypeParser : RiasTypeParser<DiscordColor>
     {
-        public override ValueTask<TypeParserResult<Color>> ParseAsync(Parameter parameter, string value, RiasCommandContext context)
+        public override ValueTask<TypeParserResult<DiscordColor>> ParseAsync(Parameter parameter, string value, RiasCommandContext context)
         {
             var hex = RiasUtilities.HexToInt(value);
             if (hex.HasValue)
-                return TypeParserResult<Color>.Successful(new Color(hex.Value));
+                return TypeParserResult<DiscordColor>.Successful(new DiscordColor(hex.Value));
             
             var color = default(System.Drawing.Color);
             if (Enum.TryParse<System.Drawing.KnownColor>(value.Replace(" ", ""), true, out var knownColor))
                 color = System.Drawing.Color.FromKnownColor(knownColor);
 
             if (!color.IsEmpty)
-                return TypeParserResult<Color>.Successful(new Color(color.R, color.G, color.B));
+                return TypeParserResult<DiscordColor>.Successful(new DiscordColor(color.R, color.G, color.B));
 
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
-            return TypeParserResult<Color>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserInvalidColor));
+            return TypeParserResult<DiscordColor>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserInvalidColor));
         }
     }
 }

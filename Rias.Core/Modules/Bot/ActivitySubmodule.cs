@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Humanizer;
 using Qmmands;
 using Rias.Core.Attributes;
@@ -27,16 +27,16 @@ namespace Rias.Core.Modules.Bot
                 
                 if (type is null || name is null)
                 {
-                    await RiasBot.SetPresenceAsync(null);
+                    await RiasBot.Client.UpdateStatusAsync(userStatus: RiasBot.Client.CurrentUser.Presence.Status);
                     await ReplyConfirmationAsync(Localization.BotActivityRemoved);
                     return;
                 }
 
                 var activity = Service.GetActivity(name, type);
-                if (activity.Type == ActivityType.Streaming)
-                    name = $"[{name}]({activity.Url})";
+                if (activity.ActivityType == ActivityType.Streaming)
+                    name = $"[{name}]({activity.StreamUrl})";
 
-                await RiasBot.SetPresenceAsync(activity);
+                await RiasBot.Client.UpdateStatusAsync(activity, RiasBot.Client.CurrentUser.Presence.Status);
                 await ReplyConfirmationAsync(Localization.BotActivitySet, GetText(Localization.BotActivity(type.ToLower()), name.ToLowerInvariant()).ToLowerInvariant());
             }
             
@@ -52,10 +52,10 @@ namespace Rias.Core.Modules.Bot
                 var activitiesEnumerable = activities.Split("\n").Select(x =>
                 {
                     var typeIndex = x.IndexOf(" ", StringComparison.Ordinal);
-                    return typeIndex <= 0 ? new LocalActivity(x, ActivityType.Playing) : Service.GetActivity(x[typeIndex..].TrimStart(), x[..typeIndex]);
+                    return typeIndex <= 0 ? new DiscordActivity(x, ActivityType.Playing) : Service.GetActivity(x[typeIndex..].TrimStart(), x[..typeIndex]);
                 }).ToArray();
                 await Service.StartActivityRotationAsync(TimeSpan.FromSeconds(period), activitiesEnumerable);
-                await ReplyConfirmationAsync(Localization.BotActivityRotationSet, period, string.Join("\n", activitiesEnumerable.Select(x => $"{x.Type} {x.Name}")));
+                await ReplyConfirmationAsync(Localization.BotActivityRotationSet, period, string.Join("\n", activitiesEnumerable.Select(x => $"{x.ActivityType} {x.Name}")));
             }
             
             [Command("status"), OwnerOnly]
@@ -70,7 +70,7 @@ namespace Rias.Core.Modules.Bot
                 if (userStatus == UserStatus.Offline)
                     userStatus = UserStatus.Invisible;
                 
-                await RiasBot.SetPresenceAsync(userStatus);
+                await RiasBot.Client.UpdateStatusAsync(RiasBot.Client.CurrentUser.Presence.Activity, userStatus);
                 await ReplyConfirmationAsync(Localization.BotStatusSet, GetText(Localization.BotStatus(userStatus.Humanize(LetterCasing.LowerCase).Underscore())).ToLowerInvariant());
             }
         }

@@ -2,13 +2,14 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Database.Entities;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
 
@@ -43,13 +44,12 @@ namespace Rias.Core.Modules.Waifu
                 return;
             }
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Url = character is CharactersEntity animeCharacter? animeCharacter.Url : default,
                 Title = character.Name,
-                ThumbnailUrl = character.ImageUrl
-            };
+            }.WithThumbnail(character.ImageUrl);
 
             var claimCanceled = false;
 
@@ -91,15 +91,15 @@ namespace Rias.Core.Modules.Waifu
             }
 
             embed.AddField(GetText(Localization.WaifuClaimedBy), $"{waifuUsers.Count} {GetText(Localization.CommonUsers).ToLowerInvariant()}", true)
-                .AddField(GetText(Localization.UtilityPrice), waifuPrice, true);
+                .AddField(GetText(Localization.UtilityPrice), waifuPrice.ToString(), true);
             
-            await Context.Channel.SendMessageAsync($"**{GetText(Localization.WaifuClaimNote, Context.Prefix)}**", embed: embed.Build());
+            await Context.Channel.SendMessageAsync($"**{GetText(Localization.WaifuClaimNote, Context.Prefix)}**", embed: embed);
 
             if (claimCanceled)
                 return;
 
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Message.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.WaifuClaimCanceled);
                 return;
@@ -122,7 +122,7 @@ namespace Rias.Core.Modules.Waifu
             await DbContext.SaveChangesAsync();
 
             embed.WithDescription(GetText(Localization.WaifuWaifuClaimed, character.Name!, waifuPrice, Credentials.Currency));
-            embed.Fields.Clear();
+            embed.ClearFields();
 
             await ReplyAsync(embed);
         }
@@ -138,18 +138,17 @@ namespace Rias.Core.Modules.Waifu
                 return;
             }
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = waifu.Name,
                 Description = GetText(Localization.WaifuDivorceConfirmation, waifu.Name!),
-                ThumbnailUrl = waifu.ImageUrl
-            };
+            }.WithThumbnail(waifu.ImageUrl);
 
             await ReplyAsync(embed);
             
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Message.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.WaifuDivorceCanceled);
                 return;
@@ -166,9 +165,9 @@ namespace Rias.Core.Modules.Waifu
         
         [Command("all"), Context(ContextType.Guild),
          Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
-        public async Task AllWaifusAsync([Remainder] CachedMember? member = null)
+        public async Task AllWaifusAsync([Remainder] DiscordMember? member = null)
         {
-            member ??= (CachedMember) Context.User;
+            member ??= (DiscordMember) Context.User;
 
             var allWaifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
             (
@@ -183,7 +182,7 @@ namespace Rias.Core.Modules.Waifu
                 if (member.Id == Context.User.Id)
                     await ReplyErrorAsync(Localization.WaifuNoWaifus);
                 else
-                    await ReplyErrorAsync(Localization.WaifuUserNoWaifus, member);
+                    await ReplyErrorAsync(Localization.WaifuUserNoWaifus, member.FullName());
                 
                 return;
             }
@@ -210,26 +209,27 @@ namespace Rias.Core.Modules.Waifu
 
             if (waifus.Count == 0)
             {
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
-                    Title = member.Id == Context.User.Id ? GetText(Localization.WaifuAllWaifus) : GetText(Localization.WaifuAllUserWaifus, member),
+                    Title = member.Id == Context.User.Id ? GetText(Localization.WaifuAllWaifus) : GetText(Localization.WaifuAllUserWaifus, member.FullName()),
                     Description = specialWaifuString,
-                    ThumbnailUrl = specialWaifuImage
-                };
+                }.WithThumbnail(specialWaifuImage);
 
                 await ReplyAsync(embed);
                 return;
             }
 
-            await SendPaginatedMessageAsync(waifus, 10, (items, _) => new LocalEmbedBuilder
+            await SendPaginatedMessageAsync(waifus, 10, (items, _) => new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                Title = member.Id == Context.User.Id ? GetText(Localization.WaifuAllWaifus) : GetText(Localization.WaifuAllUserWaifus, member),
+                Title = member.Id == Context.User.Id ? GetText(Localization.WaifuAllWaifus) : GetText(Localization.WaifuAllUserWaifus, member.FullName()),
                 Description = $"{specialWaifuString}\n\n{string.Join("\n\n", items.Select(StringifyWaifu))}",
-                Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.WaifuWaifusNumber, specialWaifu != null ? waifus.Count + 1 : waifus.Count)),
-                ThumbnailUrl = specialWaifuImage,
-            });
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = GetText(Localization.WaifuWaifusNumber, specialWaifu != null ? waifus.Count + 1 : waifus.Count)
+                }
+            }.WithThumbnail(specialWaifuImage));
         }
         
         [Command("special"), Context(ContextType.Guild),
@@ -256,18 +256,17 @@ namespace Rias.Core.Modules.Waifu
                 return;
             }
             
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = waifu.Name,
                 Description = GetText(Localization.WaifuSpecialConfirmation, waifu.Name!),
-                ThumbnailUrl = waifu.ImageUrl
-            };
+            }.WithThumbnail(waifu.ImageUrl);
 
             await ReplyAsync(embed);
 
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Message.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.WaifuSpecialCanceled);
                 return;
@@ -390,10 +389,12 @@ namespace Rias.Core.Modules.Waifu
                 .ToList();
 
             var currentWaifu = waifus.FirstOrDefault(x => x.GetType().IsInstanceOfType(waifu) && x.Id == waifu.Id);
-            waifus.Remove(currentWaifu);
+            if (currentWaifu is not null)
+                waifus.Remove(currentWaifu);
             
             position = Math.Min(position, waifus.Count + 1);
-            waifus.Insert(position - 1, currentWaifu);
+            if (currentWaifu is not null)
+                waifus.Insert(position - 1, currentWaifu);
             
             for (var i = 0; i < waifus.Count; i++)
                 waifus[i].Position = i + 1;
@@ -443,18 +444,17 @@ namespace Rias.Core.Modules.Waifu
                 return;
             }
             
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = name,
                 Description = GetText(Localization.WaifuCreationConfirmation, name),
-                ThumbnailUrl = url
-            };
+            }.WithThumbnail(url);
 
             await ReplyAsync(embed);
 
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Message.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.WaifuCreationCanceled);
                 return;

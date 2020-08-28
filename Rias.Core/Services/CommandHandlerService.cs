@@ -7,8 +7,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Disqord;
-using Disqord.Events;
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using Humanizer;
 using Humanizer.Localisation;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +49,7 @@ namespace Rias.Core.Services
             LoadCommands();
             LoadTypeParsers();
 
-            RiasBot.MessageReceived += MessageReceivedAsync;
+            RiasBot.Client.MessageCreated += MessageCreatedAsync;
         }
         
         private void LoadCommands()
@@ -63,7 +64,7 @@ namespace Rias.Core.Services
                 throw new KeyNotFoundException("The modules node array couldn't be loaded");
             }
 
-            var assembly = Assembly.GetAssembly(typeof(Rias));
+            var assembly = Assembly.GetAssembly(typeof(RiasBot));
             _commandService.AddModules(assembly, null, module => SetUpModule(module, modulesInfo));
 
             sw.Stop();
@@ -86,15 +87,18 @@ namespace Rias.Core.Services
                     module.AddAlias(moduleAlias);
                 }
             }
-
-            if (!moduleInfo.Commands.Any())
+            
+            if (moduleInfo.Commands is null || moduleInfo.Commands.Count == 0)
                 return;
             
-            SetUpCommands(module, moduleInfo.Commands.ToList());
+            SetUpCommands(module, moduleInfo.Commands);
 
+            if (moduleInfo.Submodules is null)
+                return;
+            
             foreach (var submodule in module.Submodules)
             {
-                SetUpModule(submodule, moduleInfo.Submodules.ToList());
+                SetUpModule(submodule, moduleInfo.Submodules);
             }
         }
 
@@ -142,7 +146,7 @@ namespace Rias.Core.Services
             if (typeParserInterface is null)
                 throw new NullReferenceException(parserInterface);
 
-            var assembly = typeof(Rias).Assembly;
+            var assembly = typeof(RiasBot).Assembly;
             _typeParsers = assembly!.GetTypes()
                 .Where(x => typeParserInterface.IsAssignableFrom(x)
                             && !x.GetTypeInfo().IsInterface
@@ -162,70 +166,68 @@ namespace Rias.Core.Services
             }
         }
         
-        private async Task MessageReceivedAsync(MessageReceivedEventArgs args)
+        private async Task MessageCreatedAsync(MessageCreateEventArgs args)
         {
-            if (!(args.Message is CachedUserMessage userMessage)) return;
-            if (userMessage.Author.IsBot) return;
+            if (args.Message.MessageType != MessageType.Default) return;
+            if (args.Message.Author.IsBot) return;
             
-            var guildChannel = userMessage.Channel as CachedTextChannel;
-            if (guildChannel != null)
+            if (args.Channel.Type == ChannelType.Text)
             {
-                await RunTaskAsync(_botService.AddAssignableRoleAsync((CachedMember) userMessage.Author));
-                await RunTaskAsync(_xpService.AddUserXpAsync(userMessage.Author));
-                await RunTaskAsync(_xpService.AddGuildUserXpAsync((CachedMember) userMessage.Author, userMessage.Channel));
+                await RunTaskAsync(_botService.AddAssignableRoleAsync((DiscordMember) args.Author));
+                await RunTaskAsync(_xpService.AddUserXpAsync(args.Author));
+                await RunTaskAsync(_xpService.AddGuildUserXpAsync((DiscordMember) args.Author, args.Channel));
             }
             
-            var prefix = await GetGuildPrefixAsync(guildChannel?.Guild);
-            if (CommandUtilities.HasPrefix(userMessage.Content, prefix, out var output)
-                || RiasUtilities.HasMentionPrefix(userMessage, out output))
+            var prefix = await GetGuildPrefixAsync(args.Guild);
+            if (CommandUtilities.HasPrefix(args.Message.Content, prefix, out var output))
             {
-                await RunTaskAsync(ExecuteCommandAsync(userMessage, userMessage.Channel, prefix, output));
+                await RunTaskAsync(ExecuteCommandAsync(args.Message, args.Channel, prefix, output));
                 return;
             }
 
-            if (userMessage.Client.CurrentUser is null)
+            if (args.Client.CurrentUser is null)
                 return;
-            
-            if (CommandUtilities.HasPrefix(userMessage.Content,userMessage.Client.CurrentUser.Name, StringComparison.InvariantCultureIgnoreCase, out output))
-                await RunTaskAsync(ExecuteCommandAsync(userMessage, userMessage.Channel, prefix, output));
+
+            if (CommandUtilities.HasPrefix(args.Message.Content, args.Client.CurrentUser.Username, StringComparison.InvariantCultureIgnoreCase, out output)
+                || args.Message.HasMentionPrefix(args.Client.CurrentUser, out output))
+                await RunTaskAsync(ExecuteCommandAsync(args.Message, args.Channel, prefix, output));
         }
 
-        private async Task ExecuteCommandAsync(CachedUserMessage userMessage, ICachedMessageChannel? channel, string prefix, string output)
+        private async Task ExecuteCommandAsync(DiscordMessage message, DiscordChannel channel, string prefix, string output)
         {
-            if (await CheckUserBan(userMessage.Author) && userMessage.Author.Id != Credentials.MasterId)
+            if (await CheckUserBan(message.Author) && message.Author.Id != Credentials.MasterId)
                 return;
 
-            var guildChannel = channel as CachedTextChannel;
-            if (guildChannel != null)
+            if (channel.Type == ChannelType.Text)
             {
-                var channelPermissions = guildChannel.Guild.CurrentMember.GetPermissionsFor(guildChannel);
-                if (!channelPermissions.SendMessages)
+                var channelPermissions = channel.Guild.CurrentMember.PermissionsIn(channel);
+                if (!channelPermissions.HasPermission(Permissions.SendMessages))
                     return;
 
-                if (!guildChannel.Guild.CurrentMember.Permissions.EmbedLinks)
+                if (!channel.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks))
                 {
-                    await guildChannel.SendMessageAsync(GetText(guildChannel.Guild.Id, Localization.ServiceNoEmbedLinksPermission));
+                    await channel.SendMessageAsync(GetText(channel.Guild.Id, Localization.ServiceNoEmbedLinksPermission));
                     return;
                 }
 
-                if (!channelPermissions.EmbedLinks)
+                if ((channelPermissions & Permissions.EmbedLinks) != Permissions.EmbedLinks)
                 {
-                    await guildChannel.SendMessageAsync(GetText(guildChannel.Guild.Id, Localization.ServiceNoEmbedLinksChannelPermission));
+                    await channel.SendMessageAsync(GetText(channel.Guild.Id, Localization.ServiceNoEmbedLinksChannelPermission));
                     return;
                 }
             }
             
-            var context = new RiasCommandContext(userMessage, RiasBot, prefix);
+            var context = new RiasCommandContext(RiasBot, message, prefix);
             var result = await _commandService.ExecuteAsync(output, context);
             
             if (result.IsSuccessful)
             {
-                if (guildChannel != null
-                    && guildChannel.Guild.CurrentMember.Permissions.ManageMessages
-                    && await CheckGuildCommandMessageDeletion(guildChannel.Guild)
+                if (channel.Type == ChannelType.Text
+                    && channel.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.ManageMessages)
+                    && await CheckGuildCommandMessageDeletion(channel.Guild)
                     && !string.Equals(context.Command.Name, "prune"))
                 {
-                    await userMessage.DeleteAsync();
+                    await message.DeleteAsync();
                 }
                 
                 CommandsExecuted++;
@@ -253,7 +255,7 @@ namespace Rias.Core.Services
         private Task SendFailedResultsAsync(RiasCommandContext context, IEnumerable<FailedResult> failedResults)
         {
             var guildId = context.Guild?.Id;
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ErrorColor,
                 Title = GetText(guildId, Localization.ServiceCommandNotExecuted)
@@ -306,7 +308,7 @@ namespace Rias.Core.Services
 
             embed.WithDescription($"**{GetText(guildId, reasons.Count == 1 ? Localization.CommonReason : Localization.CommonReasons)}**:\n" +
                                   string.Join("\n", reasons.Select(x => $"• {x}")));
-            return context.Channel.SendMessageAsync(embed);
+            return context.Channel.SendMessageAsync(embed: embed);
         }
         
         private async Task SendCommandOnCooldownMessageAsync(RiasCommandContext context, CommandOnCooldownResult result)
@@ -334,7 +336,7 @@ namespace Rias.Core.Services
             _cooldownService.Remove(cooldownKey);
         }
         
-        private async Task<string> GetGuildPrefixAsync(CachedGuild? guild)
+        private async Task<string> GetGuildPrefixAsync(DiscordGuild? guild)
         {
             if (guild is null)
                 return Credentials.Prefix;
@@ -346,14 +348,14 @@ namespace Rias.Core.Services
             return !string.IsNullOrEmpty(prefix) ? prefix : Credentials.Prefix;
         }
         
-        private async Task<bool> CheckGuildCommandMessageDeletion(CachedGuild guild)
+        private async Task<bool> CheckGuildCommandMessageDeletion(DiscordGuild guild)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return (await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id))?.DeleteCommandMessage ?? false;
         }
         
-        private async Task<bool> CheckUserBan(CachedUser user)
+        private async Task<bool> CheckUserBan(DiscordUser user)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -364,15 +366,15 @@ namespace Rias.Core.Services
         {
             public string? Name { get; set; }
             public string? Aliases { get; set; }
-            public IEnumerable<CommandInfo>? Commands { get; set; }
-            public IEnumerable<ModuleInfo>? Submodules { get; set; }
+            public IReadOnlyList<CommandInfo>? Commands { get; set; }
+            public IReadOnlyList<ModuleInfo>? Submodules { get; set; }
         }
 
         public class CommandInfo
         {
             public string? Aliases { get; set; }
             public string? Description { get; set; }
-            public IEnumerable<string>? Remarks { get; set; }
+            public IReadOnlyList<string>? Remarks { get; set; }
         }
     }
 }

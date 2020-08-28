@@ -1,19 +1,20 @@
 using System;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 
 namespace Rias.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class BotPermissionAttribute : RiasCheckAttribute
     {
-        public readonly GuildPermissions? GuildPermissions;
+        public readonly Permissions? GuildPermissions;
         
-        public BotPermissionAttribute(Permission permissions)
+        public BotPermissionAttribute(Permissions permissions)
         {
             GuildPermissions = permissions;
         }
@@ -29,10 +30,10 @@ namespace Rias.Core.Attributes
             if (currentMember is null)
                 return CheckResult.Unsuccessful(localization.GetText(null, Localization.AttributeBotPermissionNotGuild));
 
-            if (currentMember.Permissions.Has(GuildPermissions.Value))
+            if (currentMember.GetPermissions().HasPermission(GuildPermissions.Value))
                 return CheckResult.Successful;
 
-            var botPerms = currentMember.Permissions.Permissions;
+            var botPerms = currentMember.GetPermissions();
             var requiredPerms = GuildPermissions ^ (GuildPermissions & botPerms);
 
             var requiredPermsList = requiredPerms

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
@@ -19,7 +20,7 @@ namespace Rias.Core.Modules.Administration
             }
             
             [Command("createvoicechannel"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateVoiceChannelAsync([Remainder] string name)
             {
@@ -34,9 +35,9 @@ namespace Rias.Core.Modules.Administration
             }
 
             [Command("deletevoicechannel"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task DeleteVoiceChannelAsync([Remainder] CachedVoiceChannel channel)
+            public async Task DeleteVoiceChannelAsync([Channel(ChannelType.Voice), Remainder] DiscordChannel channel)
             {
                 if (!ChannelExtensions.CheckViewChannelPermission(Context.CurrentMember!, channel))
                 {
@@ -49,7 +50,7 @@ namespace Rias.Core.Modules.Administration
             }
 
             [Command("renamevoicechannel"), Context(ContextType.Guild),
-             UserPermission(Permission.ManageChannels), BotPermission(Permission.ManageChannels),
+             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameVoiceChannelAsync([Remainder] string names)
             {

@@ -5,7 +5,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -28,18 +29,11 @@ namespace Rias.Core.Modules.Help
         [Command("help")]
         public async Task HelpAsync()
         {
-            var embed = new LocalEmbedBuilder
-            {
-                Color = RiasUtilities.ConfirmColor,
-                Author = new LocalEmbedAuthorBuilder
-                {
-                    Name = GetText(Localization.HelpTitle, RiasBot.CurrentUser.Name, Rias.Version),
-                    IconUrl = RiasBot.CurrentUser.GetAvatarUrl()
-                },
-                Footer = new LocalEmbedFooterBuilder().WithText("© 2018-2020 Copyright: Koneko#0001")
-            };
-            
-            embed.WithDescription(GetText(Localization.HelpInfo, Context.Prefix));
+            var embed = new DiscordEmbedBuilder()
+                .WithColor(RiasUtilities.ConfirmColor)
+                .WithAuthor(GetText(Localization.HelpTitle, RiasBot.CurrentUser!.Username, RiasBot.Version), RiasBot.CurrentUser.GetAvatarUrl(ImageFormat.Auto))
+                .WithFooter("© 2018-2020 Copyright: Koneko#0001")
+                .WithDescription(GetText(Localization.HelpInfo, Context.Prefix));
 
             var links = new StringBuilder();
             const string delimiter = " • ";
@@ -48,7 +42,7 @@ namespace Rias.Core.Modules.Help
             {
                 var ownerServer = RiasBot.GetGuild(Credentials.OwnerServerId);
                 links.Append(delimiter)
-                    .Append(GetText(Localization.HelpSupportServer, ownerServer.Name, Credentials.OwnerServerInvite))
+                    .Append(GetText(Localization.HelpSupportServer, ownerServer!.Name, Credentials.OwnerServerInvite))
                     .Append("\n");
             }
 
@@ -87,7 +81,7 @@ namespace Rias.Core.Modules.Help
                 title = $"{Context.Prefix}{moduleAlias}";
             } 
             
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = title
@@ -152,12 +146,11 @@ namespace Rias.Core.Modules.Help
         [Command("modules")]
         public async Task ModulesAsync()
         {
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                Title = GetText(Localization.HelpModulesListTitle),
-                Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.HelpModulesListFooter, Context.Prefix))
-            };
+                Title = GetText(Localization.HelpModulesListTitle)
+            }.WithFooter(GetText(Localization.HelpModulesListFooter, Context.Prefix));
 
             var isOwner = Context.User.Id == Credentials.MasterId;
 
@@ -222,7 +215,7 @@ namespace Rias.Core.Modules.Help
             
             var commandsAliases = GetCommandsAliases(modulesCommands, Context.Prefix);
 
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(module.Parent != null ? Localization.HelpAllCommandsForSubmodule : Localization.HelpAllCommandsForModule, module.Name)
@@ -248,11 +241,14 @@ namespace Rias.Core.Modules.Help
          Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task AllCommandsAsync()
         {
-            var embed = new LocalEmbedBuilder
+            var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.HelpAllCommands),
-                Footer = new LocalEmbedFooterBuilder().WithText(GetText(Localization.HelpCommandInfo, Context.Prefix)),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = GetText(Localization.HelpCommandInfo, Context.Prefix)
+                },
                 Timestamp = DateTimeOffset.UtcNow
             };
 
@@ -287,13 +283,13 @@ namespace Rias.Core.Modules.Help
 
                 if (embed.Fields.Count <= 20) continue;
 
-                var received = await SendAllCommandsMessageAsync(embed.Build());
+                var received = await SendAllCommandsMessageAsync(embed);
                 if (!received) return;
                 
-                embed.Fields.Clear();
+                embed.ClearFields();
             }
 
-            await SendAllCommandsMessageAsync(embed.Build());
+            await SendAllCommandsMessageAsync(embed);
         }
         
         private Command? GetCommand(Module? module, string? alias)
@@ -336,11 +332,11 @@ namespace Rias.Core.Modules.Help
                 return $"{prefix}{moduleAlias}{x.Aliases.FirstOrDefault()}{nextAliases}{isOwnerString}";
             }).ToImmutableList();
         
-        private async Task<bool> SendAllCommandsMessageAsync(LocalEmbed embed)
+        private async Task<bool> SendAllCommandsMessageAsync(DiscordEmbed embed)
         {
             try
             {
-                await Context.User.SendMessageAsync(embed: embed);
+                await ((DiscordMember) Context.User).SendMessageAsync(embed: embed);
             }
             catch
             {

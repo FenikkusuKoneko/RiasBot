@@ -1,13 +1,14 @@
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus.Entities;
 using Humanizer;
 using Humanizer.Localisation;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Commons;
 using Rias.Core.Database.Entities;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 
 namespace Rias.Core.Modules.Gambling
@@ -22,13 +23,13 @@ namespace Rias.Core.Modules.Gambling
             }
             
             [Command("currency"), Context(ContextType.Guild)]
-            public async Task CurrencyAsync([Remainder] CachedMember? user = null)
+            public async Task CurrencyAsync([Remainder] DiscordMember? member = null)
             {
-                user ??= (CachedMember) Context.User;
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
-                if (user.Id == Context.User.Id)
+                member ??= (DiscordMember) Context.User;
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == member.Id, () => new UsersEntity {UserId = member.Id});
+                if (member.Id == Context.User.Id)
                 {
-                    var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == user.Id, x => x.DateAdded, true);
+                    var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == member.Id, x => x.DateAdded, true);
 
                     if (string.IsNullOrEmpty(Credentials.DiscordBotList))
                         await ReplyConfirmationAsync(Localization.GamblingCurrencyYou, userDb.Currency, Credentials.Currency);
@@ -46,29 +47,29 @@ namespace Rias.Core.Modules.Gambling
                 }
                 else
                 {
-                    await ReplyConfirmationAsync(Localization.GamblingCurrencyUser, user, userDb.Currency, Credentials.Currency);
+                    await ReplyConfirmationAsync(Localization.GamblingCurrencyUser, member.FullName(), userDb.Currency, Credentials.Currency);
                 }
             }
             
             [Command("reward"), OwnerOnly]
-            public async Task RewardAsync(int amount, [Remainder] IUser user)
+            public async Task RewardAsync(int amount, [Remainder] DiscordUser user)
             {
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 var currency = userDb.Currency += amount;
 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.GamblingUserRewarded, amount, Credentials.Currency, user, currency);
+                await ReplyConfirmationAsync(Localization.GamblingUserRewarded, amount, Credentials.Currency, user.FullName(), currency);
             }
             
             [Command("take"), OwnerOnly]
-            public async Task TakeAsync(int amount, [Remainder] IUser user)
+            public async Task TakeAsync(int amount, [Remainder] DiscordUser user)
             {
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
                 amount = Math.Min(amount, userDb.Currency);
                 userDb.Currency -= amount;
 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.GamblingUserTook, amount, Credentials.Currency, user);
+                await ReplyConfirmationAsync(Localization.GamblingUserTook, amount, Credentials.Currency, user.FullName());
             }
             
             [Command("leaderboard"),
@@ -85,7 +86,7 @@ namespace Rias.Core.Modules.Gambling
                     return;
                 }
 
-                var embed = new LocalEmbedBuilder
+                var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.GamblingCurrencyLeaderboard, Credentials.Currency)
@@ -94,8 +95,11 @@ namespace Rias.Core.Modules.Gambling
                 var index = 0;
                 foreach (var userCurrency in usersCurrency)
                 {
-                    var user = (IUser) RiasBot.GetUser(userCurrency.UserId) ?? await RiasBot.GetUserAsync(userCurrency.UserId);
-                    embed.AddField($"#{++index + page * 15} {(user != null ? user.ToString() : userCurrency.UserId.ToString())}",
+                    var user = RiasBot.Members.TryGetValue(userCurrency.UserId, out var m)
+                        ? m
+                        : await RiasBot.Client.ShardClients[0].GetUserAsync(userCurrency.UserId);
+                    
+                    embed.AddField($"#{++index + page * 15} {user.FullName()}",
                         $"{userCurrency.Currency} {Credentials.Currency}", true);
                 }
 

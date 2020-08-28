@@ -5,14 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Disqord;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using ImageMagick;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rias.Core.Database;
 using Rias.Core.Database.Entities;
+using Rias.Core.Extensions;
 using Rias.Core.Implementation;
-using Color = Disqord.Color;
 
 namespace Rias.Core.Services
 {
@@ -38,18 +39,18 @@ namespace Rias.Core.Services
         private readonly string _arialFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/ArialBold.ttf");
         private readonly string _meiryoFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/Meiryo.ttf");
 
-        private readonly Color[] _colors =
+        private readonly DiscordColor[] _colors =
         {
-            new Color(255, 255, 255),    //white
-            new Color(255, 0, 0),        //red
-            new Color(0, 255, 0),        //green
-            new Color(0, 255, 255),      //cyan/aqua
-            new Color(255, 165, 0),      //orange
-            new Color(255, 105, 180),    //hot pink
-            new Color(255, 0, 255)       //magenta
+            new DiscordColor(255, 255, 255),    //white
+            new DiscordColor(255, 0, 0),        //red
+            new DiscordColor(0, 255, 0),        //green
+            new DiscordColor(0, 255, 255),      //cyan/aqua
+            new DiscordColor(255, 165, 0),      //orange
+            new DiscordColor(255, 105, 180),    //hot pink
+            new DiscordColor(255, 0, 255)       //magenta
         };
         
-        public async Task<Stream> GenerateProfileImageAsync(CachedMember member)
+        public async Task<Stream> GenerateProfileImageAsync(DiscordMember member)
         {
             var profileInfo = await GetProfileInfoAsync(member);
 
@@ -69,7 +70,7 @@ namespace Rias.Core.Services
             return imageStream;
         }
         
-        private void AddInfo(MagickImage image, CachedMember member, ProfileInfo profileInfo)
+        private void AddInfo(MagickImage image, DiscordMember member, ProfileInfo profileInfo)
         {
             var settings = new MagickReadSettings
             {
@@ -153,7 +154,7 @@ namespace Rias.Core.Services
             image.Draw(new DrawableComposite(30, 420, CompositeOperator.Over, bioImage));
         }
         
-        public async Task<Stream> GenerateProfileBackgroundAsync(CachedUser user, Stream backgroundStream)
+        public async Task<Stream> GenerateProfileBackgroundAsync(DiscordUser user, Stream backgroundStream)
         {
             using var image = new MagickImage(_dark, 500, 500);
             
@@ -180,7 +181,7 @@ namespace Rias.Core.Services
             return imageStream;
         }
 
-        public async Task<bool> CheckColorAsync(CachedUser user, Color color, int? tier = null)
+        public async Task<bool> CheckColorAsync(DiscordUser user, DiscordColor color, int? tier = null)
         {
             if (Credentials.PatreonConfig is null)
                 return true;
@@ -188,7 +189,7 @@ namespace Rias.Core.Services
             if (user.Id == Credentials.MasterId)
                 return true;
 
-            if (_colors.Any(x => x == color))
+            if (_colors.Any(x => x.Value == color.Value))
                 return true;
             
             if (tier.HasValue)
@@ -261,9 +262,9 @@ namespace Rias.Core.Services
             image.Draw(new Drawables().Rectangle(0, 0, 500, 250).FillColor(MagickColor.FromRgba(0, 0, 0, (byte) dim)));
         }
         
-        private async Task AddAvatarAndUsernameAsync(MagickImage image, CachedUser user, ProfileInfo? profileInfo = null)
+        private async Task AddAvatarAndUsernameAsync(MagickImage image, DiscordUser user, ProfileInfo? profileInfo = null)
         {
-            await using var avatarStream = await _httpClient.GetStreamAsync(user.GetAvatarUrl());
+            await using var avatarStream = await _httpClient.GetStreamAsync(user.GetAvatarUrl(ImageFormat.Auto));
             using var avatarImage = new MagickImage(avatarStream);
             avatarImage.Resize(new MagickGeometry
             {
@@ -288,7 +289,7 @@ namespace Rias.Core.Services
                 Height = 50
             };
             
-            using var usernameImage = new MagickImage($"caption:{user}", usernameSettings);
+            using var usernameImage = new MagickImage($"caption:{user.FullName()}", usernameSettings);
             image.Draw(new DrawableComposite(150, 130, CompositeOperator.Over, usernameImage));
 
             if (profileInfo is null)
@@ -496,7 +497,7 @@ namespace Rias.Core.Services
             return null;
         }
 
-        private async Task<ProfileInfo> GetProfileInfoAsync(CachedMember member)
+        private async Task<ProfileInfo> GetProfileInfoAsync(DiscordMember member)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -516,12 +517,13 @@ namespace Rias.Core.Services
 
             var xp = userDb?.Xp ?? 0;
 
-            var color = profileDb?.Color != null ? new Color(RiasUtilities.HexToInt(profileDb.Color[1..]).GetValueOrDefault()) : _colors[0];
-            if (color != _colors[0] && !await CheckColorAsync(member, color, patreonDb?.Tier ?? 0))
+            var color = profileDb?.Color != null ? new DiscordColor(RiasUtilities.HexToInt(profileDb.Color[1..]).GetValueOrDefault()) : _colors[0];
+            if (color.Value != _colors[0].Value && !await CheckColorAsync(member, color, patreonDb?.Tier ?? 0))
                 color = _colors[0];
 
             var specialWaifu = waifus.FirstOrDefault(x => x.IsSpecial);
-            waifus.Remove(specialWaifu);
+            if (specialWaifu != null)
+                waifus.Remove(specialWaifu);
             
             return new ProfileInfo
             {

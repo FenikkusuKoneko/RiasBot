@@ -583,25 +583,6 @@
           ]
         },
         {
-          "name": "configuration",
-          "commands": [
-            {
-              "aliases": "setusername",
-              "description": "Sets my username. It can be changed twice per hour.",
-              "remarks": [
-                "{0}setusername Rias"
-              ]
-            },
-            {
-              "aliases": "setavatar setpfp",
-              "description": "Sets my profile picture/avatar. It can be changed twice per 10 minutes.",
-              "remarks": [
-                "{0}setavatar https://i.imgur.com/ZW96TT6.jpg"
-              ]
-            }
-          ]
-        },
-        {
           "name": "database",
           "commands": [
             {

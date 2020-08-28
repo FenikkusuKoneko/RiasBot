@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Disqord;
-using Disqord.Events;
-using Disqord.Extensions.Interactivity;
-using Disqord.Extensions.Interactivity.Menus;
-using Disqord.Extensions.Interactivity.Menus.Paged;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
+using Rias.Core.Configuration;
 using Rias.Core.Database;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
@@ -19,7 +17,7 @@ namespace Rias.Core.Modules
 {
     public abstract class RiasModule : ModuleBase<RiasCommandContext>, IAsyncDisposable
     {
-        public readonly Rias RiasBot;
+        public readonly RiasBot RiasBot;
         public readonly Credentials Credentials;
         public readonly Localization Localization;
         public readonly RiasDbContext DbContext;
@@ -27,15 +25,13 @@ namespace Rias.Core.Modules
         private readonly InteractivityExtension _interactivity;
         private readonly IServiceScope _scope;
         
-        private readonly TimeSpan _defaultInteractivityTimeout = TimeSpan.FromMinutes(1);
-
         public RiasModule(IServiceProvider serviceProvider)
         {
-            RiasBot = serviceProvider.GetRequiredService<Rias>();
+            RiasBot = serviceProvider.GetRequiredService<RiasBot>();
             Credentials = serviceProvider.GetRequiredService<Credentials>();
             Localization = serviceProvider.GetRequiredService<Localization>();
 
-            _interactivity = serviceProvider.GetRequiredService<InteractivityExtension>();
+            _interactivity = RiasBot.Client.GetInteractivity().First().Value;
             _scope = serviceProvider.CreateScope();
             DbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
         }
@@ -45,7 +41,7 @@ namespace Rias.Core.Modules
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module name of this class.
         /// </summary>
-        public Task<IUserMessage> ReplyConfirmationAsync(string key, params object[] args)
+        public Task<DiscordMessage> ReplyConfirmationAsync(string key, params object[] args)
         {
             return Context.Channel.SendConfirmationMessageAsync(Localization.GetText(Context.Guild?.Id, key, args));
         }
@@ -55,15 +51,15 @@ namespace Rias.Core.Modules
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
-        public Task<IUserMessage> ReplyErrorAsync(string key, params object[] args)
+        public Task<DiscordMessage> ReplyErrorAsync(string key, params object[] args)
         {
             return Context.Channel.SendErrorMessageAsync(Localization.GetText(Context.Guild?.Id, key, args));
         }
 
-        public async Task<IUserMessage> ReplyAsync(LocalEmbedBuilder embed)
+        public async Task<DiscordMessage> ReplyAsync(DiscordEmbedBuilder embed)
             => await Context.Channel.SendMessageAsync(embed);
 
-        public async Task SendPaginatedMessageAsync<T>(List<T> items, int itemsPerPage, Func<IEnumerable<T>, int, LocalEmbedBuilder> embedFunc)
+        public async Task SendPaginatedMessageAsync<T>(List<T> items, int itemsPerPage, Func<IEnumerable<T>, int, DiscordEmbedBuilder> embedFunc)
         {
             var pageCount = (items.Count - 1) / itemsPerPage + 1;
             
@@ -74,24 +70,14 @@ namespace Rias.Core.Modules
                 if (embed.Footer != null)
                     footerText += $" | {embed.Footer.Text}";
                 embed.WithFooter(footerText);
-                return new Page(embed.Build());
+                return new Page(embed: embed);
             });
-            
-            var menu = new RiasPagedMenu(Context.User.Id, new DefaultPageProvider(pages));
-            if (pageCount > 1)
-            {
-                await menu.AddButtonAsync(new Button(new LocalEmoji("⏮️"), async _ => await menu.ChangePageAsync(0), 0));
-                await menu.AddButtonAsync(new Button(new LocalEmoji("◀️"), async _ => await menu.ChangePageAsync(menu.CurrentPageIndex - 1), 1));
-                await menu.AddButtonAsync(new Button(new LocalEmoji("▶️"), async _ => await menu.ChangePageAsync(menu.CurrentPageIndex + 1), 2));
-                await menu.AddButtonAsync(new Button(new LocalEmoji("⏭️"), async _ => await menu.ChangePageAsync(menu.PageProvider.PageCount - 1), 3));
-            }
 
-            await _interactivity.StartMenuAsync(Context.Channel, menu, _defaultInteractivityTimeout);
+            await _interactivity.SendPaginatedMessageAsync(Context.Channel, Context.User, pages);
         }
 
-        public Task<MessageReceivedEventArgs> NextMessageAsync()
-        => _interactivity.WaitForMessageAsync(x => x.Message.Author.Id == Context.User.Id,
-            _defaultInteractivityTimeout);
+        public async Task<DiscordMessage?> NextMessageAsync()
+            => (await _interactivity.WaitForMessageAsync(x => x.Author.Id == Context.User.Id)).Result;
 
         /// <summary>
         /// Get a translation text with or without arguments.<br/>
