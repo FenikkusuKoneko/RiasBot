@@ -15,6 +15,7 @@ using Rias.Core.Database;
 using Rias.Core.Database.Entities;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
+using Rias.Core.Models;
 
 namespace Rias.Core.Services
 {
@@ -143,13 +144,13 @@ namespace Rias.Core.Services
                     else
                     {
                         var message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpMessage);
-                        if (RiasUtilities.TryParseEmbed(message, out var embed))
+                        if (RiasUtilities.TryParseMessage(message, out var customMessage))
                         {
                             if (!currentMember.GetPermissions().HasPermission(Permissions.EmbedLinks)
                                 || !currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
                                 return;
                             
-                            await channel.SendMessageAsync(embed: embed);
+                            await channel.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
                         }
                         else
                             await channel.SendMessageAsync(message);
@@ -162,13 +163,13 @@ namespace Rias.Core.Services
                     else
                     {
                         var message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpRoleRewardMessage);
-                        if (RiasUtilities.TryParseEmbed(message, out var embed))
+                        if (RiasUtilities.TryParseMessage(message, out var customMessage))
                         {
                             if (!currentMember.GetPermissions().HasPermission(Permissions.EmbedLinks)
                                 || !currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
                                 return;
                             
-                            await channel.SendMessageAsync(embed: embed);
+                            await channel.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
                         }
                         else
                             await channel.SendMessageAsync(message);
@@ -206,13 +207,13 @@ namespace Rias.Core.Services
             try
             {
                 string? message = null;
-                DiscordEmbedBuilder embed;
+                var customMessage = new CustomMessage();
                 
                 if (role is null)
                 {
                     if (guildDb.XpLevelUpMessage is null)
                     {
-                        embed = new DiscordEmbedBuilder
+                        customMessage.Embed = new DiscordEmbedBuilder
                         {
                             Color = RiasUtilities.ConfirmColor,
                             Description = GetText(guild.Id, Localization.XpGuildLevelUp, member.FullName(), level)
@@ -221,7 +222,7 @@ namespace Rias.Core.Services
                     else
                     {
                         message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpMessage);
-                        if (RiasUtilities.TryParseEmbed(message, out embed))
+                        if (RiasUtilities.TryParseMessage(message, out customMessage))
                             message = null;
                     }
                 }
@@ -229,7 +230,7 @@ namespace Rias.Core.Services
                 {
                     if (guildDb.XpLevelUpRoleRewardMessage is null)
                     {
-                        embed = new DiscordEmbedBuilder
+                        customMessage.Embed = new DiscordEmbedBuilder
                         {
                             Color = RiasUtilities.ConfirmColor,
                             Description = GetText(guild.Id, Localization.XpGuildLevelUpRoleReward, member.FullName(), level, role)
@@ -238,7 +239,7 @@ namespace Rias.Core.Services
                     else
                     {
                         message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpRoleRewardMessage);
-                        if (RiasUtilities.TryParseEmbed(message, out embed))
+                        if (RiasUtilities.TryParseMessage(message, out customMessage))
                             message = null;
                     }
                 }
@@ -246,7 +247,7 @@ namespace Rias.Core.Services
                 if (message is not null)
                     await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(message));
                 else
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().AddEmbed(embed));
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed));
             }
             catch
             {

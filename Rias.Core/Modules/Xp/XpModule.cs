@@ -194,6 +194,15 @@ namespace Rias.Core.Modules.Xp
                 return;
             }
 
+            var xpMessage = XpService.ReplacePlaceholders((DiscordMember) Context.User, null, 1, message);
+            var xpMessageParsed = RiasUtilities.TryParseMessage(xpMessage, out var customMessage);
+
+            if (xpMessageParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
+            {
+                await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
+                return;
+            }
+
             guildDb.XpLevelUpMessage = message;
             await DbContext.SaveChangesAsync();
             
@@ -216,14 +225,14 @@ namespace Rias.Core.Modules.Xp
             else
                 reply += GetText(Localization.XpNotificationNotEnabled);
 
-            if (RiasUtilities.TryParseEmbed(message, out var embed))
+            if (xpMessageParsed)
             {
-                reply += $"\n{GetText(Localization.XpNotificationMessage)}";
-                await Context.Channel.SendMessageAsync(reply, embed: embed);
+                reply += $"\n{GetText(Localization.XpNotificationMessage)}\n\n{customMessage.Content}";
+                await Context.Channel.SendMessageAsync(reply, embed: customMessage.Embed);
             }
             else
             {
-                reply += $"\n{GetText(Localization.XpNotificationMessage)}\n\n{message}";
+                reply += $"\n{GetText(Localization.XpNotificationMessage)}\n\n{xpMessage}";
                 await Context.Channel.SendMessageAsync(reply);
             }
         }
@@ -244,6 +253,19 @@ namespace Rias.Core.Modules.Xp
             if (message.Length > 1500)
             {
                 await ReplyErrorAsync(Localization.XpNotificationMessageLengthLimit, 1500);
+                return;
+            }
+
+            var xpRoles = await DbContext.GetOrderedListAsync<GuildXpRolesEntity, int>(x => x.GuildId == Context.Guild!.Id, x => x.Level);
+
+            var level = xpRoles.Count != 0 ? xpRoles[0].Level : 0;
+            var role = xpRoles.Count != 0 ? Context.Guild!.GetRole(xpRoles[0].RoleId) : null;
+
+            var xpMessageReward = XpService.ReplacePlaceholders((DiscordMember) Context.User, role, level, message);
+            var xpMessageRewardParsed = RiasUtilities.TryParseMessage(xpMessageReward, out var customMessage);
+            if (xpMessageRewardParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
+            {
+                await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
                 return;
             }
 
@@ -269,14 +291,14 @@ namespace Rias.Core.Modules.Xp
             else
                 reply += GetText(Localization.XpNotificationNotEnabled);
 
-            if (RiasUtilities.TryParseEmbed(message, out var embed))
+            if (xpMessageRewardParsed)
             {
-                reply += $"\n{GetText(Localization.XpNotificationMessage)}";
-                await Context.Channel.SendMessageAsync(reply, embed: embed);
+                reply += $"\n{GetText(Localization.XpNotificationMessage)}\n\n{customMessage.Content}";
+                await Context.Channel.SendMessageAsync(reply, embed: customMessage.Embed);
             }
             else
             {
-                reply += $"\n{GetText(Localization.XpNotificationMessage)}\n\n{message}";
+                reply += $"\n{GetText(Localization.XpNotificationMessage)}\n\n{xpMessageReward}";
                 await Context.Channel.SendMessageAsync(reply);
             }
         }

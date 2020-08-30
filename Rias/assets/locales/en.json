@@ -155,6 +155,7 @@
   "administration_warning": "Warning",
   "administration_warnings": "Warnings",
   "administration_punishment": "Punishment",
+  "administration_null_custom_message": "The custom message contains an invalid or empty content or an invalid embed.",
   
   "bot_guild_not_found": "I couldn't find the server",
   "bot_left_guild": "Left **{0}**",

@@ -165,41 +165,56 @@ namespace Rias.Core.Implementation
         public static DiscordEmbedBuilder WithCurrentTimestamp(this DiscordEmbedBuilder embedBuilder)
             => embedBuilder.WithTimestamp(DateTimeOffset.UtcNow);
 
-        public static bool TryParseEmbed(string json, out DiscordEmbedBuilder embed)
+        public static bool TryParseMessage(string json, out CustomMessage message)
         {
-            embed = new DiscordEmbedBuilder();
+            message = new CustomMessage();
+            JsonEmbed jsonEmbed;
+
             try
             {
-                var embedDeserialized = JsonConvert.DeserializeObject<JsonEmbed>(json);
-        
-                var author = embedDeserialized.Author;
-                var title = embedDeserialized.Title;
-                var description = embedDeserialized.Description;
-        
-                var colorString = embedDeserialized.Color;
-                var thumbnail = embedDeserialized.Thumbnail;
-                var image = embedDeserialized.Image;
-                var fields = embedDeserialized.Fields;
-                var footer = embedDeserialized.Footer;
-                var timestamp = embedDeserialized.Timestamp;
-        
+                jsonEmbed = JsonConvert.DeserializeObject<JsonEmbed>(json);
+            }
+            catch
+            {
+                return false;
+            }
+
+            message.Content = jsonEmbed.Content;
+            if (jsonEmbed.IsEmbedEmpty())
+                return true;
+
+            try
+            {
+                var embed = new DiscordEmbedBuilder();
+
+                var author = jsonEmbed.Author;
+                var title = jsonEmbed.Title;
+                var description = jsonEmbed.Description;
+
+                var colorString = jsonEmbed.Color;
+                var thumbnail = jsonEmbed.Thumbnail;
+                var image = jsonEmbed.Image;
+                var fields = jsonEmbed.Fields;
+                var footer = jsonEmbed.Footer;
+                var timestamp = jsonEmbed.Timestamp;
+
                 if (author != null)
                     embed.WithAuthor(author.Name, author.Url, author.IconUrl);
-        
+
                 if (!string.IsNullOrEmpty(title))
                     embed.WithTitle(title);
-        
+
                 if (!string.IsNullOrEmpty(description))
                     embed.WithDescription(description);
-        
+
                 if (!string.IsNullOrEmpty(colorString))
                     embed.WithColor(HexToInt(colorString) ?? 0xFFFFFF);
-        
+
                 if (!string.IsNullOrEmpty(thumbnail))
                     embed.WithThumbnail(thumbnail);
                 if (!string.IsNullOrEmpty(image))
                     embed.WithImageUrl(image);
-        
+
                 if (fields != null)
                 {
                     foreach (var field in fields)
@@ -207,22 +222,23 @@ namespace Rias.Core.Implementation
                         var fieldName = field.Name;
                         var fieldValue = field.Value;
                         var fieldInline = field.Inline;
-        
+
                         if (!string.IsNullOrEmpty(fieldName) && !string.IsNullOrEmpty(fieldValue))
                         {
                             embed.AddField(fieldName, fieldValue, fieldInline);
                         }
                     }
                 }
-        
+
                 if (footer != null)
                     embed.WithFooter(footer.Text, footer.IconUrl);
-        
+
                 if (timestamp.HasValue)
                     embed.WithTimestamp(timestamp.Value);
-                else if (embedDeserialized.WithCurrentTimestamp)
+                else if (jsonEmbed.WithCurrentTimestamp)
                     embed.WithCurrentTimestamp();
-        
+
+                message.Embed = embed;
                 return true;
             }
             catch

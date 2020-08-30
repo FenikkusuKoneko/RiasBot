@@ -61,8 +61,8 @@ namespace Rias.Core.Modules.Administration
             await DbContext.SaveChangesAsync();
 
             var greetMessage = BotService.ReplacePlaceholders(Context.User, guildDb.GreetMessage);
-            if (RiasUtilities.TryParseEmbed(greetMessage, out var embed))
-                await Context.Channel.SendMessageAsync(GetText(Localization.AdministrationGreetEnabled), embed: embed);
+            if (RiasUtilities.TryParseMessage(greetMessage, out var customMessage))
+                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetEnabled)}\n\n{customMessage.Content}", embed: customMessage.Embed);
             else
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetEnabled)}\n\n{greetMessage}");
         }
@@ -77,13 +77,20 @@ namespace Rias.Core.Modules.Administration
                 return;
             }
             
+            var greetMessage = BotService.ReplacePlaceholders(Context.User, message);
+            var greetMessageParsed = RiasUtilities.TryParseMessage(greetMessage, out var customMessage);
+            if (greetMessageParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
+            {
+                await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
+                return;
+            }
+            
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
             guildDb.GreetMessage = message;
             await DbContext.SaveChangesAsync();
-
-            var greetMessage = BotService.ReplacePlaceholders(Context.User, message);
-            if (RiasUtilities.TryParseEmbed(greetMessage, out var embed))
-                await Context.Channel.SendMessageAsync(GetText(Localization.AdministrationGreetMessageSet), embed: embed);
+            
+            if (greetMessageParsed)
+                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetMessageSet)}\n\n{customMessage.Content}", embed: customMessage.Embed);
             else
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetMessageSet)}\n\n{greetMessage}");
         }
@@ -125,8 +132,8 @@ namespace Rias.Core.Modules.Administration
             await DbContext.SaveChangesAsync();
             
             var byeMessage = BotService.ReplacePlaceholders(Context.User, guildDb.ByeMessage);
-            if (RiasUtilities.TryParseEmbed(byeMessage, out var embed))
-                await Context.Channel.SendMessageAsync(GetText(Localization.AdministrationByeEnabled), embed: embed);
+            if (RiasUtilities.TryParseMessage(byeMessage, out var customMessage))
+                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeEnabled)}\n\n{customMessage.Content}", embed: customMessage.Embed);
             else
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeEnabled)}\n\n{byeMessage}");
         }
@@ -141,13 +148,21 @@ namespace Rias.Core.Modules.Administration
                 return;
             }
             
+            var byeMessage = BotService.ReplacePlaceholders(Context.User, message);
+            var byeMessageParsed = RiasUtilities.TryParseMessage(byeMessage, out var customMessage);
+            if (byeMessageParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
+            {
+                await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
+                return;
+            }
+            
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
             guildDb.ByeMessage = message;
             await DbContext.SaveChangesAsync();
 
-            var byeMessage = BotService.ReplacePlaceholders(Context.User, message);
-            if (RiasUtilities.TryParseEmbed(byeMessage, out var embed))
-                await Context.Channel.SendMessageAsync(GetText(Localization.AdministrationByeMessageSet), embed: embed);
+            
+            if (byeMessageParsed)
+                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeMessageSet)}\n\n{customMessage.Content}", embed: customMessage.Embed);
             else
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeMessageSet)}\n\n{byeMessage}");
         }

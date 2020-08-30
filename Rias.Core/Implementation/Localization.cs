@@ -249,6 +249,7 @@ namespace Rias.Core.Implementation
         public static string AdministrationWarning => "administration_warning";
         public static string AdministrationWarnings => "administration_warnings";
         public static string AdministrationPunishment => "administration_punishment";
+        public static string AdministrationNullCustomMessage => "administration_null_custom_message";
          
         public static string BotGuildNotFound => "bot_guild_not_found";
         public static string BotLeftGuild => "bot_left_guild";

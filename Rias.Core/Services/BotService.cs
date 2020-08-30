@@ -107,8 +107,8 @@ namespace Rias.Core.Services
             try
             {
                 var greetMsg = ReplacePlaceholders(member, guildDb.GreetMessage);
-                if (RiasUtilities.TryParseEmbed(greetMsg, out var embed))
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().AddEmbed(embed));
+                if (RiasUtilities.TryParseMessage(greetMsg, out var customMessage))
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed));
                 else
                     await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(greetMsg));
             }
@@ -177,8 +177,8 @@ namespace Rias.Core.Services
             try
             {
                 var byeMsg = ReplacePlaceholders(member, guildDb.ByeMessage);
-                if (RiasUtilities.TryParseEmbed(byeMsg, out var embed))
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().AddEmbed(embed));
+                if (RiasUtilities.TryParseMessage(byeMsg, out var customMessage))
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed));
                 else
                     await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(byeMsg));
             }

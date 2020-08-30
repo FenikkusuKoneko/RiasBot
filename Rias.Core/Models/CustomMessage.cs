@@ -1,10 +1,20 @@
 using System;
+using DSharpPlus.Entities;
 using Newtonsoft.Json;
 
 namespace Rias.Core.Models
 {
+    public class CustomMessage
+    {
+        public string? Content { get; set; }
+        public DiscordEmbedBuilder? Embed { get; set; }
+        
+        //TODO check is Content or Embed are null and send a warning message
+    }
+    
     public class JsonEmbed
     {
+        public string? Content { get; set; }
         public JsonEmbedAuthor? Author { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
@@ -15,6 +25,19 @@ namespace Rias.Core.Models
         public JsonEmbedFooter? Footer { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
         public bool WithCurrentTimestamp { get; set; }
+
+        public bool IsEmbedEmpty()
+        {
+            return Author is null
+                   && string.IsNullOrEmpty(Title)
+                   && string.IsNullOrEmpty(Description)
+                   && string.IsNullOrEmpty(Color)
+                   && string.IsNullOrEmpty(Thumbnail)
+                   && string.IsNullOrEmpty(Image)
+                   && (Fields is null || Fields.Length == 0)
+                   && Footer is null
+                   && Timestamp is null;
+        }
     }
 
     public class JsonEmbedAuthor

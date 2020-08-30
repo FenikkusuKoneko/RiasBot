@@ -58,7 +58,13 @@ namespace Rias.Core.Modules.Bot
         [Command("send"), OwnerOnly]
         public async Task SendAsync(string id, [Remainder] string message)
         {
-            var isEmbed = RiasUtilities.TryParseEmbed(message, out var embed);
+            var messageParsed = RiasUtilities.TryParseMessage(message, out var customMessage);
+            if (messageParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
+            {
+                await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
+                return;
+            }
+            
             if (id.StartsWith("c:", StringComparison.InvariantCultureIgnoreCase))
             {
                 DiscordChannel channel;
@@ -89,8 +95,8 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
 
-                if (isEmbed)
-                    await channel.SendMessageAsync(embed);
+                if (messageParsed)
+                    await channel.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
                 else
                     await channel.SendMessageAsync(message);
                 
@@ -117,8 +123,8 @@ namespace Rias.Core.Modules.Bot
 
                 try
                 {
-                    if (isEmbed)
-                        await member.SendMessageAsync(embed: embed);
+                    if (messageParsed)
+                        await member.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
                     else
                         await member.SendMessageAsync(message);
                     
@@ -196,8 +202,15 @@ namespace Rias.Core.Modules.Bot
                 return;
             }
 
-            if (RiasUtilities.TryParseEmbed(message, out var embed))
-                await discordMessage.ModifyAsync(embed: embed.Build());
+            var messageParsed = RiasUtilities.TryParseMessage(message, out var customMessage);
+            if (messageParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
+            {
+                await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
+                return;
+            }
+
+            if (messageParsed)
+                await discordMessage.ModifyAsync(customMessage.Content, customMessage.Embed?.Build());
             else
                 await discordMessage.ModifyAsync(message);
 
