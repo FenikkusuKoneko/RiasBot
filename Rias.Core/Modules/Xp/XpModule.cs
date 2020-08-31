@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -72,6 +73,7 @@ namespace Rias.Core.Modules.Xp
                 Title = GetText(Localization.XpLeaderboard)
             };
 
+            var description = new StringBuilder();
             var index = page * 15;
             foreach (var userDb in xpLeaderboard)
             {
@@ -79,11 +81,12 @@ namespace Rias.Core.Modules.Xp
                     ? m
                     : await RiasBot.Client.ShardClients[0].GetUserAsync(userDb.UserId);
                 
-                embed.AddField($"{++index}. {member.FullName()}",
-                    $"{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} | {GetText(Localization.XpXp)} {userDb.Xp}",
-                    true);
+                description.Append($"{++index}. **{member.FullName()}**: " +
+                                   $"`{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} " +
+                                   $"({userDb.Xp} {GetText(Localization.XpXp).ToLowerInvariant()})`\n");
             }
-            
+
+            embed.WithDescription(description.ToString());
             await ReplyAsync(embed);
         }
         
@@ -113,18 +116,20 @@ namespace Rias.Core.Modules.Xp
                 Title = GetText(Localization.XpGuildLeaderboard)
             };
 
+            var description = new StringBuilder();
             var index = page * 15;
             foreach (var userDb in xpLeaderboard)
             {
                 var member = await Context.Guild!.GetMemberAsync(userDb.UserId);
                 if (member is null)
                     continue;
-                
-                embed.AddField($"{++index}. {member.FullName()}",
-                    $"{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} | {GetText(Localization.XpXp)} {userDb.Xp}",
-                    true);
+
+                description.Append($"{++index}. {member.Mention}: " +
+                                   $"`{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} " +
+                                   $"({userDb.Xp} {GetText(Localization.XpXp).ToLowerInvariant()})`\n");
             }
 
+            embed.WithDescription(description.ToString());
             await ReplyAsync(embed);
         }
         
@@ -366,7 +371,7 @@ namespace Rias.Core.Modules.Xp
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.XpLevelUpRoleRewardList),
-                Description = string.Join('\n', items.Select(lr => $"{GetText(Localization.XpLevelX, lr.Level)}: {Context.Guild!.GetRole(lr.RoleId)}"))
+                Description = string.Join('\n', items.Select(lr => $"{GetText(Localization.XpLevelX, lr.Level)}: {Context.Guild!.GetRole(lr.RoleId).Mention}"))
             });
         }
         
