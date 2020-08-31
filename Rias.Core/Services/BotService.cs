@@ -214,7 +214,7 @@ namespace Rias.Core.Services
 #if DEBUG
                 reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser!.Username}/{RiasBot.Version} (development)");
 #else
-                reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser.Name}/{RiasBot.Version}");
+                reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser.Username}/{RiasBot.Version}");
 #endif
             }
 
