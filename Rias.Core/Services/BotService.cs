@@ -34,6 +34,19 @@ namespace Rias.Core.Services
             RiasBot.Client.GuildMemberAdded += GuildMemberAddedAsync;
             RiasBot.Client.GuildMemberRemoved += GuildMemberRemovedAsync;
             RiasBot.Client.GuildMemberUpdated += GuildMemberUpdatedAsync;
+
+            RiasBot.Client.GuildDownloadCompleted += args =>
+            {
+                foreach (var (id, member) in args.Guilds.SelectMany(x => x.Value.Members))
+                    RiasBot.Members[id] = member;
+                return Task.CompletedTask;
+            };
+            
+            RiasBot.Client.UserUpdated += args =>
+            {
+                RiasBot.Members[args.UserAfter.Id] = args.UserAfter;
+                return Task.CompletedTask;
+            };
         }
 
         public readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks = new ConcurrentDictionary<ulong, List<DiscordWebhook>>();
@@ -45,6 +58,7 @@ namespace Rias.Core.Services
             if (RiasBot.CurrentUser != null && member.Id == RiasBot.CurrentUser.Id)
                 return;
 
+            RiasBot.Members[args.Member.Id] = args.Member;
             await RunTaskAsync(AddAssignableRoleAsync(member));
 
             using var scope = RiasBot.CreateScope();
@@ -134,7 +148,7 @@ namespace Rias.Core.Services
         {
             if (RiasBot.CurrentUser != null && args.Member.Id == RiasBot.CurrentUser.Id)
                 return;
-
+            
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == args.Guild.Id);
@@ -202,7 +216,7 @@ namespace Rias.Core.Services
 
         private Task ShardReadyAsync(ReadyEventArgs e)
         {
-            _shardsReady.AddOrUpdate(e.Client.ShardId, true, (shardKey, value) => true);
+            _shardsReady.AddOrUpdate(e.Client.ShardId, true, (k, v) => true);
             if (_shardsReady.Count == RiasBot.Client.ShardClients.Count && _shardsReady.All(x => x.Value))
             {
                 RiasBot.Client.Ready -= ShardReadyAsync;
@@ -214,7 +228,7 @@ namespace Rias.Core.Services
 #if DEBUG
                 reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser!.Username}/{RiasBot.Version} (development)");
 #else
-                reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser.Username}/{RiasBot.Version}");
+                reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser!.Username}/{RiasBot.Version}");
 #endif
             }
 
@@ -246,6 +260,8 @@ namespace Rias.Core.Services
 
         private async Task GuildMemberUpdatedAsync(GuildMemberUpdateEventArgs args)
         {
+            RiasBot.Members[args.Member.Id] = args.Member;
+            
             // we care only about the mute role
             if (args.RolesBefore.Count == args.RolesAfter.Count)
                 return;

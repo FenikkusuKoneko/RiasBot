@@ -17,7 +17,7 @@ namespace Rias
 
             Log.Logger = new LoggerConfiguration()
 #if DEBUG
-                .MinimumLevel.Verbose()
+                .MinimumLevel.Debug()
 #else
                 .MinimumLevel.Information()
 #endif

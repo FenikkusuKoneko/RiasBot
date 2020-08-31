@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -20,6 +21,7 @@ using Rias.Core.Database;
 using Rias.Core.Implementation;
 using Rias.Core.Services;
 using Serilog;
+using Serilog.Extensions.Logging;
 using StackExchange.Redis;
 
 namespace Rias.Core
@@ -27,7 +29,7 @@ namespace Rias.Core
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.2.1";
+        public const string Version = "3.2.2";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         public readonly DiscordShardedClient Client;
@@ -37,12 +39,7 @@ namespace Rias.Core
             .Select(x => x.Value)
             .ToImmutableDictionary(x => x.Id);
 
-        public IReadOnlyDictionary<ulong, DiscordMember> Members => Client.ShardClients
-            .SelectMany(x => x.Value.Guilds)
-            .SelectMany(x => x.Value.Members)
-            .Select(x => x.Value)
-            .Distinct(new MemberComparer())
-            .ToImmutableDictionary(x => x.Id);
+        public ConcurrentDictionary<ulong, DiscordUser> Members = new ConcurrentDictionary<ulong, DiscordUser>();
 
         public IReadOnlyDictionary<ulong, DiscordChannel> Channels => Client.ShardClients
             .SelectMany(x => x.Value.Guilds)
@@ -66,7 +63,7 @@ namespace Rias.Core
             {
                 Token = _credentials.Token,
                 MessageCacheSize = 100,
-                LogLevel = LogLevel.Debug
+                LoggerFactory = new SerilogLoggerFactory(Log.Logger)
             });
             
             var commandService = new CommandService(new CommandServiceConfiguration
@@ -129,7 +126,7 @@ namespace Rias.Core
         public DiscordGuild? GetGuild(ulong id)
             => Guilds.TryGetValue(id, out var guild) ? guild : null;
 
-        public DiscordMember? GetMember(ulong id)
+        public DiscordUser? GetMember(ulong id)
             => Members.TryGetValue(id, out var user) ? user : null;
 
         public object? GetService(Type serviceType)
@@ -198,23 +195,6 @@ namespace Rias.Core
 
             dbContext.Database.Migrate();
             dbContext.SaveChanges();
-        }
-
-        private class MemberComparer : IEqualityComparer<DiscordMember>
-        {
-            public bool Equals(DiscordMember? x, DiscordMember? y)
-            {
-                if (ReferenceEquals(x, y)) return true;
-                if (ReferenceEquals(x, null)) return false;
-                if (ReferenceEquals(y, null)) return false;
-                if (x.GetType() != y.GetType()) return false;
-                return x.Id == y.Id;
-            }
-
-            public int GetHashCode(DiscordMember obj)
-            {
-                return obj.Id.GetHashCode();
-            }
         }
     }
 }

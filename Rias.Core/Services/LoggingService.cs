@@ -1,14 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Core.Attributes;
 using Rias.Core.Extensions;
 using Rias.Core.Implementation;
 using Serilog;
-using Serilog.Events;
 
 namespace Rias.Core.Services
 {
@@ -19,27 +16,8 @@ namespace Rias.Core.Services
         {
             var commandService = serviceProvider.GetRequiredService<CommandService>();
             
-            RiasBot.Client.DebugLogger.LogMessageReceived += LogMessageReceived;
             commandService.CommandExecuted += CommandExecutedAsync;
             commandService.CommandExecutionFailed += CommandExecutionFailedAsync;
-        }
-        
-        private void LogMessageReceived(object? sender, DebugLogMessageEventArgs args)
-        {
-            var logEventLevel = args.Level switch
-            {
-                LogLevel.Info => LogEventLevel.Information,
-                LogLevel.Debug => LogEventLevel.Debug,
-                LogLevel.Warning => LogEventLevel.Warning,
-                LogLevel.Error => LogEventLevel.Error,
-                LogLevel.Critical => LogEventLevel.Fatal,
-                _ => LogEventLevel.Verbose
-            };
-            
-            if (args.Exception is null)
-                Log.Logger.Write(logEventLevel, args.Message);
-            else
-                Log.Logger.Write(logEventLevel, args.Exception, args.Message);
         }
 
         private Task CommandExecutedAsync(CommandExecutedEventArgs args)

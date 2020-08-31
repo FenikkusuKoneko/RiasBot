@@ -125,13 +125,12 @@ namespace Rias.Core.Services
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var members = RiasBot.Members;
             var patrons = (await db.GetOrderedListAsync<PatreonEntity, int>(x => x.PatronStatus == PatronStatus.ActivePatron && x.Tier > 0,
                     x => x.Tier, true))
-                .Where(x => members.ContainsKey(x.UserId))
+                .Where(x => RiasBot.Members.ContainsKey(x.UserId))
                 .Select(x =>
                 {
-                    var user = members[x.UserId];
+                    var user = RiasBot.Members[x.UserId];
                     return new PatreonDiscordUser
                     {
                         PatreonId = x.PatreonUserId,
