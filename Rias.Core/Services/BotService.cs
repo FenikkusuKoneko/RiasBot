@@ -254,7 +254,10 @@ namespace Rias.Core.Services
             if (aar is null)
                 return;
 
-            if (currentMember.CheckRoleHierarchy(aar) > 0 && !aar.IsManaged && memberRoles.All(x => x.Id != aar.Id))
+            if (member.Guild.Members.ContainsKey(member.Id)
+                && currentMember.CheckRoleHierarchy(aar) > 0
+                && !aar.IsManaged
+                && memberRoles.All(x => x.Id != aar.Id))
                 await member.GrantRoleAsync(aar);
         }
 
