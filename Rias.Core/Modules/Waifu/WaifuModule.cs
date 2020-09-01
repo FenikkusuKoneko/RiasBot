@@ -99,7 +99,7 @@ namespace Rias.Core.Modules.Waifu
                 return;
 
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.WaifuClaimCanceled);
                 return;
@@ -148,7 +148,7 @@ namespace Rias.Core.Modules.Waifu
             await ReplyAsync(embed);
             
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.WaifuDivorceCanceled);
                 return;
@@ -266,7 +266,7 @@ namespace Rias.Core.Modules.Waifu
             await ReplyAsync(embed);
 
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.WaifuSpecialCanceled);
                 return;
@@ -454,7 +454,7 @@ namespace Rias.Core.Modules.Waifu
             await ReplyAsync(embed);
 
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.WaifuCreationCanceled);
                 return;

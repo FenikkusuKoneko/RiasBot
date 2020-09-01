@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Rias.Core.Database;
 using Rias.Core.Models;
@@ -10,7 +9,7 @@ using Rias.Core.Models;
 namespace Rias.Core.Migrations
 {
     [DbContext(typeof(RiasDbContext))]
-    partial class RiasDbContextModelSnapshot : ModelSnapshot
+    public class RiasDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

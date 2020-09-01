@@ -108,7 +108,7 @@ namespace Rias.Core.Modules.Profile
             await Context.Channel.SendFileAsync($"{Context.User.Id}_profile_preview.png", profilePreview, GetText(Localization.ProfileBackgroundPreview));
             
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.ProfileBackgroundCanceled);
                 return;

@@ -76,8 +76,8 @@ namespace Rias.Core.Modules
             await _interactivity.SendPaginatedMessageAsync(Context.Channel, Context.User, pages);
         }
 
-        public async Task<DiscordMessage?> NextMessageAsync()
-            => (await _interactivity.WaitForMessageAsync(x => x.Author.Id == Context.User.Id)).Result;
+        public Task<InteractivityResult<DiscordMessage>> NextMessageAsync()
+            => _interactivity.WaitForMessageAsync(x => x.Author.Id == Context.User.Id);
 
         /// <summary>
         /// Get a translation text with or without arguments.<br/>

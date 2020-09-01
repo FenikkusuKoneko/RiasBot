@@ -25,7 +25,7 @@ namespace Rias.Core.Modules.Bot
             {
                 await ReplyConfirmationAsync(Localization.BotDeleteDialog, user.FullName());
                 var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
                 {
                     await ReplyErrorAsync(Localization.BotDeleteCanceled);
                     return;
@@ -79,7 +79,7 @@ namespace Rias.Core.Modules.Bot
             {
                 await ReplyConfirmationAsync(Localization.BotBlacklistDialog);
                 var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
                 {
                     await ReplyErrorAsync(Localization.BotBlacklistCanceled);
                     return;
@@ -107,7 +107,7 @@ namespace Rias.Core.Modules.Bot
             {
                 await ReplyConfirmationAsync(Localization.BotBotBanDialog);
                 var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
                 {
                     await ReplyErrorAsync(Localization.BotBotBanCanceled);
                     return;

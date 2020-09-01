@@ -382,7 +382,7 @@ namespace Rias.Core.Modules.Xp
             await ReplyConfirmationAsync(Localization.XpResetGuildXpConfirmation);
             
             var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
             {
                 await ReplyErrorAsync(Localization.XpResetGuildXpCanceled);
                 return;
