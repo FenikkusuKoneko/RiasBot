@@ -22,7 +22,6 @@ namespace Rias.Core.Modules
         public readonly Localization Localization;
         public readonly RiasDbContext DbContext;
         
-        private readonly InteractivityExtension _interactivity;
         private readonly IServiceScope _scope;
         
         public RiasModule(IServiceProvider serviceProvider)
@@ -31,7 +30,6 @@ namespace Rias.Core.Modules
             Credentials = serviceProvider.GetRequiredService<Credentials>();
             Localization = serviceProvider.GetRequiredService<Localization>();
 
-            _interactivity = RiasBot.Client.GetInteractivity().First().Value;
             _scope = serviceProvider.CreateScope();
             DbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
         }
@@ -73,11 +71,11 @@ namespace Rias.Core.Modules
                 return new Page(embed: embed);
             });
 
-            await _interactivity.SendPaginatedMessageAsync(Context.Channel, Context.User, pages);
+            await Context.Interactivity.SendPaginatedMessageAsync(Context.Channel, Context.User, pages);
         }
 
         public Task<InteractivityResult<DiscordMessage>> NextMessageAsync()
-            => _interactivity.WaitForMessageAsync(x => x.Author.Id == Context.User.Id);
+            => Context.Interactivity.WaitForMessageAsync(x => x.Author.Id == Context.User.Id);
 
         /// <summary>
         /// Get a translation text with or without arguments.<br/>

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Interactivity;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -214,12 +215,13 @@ namespace Rias.Core.Services
             await db.SaveChangesAsync();
         }
 
-        private Task ShardReadyAsync(ReadyEventArgs e)
+        private async Task ShardReadyAsync(ReadyEventArgs e)
         {
             _shardsReady.AddOrUpdate(e.Client.ShardId, true, (k, v) => true);
             if (_shardsReady.Count == RiasBot.Client.ShardClients.Count && _shardsReady.All(x => x.Value))
             {
                 RiasBot.Client.Ready -= ShardReadyAsync;
+                await RiasBot.Client.UseInteractivityAsync(new InteractivityConfiguration());
                 Log.Information("All shards are connected");
 
                 RiasBot.GetRequiredService<MuteService>();
@@ -231,8 +233,6 @@ namespace Rias.Core.Services
                 reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser!.Username}/{RiasBot.Version}");
 #endif
             }
-
-            return Task.CompletedTask;
         }
         
         public async Task AddAssignableRoleAsync(DiscordMember member)

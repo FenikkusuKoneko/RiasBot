@@ -2,6 +2,7 @@
 using System.Linq;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 
@@ -48,6 +49,8 @@ namespace Rias.Core.Implementation
         /// Gets the prefix of the server or the default one.
         /// </summary>
         public readonly string Prefix;
+
+        public readonly InteractivityExtension Interactivity;
         
 #pragma warning disable 8618
         public RiasCommandContext(IServiceProvider serviceProvider, DiscordMessage message, string prefix) : base(serviceProvider)
@@ -64,6 +67,7 @@ namespace Rias.Core.Implementation
             User = message.Author;
             Message = message;
             Prefix = prefix;
+            Interactivity = Client.GetInteractivity();
         }
     }
 }
