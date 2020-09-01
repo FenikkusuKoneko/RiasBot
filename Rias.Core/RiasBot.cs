@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -29,7 +28,7 @@ namespace Rias.Core
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.2.4";
+        public const string Version = "3.2.5";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         public readonly DiscordShardedClient Client;
@@ -62,7 +61,8 @@ namespace Rias.Core
             Client = new DiscordShardedClient(new DiscordConfiguration
             {
                 Token = _credentials.Token,
-                MessageCacheSize = 100,
+                MessageCacheSize = 4096,
+                Intents = DiscordIntents.All,
                 LoggerFactory = new SerilogLoggerFactory(Log.Logger)
             });
             
@@ -113,12 +113,9 @@ namespace Rias.Core
             
             UpTime.Start();
         }
-        
-        public async Task StartAsync()
-        {
-            await Client.UseInteractivityAsync(new InteractivityConfiguration());
-            await Client.StartAsync();
-        }
+
+        public Task StartAsync()
+            => Client.StartAsync();
 
         public int GetShardId(DiscordGuild? guild)
             => guild != null ? Client.ShardClients.First(x => x.Value.Guilds.ContainsKey(guild.Id)).Value.ShardId : 0;
@@ -180,6 +177,7 @@ namespace Rias.Core
                 BucketType.Guild => riasContext.Guild!.Id.ToString(),
                 BucketType.User => riasContext.User.Id.ToString(),
                 BucketType.Member => $"{riasContext.Guild!.Id}_{riasContext.User.Id}",
+                BucketType.Channel => riasContext.Channel.Id.ToString(),
                 _ => null
             };
         }
