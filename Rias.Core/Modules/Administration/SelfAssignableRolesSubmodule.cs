@@ -102,8 +102,7 @@ namespace Rias.Core.Modules.Administration
                     await DbContext.AddAsync(new SelfAssignableRolesEntity
                     {
                         GuildId = Context.Guild.Id,
-                        RoleId = role.Id,
-                        RoleName = role.Name
+                        RoleId = role.Id
                     });
 
                     await DbContext.SaveChangesAsync();
@@ -137,41 +136,37 @@ namespace Rias.Core.Modules.Administration
              Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task ListSelfAssignableRolesAsync()
             {
-                var sarList = await UpdateSelfAssignableRolesAsync();
-                if (sarList.Count == 0)
+                var roles = await UpdateSelfAssignableRolesAsync();
+                if (roles.Count == 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationNoSar);
                     return;
                 }
                 
-                await SendPaginatedMessageAsync(sarList, 15, (items, index) => new DiscordEmbedBuilder
+                await SendPaginatedMessageAsync(roles, 15, (items, index) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.AdministrationSarList),
-                    Description = string.Join("\n", items.Select(x => $"{++index}. {x.RoleName} | {x.RoleId}"))
+                    Description = string.Join("\n", items.Select(x => $"{++index}. {x.Mention} | {x.Id}"))
                 });
             }
             
-            private async Task<List<SelfAssignableRolesEntity>> UpdateSelfAssignableRolesAsync()
+            private async Task<List<DiscordRole>> UpdateSelfAssignableRolesAsync()
             {
+                var roles = new List<DiscordRole>();
                 var sarList = await DbContext.GetListAsync<SelfAssignableRolesEntity>(x => x.GuildId == Context.Guild!.Id);
-                foreach (var sar in sarList.ToArray())
+                
+                foreach (var sar in sarList)
                 {
                     var role = Context.Guild!.GetRole(sar.RoleId);
                     if (role != null)
-                    {
-                        if (!string.Equals(sar.RoleName, role.Name))
-                            sar.RoleName = role.Name;
-                    }
+                        roles.Add(role);
                     else
-                    {
-                        sarList.Remove(sar);
                         DbContext.Remove(sar);
-                    }
                 }
                 
                 await DbContext.SaveChangesAsync();
-                return sarList;
+                return roles;
             }
         }
     }

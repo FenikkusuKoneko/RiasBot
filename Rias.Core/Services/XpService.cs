@@ -140,7 +140,7 @@ namespace Rias.Core.Services
                 if (role is null)
                 {
                     if (guildDb.XpLevelUpMessage is null)
-                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUp, member, level);
+                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUp, member.FullName(), level);
                     else
                     {
                         var message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpMessage);
@@ -159,7 +159,7 @@ namespace Rias.Core.Services
                 else
                 {
                     if (guildDb.XpLevelUpRoleRewardMessage is null)
-                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUpRoleReward, member, level, role);
+                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUpRoleReward, member.FullName(), level, role);
                     else
                     {
                         var message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpRoleRewardMessage);
