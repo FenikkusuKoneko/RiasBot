@@ -37,7 +37,7 @@ namespace Rias.Core.Modules.Administration
             [Command("deletevoicechannel"), Context(ContextType.Guild),
              UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task DeleteVoiceChannelAsync([Channel(ChannelType.Voice), Remainder] DiscordChannel channel)
+            public async Task DeleteVoiceChannelAsync([VoiceChannel, Remainder] DiscordChannel channel)
             {
                 if (!ChannelExtensions.CheckViewChannelPermission(Context.CurrentMember!, channel))
                 {

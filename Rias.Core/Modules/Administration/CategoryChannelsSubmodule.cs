@@ -37,7 +37,7 @@ namespace Rias.Core.Modules.Administration
             [Command("deletecategory"), Context(ContextType.Guild),
              UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
              Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task DeleteCategoryAsync([Channel(ChannelType.Category), Remainder] DiscordChannel category)
+            public async Task DeleteCategoryAsync([CategoryChannel, Remainder] DiscordChannel category)
             {
                 if (!ChannelExtensions.CheckViewChannelPermission(Context.CurrentMember!, category))
                 {

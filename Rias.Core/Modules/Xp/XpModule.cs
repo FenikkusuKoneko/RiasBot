@@ -136,7 +136,7 @@ namespace Rias.Core.Modules.Xp
         [Command("xpnotification"), Context(ContextType.Guild),
          UserPermission(Permissions.Administrator), BotPermission(Permissions.ManageWebhooks),
          Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-        public async Task XpNotificationAsync([Channel(ChannelType.Text), Remainder] DiscordChannel? channel = null)
+        public async Task XpNotificationAsync([TextChannel, Remainder] DiscordChannel? channel = null)
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
             

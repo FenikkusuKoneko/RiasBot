@@ -76,7 +76,7 @@ namespace Rias.Core.Modules.Bot
                     return;
                 }
 
-                if (channel.Type != ChannelType.Text)
+                if (channel.Type != ChannelType.Text && channel.Type != ChannelType.News && channel.Type != ChannelType.Store)
                 {
                     await ReplyErrorAsync(Localization.BotChannelNotTextChannel);
                     return;
@@ -157,7 +157,7 @@ namespace Rias.Core.Modules.Bot
                 return;
             }
 
-            if (channel.Type != ChannelType.Text)
+            if (channel.Type != ChannelType.Text && channel.Type != ChannelType.News && channel.Type != ChannelType.Store)
             {
                 await ReplyErrorAsync(Localization.BotChannelNotTextChannel);
                 return;
