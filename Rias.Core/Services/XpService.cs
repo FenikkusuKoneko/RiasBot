@@ -245,9 +245,9 @@ namespace Rias.Core.Services
                 }
                 
                 if (message is not null)
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(message));
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(message).AddMention(new UserMention(member)));
                 else
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed));
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed).AddMention(new UserMention(member)));
             }
             catch
             {

@@ -123,9 +123,9 @@ namespace Rias.Core.Services
             {
                 var greetMsg = ReplacePlaceholders(member, guildDb.GreetMessage);
                 if (RiasUtilities.TryParseMessage(greetMsg, out var customMessage))
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed));
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed).AddMention(new UserMention(member)));
                 else
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(greetMsg));
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(greetMsg).AddMention(new UserMention(member)));
             }
             catch
             {
@@ -193,9 +193,9 @@ namespace Rias.Core.Services
             {
                 var byeMsg = ReplacePlaceholders(member, guildDb.ByeMessage);
                 if (RiasUtilities.TryParseMessage(byeMsg, out var customMessage))
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed));
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed).AddMention(new UserMention(member)));
                 else
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(byeMsg));
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(byeMsg).AddMention(new UserMention(member)));
             }
             catch
             {
