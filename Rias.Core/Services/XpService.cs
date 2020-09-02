@@ -140,7 +140,7 @@ namespace Rias.Core.Services
                 if (role is null)
                 {
                     if (guildDb.XpLevelUpMessage is null)
-                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUp, member.FullName(), level);
+                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUp, member.Mention, level);
                     else
                     {
                         var message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpMessage);
@@ -159,7 +159,7 @@ namespace Rias.Core.Services
                 else
                 {
                     if (guildDb.XpLevelUpRoleRewardMessage is null)
-                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUpRoleReward, member.FullName(), level, role);
+                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUpRoleReward, member.Mention, level, role);
                     else
                     {
                         var message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpRoleRewardMessage);
@@ -216,7 +216,7 @@ namespace Rias.Core.Services
                         customMessage.Embed = new DiscordEmbedBuilder
                         {
                             Color = RiasUtilities.ConfirmColor,
-                            Description = GetText(guild.Id, Localization.XpGuildLevelUp, member.FullName(), level)
+                            Description = GetText(guild.Id, Localization.XpGuildLevelUp, member.Mention, level)
                         };
                     }
                     else
@@ -233,7 +233,7 @@ namespace Rias.Core.Services
                         customMessage.Embed = new DiscordEmbedBuilder
                         {
                             Color = RiasUtilities.ConfirmColor,
-                            Description = GetText(guild.Id, Localization.XpGuildLevelUpRoleReward, member.FullName(), level, role)
+                            Description = GetText(guild.Id, Localization.XpGuildLevelUpRoleReward, member.Mention, level, role)
                         };
                     }
                     else
