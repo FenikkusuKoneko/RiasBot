@@ -27,7 +27,7 @@ namespace Rias.Core.Services
         
         public async Task<string?> GetReactionUrlAsync(string type)
         {
-            using var response = await _httpClient.GetAsync($"https://api-v2.weeb.sh/images/random?type={type}&filetype=gif");
+            using var response = await _httpClient.GetAsync($"https://api.weeb.sh/images/random?type={type}&filetype=gif");
             if (!response.IsSuccessStatusCode)
                 return null;
 

@@ -28,7 +28,7 @@ namespace Rias.Core
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.2.5";
+        public const string Version = "3.2.6";
         public static readonly Stopwatch UpTime = new Stopwatch();
 
         public readonly DiscordShardedClient Client;
