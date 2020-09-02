@@ -9,7 +9,7 @@ using Rias.Core.Implementation;
 
 namespace Rias.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class BotPermissionAttribute : RiasCheckAttribute
     {
         public readonly Permissions? GuildPermissions;

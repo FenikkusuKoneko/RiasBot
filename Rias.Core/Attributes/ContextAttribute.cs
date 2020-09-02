@@ -10,7 +10,7 @@ using Rias.Core.Implementation;
 
 namespace Rias.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class ContextAttribute : RiasCheckAttribute
     {
         private readonly ContextType _contexts;

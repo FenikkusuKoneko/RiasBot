@@ -10,7 +10,7 @@ namespace Rias.Core.Attributes
     /// <summary>
     ///     Requires that the user invoking the command to be the bot owner.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class OwnerOnlyAttribute : RiasCheckAttribute
     {
         public override ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
