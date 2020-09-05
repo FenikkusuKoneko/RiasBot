@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Rias.Core;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 

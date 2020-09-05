@@ -443,4 +443,4 @@ Rias/data/credentials.json
 Rias/logs/
 
 # Ignore these
-Rias.Core/Modules/TestModule.cs
+Rias/Modules/TestModule.cs
