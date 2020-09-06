@@ -8,45 +8,45 @@ namespace Rias.Configuration
 {
     public class Credentials
     {
-        private readonly string _prefix;
-        private readonly string _token;
+        public string Prefix { get; }
+        public string Token { get; }
 
-        private readonly ulong _masterId;
-        private readonly string _currency;
+        public ulong MasterId { get; }
+        public string Currency { get; }
 
-        private readonly string _invite;
-        private readonly string _ownerServerInvite;
-        private readonly ulong _ownerServerId;
+        public string Invite { get; }
+        public string OwnerServerInvite { get; }
+        public ulong OwnerServerId { get; }
 
-        private readonly string _patreon;
-        private readonly string _website;
-        private readonly string _discordBotList;
+        public string Patreon { get; }
+        public string Website { get; }
+        public string DiscordBotList { get; }
 
-        private readonly string _urbanDictionaryApiKey;
-        private readonly string _discordBotListToken;
-        private readonly string _weebServicesToken;
+        public string UrbanDictionaryApiKey { get; }
+        public string DiscordBotListToken { get; }
+        public string WeebServicesToken { get; }
 
-        private readonly DatabaseConfiguration? _databaseConfig;
-        private readonly VotesConfiguration? _votesConfig;
-        private readonly PatreonConfiguration? _patreonConfig;
+        public DatabaseConfiguration? DatabaseConfig { get; }
+        public VotesConfiguration? VotesConfig { get; }
+        public PatreonConfiguration? PatreonConfig { get; }
 
-        private readonly bool _isDevelopment;
+        public bool IsDevelopment { get; }
 
-        private readonly string _credsPath = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
+        private string _credsPath = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
 
         public Credentials()
         {
             var config = new ConfigurationBuilder().AddJsonFile(_credsPath).Build();
 
-            _prefix = config.GetValue<string>(nameof(_prefix));
-            _token = config.GetValue<string>(nameof(_token));
+            Prefix = config.GetValue<string>(nameof(Prefix));
+            Token = config.GetValue<string>(nameof(Token));
 
-            _masterId = config.GetValue<ulong>(nameof(_masterId));
-            _currency = config.GetValue<string>(nameof(_currency));
+            MasterId = config.GetValue<ulong>(nameof(MasterId));
+            Currency = config.GetValue<string>(nameof(Currency));
 
-            _invite = config.GetValue<string>(nameof(_invite));
-            _ownerServerInvite = config.GetValue<string>(nameof(_ownerServerInvite));
-            _ownerServerId = config.GetValue<ulong>(nameof(_ownerServerId));
+            Invite = config.GetValue<string>(nameof(Invite));
+            OwnerServerInvite = config.GetValue<string>(nameof(OwnerServerInvite));
+            OwnerServerId = config.GetValue<ulong>(nameof(OwnerServerId));
 
             var confirmColor = RiasUtilities.HexToInt(config.GetValue<string>(nameof(RiasUtilities.ConfirmColor)));
             if (confirmColor.HasValue)
@@ -56,80 +56,46 @@ namespace Rias.Configuration
             if (errorColor.HasValue)
                 RiasUtilities.ErrorColor = new DiscordColor(errorColor.Value);
 
-            _patreon = config.GetValue<string>(nameof(_patreon));
-            _website = config.GetValue<string>(nameof(_website));
-            _discordBotList = config.GetValue<string>(nameof(_discordBotList));
+            Patreon = config.GetValue<string>(nameof(Patreon));
+            Website = config.GetValue<string>(nameof(Website));
+            DiscordBotList = config.GetValue<string>(nameof(DiscordBotList));
 
-            _urbanDictionaryApiKey = config.GetValue<string>(nameof(_urbanDictionaryApiKey));
-            _discordBotListToken = config.GetValue<string>(nameof(_discordBotListToken));
-            _weebServicesToken = config.GetValue<string>(nameof(_weebServicesToken));
+            UrbanDictionaryApiKey = config.GetValue<string>(nameof(UrbanDictionaryApiKey));
+            DiscordBotListToken = config.GetValue<string>(nameof(DiscordBotListToken));
+            WeebServicesToken = config.GetValue<string>(nameof(WeebServicesToken));
 
-            var databaseConfig = config.GetSection(nameof(_databaseConfig));
-            _databaseConfig = !databaseConfig.Exists() ? null : new DatabaseConfiguration
+            var databaseConfig = config.GetSection(nameof(DatabaseConfig));
+            DatabaseConfig = !databaseConfig.Exists() ? null : new DatabaseConfiguration
             {
-                Host = databaseConfig.GetValue<string>(nameof(_databaseConfig.Host)),
-                Port = databaseConfig.GetValue<ushort>(nameof(_databaseConfig.Port)),
-                Database = databaseConfig.GetValue<string>(nameof(_databaseConfig.Database)),
-                Username = databaseConfig.GetValue<string>(nameof(_databaseConfig.Username)),
-                Password = databaseConfig.GetValue<string>(nameof(_databaseConfig.Password)),
-                ApplicationName = databaseConfig.GetValue<string>(nameof(_databaseConfig.ApplicationName))
+                Host = databaseConfig.GetValue<string>(nameof(DatabaseConfig.Host)),
+                Port = databaseConfig.GetValue<ushort>(nameof(DatabaseConfig.Port)),
+                Database = databaseConfig.GetValue<string>(nameof(DatabaseConfig.Database)),
+                Username = databaseConfig.GetValue<string>(nameof(DatabaseConfig.Username)),
+                Password = databaseConfig.GetValue<string>(nameof(DatabaseConfig.Password)),
+                ApplicationName = databaseConfig.GetValue<string>(nameof(DatabaseConfig.ApplicationName))
             };
 
-            var votesConfig = config.GetSection(nameof(_votesConfig));
-            _votesConfig = !votesConfig.Exists() ? null : new VotesConfiguration
+            var votesConfig = config.GetSection(nameof(VotesConfig));
+            VotesConfig = !votesConfig.Exists() ? null : new VotesConfiguration
             {
-                WebSocketHost = votesConfig.GetValue<string>(nameof(_votesConfig.WebSocketHost)),
-                WebSocketPort = votesConfig.GetValue<ushort>(nameof(_votesConfig.WebSocketPort)),
-                IsSecureConnection = votesConfig.GetValue<bool>(nameof(_votesConfig.IsSecureConnection)),
-                UrlParameters = votesConfig.GetValue<string>(nameof(_votesConfig.UrlParameters)),
-                Authorization = votesConfig.GetValue<string>(nameof(_votesConfig.Authorization))
-            };
-            
-            var patreonConfig = config.GetSection(nameof(_patreonConfig));
-            _patreonConfig = !patreonConfig.Exists() ? null : new PatreonConfiguration
-            {
-                WebSocketHost = patreonConfig.GetValue<string>(nameof(_patreonConfig.WebSocketHost)),
-                WebSocketPort = patreonConfig.GetValue<ushort>(nameof(_patreonConfig.WebSocketPort)),
-                IsSecureConnection = patreonConfig.GetValue<bool>(nameof(_patreonConfig.IsSecureConnection)),
-                UrlParameters = patreonConfig.GetValue<string>(nameof(_patreonConfig.UrlParameters)),
-                Authorization = patreonConfig.GetValue<string>(nameof(_patreonConfig.Authorization))
+                WebSocketHost = votesConfig.GetValue<string>(nameof(VotesConfig.WebSocketHost)),
+                WebSocketPort = votesConfig.GetValue<ushort>(nameof(VotesConfig.WebSocketPort)),
+                IsSecureConnection = votesConfig.GetValue<bool>(nameof(VotesConfig.IsSecureConnection)),
+                UrlParameters = votesConfig.GetValue<string>(nameof(VotesConfig.UrlParameters)),
+                Authorization = votesConfig.GetValue<string>(nameof(VotesConfig.Authorization))
             };
             
-            _isDevelopment = config.GetValue<bool>(nameof(_isDevelopment));
+            var patreonConfig = config.GetSection(nameof(PatreonConfig));
+            PatreonConfig = !patreonConfig.Exists() ? null : new PatreonConfiguration
+            {
+                WebSocketHost = patreonConfig.GetValue<string>(nameof(PatreonConfig.WebSocketHost)),
+                WebSocketPort = patreonConfig.GetValue<ushort>(nameof(PatreonConfig.WebSocketPort)),
+                IsSecureConnection = patreonConfig.GetValue<bool>(nameof(PatreonConfig.IsSecureConnection)),
+                UrlParameters = patreonConfig.GetValue<string>(nameof(PatreonConfig.UrlParameters)),
+                Authorization = patreonConfig.GetValue<string>(nameof(PatreonConfig.Authorization))
+            };
+            
+            IsDevelopment = config.GetValue<bool>(nameof(IsDevelopment));
         }
-
-        public string Prefix => _prefix;
-
-        public string Token => _token;
-
-        public ulong MasterId => _masterId;
-
-        public string Currency => _currency;
-
-        public string Invite => _invite;
-
-        public string OwnerServerInvite => _ownerServerInvite;
-
-        public ulong OwnerServerId => _ownerServerId;
-
-        public string Patreon => _patreon;
-
-        public string Website => _website;
-
-        public string DiscordBotList => _discordBotList;
-
-        public string UrbanDictionaryApiKey => _urbanDictionaryApiKey;
-
-        public string DiscordBotListToken => _discordBotListToken;
-
-        public string WeebServicesToken => _weebServicesToken;
-
-        public DatabaseConfiguration? DatabaseConfig => _databaseConfig;
-
-        public VotesConfiguration? VotesConfig => _votesConfig;
-
-        public PatreonConfiguration? PatreonConfig => _patreonConfig;
-
-        public bool IsDevelopment => _isDevelopment;
     }
 }

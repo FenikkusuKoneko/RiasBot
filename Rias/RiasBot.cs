@@ -154,14 +154,14 @@ namespace Rias
             }
 
             var connectionString = new StringBuilder();
-            connectionString.Append("Host=").Append(_credentials.DatabaseConfig.Host).Append(";");
+            connectionString.Append("Host=").Append(_credentials.DatabaseConfig.Host).Append(';');
 
             if (_credentials.DatabaseConfig.Port > 0)
-                connectionString.Append("Port=").Append(_credentials.DatabaseConfig.Port).Append(";");
+                connectionString.Append("Port=").Append(_credentials.DatabaseConfig.Port).Append(';');
 
-            connectionString.Append("Username=").Append(_credentials.DatabaseConfig.Username).Append(";")
-                .Append("Password=").Append(_credentials.DatabaseConfig.Password).Append(";")
-                .Append("Database=").Append(_credentials.DatabaseConfig.Database).Append(";")
+            connectionString.Append("Username=").Append(_credentials.DatabaseConfig.Username).Append(';')
+                .Append("Password=").Append(_credentials.DatabaseConfig.Password).Append(';')
+                .Append("Database=").Append(_credentials.DatabaseConfig.Database).Append(';')
                 .Append("ApplicationName=").Append(_credentials.DatabaseConfig.ApplicationName);
 
             return connectionString.ToString();

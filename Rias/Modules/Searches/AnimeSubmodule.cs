@@ -318,7 +318,7 @@ namespace Rias.Modules.Searches
                 }
                 else
                 {
-                    mangaSb.Append("-");
+                    mangaSb.Append('-');
                 }
 
                 var animeList = GetCharacterSources(character, "anime");
@@ -338,7 +338,7 @@ namespace Rias.Modules.Searches
                 }
                 else
                 {
-                    animeSb.Append("-");
+                    animeSb.Append('-');
                 }
 
                 var embed = new DiscordEmbedBuilder

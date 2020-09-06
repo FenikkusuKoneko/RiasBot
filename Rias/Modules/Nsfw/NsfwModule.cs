@@ -72,13 +72,13 @@ namespace Rias.Modules.Nsfw
             var gelbooruHentai = await Service.GetNsfwImageAsync(NsfwService.NsfwImageApiProvider.Gelbooru, tags);
 
             if (danbooruHentai != null)
-                hentaiBuilder.Append(danbooruHentai.Url).Append("\n");
+                hentaiBuilder.Append(danbooruHentai.Url).AppendLine();
             if (konachanHentai != null)
-                hentaiBuilder.Append(konachanHentai.Url).Append("\n");
+                hentaiBuilder.Append(konachanHentai.Url).AppendLine();
             if (yandereHentai != null)
-                hentaiBuilder.Append(yandereHentai.Url).Append("\n");
+                hentaiBuilder.Append(yandereHentai.Url).AppendLine();
             if (gelbooruHentai != null)
-                hentaiBuilder.Append(gelbooruHentai.Url).Append("\n");
+                hentaiBuilder.Append(gelbooruHentai.Url).AppendLine();
 
             if (hentaiBuilder.Length == 0)
             {

@@ -44,20 +44,20 @@ namespace Rias.Modules.Help
                 var ownerServer = RiasBot.GetGuild(Credentials.OwnerServerId);
                 links.Append(delimiter)
                     .Append(GetText(Localization.HelpSupportServer, ownerServer!.Name, Credentials.OwnerServerInvite))
-                    .Append("\n");
+                    .AppendLine();
             }
 
             if (links.Length > 0) links.Append(delimiter);
             if (!string.IsNullOrEmpty(Credentials.Invite))
-                links.Append(GetText(Localization.HelpInviteMe, Credentials.Invite)).Append("\n");
+                links.Append(GetText(Localization.HelpInviteMe, Credentials.Invite)).AppendLine();
 
             if (links.Length > 0) links.Append(delimiter);
             if (!string.IsNullOrEmpty(Credentials.Website))
-                links.Append(GetText(Localization.HelpWebsite, Credentials.Website)).Append("\n");
+                links.Append(GetText(Localization.HelpWebsite, Credentials.Website)).AppendLine();
 
             if (links.Length > 0) links.Append(delimiter);
             if (!string.IsNullOrEmpty(Credentials.Patreon))
-                links.Append(GetText(Localization.HelpDonate, Credentials.Patreon)).Append("\n");
+                links.Append(GetText(Localization.HelpDonate, Credentials.Patreon)).AppendLine();
 
             embed.AddField(GetText(Localization.HelpLinks), links.ToString());
             await ReplyAsync(embed);
