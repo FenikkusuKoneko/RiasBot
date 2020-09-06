@@ -11,17 +11,23 @@ namespace Rias.Services
 {
     public class RiasService
     {
-        public readonly RiasBot RiasBot;
-        public readonly Credentials Credentials;
-        public readonly Localization Localization;
+        private readonly RiasBot _riasBot;
+        private readonly Credentials _credentials;
+        private readonly Localization _localization;
 
         public RiasService(IServiceProvider serviceProvider)
         {
-            RiasBot = serviceProvider.GetRequiredService<RiasBot>();
-            Credentials = serviceProvider.GetRequiredService<Credentials>();
-            Localization = serviceProvider.GetRequiredService<Localization>();
+            _riasBot = serviceProvider.GetRequiredService<RiasBot>();
+            _credentials = serviceProvider.GetRequiredService<Credentials>();
+            _localization = serviceProvider.GetRequiredService<Localization>();
         }
         
+        public RiasBot RiasBot => _riasBot;
+        
+        public Credentials Credentials => _credentials;
+        
+        public Localization Localization => _localization;
+
         /// <summary>
         /// Send a confirmation message with arguments. The form is an embed with the confirm color.<br/>
         /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
@@ -29,7 +35,7 @@ namespace Rias.Services
         /// </summary>
         public Task<DiscordMessage> ReplyConfirmationAsync(DiscordChannel channel, ulong guildId, string key, params object[] args)
         {
-            return channel.SendConfirmationMessageAsync(Localization.GetText(guildId, key, args));
+            return channel.SendConfirmationMessageAsync(_localization.GetText(guildId, key, args));
         }
 
         /// <summary>
@@ -39,7 +45,7 @@ namespace Rias.Services
         /// </summary>
         public Task<DiscordMessage> ReplyErrorAsync(DiscordChannel channel, ulong guildId, string key, params object[] args)
         {
-            return channel.SendErrorMessageAsync(Localization.GetText(guildId, key, args));
+            return channel.SendErrorMessageAsync(_localization.GetText(guildId, key, args));
         }
 
         /// <summary>
@@ -49,13 +55,12 @@ namespace Rias.Services
         /// </summary>
         public string GetText(ulong? guildId, string key, params object[] args)
         {
-            return Localization.GetText(guildId, key, args);
+            return _localization.GetText(guildId, key, args);
         }
         
         /// <summary>
         /// Run a task in an async way.
         /// </summary>
-        /// <param name="func"></param>
         public Task RunTaskAsync(Task func)
         {
             Task.Run(async () =>

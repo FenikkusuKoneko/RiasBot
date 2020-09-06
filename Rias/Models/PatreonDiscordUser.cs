@@ -7,11 +7,13 @@ namespace Rias.Models
     {
         [JsonProperty("patreon_id")]
         public int PatreonId { get; set; }
+        
         [JsonProperty("discord_id")]
         public ulong DiscordId { get; set; }
         
         [JsonProperty("patreon_username")]
         public string PatreonUsername { get; set; }
+        
         [JsonProperty("discord_username")]
         public string DiscordUsername { get; set; }
         

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Qmmands;
@@ -12,15 +13,17 @@ namespace Rias.Modules.Reactions
     [Name("Reactions")]
     public class ReactionsModule : RiasModule<ReactionsService>
     {
-        public ReactionsModule(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
         private const int ReactionLimit = 1500;
         
-        [Command("pat"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-        Priority(1)]
+        public ReactionsModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+        }
+        
+        [Command("pat")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
         public async Task PatAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -43,12 +46,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPatYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPattedBy,
-                    member.Mention, ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("pat"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(0)]
+
+        [Command("pat")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
         public async Task PatAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -77,12 +81,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPatYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPattedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("hug"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-        Priority(1)]
+
+        [Command("hug")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
         public async Task HugAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -105,12 +110,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHugYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHuggedBy,
-                    member.Mention, ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("hug"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(0)]
+
+        [Command("hug")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
         public async Task HugAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -139,12 +145,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHugYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHuggedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("kiss"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-        Priority(1)]
+
+        [Command("kiss")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
         public async Task KissAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -167,12 +174,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissedBy,
-                    member.Mention, ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("kiss"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(0)]
+
+        [Command("kiss")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
         public async Task KissAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -201,12 +209,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("lick"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-        Priority(1)]
+
+        [Command("lick")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
         public async Task LickAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -229,12 +238,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickedBy,
-                    member.Mention, ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("lick"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(0)]
+
+        [Command("lick")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
         public async Task LickAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -261,15 +271,15 @@ namespace Rias.Modules.Reactions
 
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickYou, Context.User.Mention), embed: embed);
-
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("cuddle"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-        Priority(1)]
+
+        [Command("cuddle")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
         public async Task CuddleAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -292,12 +302,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddleYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddledBy,
-                    member.Mention, ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("cuddle"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(0)]
+
+        [Command("cuddle")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
         public async Task CuddleAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -326,12 +337,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddleYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddledBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("bite"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-        Priority(1)]
+
+        [Command("bite")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
         public async Task BiteAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -354,12 +366,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBiteYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBittenBy,
-                    member.Mention, ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("bite"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(0)]
+
+        [Command("bite")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
         public async Task BiteAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -388,12 +401,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBiteYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBittenBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("slap"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-        Priority(1)]
+
+        [Command("slap")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
         public async Task SlapAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -416,12 +430,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlapYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlappedBy,
-                    member.Mention, ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("slap"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(0)]
+
+        [Command("slap")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
         public async Task SlapAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -450,11 +465,12 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlapYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlappedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("cry"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+
+        [Command("cry")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         public async Task CryAsync()
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -475,10 +491,11 @@ namespace Rias.Modules.Reactions
             
             await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsDontCry, Context.User.Mention), embed: embed);
         }
-        
-        [Command("grope"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(1)]
+
+        [Command("grope")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
         public async Task GropeAsync([Remainder] DiscordMember member)
         {
             var embed = new DiscordEmbedBuilder
@@ -495,12 +512,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropeYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropedBy,
-                    member.Mention, ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("grope"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(0)]
+
+        [Command("grope")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
         public async Task GropeAsync([Remainder] string? value = null)
         {
             if (value != null && value.Length > ReactionLimit)
@@ -523,11 +541,12 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropeYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("blush"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+
+        [Command("blush")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         public async Task BlushAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -550,11 +569,12 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlush, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlushAt,
-                    ((DiscordMember) Context.User).DisplayName, member.Mention), embed: embed);
+                    ((DiscordMember)Context.User).DisplayName, member.Mention), embed: embed);
         }
-        
-        [Command("blush"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+
+        [Command("blush")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         public async Task BlushAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -583,12 +603,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlush, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlushAt,
-                    ((DiscordMember) Context.User).DisplayName, value.Replace("@everyone", "everyone")), embed: embed);
+                    ((DiscordMember)Context.User).DisplayName, value.Replace("@everyone", "everyone")), embed: embed);
         }
-        
-        [Command("dance"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-        Priority(1)]
+
+        [Command("dance")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
         public async Task DanceAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -612,10 +633,11 @@ namespace Rias.Modules.Reactions
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsDanceTogether, Context.User.Mention, member.Mention), embed: embed);
         }
-        
-        [Command("dance"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(0)]
+
+        [Command("dance")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
         public async Task DanceAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -645,10 +667,11 @@ namespace Rias.Modules.Reactions
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsDanceTogether, Context.User.Mention, value.Replace("@everyone", "everyone")), embed: embed);
         }
-        
-        [Command("poke"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-        Priority(1)]
+
+        [Command("poke")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
         public async Task PokeAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -671,12 +694,13 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokeYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokedBy,
-                    member.Mention, ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("poke"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member),
-         Priority(0)]
+
+        [Command("poke")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
         public async Task PokeAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -705,11 +729,12 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokeYou, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember) Context.User).DisplayName), embed: embed);
+                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
-        
-        [Command("pout"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+
+        [Command("pout")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         public async Task PoutAsync([Remainder] DiscordMember member)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -732,11 +757,12 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPout, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPoutAt,
-                    ((DiscordMember) Context.User).DisplayName, member.Mention), embed: embed);
+                    ((DiscordMember)Context.User).DisplayName, member.Mention), embed: embed);
         }
-        
-        [Command("pout"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+
+        [Command("pout")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         public async Task PoutAsync([Remainder] string? value = null)
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
@@ -765,11 +791,12 @@ namespace Rias.Modules.Reactions
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPout, Context.User.Mention), embed: embed);
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPoutAt,
-                    ((DiscordMember) Context.User).DisplayName, value.Replace("@everyone", "everyone")), embed: embed);
+                    ((DiscordMember)Context.User).DisplayName, value.Replace("@everyone", "everyone")), embed: embed);
         }
-        
-        [Command("sleepy"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+
+        [Command("sleepy")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         public async Task SleepyAsync()
         {
             if (string.IsNullOrEmpty(Credentials.WeebServicesToken))

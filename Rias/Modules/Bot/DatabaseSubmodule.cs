@@ -16,11 +16,13 @@ namespace Rias.Modules.Bot
         [Name("Database")]
         public class DatabaseSubmodule : RiasModule
         {
-            public DatabaseSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public DatabaseSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
             }
-            
-            [Command("delete"), OwnerOnly]
+
+            [Command("delete")]
+            [OwnerOnly]
             public async Task DeleteAsync([Remainder] DiscordUser user)
             {
                 await ReplyConfirmationAsync(Localization.BotDeleteDialog, user.FullName());
@@ -46,8 +48,9 @@ namespace Rias.Modules.Bot
                 await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync(Localization.BotUserDeleted, user.FullName());
             }
-            
-            [Command("database"), OwnerOnly]
+
+            [Command("database")]
+            [OwnerOnly]
             public async Task DatabaseAsync([Remainder] DiscordUser user)
             {
                 var userDb = await DbContext.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
@@ -73,8 +76,9 @@ namespace Rias.Modules.Bot
 
                 await ReplyAsync(embed);
             }
-            
-            [Command("blacklist"), OwnerOnly]
+
+            [Command("blacklist")]
+            [OwnerOnly]
             public async Task BlacklistAsync([Remainder] DiscordUser user)
             {
                 await ReplyConfirmationAsync(Localization.BotBlacklistDialog);
@@ -85,24 +89,26 @@ namespace Rias.Modules.Bot
                     return;
                 }
 
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id });
                 userDb.IsBlacklisted = true;
                 
                 await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync(Localization.BotUserBlacklisted, user.FullName());
             }
-            
-            [Command("removeblacklist"), OwnerOnly]
+
+            [Command("removeblacklist")]
+            [OwnerOnly]
             public async Task RemoveBlacklistAsync([Remainder] DiscordUser user)
             {
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id });
                 userDb.IsBlacklisted = false;
                 
                 await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync(Localization.BotUserBlacklistRemoved, user.FullName());
             }
-            
-            [Command("botban"), OwnerOnly]
+
+            [Command("botban")]
+            [OwnerOnly]
             public async Task BotBanAsync([Remainder] DiscordUser user)
             {
                 await ReplyConfirmationAsync(Localization.BotBotBanDialog);
@@ -113,17 +119,18 @@ namespace Rias.Modules.Bot
                     return;
                 }
                 
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id });
                 userDb.IsBanned = true;
                 
                 await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync(Localization.BotUserBotBanned, user.FullName());
             }
-            
-            [Command("removebotban"), OwnerOnly]
+
+            [Command("removebotban")]
+            [OwnerOnly]
             public async Task RemoveBotBanAsync([Remainder] DiscordUser user)
             {
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id });
                 userDb.IsBanned = false;
                 
                 await DbContext.SaveChangesAsync();

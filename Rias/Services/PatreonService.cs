@@ -28,7 +28,8 @@ namespace Rias.Services
         private readonly WebSocketClient? _webSocket;
         private readonly Timer? _sendPatronsTimer;
 
-        public PatreonService(IServiceProvider serviceProvider) : base(serviceProvider)
+        public PatreonService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             var credentials = serviceProvider.GetRequiredService<Credentials>();
             if (credentials.PatreonConfig != null)
@@ -47,14 +48,13 @@ namespace Rias.Services
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var patrons = await db.Patreon.Where(x => x.PatronStatus == PatronStatus.ActivePatron &&
-                                                      !x.Checked && x.Tier > 0)
+            var patrons = await db.Patreon.Where(x => x.PatronStatus == PatronStatus.ActivePatron && !x.Checked && x.Tier > 0)
                 .ToListAsync();
             
             foreach (var patron in patrons)
             {
                 var reward = patron.AmountCents * 5;
-                var userDb = await db.GetOrAddAsync(x => x.UserId == patron.UserId, () => new UsersEntity {UserId = patron.UserId});
+                var userDb = await db.GetOrAddAsync(x => x.UserId == patron.UserId, () => new UsersEntity { UserId = patron.UserId });
                 userDb.Currency += reward;
 
                 patron.Checked = true;
@@ -100,7 +100,7 @@ namespace Rias.Services
                 }
 
                 var reward = patreonDb.AmountCents * 5;
-                var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity {UserId = userId});
+                var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity { UserId = userId });
                 userDb.Currency += reward;
 
                 patreonDb.Checked = true;
@@ -125,8 +125,10 @@ namespace Rias.Services
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var patrons = (await db.GetOrderedListAsync<PatreonEntity, int>(x => x.PatronStatus == PatronStatus.ActivePatron && x.Tier > 0,
-                    x => x.Tier, true))
+            var patrons = (await db.GetOrderedListAsync<PatreonEntity, int>(
+                    x => x.PatronStatus == PatronStatus.ActivePatron && x.Tier > 0,
+                    x => x.Tier,
+                    true))
                 .Where(x => RiasBot.Members.ContainsKey(x.UserId))
                 .Select(x =>
                 {

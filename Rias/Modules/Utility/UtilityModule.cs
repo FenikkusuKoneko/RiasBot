@@ -27,17 +27,21 @@ namespace Rias.Modules.Utility
     public partial class UtilityModule : RiasModule
     {
         private readonly UnitsService _unitsService;
-        public UtilityModule(IServiceProvider serviceProvider) : base(serviceProvider)
+        
+        public UtilityModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _unitsService = serviceProvider.GetRequiredService<UnitsService>();
         }
-        
-        [Command("prefix"), Context(ContextType.Guild)]
-        public async Task PrefixAsync()
-        => await ReplyConfirmationAsync(Localization.UtilityPrefixIs, Context.Prefix);
-        
-        [Command("setprefix"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator)]
+
+        [Command("prefix")]
+        [Context(ContextType.Guild)]
+        public Task PrefixAsync()
+        => ReplyConfirmationAsync(Localization.UtilityPrefixIs, Context.Prefix);
+
+        [Command("setprefix")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
         public async Task SetPrefixAsync([Remainder] string prefix)
         {
             if (prefix.Length > 15)
@@ -46,14 +50,15 @@ namespace Rias.Modules.Utility
                 return;
             }
             
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             guildDb.Prefix = prefix;
 
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.UtilityPrefixChanged, Context.Prefix, prefix);
         }
-        
-        [Command("languages"), Context(ContextType.Guild)]
+
+        [Command("languages")]
+        [Context(ContextType.Guild)]
         public async Task LanguagesAsync()
         {
             var embed = new DiscordEmbedBuilder
@@ -69,8 +74,9 @@ namespace Rias.Modules.Utility
 
             await ReplyAsync(embed);
         }
-        
-        [Command("setlanguage"), Context(ContextType.Guild)]
+
+        [Command("setlanguage")]
+        [Context(ContextType.Guild)]
         public async Task SetLanguageAsync(string language)
         {
             var (locale, lang) = Localization.Locales.FirstOrDefault(x =>
@@ -86,14 +92,14 @@ namespace Rias.Modules.Utility
             {
                 Localization.RemoveGuildLocale(Context.Guild!.Id);
                 
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity {GuildId = Context.Guild.Id});
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity { GuildId = Context.Guild.Id });
                 guildDb.Locale = null;
             }
             else
             {
                 Localization.SetGuildLocale(Context.Guild!.Id, locale.ToLowerInvariant());
                 
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity {GuildId = Context.Guild.Id});
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity { GuildId = Context.Guild.Id });
                 guildDb.Locale = locale.ToLower();
             }
             
@@ -120,7 +126,8 @@ namespace Rias.Modules.Utility
         {
             var patrons = await DbContext.GetOrderedListAsync<PatreonEntity, int>(
                 x => x.PatronStatus == PatronStatus.ActivePatron && x.Tier > 0,
-                y => y.AmountCents, true);
+                y => y.AmountCents,
+                true);
             
             if (patrons.Count == 0)
             {
@@ -142,7 +149,9 @@ namespace Rias.Modules.Utility
             var timeNow = DateTime.UtcNow;
             var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == Context.User.Id, x => x.DateAdded, true);
             if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
+            {
                 await ReplyConfirmationAsync(Localization.UtilityVoteInfo, $"{Credentials.DiscordBotList}/vote", Credentials.Currency);
+            }
             else
             {
                 var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
@@ -215,9 +224,9 @@ namespace Rias.Modules.Utility
             var choice = new Random().Next(choices.Length);
             await ReplyConfirmationAsync(Localization.UtilityChose, choices[choice].Trim());
         }
-        
-        [Command("color"),
-         Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("color")]
+        [Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.User)]
         public async Task ColorAsync([Remainder] DiscordColor color)
         {
             var currentMember = Context.Guild?.CurrentMember;
@@ -239,7 +248,7 @@ namespace Rias.Modules.Utility
             var yuv = ColorYUV.FromMagickColor(magickColor);
             var cmyk = ColorCMYK.FromMagickColor(magickColor);
 
-            var ushortMax = (double) ushort.MaxValue;
+            var ushortMax = (double)ushort.MaxValue;
             var byteMax = byte.MaxValue;
             var colorDetails = new StringBuilder()
                 .Append($"**Hex:** {hexColor}").AppendLine()
@@ -286,13 +295,13 @@ namespace Rias.Modules.Utility
             await ReplyAsync(embed);
         }
 
-        [Command("converter"),
-        Priority(3)]
+        [Command("converter")]
+        [Priority(3)]
         public async Task ConverterAsync(double value, string unit1, string unit2)
             => await ConverterAsync(unit1, unit2, value);
 
-        [Command("converter"),
-        Priority(2)]
+        [Command("converter")]
+        [Priority(2)]
         public async Task ConverterAsync(string unit1Name, string unit2Name, double value)
         {
             var units1 = _unitsService.GetUnits(unit1Name).ToList();
@@ -325,7 +334,8 @@ namespace Rias.Modules.Utility
 
             if (unit1 is null || unit2 is null)
             {
-                await ReplyErrorAsync(Localization.UtilityUnitsNotCompatible,
+                await ReplyErrorAsync(
+                    Localization.UtilityUnitsNotCompatible,
                     $"{units1[0].Name.Singular} ({units1[0].Category.Name})",
                     $"{units2[0].Name.Singular} ({units2[0].Category.Name})");
                 
@@ -347,14 +357,14 @@ namespace Rias.Modules.Utility
 
             await ReplyAsync(embed);
         }
-        
-        [Command("converter"),
-         Priority(1)]
+
+        [Command("converter")]
+        [Priority(1)]
         public async Task ConverterAsync(string category, double value, string unit1, string unit2)
             => await ConverterAsync(category, unit1, unit2, value);
 
-        [Command("converter"),
-         Priority(0)]
+        [Command("converter")]
+        [Priority(0)]
         public async Task ConverterAsync(string category, string unit1Name, string unit2Name, double value)
         {
             var unitsCategory = _unitsService.GetUnitsByCategory(category);
@@ -413,7 +423,9 @@ namespace Rias.Modules.Utility
         {
             if (category is null)
             {
-                await SendPaginatedMessageAsync(_unitsService.GetAllUnits().OrderBy(x => x.Name).ToList(), 15,
+                await SendPaginatedMessageAsync(
+                    _unitsService.GetAllUnits().OrderBy(x => x.Name).ToList(),
+                    15,
                     (items, index) => new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
@@ -466,10 +478,8 @@ namespace Rias.Modules.Utility
         /// <summary>
         /// If the number is higher than 1 or lower than -1 then it rounds on the first 2 digits.
         /// Otherwise it rounds after the number of leading zeros.<br/>
-        /// Ex: 0.00234 = 0.0023, 0.0000234 = 2.3E-5, 1.23 = 1.23, 1E20 = 1E+20
+        /// Ex: 0.00234 = 0.0023, 0.0000234 = 2.3E-5, 1.23 = 1.23, 1E20 = 1E+20.
         /// </summary>
-        /// <param name="d"></param>
-        /// <returns></returns>
         private string Format(double d)
         {
             if (Math.Abs(d) >= 1)

@@ -20,14 +20,17 @@ namespace Rias.Modules.Administration
         {
             private readonly HttpClient _httpClient;
             
-            public ServerSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public ServerSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
                 _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             }
-            
-            [Command("setnickname"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageNicknames), BotPermission(Permissions.ManageNicknames),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("setnickname")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageNicknames)]
+            [BotPermission(Permissions.ManageNicknames)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetNicknameAsync(DiscordMember user, [Remainder] string? nickname = null)
             {
                 if (user.Id == Context.Guild!.Owner.Id)
@@ -42,7 +45,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckHierarchy(user) <= 0)
+                if (((DiscordMember)Context.User).CheckHierarchy(user) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
@@ -55,13 +58,14 @@ namespace Rias.Modules.Administration
                 else
                     await ReplyConfirmationAsync(Localization.AdministrationNicknameChanged, user.FullName(), nickname);
             }
-            
-            [Command("setmynickname"), Context(ContextType.Guild),
-             BotPermission(Permissions.ManageNicknames),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("setmynickname")]
+            [Context(ContextType.Guild)]
+            [BotPermission(Permissions.ManageNicknames)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetMyNicknameAsync([Remainder] string? nickname = null)
             {
-                var member = (DiscordMember) Context.User;
+                var member = (DiscordMember)Context.User;
                 if (member.Id == Context.Guild!.Owner.Id)
                 {
                     await ReplyErrorAsync(Localization.AdministrationNicknameYouOwner);
@@ -87,10 +91,12 @@ namespace Rias.Modules.Administration
                 else
                     await ReplyConfirmationAsync(Localization.AdministrationYourNicknameChanged, member.FullName(), nickname);
             }
-            
-            [Command("setservername"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageGuild), BotPermission(Permissions.ManageGuild),
-             Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("setservername")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageGuild)]
+            [BotPermission(Permissions.ManageGuild)]
+            [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetServerNameAsync([Remainder] string name)
             {
                 if (name.Length < 2 || name.Length > 100)
@@ -103,9 +109,11 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationServerNameChanged, name);
             }
 
-            [Command("setservericon"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageGuild), BotPermission(Permissions.ManageGuild),
-             Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("setservericon")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageGuild)]
+            [BotPermission(Permissions.ManageGuild)]
+            [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetServerIconAsync(string url)
             {
                 if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))

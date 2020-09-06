@@ -15,12 +15,13 @@ namespace Rias.Services
 {
     public class AnimeService : RiasService
     {
-        private readonly HttpClient _httpClient;
         private const string AniListGraphQlUrl = "https://graphql.anilist.co";
+        private readonly HttpClient _httpClient;
         
-        public AnimeService(IServiceProvider serviceProvider) : base(serviceProvider)
+        public AnimeService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
-            _httpClient = new HttpClient {Timeout = TimeSpan.FromSeconds(10)};
+            _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
         }
         
         public async Task<ICharacterEntity?> GetOrAddCharacterAsync(string name)
@@ -38,7 +39,7 @@ namespace Rias.Services
                       .FirstOrDefault(x =>
                           name.Split(' ')
                               .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)))
-                  ?? (ICharacterEntity?) db.Characters
+                  ?? (ICharacterEntity?)db.Characters
                       .AsEnumerable()
                       .FirstOrDefault(x =>
                           name.Split(' ')
@@ -91,7 +92,8 @@ namespace Rias.Services
             return characterDb;
         }
         
-        public async Task<TType?> GetAniListInfoAsync<TType>(string query, object variables, params string[] tokens) where TType : class
+        public async Task<TType?> GetAniListInfoAsync<TType>(string query, object variables, params string[] tokens)
+            where TType : class
         {
             var graphQlQuery = new GraphQlQuery
             {
@@ -124,13 +126,13 @@ namespace Rias.Services
         public Task<CharacterContent?> GetAniListCharacterById(int id)
         {
             var query = CharacterQuery.Replace("[type]", "Int").Replace("[var]", "id");
-            return GetAniListInfoAsync<CharacterContent>(query, new {character = id}, "Character");
+            return GetAniListInfoAsync<CharacterContent>(query, new { character = id }, "Character");
         }
         
         private Task<CharacterContent?> GetAniListCharacterByName(string name)
         {
             var query = CharacterQuery.Replace("[type]", "String").Replace("[var]", "search");
-            return GetAniListInfoAsync<CharacterContent>(query, new {character = name}, "Character");
+            return GetAniListInfoAsync<CharacterContent>(query, new { character = name }, "Character");
         }
         
         private async Task<bool> CheckCharacterImageAsync(string characterUrl)
@@ -150,10 +152,11 @@ namespace Rias.Services
         {
             [JsonProperty("query")]
             public string Query { get; set; }
+            
             [JsonProperty("variables")]
             public object Variables { get; set; }
         }
-        
+
         public const string AnimeQuery =
             @"query ($anime: [type]) {
               Media([var]: $anime, type: ANIME) {

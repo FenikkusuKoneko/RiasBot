@@ -20,46 +20,28 @@ namespace Rias.Services
 {
     public class MuteService : RiasService
     {
-        public MuteService(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            LoadTimers = new Timer(_ => LoadTimersAsync(), null, TimeSpan.Zero, TimeSpan.FromDays(7));
-        }
-        
-        private readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), Timer> _timers = new ConcurrentDictionary<(ulong, ulong), Timer>();
-
 #if DEBUG
         public const string MuteRole = "rias-mute-dev";
 #elif RELEASE
         public const string MuteRole = "rias-mute";
 #endif
         
-        private Timer LoadTimers { get; }
+        private readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), Timer> _timers = new ConcurrentDictionary<(ulong, ulong), Timer>();
         
-        private void LoadTimersAsync()
+        public MuteService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
-            using var scope = RiasBot.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var muteTimersDb = db.MuteTimers.ToList();
-
-            var dateTime = DateTime.UtcNow.AddDays(7);
-            foreach (var muteTimerDb in muteTimersDb)
-            {
-                if (dateTime <= muteTimerDb.Expiration)
-                    continue;
-
-                var context = new MuteContext(RiasBot, muteTimerDb.GuildId, muteTimerDb.ModeratorId, muteTimerDb.UserId, muteTimerDb.MuteChannelSourceId);
-                var dueTime = muteTimerDb.Expiration - DateTime.UtcNow;
-                if (dueTime < TimeSpan.Zero)
-                    dueTime = TimeSpan.Zero;
-                var muteTimer = new Timer(async _ => await UnmuteUserAsync(context), null, dueTime, TimeSpan.Zero);
-                _timers.TryAdd((muteTimerDb.GuildId, muteTimerDb.UserId), muteTimer);
-            }
-
-            Log.Debug("Mute timers loaded");
+            LoadTimers = new Timer(_ => LoadTimersAsync(), null, TimeSpan.Zero, TimeSpan.FromDays(7));
         }
         
-        public async Task MuteUserAsync(DiscordChannel channel, DiscordMember moderator, DiscordMember member,
-            string? reason, TimeSpan? timeout = null)
+        private Timer LoadTimers { get; }
+
+        public async Task MuteUserAsync(
+            DiscordChannel channel,
+            DiscordMember moderator,
+            DiscordMember member,
+            string? reason,
+            TimeSpan? timeout = null)
         {
             var guild = member.Guild;
 
@@ -107,8 +89,7 @@ namespace Rias.Services
             if (timeout.HasValue)
             {
                 var locale = Localization.GetGuildLocale(guild.Id);
-                embed.AddField(GetText(guild.Id, Localization.AdministrationMutedFor),
-                    timeout.Value.Humanize(5, new CultureInfo(locale), TimeUnit.Year), true);
+                embed.AddField(GetText(guild.Id, Localization.AdministrationMutedFor), timeout.Value.Humanize(5, new CultureInfo(locale), TimeUnit.Year), true);
             }
 
             var modLogChannel = guild.GetChannel(guildDb?.ModLogChannelId ?? 0);
@@ -120,6 +101,134 @@ namespace Rias.Services
             }
 
             await channel.SendMessageAsync(embed);
+        }
+
+        public async Task UnmuteUserAsync(MuteContext context)
+        {
+            if (context.SentByTimer) context.Update();
+
+            if (context.Guild is null || context.Member is null)
+            {
+                await RemoveMuteAsync(context);
+                return;
+            }
+
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == context.Guild.Id);
+
+            var role = context.Guild.GetRole(guildDb?.MuteRoleId ?? 0)
+                       ?? context.Guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole) && !x.Value.IsManaged).Value;
+
+            if (role is null)
+            {
+                if (!context.SentByTimer)
+                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationMuteRoleNotFound, guildDb?.Prefix ?? Credentials.Prefix);
+                await RemoveMuteAsync(context);
+                return;
+            }
+
+            var currentMember = context.Guild.CurrentMember;
+            if (currentMember.CheckRoleHierarchy(role) <= 0)
+            {
+                if (!context.SentByTimer)
+                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationMuteRoleAbove, role.Name);
+                await RemoveMuteAsync(context);
+                return;
+            }
+
+            if (currentMember.CheckHierarchy(context.Member) <= 0)
+            {
+                if (!context.SentByTimer)
+                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationUserAboveMe);
+                await RemoveMuteAsync(context);
+                return;
+            }
+
+            if (context.Member.Roles.All(r => r.Id != role.Id))
+            {
+                if (!context.SentByTimer)
+                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationUserNotMuted, context.Member);
+                await RemoveMuteAsync(context);
+                return;
+            }
+
+            await RunTaskAsync(RemoveMuteAsync(context));
+            await context.Member.RevokeRoleAsync(role);
+
+            var embed = new DiscordEmbedBuilder
+                {
+                    Color = RiasUtilities.Yellow,
+                    Description = GetText(context.Guild.Id, Localization.AdministrationUserUnmuted)
+                }
+                .AddField(GetText(context.Guild.Id, Localization.CommonUser), context.Member.FullName(), true)
+                .AddField(GetText(context.Guild.Id, Localization.CommonId), context.MemberId.ToString(), true)
+                .AddField(GetText(context.Guild.Id, Localization.AdministrationModerator), context.SentByTimer ? currentMember.FullName() : context.Moderator?.FullName() ?? "-", true);
+
+            if (!string.IsNullOrEmpty(context.Reason))
+                embed.AddField(GetText(context.Guild.Id, Localization.CommonReason), context.Reason, true);
+
+            if (context.SentByTimer)
+                embed.AddField(GetText(context.Guild.Id, Localization.CommonReason), GetText(context.Guild.Id, Localization.CommonTimesUp), true);
+
+            embed.WithThumbnail(context.Member.GetAvatarUrl(ImageFormat.Auto));
+            embed.WithCurrentTimestamp();
+
+            var channel = context.SourceChannel;
+            var modLogChannel = context.Guild.GetChannel(guildDb?.ModLogChannelId ?? 0);
+            if (modLogChannel != null)
+            {
+                var preconditionsModLog = currentMember.PermissionsIn(modLogChannel);
+                if (preconditionsModLog.HasPermission(Permissions.AccessChannels) && preconditionsModLog.HasPermission(Permissions.SendMessages))
+                    channel = modLogChannel;
+            }
+
+            if (channel is null)
+                return;
+
+            var preconditionsChannel = currentMember.PermissionsIn(channel);
+            if (preconditionsChannel.HasPermission(Permissions.AccessChannels) && preconditionsChannel.HasPermission(Permissions.SendMessages))
+                await channel.SendMessageAsync(embed);
+        }
+        
+        public async Task AddMuteRoleToChannelsAsync(DiscordRole role, DiscordGuild guild)
+        {
+            var categories = guild.Channels.Where(x => x.Value.Type == ChannelType.Category);
+            foreach (var (_, category) in categories)
+            {
+                if (guild.CurrentMember.PermissionsIn(category).HasPermission(Permissions.AccessChannels))
+                    await AddPermissionOverwriteAsync(category, role);
+            }
+
+            var channels = guild.Channels;
+            foreach (var (_, channel) in channels)
+            {
+                if (guild.CurrentMember.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
+                    await AddPermissionOverwriteAsync(channel, role);
+            }
+        }
+        
+        private void LoadTimersAsync()
+        {
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var muteTimersDb = db.MuteTimers.ToList();
+
+            var dateTime = DateTime.UtcNow.AddDays(7);
+            foreach (var muteTimerDb in muteTimersDb)
+            {
+                if (dateTime <= muteTimerDb.Expiration)
+                    continue;
+
+                var context = new MuteContext(RiasBot, muteTimerDb.GuildId, muteTimerDb.ModeratorId, muteTimerDb.UserId, muteTimerDb.MuteChannelSourceId);
+                var dueTime = muteTimerDb.Expiration - DateTime.UtcNow;
+                if (dueTime < TimeSpan.Zero)
+                    dueTime = TimeSpan.Zero;
+                var muteTimer = new Timer(async _ => await UnmuteUserAsync(context), null, dueTime, TimeSpan.Zero);
+                _timers.TryAdd((muteTimerDb.GuildId, muteTimerDb.UserId), muteTimer);
+            }
+
+            Log.Debug("Mute timers loaded");
         }
         
         private async Task AddMuteAsync(DiscordChannel channel, DiscordMember moderator, DiscordMember member, TimeSpan? timeout)
@@ -192,96 +301,6 @@ namespace Rias.Services
             }
         }
         
-        public async Task UnmuteUserAsync(MuteContext context)
-        {
-            if (context.SentByTimer) context.Update();
-
-            if (context.Guild is null || context.Member is null)
-            {
-                await RemoveMuteAsync(context);
-                return;
-            }
-
-            using var scope = RiasBot.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == context.Guild.Id);
-
-            var role = context.Guild.GetRole(guildDb?.MuteRoleId ?? 0)
-                       ?? context.Guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole) && !x.Value.IsManaged).Value;
-
-            if (role is null)
-            {
-                if (!context.SentByTimer)
-                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationMuteRoleNotFound, guildDb?.Prefix ?? Credentials.Prefix);
-                await RemoveMuteAsync(context);
-                return;
-            }
-
-            var currentMember = context.Guild.CurrentMember;
-            if (currentMember.CheckRoleHierarchy(role) <= 0)
-            {
-                if (!context.SentByTimer)
-                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationMuteRoleAbove, role.Name);
-                await RemoveMuteAsync(context);
-                return;
-            }
-
-            if (currentMember.CheckHierarchy(context.Member) <= 0)
-            {
-                if (!context.SentByTimer)
-                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationUserAboveMe);
-                await RemoveMuteAsync(context);
-                return;
-            }
-
-            if (context.Member.Roles.All(r => r.Id != role.Id))
-            {
-                if (!context.SentByTimer)
-                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationUserNotMuted, context.Member);
-                await RemoveMuteAsync(context);
-                return;
-            }
-
-            await RunTaskAsync(RemoveMuteAsync(context));
-            await context.Member.RevokeRoleAsync(role);
-
-            var embed = new DiscordEmbedBuilder
-                {
-                    Color = RiasUtilities.Yellow,
-                    Description = GetText(context.Guild.Id, Localization.AdministrationUserUnmuted)
-                }
-                .AddField(GetText(context.Guild.Id, Localization.CommonUser), context.Member.FullName(), true)
-                .AddField(GetText(context.Guild.Id, Localization.CommonId), context.MemberId.ToString(), true)
-                .AddField(GetText(context.Guild.Id, Localization.AdministrationModerator),
-                    context.SentByTimer ? currentMember.FullName() : context.Moderator?.FullName() ?? "-", true);
-
-            if (!string.IsNullOrEmpty(context.Reason))
-                embed.AddField(GetText(context.Guild.Id, Localization.CommonReason), context.Reason, true);
-
-            if (context.SentByTimer)
-                embed.AddField(GetText(context.Guild.Id, Localization.CommonReason),
-                    GetText(context.Guild.Id, Localization.CommonTimesUp), true);
-
-            embed.WithThumbnail(context.Member.GetAvatarUrl(ImageFormat.Auto));
-            embed.WithCurrentTimestamp();
-
-            var channel = context.SourceChannel;
-            var modLogChannel = context.Guild.GetChannel(guildDb?.ModLogChannelId ?? 0);
-            if (modLogChannel != null)
-            {
-                var preconditionsModLog = currentMember.PermissionsIn(modLogChannel);
-                if (preconditionsModLog.HasPermission(Permissions.AccessChannels) && preconditionsModLog.HasPermission(Permissions.SendMessages))
-                    channel = modLogChannel;
-            }
-
-            if (channel is null)
-                return;
-
-            var preconditionsChannel = currentMember.PermissionsIn(channel);
-            if (preconditionsChannel.HasPermission(Permissions.AccessChannels) && preconditionsChannel.HasPermission(Permissions.SendMessages))
-                await channel.SendMessageAsync(embed);
-        }
-        
         private async Task RemoveMuteAsync(MuteContext context)
         {
             if (_timers.TryRemove((context.GuildId, context.MemberId), out var muteTimer))
@@ -303,24 +322,7 @@ namespace Rias.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task AddMuteRoleToChannelsAsync(DiscordRole role, DiscordGuild guild)
-        {
-            var categories = guild.Channels.Where(x => x.Value.Type == ChannelType.Category);
-            foreach (var (_, category) in categories)
-            {
-                if (guild.CurrentMember.PermissionsIn(category).HasPermission(Permissions.AccessChannels))
-                    await AddPermissionOverwriteAsync(category, role);
-            }
-
-            var channels = guild.Channels;
-            foreach (var (_, channel) in channels)
-            {
-                if (guild.CurrentMember.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
-                    await AddPermissionOverwriteAsync(channel, role);
-            }
-        }
-
-        private static async Task AddPermissionOverwriteAsync(DiscordChannel channel, DiscordRole role)
+        private async Task AddPermissionOverwriteAsync(DiscordChannel channel, DiscordRole role)
         {
             var roleOverwrites = channel.PermissionOverwrites.FirstOrDefault(x => x.Type == OverwriteType.Role && x.Id == role.Id);
             if (roleOverwrites is null)
@@ -346,57 +348,76 @@ namespace Rias.Services
         
         public class MuteContext
         {
-            public DiscordGuild? Guild { get; }
-            public ulong GuildId { get; }
-            public DiscordMember? Moderator { get; private set; }
-            public ulong ModeratorId { get; private set; }
-            public DiscordMember? Member { get; private set; }
-            public ulong MemberId { get; }
-            public DiscordChannel? SourceChannel { get; }
-            public string? Reason { get; }
-            public bool SentByTimer { get; }
+            private readonly DiscordGuild? _guild;
+            private readonly ulong _guildId;
+            private readonly ulong _moderatorId;
+            private readonly ulong _memberId;
+            private readonly DiscordChannel? _sourceChannel;
+            private readonly string? _reason;
+            private readonly bool _sentByTimer;
             
+            private DiscordMember? _moderator;
+            private DiscordMember? _member;
+
             public MuteContext(DiscordGuild guild, DiscordMember moderator, DiscordMember member, DiscordChannel channel, string? reason)
             {
-                Guild = guild;
-                GuildId = guild.Id;
-                Moderator = moderator;
-                ModeratorId = moderator.Id;
-                Member = member;
-                MemberId = member.Id;
-                SourceChannel = channel;
-                Reason = reason;
+                _guild = guild;
+                _guildId = guild.Id;
+                _moderator = moderator;
+                _moderatorId = moderator.Id;
+                _member = member;
+                _memberId = member.Id;
+                _sourceChannel = channel;
+                _reason = reason;
             }
 
             public MuteContext(RiasBot riasBot, ulong guildId, ulong moderatorId, ulong memberId, ulong channelId)
             {
-                Guild = riasBot.GetGuild(guildId);
-                GuildId = guildId;
-                MemberId = memberId;
+                _guild = riasBot.GetGuild(guildId);
+                _guildId = guildId;
+                _memberId = memberId;
 
                 if (Guild != null)
                 {
                     if (Guild.Members.TryGetValue(moderatorId, out var moderator))
-                        Moderator = moderator;
+                        _moderator = moderator;
                     
                     if (Guild.Members.TryGetValue(memberId, out var member))
-                        Member = member;
+                        _member = member;
                     
-                    SourceChannel = Guild.GetChannel(channelId);
+                    _sourceChannel = Guild.GetChannel(channelId);
                 }
 
-                SentByTimer = true;
+                _sentByTimer = true;
             }
+
+            public DiscordGuild? Guild => _guild;
+
+            public ulong GuildId => _guildId;
+
+            public DiscordMember? Moderator => _moderator;
+
+            public ulong ModeratorId => _moderatorId;
+
+            public DiscordMember? Member => _member;
+
+            public ulong MemberId => _memberId;
+
+            public DiscordChannel? SourceChannel => _sourceChannel;
+
+            public string? Reason => _reason;
+
+            public bool SentByTimer => _sentByTimer;
 
             public void Update()
             {
                 if (Guild == null) return;
                 
                 if (Guild.Members.TryGetValue(ModeratorId, out var moderator))
-                    Moderator = moderator;
+                    _moderator = moderator;
                     
                 if (Guild.Members.TryGetValue(MemberId, out var member))
-                    Member = member;
+                    _member = member;
             }
         }
     }

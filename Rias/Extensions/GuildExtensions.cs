@@ -16,7 +16,7 @@ namespace Rias.Extensions
                 PremiumTier.Tier_1 => 100,
                 PremiumTier.Tier_2 => 150,
                 PremiumTier.Tier_3 => 250,
-                _ => 50    //default is PremiumTier.None
+                _ => 50 // default is PremiumTier.None
             };
         }
 
@@ -45,7 +45,7 @@ namespace Rias.Extensions
         }
 
         /// <summary>
-        /// Gets a voice channel by id or name (ordinal ignore case)
+        /// Gets a voice channel by id or name (ordinal ignore case).
         /// </summary>
         public static DiscordChannel? GetVoiceChannel(this DiscordGuild guild, string value)
             => ulong.TryParse(value, out var channelId)

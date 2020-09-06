@@ -21,16 +21,10 @@ namespace Rias.Services
 {
     public class XpService : RiasService
     {
+        public const int XpThreshold = 30;
+        
         private readonly BotService _botService;
         private readonly HttpClient _httpClient;
-        
-        public XpService(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            _botService = serviceProvider.GetRequiredService<BotService>();
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
-        }
-        
-        public const int XpThreshold = 30;
         
         private readonly ConcurrentDictionary<ulong, DateTime> _usersXp = new ConcurrentDictionary<ulong, DateTime>();
         private readonly ConcurrentDictionary<(ulong, ulong), DateTime> _guildUsersXp = new ConcurrentDictionary<(ulong, ulong), DateTime>();
@@ -41,6 +35,32 @@ namespace Rias.Services
         private readonly string _arialFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/ArialBold.ttf");
         private readonly string _meiryoFontPath = Path.Combine(Environment.CurrentDirectory, "assets/fonts/Meiryo.ttf");
         
+        public XpService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+            _botService = serviceProvider.GetRequiredService<BotService>();
+            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
+        }
+        
+        public static string ReplacePlaceholders(DiscordMember member, DiscordRole? role, int level, string message)
+        {
+            var sb = new StringBuilder(message)
+                .Replace("%mention%", member.Mention)
+                .Replace("%user%", member.Username)
+                .Replace("%guild%", member.Guild.Name)
+                .Replace("%server%", member.Guild.Name)
+                .Replace("%level%", level.ToString())
+                .Replace("%avatar%", member.GetAvatarUrl(ImageFormat.Auto));
+
+            if (role != null)
+            {
+                sb.Replace("%role%", role.Name)
+                    .Replace("%role_mention%", role.Mention);
+            }
+
+            return sb.ToString();
+        }
+
         public async Task AddUserXpAsync(DiscordUser user)
         {
             var now = DateTime.UtcNow;
@@ -58,7 +78,7 @@ namespace Rias.Services
             
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = await db.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id, Xp = -5});
+            var userDb = await db.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id, Xp = -5 });
             
             if (check && userDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
                 return;
@@ -87,8 +107,9 @@ namespace Rias.Services
             
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildXpDb = await db.GetOrAddAsync(x => x.GuildId == member.Guild.Id && x.UserId == member.Id,
-                () => new GuildUsersEntity {GuildId = member.Guild.Id, UserId = member.Id});
+            var guildXpDb = await db.GetOrAddAsync(
+                x => x.GuildId == member.Guild.Id && x.UserId == member.Id,
+                () => new GuildUsersEntity { GuildId = member.Guild.Id, UserId = member.Id });
             
             if (check && guildXpDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
                 return;
@@ -123,6 +144,21 @@ namespace Rias.Services
             if (guildDb != null && guildDb.XpNotification)
                 await SendXpNotificationAsync(member, channel, role, guildDb, nextLevel);
         }
+
+        public async Task<Stream> GenerateXpImageAsync(DiscordMember member)
+        {
+            var xpInfo = await GetXpInfo(member);
+
+            using var image = new MagickImage(_dark, 500, 300);
+
+            await AddAvatarAndUsernameAsync(image, member);
+            AddInfo(image, xpInfo, member.Guild);
+
+            var imageStream = new MemoryStream();
+            image.Write(imageStream, MagickFormat.Png);
+            imageStream.Position = 0;
+            return imageStream;
+        }
         
         private async Task SendXpNotificationAsync(DiscordMember member, DiscordChannel channel, DiscordRole? role, GuildsEntity guildDb, int level)
         {
@@ -140,7 +176,9 @@ namespace Rias.Services
                 if (role is null)
                 {
                     if (guildDb.XpLevelUpMessage is null)
+                    {
                         await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUp, member.Mention, level);
+                    }
                     else
                     {
                         var message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpMessage);
@@ -153,13 +191,17 @@ namespace Rias.Services
                             await channel.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
                         }
                         else
+                        {
                             await channel.SendMessageAsync(message);
+                        }
                     }
                 }
                 else
                 {
                     if (guildDb.XpLevelUpRoleRewardMessage is null)
+                    {
                         await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUpRoleReward, member.Mention, level, role);
+                    }
                     else
                     {
                         var message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpRoleRewardMessage);
@@ -172,7 +214,9 @@ namespace Rias.Services
                             await channel.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
                         }
                         else
+                        {
                             await channel.SendMessageAsync(message);
+                        }
                     }
                 }
                 
@@ -243,7 +287,7 @@ namespace Rias.Services
                             message = null;
                     }
                 }
-                
+
                 if (message is not null)
                     await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(message).AddMention(new UserMention(member)));
                 else
@@ -263,38 +307,6 @@ namespace Rias.Services
                     
             guildDb.XpNotification = false;
             await db.SaveChangesAsync();
-        }
-        
-        public static string ReplacePlaceholders(DiscordMember member, DiscordRole? role, int level, string message)
-        {
-            var sb = new StringBuilder(message)
-                .Replace("%mention%", member.Mention)
-                .Replace("%user%", member.Username)
-                .Replace("%guild%", member.Guild.Name)
-                .Replace("%server%", member.Guild.Name)
-                .Replace("%level%", level.ToString())
-                .Replace("%avatar%", member.GetAvatarUrl(ImageFormat.Auto));
-
-            if (role != null)
-                sb.Replace("%role%", role.Name)
-                    .Replace("%role_mention%", role.Mention);
-
-            return sb.ToString();
-        }
-
-        public async Task<Stream> GenerateXpImageAsync(DiscordMember member)
-        {
-            var xpInfo = await GetXpInfo(member);
-
-            using var image = new MagickImage(_dark, 500, 300);
-
-            await AddAvatarAndUsernameAsync(image, member);
-            AddInfo(image, xpInfo, member.Guild);
-
-            var imageStream = new MemoryStream();
-            image.Write(imageStream, MagickFormat.Png);
-            imageStream.Position = 0;
-            return imageStream;
         }
         
         private async Task AddAvatarAndUsernameAsync(MagickImage image, DiscordUser user)
@@ -346,15 +358,15 @@ namespace Rias.Services
 
             settings.TextGravity = Gravity.Center;
             using var globalLevelTextImage = new MagickImage($"caption:{GetText(guild.Id, Localization.XpLvl, xpInfo.GlobalLevel).ToUpperInvariant()}", settings);
-            image.Draw(new DrawableComposite(250 - (double) globalLevelTextImage.Width / 2, 120, CompositeOperator.Over, globalLevelTextImage));
+            image.Draw(new DrawableComposite(250 - (double)globalLevelTextImage.Width / 2, 120, CompositeOperator.Over, globalLevelTextImage));
             using var serverLevelTextImage = new MagickImage($"caption:{GetText(guild.Id, Localization.XpLvl, xpInfo.ServerLevel).ToUpperInvariant()}", settings);
-            image.Draw(new DrawableComposite(250 - (double) serverLevelTextImage.Width / 2, 210, CompositeOperator.Over, serverLevelTextImage));
+            image.Draw(new DrawableComposite(250 - (double)serverLevelTextImage.Width / 2, 210, CompositeOperator.Over, serverLevelTextImage));
 
             settings.TextGravity = Gravity.East;
             using var globalRankTextImage = new MagickImage($"caption:#{xpInfo.GlobalRank}", settings);
-            image.Draw(new DrawableComposite(470 - (double) globalRankTextImage.Width, 120, CompositeOperator.Over, globalRankTextImage));
+            image.Draw(new DrawableComposite(470 - (double)globalRankTextImage.Width, 120, CompositeOperator.Over, globalRankTextImage));
             using var serverRankTextImage = new MagickImage($"caption:#{xpInfo.ServerRank}", settings);
-            image.Draw(new DrawableComposite(470 - (double) serverRankTextImage.Width, 210, CompositeOperator.Over, serverRankTextImage));
+            image.Draw(new DrawableComposite(470 - (double)serverRankTextImage.Width, 210, CompositeOperator.Over, serverRankTextImage));
             
             image.Draw(new Drawables()
                 .RoundRectangle(30, 150, 470, 160, 5, 5)
@@ -366,7 +378,7 @@ namespace Rias.Services
             var globalCurrentXp = RiasUtilities.LevelXp(xpInfo.GlobalLevel, xpInfo.GlobalXp, XpThreshold);
             var globalNextLevelXp = (xpInfo.GlobalLevel + 1) * 30;
             
-            var globalXpBarLength = (double) globalCurrentXp  / globalNextLevelXp * 440;
+            var globalXpBarLength = (double)globalCurrentXp / globalNextLevelXp * 440;
             image.Draw(new Drawables()
                 .RoundRectangle(30, 150, 30 + globalXpBarLength, 160, 5, 5)
                 .FillColor(xpInfo.Color));
@@ -374,7 +386,7 @@ namespace Rias.Services
             var serverCurrentXp = RiasUtilities.LevelXp(xpInfo.ServerLevel, xpInfo.ServerXp, XpThreshold);
             var serverNextLevelXp = (xpInfo.ServerLevel + 1) * 30;
             
-            var serverXpBarLength = (double) serverCurrentXp  / serverNextLevelXp * 440;
+            var serverXpBarLength = (double)serverCurrentXp / serverNextLevelXp * 440;
             image.Draw(new Drawables()
                 .RoundRectangle(30, 240, 30 + serverXpBarLength, 250, 5, 5)
                 .FillColor(xpInfo.Color));
@@ -388,9 +400,9 @@ namespace Rias.Services
             
             settings.TextGravity = Gravity.East;
             using var globalNextLevelXpTextImage = new MagickImage($"caption:{globalNextLevelXp}", settings);
-            image.Draw(new DrawableComposite(470 - (double) globalNextLevelXpTextImage.Width, 170, CompositeOperator.Over, globalNextLevelXpTextImage));
+            image.Draw(new DrawableComposite(470 - (double)globalNextLevelXpTextImage.Width, 170, CompositeOperator.Over, globalNextLevelXpTextImage));
             using var serverNextLevelXpTextImage = new MagickImage($"caption:{serverNextLevelXp}", settings);
-            image.Draw(new DrawableComposite(470 - (double) serverNextLevelXpTextImage.Width, 260, CompositeOperator.Over, serverNextLevelXpTextImage));
+            image.Draw(new DrawableComposite(470 - (double)serverNextLevelXpTextImage.Width, 260, CompositeOperator.Over, serverNextLevelXpTextImage));
         }
         
         private async Task<XpInfo> GetXpInfo(DiscordMember member)
@@ -428,11 +440,17 @@ namespace Rias.Services
         private class XpInfo
         {
             public int GlobalXp { get; set; }
+            
             public int GlobalLevel { get; set; }
+            
             public int GlobalRank { get; set; }
+            
             public int ServerXp { get; set; }
+            
             public int ServerLevel { get; set; }
+            
             public int ServerRank { get; set; }
+            
             public MagickColor? Color { get; set; }
         }
     }

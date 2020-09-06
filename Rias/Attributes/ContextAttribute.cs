@@ -27,11 +27,13 @@ namespace Rias.Attributes
             var isValid = false;
 
             if ((_contexts & ContextType.Guild) != 0)
+            {
                 isValid = context.Channel.Type == ChannelType.Category
                     || context.Channel.Type == ChannelType.Text
                     || context.Channel.Type == ChannelType.Voice
                     || context.Channel.Type == ChannelType.News;
-            
+            }
+
             if ((_contexts & ContextType.DM) != 0)
                 isValid = isValid || context.Channel.Type == ChannelType.Private;
 

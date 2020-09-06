@@ -9,13 +9,14 @@ namespace Rias.Services
 {
     public class ActivityService : RiasService
     {
-        public ActivityService(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-        
         private Timer? _activityTimer;
         private DiscordActivity[]? _activities;
         private int _activityIndex;
+        
+        public ActivityService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+        }
 
         public DiscordActivity GetActivity(string name, string type)
         {
@@ -31,7 +32,7 @@ namespace Rias.Services
             
             var streamUrl = name[..streamUrlIndex];
             if (Uri.IsWellFormedUriString(streamUrl, UriKind.Absolute))
-                return new DiscordActivity(name[streamUrlIndex..].TrimStart(), ActivityType.Streaming) {StreamUrl = streamUrl};
+                return new DiscordActivity(name[streamUrlIndex..].TrimStart(), ActivityType.Streaming) { StreamUrl = streamUrl };
             
             return new DiscordActivity(name, ActivityType.Playing);
         }

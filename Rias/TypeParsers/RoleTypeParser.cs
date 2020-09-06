@@ -8,7 +8,7 @@ using Rias.Implementation;
 
 namespace Rias.TypeParsers
 {
-    public class CachedRoleTypeParser : RiasTypeParser<DiscordRole>
+    public class RoleTypeParser : RiasTypeParser<DiscordRole>
     {
         public override ValueTask<TypeParserResult<DiscordRole>> ParseAsync(Parameter parameter, string value, RiasCommandContext context)
         {

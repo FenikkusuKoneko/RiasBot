@@ -15,13 +15,16 @@ namespace Rias.Modules.Administration
         [Name("Voice Channels")]
         public class VoiceChannelsSubmodule : RiasModule
         {
-            public VoiceChannelsSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public VoiceChannelsSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
             }
-            
-            [Command("createvoicechannel"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("createvoicechannel")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateVoiceChannelAsync([Remainder] string name)
             {
                 if (name.Length < 1 || name.Length > 100)
@@ -34,10 +37,12 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationVoiceChannelCreated, name);
             }
 
-            [Command("deletevoicechannel"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task DeleteVoiceChannelAsync([VoiceChannel, Remainder] DiscordChannel channel)
+            [Command("deletevoicechannel")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            public async Task DeleteVoiceChannelAsync([VoiceChannel] [Remainder] DiscordChannel channel)
             {
                 if (!ChannelExtensions.CheckViewChannelPermission(Context.CurrentMember!, channel))
                 {
@@ -49,9 +54,11 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationVoiceChannelDeleted, channel.Name);
             }
 
-            [Command("renamevoicechannel"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("renamevoicechannel")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameVoiceChannelAsync([Remainder] string names)
             {
                 var namesSplit = names.Split("->");

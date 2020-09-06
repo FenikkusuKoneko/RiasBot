@@ -17,12 +17,14 @@ namespace Rias.Modules.Gambling
         {
             private readonly GamblingService _gamblingService;
             
-            public BlackjackSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public BlackjackSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
                 _gamblingService = serviceProvider.GetRequiredService<GamblingService>();
             }
-            
-            [Command, Context(ContextType.Guild)]
+
+            [Command]
+            [Context(ContextType.Guild)]
             public async Task BlackjackAsync(int bet)
             {
                 if (bet < GamblingService.MinimumBet)
@@ -50,10 +52,11 @@ namespace Rias.Modules.Gambling
                     return;
                 }
                 
-                await Service.CreateBlackjackAsync((DiscordMember) Context.User, Context.Channel, bet);
+                await Service.CreateBlackjackAsync((DiscordMember)Context.User, Context.Channel, bet);
             }
-            
-            [Command("resume"), Context(ContextType.Guild)]
+
+            [Command("resume")]
+            [Context(ContextType.Guild)]
             public async Task BlackjackResumeAsync()
             {
                 if (!Service.TryGetBlackjack(Context.User.Id, out var blackjack))
@@ -64,8 +67,9 @@ namespace Rias.Modules.Gambling
 
                 await blackjack!.ResendMessageAsync(Context.Channel);
             }
-            
-            [Command("stop"), Context(ContextType.Guild)]
+
+            [Command("stop")]
+            [Context(ContextType.Guild)]
             public async Task BlackjackStopAsync()
             {
                 if (!Service.TryRemoveBlackjack(Context.User.Id, out _))

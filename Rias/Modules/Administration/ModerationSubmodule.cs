@@ -17,12 +17,15 @@ namespace Rias.Modules.Administration
         [Name("Moderation")]
         public class ModerationSubmodule : RiasModule
         {
-            public ModerationSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public ModerationSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
             }
             
-            [Command("kick"), Context(ContextType.Guild),
-             UserPermission(Permissions.KickMembers), BotPermission(Permissions.KickMembers)]
+            [Command("kick")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.KickMembers)]
+            [BotPermission(Permissions.KickMembers)]
             public async Task KickAsync(DiscordMember member, [Remainder] string? reason = null)
             {
                 if (member.Id == Context.User.Id)
@@ -40,7 +43,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
@@ -50,8 +53,10 @@ namespace Rias.Modules.Administration
                 await member.RemoveAsync(reason);
             }
             
-            [Command("ban"), Context(ContextType.Guild),
-             UserPermission(Permissions.BanMembers), BotPermission(Permissions.BanMembers)]
+            [Command("ban")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.BanMembers)]
+            [BotPermission(Permissions.BanMembers)]
             public async Task BanAsync(DiscordMember member, [Remainder] string? reason = null)
             {
                 if (member.Id == Context.User.Id)
@@ -69,7 +74,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
@@ -79,8 +84,10 @@ namespace Rias.Modules.Administration
                 await member.BanAsync(reason: reason);
             }
             
-            [Command("softban"), Context(ContextType.Guild),
-             UserPermission(Permissions.KickMembers), BotPermission(Permissions.KickMembers | Permissions.BanMembers)]
+            [Command("softban")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.KickMembers)]
+            [BotPermission(Permissions.KickMembers | Permissions.BanMembers)]
             public async Task SoftBanAsync(DiscordMember member, [Remainder] string? reason = null)
             {
                 if (member.Id == Context.User.Id)
@@ -98,7 +105,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
@@ -109,8 +116,10 @@ namespace Rias.Modules.Administration
                 await member.UnbanAsync();
             }
             
-            [Command("pruneban"), Context(ContextType.Guild),
-             UserPermission(Permissions.BanMembers), BotPermission(Permissions.BanMembers)]
+            [Command("pruneban")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.BanMembers)]
+            [BotPermission(Permissions.BanMembers)]
             public async Task PruneBanAsync(DiscordMember member, [Remainder] string? reason = null)
             {
                 if (member.Id == Context.User.Id)
@@ -128,7 +137,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserAbove);
                     return;
@@ -138,10 +147,12 @@ namespace Rias.Modules.Administration
                 await member.BanAsync(7, reason);
             }
             
-            [Command("prune"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageMessages), BotPermission(Permissions.ManageMessages),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild),
-             Priority(2)]
+            [Command("prune")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageMessages)]
+            [BotPermission(Permissions.ManageMessages)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Priority(2)]
             public async Task PruneAsync(int amount = 100)
             {
                 if (amount < 1)
@@ -156,24 +167,26 @@ namespace Rias.Modules.Administration
                     .ToList();
 
                 if (messages.Count != 0)
-                {
                     await Context.Channel.DeleteMessagesAsync(messages);
-                }
                 else
                     await ReplyErrorAsync(Localization.AdministrationPruneLimit);
             }
 
-            [Command("prune"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageMessages), BotPermission(Permissions.ManageMessages),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild),
-             Priority(1)]
+            [Command("prune")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageMessages)]
+            [BotPermission(Permissions.ManageMessages)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Priority(1)]
             public async Task PruneAsync(int amount, DiscordMember member)
                 => await PruneUserMessagesAsync(member, amount);
 
-            [Command("prune"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageMessages), BotPermission(Permissions.ManageMessages),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild),
-             Priority(0)]
+            [Command("prune")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageMessages)]
+            [BotPermission(Permissions.ManageMessages)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Priority(0)]
             public async Task PruneAsync(DiscordMember member, int amount = 100)
                 => await PruneUserMessagesAsync(member, amount);
 
@@ -218,7 +231,7 @@ namespace Rias.Modules.Administration
                     embed.AddField(GetText(Localization.CommonReason), reason, true);
 
                 var channel = Context.Channel;
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
                 var modLogChannel = Context.Guild!.GetChannel(guildDb.ModLogChannelId);
                 if (modLogChannel != null)
                 {

@@ -2,10 +2,14 @@
 {
     public interface IWebSocketConfiguration
     {
-        public string? WebSocketHost { get; set; }
-        public ushort WebSocketPort { get; set; }
-        public bool IsSecureConnection { get; set; }
-        public string? UrlParameters { get; set; }
-        public string? Authorization { get; set; }
+        public string? WebSocketHost { get; }
+        
+        public ushort WebSocketPort { get; }
+        
+        public bool IsSecureConnection { get; }
+        
+        public string? UrlParameters { get; }
+        
+        public string? Authorization { get; }
     }
 }

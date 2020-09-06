@@ -18,23 +18,25 @@ namespace Rias.Modules.Waifu
     [Name("Waifu")]
     public class WaifuModule : RiasModule
     {
-        private readonly AnimeService _animeService;
-        private readonly HttpClient _httpClient;
-        
-        public WaifuModule(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            _animeService = serviceProvider.GetRequiredService<AnimeService>();
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
-        }
-        
         private const int WaifuStartingPrice = 1000;
         private const int SpecialWaifuPrice = 5000;
         private const int WaifuCreationPrice = 10000; 
 
         private const int WaifuPositionLimit = 1000;
         
-        [Command("claim"), Context(ContextType.Guild),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+        private readonly AnimeService _animeService;
+        private readonly HttpClient _httpClient;
+        
+        public WaifuModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+            _animeService = serviceProvider.GetRequiredService<AnimeService>();
+            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
+        }
+
+        [Command("claim")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task ClaimAsync([Remainder] string name)
         {
             var character = await _animeService.GetOrAddCharacterAsync(name);
@@ -47,18 +49,18 @@ namespace Rias.Modules.Waifu
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                Url = character is CharactersEntity animeCharacter? animeCharacter.Url : default,
+                Url = character is CharactersEntity animeCharacter ? animeCharacter.Url : default,
                 Title = character.Name,
             }.WithThumbnail(character.ImageUrl);
 
             var claimCanceled = false;
 
-            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
-            (
+            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>(
                 x => x.UserId == Context.User.Id,
                 x => x.Character!,
-                x => x.CustomCharacter!
-            )).Cast<IWaifusEntity>().ToList();
+                x => x.CustomCharacter!))
+                .Cast<IWaifusEntity>().ToList();
+            
             waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
             
             var waifu = character switch
@@ -78,7 +80,7 @@ namespace Rias.Modules.Waifu
                 : DbContext.Waifus.Where(x => x.CharacterId == character.CharacterId).ToList();
             
             var waifuPrice = WaifuStartingPrice + waifuUsers.Count * 10;
-            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
+            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity { UserId = Context.User.Id });
             if (!claimCanceled && userDb.Currency < waifuPrice)
             {
                 embed.WithDescription(GetText(Localization.WaifuClaimCurrencyNotEnough, Credentials.Currency));
@@ -126,9 +128,10 @@ namespace Rias.Modules.Waifu
 
             await ReplyAsync(embed);
         }
-        
-        [Command("divorce"), Context(ContextType.Guild),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("divorce")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task DivorceAsync([Remainder] string name)
         {
             var waifu = await GetWaifuAsync(name);
@@ -157,24 +160,25 @@ namespace Rias.Modules.Waifu
             if (waifu is CustomWaifusEntity customWaifu)
                 DbContext.Remove(customWaifu);
             else
-                DbContext.Remove((WaifusEntity) waifu);
+                DbContext.Remove((WaifusEntity)waifu);
             
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.WaifuDivorced, waifu.Name!);
         }
-        
-        [Command("all"), Context(ContextType.Guild),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("all")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task AllWaifusAsync([Remainder] DiscordMember? member = null)
         {
-            member ??= (DiscordMember) Context.User;
+            member ??= (DiscordMember)Context.User;
 
-            var allWaifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
-            (
+            var allWaifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>(
                 x => x.UserId == member.Id,
                 x => x.Character!,
-                x => x.CustomCharacter!
-            )).Cast<IWaifusEntity>().ToList();
+                x => x.CustomCharacter!))
+                .Cast<IWaifusEntity>().ToList();
+            
             allWaifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == member.Id));
             
             if (allWaifus.Count == 0)
@@ -231,9 +235,10 @@ namespace Rias.Modules.Waifu
                 }
             }.WithThumbnail(specialWaifuImage));
         }
-        
-        [Command("special"), Context(ContextType.Guild),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("special")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task SpecialWaifuAsync([Remainder] string name)
         {
             var waifu = await GetWaifuAsync(name);
@@ -249,7 +254,7 @@ namespace Rias.Modules.Waifu
                 return;
             }
             
-            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
+            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity { UserId = Context.User.Id });
             if (userDb.Currency < SpecialWaifuPrice)
             {
                 await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Credentials.Currency);
@@ -273,7 +278,7 @@ namespace Rias.Modules.Waifu
             }
             
             userDb.Currency -= SpecialWaifuPrice;
-            var currentSpecialWaifu = (IWaifusEntity) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
+            var currentSpecialWaifu = (IWaifusEntity)await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
                                       ?? await DbContext.CustomWaifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial);
 
             if (currentSpecialWaifu != null)
@@ -287,9 +292,10 @@ namespace Rias.Modules.Waifu
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.WaifuSpecial, waifu.Name!);
         }
-        
-        [Command("image"), Context(ContextType.Guild),
-         Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("image")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
         public async Task WaifuImageAsync(string url, [Remainder] string name)
         {
             var waifu = await GetWaifuAsync(name);
@@ -340,13 +346,14 @@ namespace Rias.Modules.Waifu
             if (waifu is WaifusEntity normalWaifuDb)
                 normalWaifuDb.CustomImageUrl = url;
             else
-                ((CustomWaifusEntity) waifu).ImageUrl = url;
+                ((CustomWaifusEntity)waifu).ImageUrl = url;
                 
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.WaifuImageSet, waifu.Name!);
         }
-        
-        [Command("position"), Context(ContextType.Guild)]
+
+        [Command("position")]
+        [Context(ContextType.Guild)]
         public async Task WaifuPositionAsync(int position, [Remainder] string name)
         {
             var waifu = await GetWaifuAsync(name);
@@ -375,12 +382,12 @@ namespace Rias.Modules.Waifu
                 return;
             }
             
-            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
-            (
+            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>(
                 x => x.UserId == Context.User.Id,
                 x => x.Character!,
-                x => x.CustomCharacter!
-            )).Cast<IWaifusEntity>().ToList();
+                x => x.CustomCharacter!))
+                .Cast<IWaifusEntity>().ToList();
+            
             waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
             
             waifus = waifus.Where(x => x.Position != 0)
@@ -402,12 +409,13 @@ namespace Rias.Modules.Waifu
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.WaifuPositionSet, waifu.Name!, position);
         }
-        
-        [Command("create"), Context(ContextType.Guild),
-         Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("create")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
         public async Task CreateWaifusAsync(string url, [Remainder] string name)
         {
-            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
+            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity { UserId = Context.User.Id });
             if (userDb.Currency < WaifuCreationPrice)
             {
                 await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Credentials.Currency);
@@ -461,7 +469,7 @@ namespace Rias.Modules.Waifu
             }
             
             userDb.Currency -= WaifuCreationPrice;
-            var currentSpecialWaifu = (IWaifusEntity) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
+            var currentSpecialWaifu = (IWaifusEntity)await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
                                       ?? await DbContext.CustomWaifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial);
 
             if (currentSpecialWaifu != null)
@@ -471,12 +479,12 @@ namespace Rias.Modules.Waifu
                     currentWaifuDb.CustomImageUrl = null;
             }
             
-            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
-            (
+            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>(
                 x => x.UserId == Context.User.Id,
                 x => x.Character!,
-                x => x.CustomCharacter!
-            )).Cast<IWaifusEntity>().ToList();
+                x => x.CustomCharacter!))
+                .Cast<IWaifusEntity>().ToList();
+            
             waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
 
             await DbContext.AddAsync(new CustomWaifusEntity
@@ -495,12 +503,12 @@ namespace Rias.Modules.Waifu
         
         private async Task<IWaifusEntity?> GetWaifuAsync(string name)
         {
-            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>
-            (
+            var waifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>(
                 x => x.UserId == Context.User.Id,
                 x => x.Character!,
-                x => x.CustomCharacter!
-            )).Cast<IWaifusEntity>().ToList();
+                x => x.CustomCharacter!))
+                .Cast<IWaifusEntity>().ToList();
+            
             waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
             
             IWaifusEntity? waifu;

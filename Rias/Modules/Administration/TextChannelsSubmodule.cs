@@ -15,13 +15,16 @@ namespace Rias.Modules.Administration
         [Name("Text Channels")]
         public class TextChannelsSubmodule : RiasModule
         {
-            public TextChannelsSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public TextChannelsSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
             }
-            
-            [Command("createtextchannel"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("createtextchannel")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateTextChannelAsync([Remainder] string name)
             {
                 if (name.Length < 1 || name.Length > 100)
@@ -33,11 +36,13 @@ namespace Rias.Modules.Administration
                 await Context.Guild!.CreateTextChannelAsync(name);
                 await ReplyConfirmationAsync(Localization.AdministrationTextChannelCreated, name);
             }
-            
-            [Command("deletetextchannel"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task DeleteTextChannelAsync([TextChannel, Remainder] DiscordChannel channel)
+
+            [Command("deletetextchannel")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            public async Task DeleteTextChannelAsync([TextChannel] [Remainder] DiscordChannel channel)
             {
                 if (!ChannelExtensions.CheckViewChannelPermission(Context.CurrentMember!, channel))
                 {
@@ -49,10 +54,12 @@ namespace Rias.Modules.Administration
                 if (channel.Id != Context.Channel.Id)
                     await ReplyConfirmationAsync(Localization.AdministrationTextChannelDeleted, channel.Name);
             }
-            
-            [Command("renametextchannel"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("renametextchannel")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameTextChannelAsync([Remainder] string names)
             {
                 var namesSplit = names.Split("->");
@@ -86,8 +93,9 @@ namespace Rias.Modules.Administration
                 await channel.ModifyAsync(x => x.Name = newName);
                 await ReplyConfirmationAsync(Localization.AdministrationTextChannelRenamed, oldName, newName);
             }
-            
-            [Command("channeltopic"), Context(ContextType.Guild)]
+
+            [Command("channeltopic")]
+            [Context(ContextType.Guild)]
             public async Task ChannelTopicAsync()
             {
                 if (string.IsNullOrEmpty(Context.Channel.Topic))
@@ -106,9 +114,11 @@ namespace Rias.Modules.Administration
                 await ReplyAsync(embed);
             }
 
-            [Command("setchanneltopic"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("setchanneltopic")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetChannelTopic([Remainder] string? topic = null)
             {
                 if (!string.IsNullOrEmpty(topic) && topic.Length > 1024)
@@ -135,10 +145,12 @@ namespace Rias.Modules.Administration
                 }
             }
 
-            [Command("setnsfwchannel"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task SetNsfwChannelAsync([TextChannel, Remainder] DiscordChannel? channel = null)
+            [Command("setnsfwchannel")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            public async Task SetNsfwChannelAsync([TextChannel] [Remainder] DiscordChannel? channel = null)
             {
                 channel ??= Context.Channel;
 

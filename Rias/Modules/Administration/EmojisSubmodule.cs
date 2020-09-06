@@ -21,14 +21,17 @@ namespace Rias.Modules.Administration
         {
             private readonly HttpClient _httpClient;
             
-            public EmojisSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public EmojisSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
                 _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             }
             
-            [Command("addemoji"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageEmojis), BotPermission(Permissions.ManageEmojis),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("addemoji")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageEmojis)]
+            [BotPermission(Permissions.ManageEmojis)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AddEmojiAsync(string url, [Remainder] string name)
             {
                 if (!Uri.TryCreate(url, UriKind.Absolute, out var emojiUri))
@@ -86,8 +89,9 @@ namespace Rias.Modules.Administration
                         return;
                     }
                 }
-
-                if (emojiStream.Length / 1024 > 256) //in KB
+                
+                // Check if length is bigger than 256 KB
+                if (emojiStream.Length / 1024 > 256)
                 {
                     await ReplyErrorAsync(Localization.AdministrationEmojiSizeLimit);
                     return;
@@ -99,9 +103,11 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationEmojiCreated, name);
             }
             
-            [Command("deleteemoji"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageEmojis), BotPermission(Permissions.ManageEmojis),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("deleteemoji")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageEmojis)]
+            [BotPermission(Permissions.ManageEmojis)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task DeleteEmojiAsync([Remainder] string name)
             {
                 var emoji = await GetEmojiAsync(name);
@@ -122,9 +128,11 @@ namespace Rias.Modules.Administration
                 }
             }
             
-            [Command("renameemoji"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageEmojis), BotPermission(Permissions.ManageEmojis),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("renameemoji")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageEmojis)]
+            [BotPermission(Permissions.ManageEmojis)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameEmojiAsync([Remainder] string names)
             {
                 var emojis = names.Split("->");
@@ -160,8 +168,10 @@ namespace Rias.Modules.Administration
                     ulong.TryParse(value, out emojiId);
                 
                 if (emojiId > 0)
+                {
                     return (await Context.Guild!.GetEmojisAsync()).FirstOrDefault(x => x.Id == emojiId)
                            ?? await Context.Guild!.GetEmojiAsync(emojiId);
+                }
 
                 value = value.Replace(" ", "_");
                 return (await Context.Guild!.GetEmojisAsync()).FirstOrDefault(e => string.Equals(e.Name, value, StringComparison.OrdinalIgnoreCase));

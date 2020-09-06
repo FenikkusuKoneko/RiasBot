@@ -12,16 +12,18 @@ namespace Rias.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class BotPermissionAttribute : RiasCheckAttribute
     {
-        public readonly Permissions? GuildPermissions;
+        private readonly Permissions? _guildPermissions;
         
+        public Permissions? GuildPermissions => _guildPermissions;
+
         public BotPermissionAttribute(Permissions permissions)
         {
-            GuildPermissions = permissions;
+            _guildPermissions = permissions;
         }
 
         public override ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {
-            if (!GuildPermissions.HasValue)
+            if (!_guildPermissions.HasValue)
                 return CheckResult.Successful;
 
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
@@ -30,11 +32,11 @@ namespace Rias.Attributes
             if (currentMember is null)
                 return CheckResult.Unsuccessful(localization.GetText(null, Localization.AttributeBotPermissionNotGuild));
 
-            if (currentMember.GetPermissions().HasPermission(GuildPermissions.Value))
+            if (currentMember.GetPermissions().HasPermission(_guildPermissions.Value))
                 return CheckResult.Successful;
 
             var botPerms = currentMember.GetPermissions();
-            var requiredPerms = GuildPermissions ^ (GuildPermissions & botPerms);
+            var requiredPerms = _guildPermissions ^ (_guildPermissions & botPerms);
 
             var requiredPermsList = requiredPerms
                 .GetValueOrDefault()
@@ -42,8 +44,8 @@ namespace Rias.Attributes
                 .Split(",", StringSplitOptions.RemoveEmptyEntries);
 
             var guildId = context.Guild?.Id;
-            var permsHumanized = requiredPermsList.Humanize(x => $"**{x.Titleize()}**",
-                localization.GetText(guildId, Localization.CommonAnd).ToLowerInvariant());
+            var permsHumanized = requiredPermsList.Humanize(
+                x => $"**{x.Titleize()}**", localization.GetText(guildId, Localization.CommonAnd).ToLowerInvariant());
             return CheckResult.Unsuccessful(localization.GetText(guildId, Localization.AttributeBotGuildPermissions, permsHumanized));
         }
     }

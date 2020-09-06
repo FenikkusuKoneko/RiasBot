@@ -19,20 +19,23 @@ namespace Rias.Modules.Profile
     public class ProfileModule : RiasModule<ProfileService>
     {
         private readonly HttpClient _httpClient;
-        public ProfileModule(IServiceProvider serviceProvider) : base(serviceProvider)
+        
+        public ProfileModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
-        
-        [Command, Context(ContextType.Guild),
-         Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
         public async Task ProfileAsync(DiscordMember? member = null)
         {
-            member ??= (DiscordMember) Context.User;
+            member ??= (DiscordMember)Context.User;
             await Context.Channel.TriggerTypingAsync();
             
             var currentMember = Context.Guild!.CurrentMember;
-            if (!UserExtensions.GetPermissions(currentMember).HasPermission(Permissions.AttachFiles))
+            if (!currentMember.GetPermissions().HasPermission(Permissions.AttachFiles))
             {
                 await ReplyErrorAsync(Localization.ProfileNoAttachFilesPermission);
                 return;
@@ -47,12 +50,13 @@ namespace Rias.Modules.Profile
             await using var profileImage = await Service.GenerateProfileImageAsync(member);
             await Context.Channel.SendFileAsync($"{member.Id}_profile.png", profileImage);
         }
-        
-        [Command("background"), Context(ContextType.Guild),
-         Cooldown(1, 30, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("background")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 30, CooldownMeasure.Seconds, BucketType.User)]
         public async Task BackgroundAsync(string url)
         {
-            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
+            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity { UserId = Context.User.Id });
             if (userDb.Currency < 1000)
             {
                 await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Credentials.Currency);
@@ -116,14 +120,15 @@ namespace Rias.Modules.Profile
 
             userDb.Currency -= 1000;
             
-            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity {UserId = Context.User.Id, BackgroundDim = 50});
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity { UserId = Context.User.Id, BackgroundDim = 50 });
             profileDb.BackgroundUrl = url;
             
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.ProfileBackgroundSet);
         }
-        
-        [Command("dim"), Context(ContextType.Guild)]
+
+        [Command("dim")]
+        [Context(ContextType.Guild)]
         public async Task DimAsync(int dim)
         {
             if (dim < 0 || dim > 100)
@@ -132,14 +137,15 @@ namespace Rias.Modules.Profile
                 return;
             }
             
-            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity {UserId = Context.User.Id});
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity { UserId = Context.User.Id });
             profileDb.BackgroundDim = dim;
 
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.ProfileBackgroundDimSet, dim);
         }
-        
-        [Command("biography"), Context(ContextType.Guild)]
+
+        [Command("biography")]
+        [Context(ContextType.Guild)]
         public async Task BiographyAsync([Remainder] string bio)
         {
             if (bio.Length > 200)
@@ -148,14 +154,15 @@ namespace Rias.Modules.Profile
                 return;
             }
             
-            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity {UserId = Context.User.Id, BackgroundDim = 50});
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity { UserId = Context.User.Id, BackgroundDim = 50 });
             profileDb.Biography = bio;
 
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.ProfileBiographySet);
         }
-        
-        [Command("color"), Context(ContextType.Guild)]
+
+        [Command("color")]
+        [Context(ContextType.Guild)]
         public async Task ColorAsync([Remainder] DiscordColor color)
         {
             if (!await Service.CheckColorAsync(Context.User, color))
@@ -164,14 +171,15 @@ namespace Rias.Modules.Profile
                 return;
             }
             
-            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity {UserId = Context.User.Id, BackgroundDim = 50});
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity { UserId = Context.User.Id, BackgroundDim = 50 });
             profileDb.Color = color.ToString();
 
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.ProfileColorSet);
         }
-        
-        [Command("badge"), Context(ContextType.Guild)]
+
+        [Command("badge")]
+        [Context(ContextType.Guild)]
         public async Task BadgeAsync(int index, [Remainder] string? text = null)
         {
             index--;
@@ -213,8 +221,7 @@ namespace Rias.Modules.Profile
                 return;
             }
             
-            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id,
-                () => new ProfileEntity {UserId = Context.User.Id, BackgroundDim = 50});
+            var profileDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new ProfileEntity { UserId = Context.User.Id, BackgroundDim = 50 });
             profileDb.Badges ??= new string[3];
                 
             profileDb.Badges[index] = text!;

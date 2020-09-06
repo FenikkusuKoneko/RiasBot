@@ -13,12 +13,14 @@ namespace Rias.Modules.Gambling
     [Name("Gambling")]
     public partial class GamblingModule : RiasModule<GamblingService>
     {
-        public GamblingModule(IServiceProvider serviceProvider) : base(serviceProvider)
+        public GamblingModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
         }
         
-        [Command("wheel"), Context(ContextType.Guild),
-         Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.User)]
+        [Command("wheel")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task WheelAsync(int bet)
         {
             if (bet < GamblingService.MinimumBet)
@@ -42,10 +44,10 @@ namespace Rias.Modules.Gambling
 
             var random = new Random();
             var position = random.Next(8);
-            var arrow = Service.Arrows[position];
-            var multiplier = Service.Multipliers[position];
+            var arrow = GamblingService.Arrows[position];
+            var multiplier = GamblingService.Multipliers[position];
 
-            var win = (int) (bet * multiplier) - bet;
+            var win = (int)(bet * multiplier) - bet;
             await Service.AddUserCurrencyAsync(Context.User.Id, win);
 
             var winString = win >= 0

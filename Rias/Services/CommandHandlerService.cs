@@ -34,12 +34,14 @@ namespace Rias.Services
         private readonly XpService _xpService;
         
         private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.json");
-        public static int CommandsAttempted;
-        public static int CommandsExecuted;
+        
+        private int _commandsAttempted;
+        private int _commandsExecuted;
 
         private List<Type> _typeParsers = new List<Type>();
 
-        public CommandHandlerService(IServiceProvider serviceProvider) : base(serviceProvider)
+        public CommandHandlerService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _commandService = serviceProvider.GetRequiredService<CommandService>();
             _botService = serviceProvider.GetRequiredService<BotService>();
@@ -51,6 +53,10 @@ namespace Rias.Services
 
             RiasBot.Client.MessageCreated += MessageCreatedAsync;
         }
+
+        public int CommandsAttempted => _commandsAttempted;
+        
+        public int CommandsExecuted => _commandsExecuted;
         
         private void LoadCommands()
         {
@@ -173,9 +179,9 @@ namespace Rias.Services
             
             if (args.Channel.Type == ChannelType.Text)
             {
-                await RunTaskAsync(_botService.AddAssignableRoleAsync((DiscordMember) args.Author));
+                await RunTaskAsync(_botService.AddAssignableRoleAsync((DiscordMember)args.Author));
                 await RunTaskAsync(_xpService.AddUserXpAsync(args.Author));
-                await RunTaskAsync(_xpService.AddGuildUserXpAsync((DiscordMember) args.Author, args.Channel));
+                await RunTaskAsync(_xpService.AddGuildUserXpAsync((DiscordMember)args.Author, args.Channel));
             }
             
             var prefix = await GetGuildPrefixAsync(args.Guild);
@@ -230,11 +236,11 @@ namespace Rias.Services
                     await message.DeleteAsync();
                 }
                 
-                CommandsExecuted++;
+                _commandsExecuted++;
                 return;
             }
             
-            CommandsAttempted++;
+            _commandsAttempted++;
 
             switch (result)
             {
@@ -244,7 +250,7 @@ namespace Rias.Services
                 case ChecksFailedResult _:
                 case TypeParseFailedResult _:
                 case ArgumentParseFailedResult _:
-                    await RunTaskAsync(SendFailedResultsAsync(context, new []{ (FailedResult) result }));
+                    await RunTaskAsync(SendFailedResultsAsync(context, new[] { (FailedResult)result }));
                     break;
                 case CommandOnCooldownResult commandOnCooldownResult:
                     await RunTaskAsync(SendCommandOnCooldownMessageAsync(context, commandOnCooldownResult));
@@ -283,6 +289,7 @@ namespace Rias.Services
                             reasons.Add(GetText(guildId, Localization.TypeParserPrimitiveType, context.Prefix, typeParseFailedResult.Parameter.Command.Name));
                             parsedPrimitiveType = true;
                         }
+                        
                         break;
                     case ArgumentParseFailedResult argumentParseFailedResult:
                         var rawArguments = Regex.Matches(argumentParseFailedResult.RawArguments, @"\w+|""[\w\s]*""");
@@ -299,6 +306,7 @@ namespace Rias.Services
                             reasons.Add(GetText(guildId, Localization.ServiceCommandManyArguments, context.Prefix, argumentParseFailedResult.Command.Name));
                             areTooManyArguments = true;
                         }
+                        
                         break;
                 }
             }
@@ -314,7 +322,7 @@ namespace Rias.Services
         private async Task SendCommandOnCooldownMessageAsync(RiasCommandContext context, CommandOnCooldownResult result)
         {
             var (cooldown, retryAfter) = result.Cooldowns[0];
-            var cooldownKey = (BucketType) cooldown.BucketType switch
+            var cooldownKey = (BucketType)cooldown.BucketType switch
             {
                 BucketType.Guild => _cooldownService.GenerateKey(context.Command.Name, context.Guild!.Id),
                 BucketType.User => _cooldownService.GenerateKey(context.Command.Name, context.User.Id),
@@ -329,7 +337,9 @@ namespace Rias.Services
             _cooldownService.Add(cooldownKey);
             
             retryAfter += TimeSpan.FromSeconds(1);
-            await context.Channel.SendErrorMessageAsync(GetText(context.Guild?.Id, Localization.ServiceCommandCooldown,
+            await context.Channel.SendErrorMessageAsync(GetText(
+                context.Guild?.Id,
+                Localization.ServiceCommandCooldown,
                 retryAfter.Humanize(culture: new CultureInfo(Localization.GetGuildLocale(context.Guild?.Id)), minUnit: TimeUnit.Second)));
             
             await Task.Delay(retryAfter);
@@ -360,21 +370,6 @@ namespace Rias.Services
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return (await db.Users.FirstOrDefaultAsync(x => x.UserId == user.Id))?.IsBanned ?? false;
-        }
-        
-        public class ModuleInfo
-        {
-            public string? Name { get; set; }
-            public string? Aliases { get; set; }
-            public IReadOnlyList<CommandInfo>? Commands { get; set; }
-            public IReadOnlyList<ModuleInfo>? Submodules { get; set; }
-        }
-
-        public class CommandInfo
-        {
-            public string? Aliases { get; set; }
-            public string? Description { get; set; }
-            public IReadOnlyList<string>? Remarks { get; set; }
         }
     }
 }

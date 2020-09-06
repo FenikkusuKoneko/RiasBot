@@ -18,13 +18,14 @@ namespace Rias.Modules.Searches
         {
             private readonly HttpClient _httpClient;
             
-            public CuteGirlsSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public CuteGirlsSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
                 _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             }
-            
-            [Command("neko"),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+            [Command("neko")]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task NekoAsync()
             {
                 using var response = await _httpClient.GetAsync("https://riasbot.me/api/neko");
@@ -45,9 +46,9 @@ namespace Rias.Modules.Searches
 
                 await ReplyAsync(embed);
             }
-            
-            [Command("kitsune"),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+            [Command("kitsune")]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task KitsuneAsync()
             {
                 using var response = await _httpClient.GetAsync("https://riasbot.me/api/kitsune");

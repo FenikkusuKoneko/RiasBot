@@ -19,17 +19,20 @@ namespace Rias.Modules.Administration
     {
         private readonly HttpClient _httpClient;
 
-        public AdministrationModule(IServiceProvider serviceProvider) : base(serviceProvider)
+        public AdministrationModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
         
-        [Command("setgreet"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator), BotPermission(Permissions.ManageWebhooks),
-         Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
+        [Command("setgreet")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
+        [BotPermission(Permissions.ManageWebhooks)]
+        [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task SetGreetAsync()
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             if (string.IsNullOrEmpty(guildDb.GreetMessage))
             {
                 await ReplyErrorAsync(Localization.AdministrationGreetMessageNotSet);
@@ -67,8 +70,9 @@ namespace Rias.Modules.Administration
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetEnabled)}\n\n{greetMessage}");
         }
         
-        [Command("greetmessage"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator)]
+        [Command("greetmessage")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
         public async Task GreetMessageAsync([Remainder] string message)
         {
             if (message.Length > 1500)
@@ -85,7 +89,7 @@ namespace Rias.Modules.Administration
                 return;
             }
             
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             guildDb.GreetMessage = message;
             await DbContext.SaveChangesAsync();
             
@@ -95,12 +99,14 @@ namespace Rias.Modules.Administration
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetMessageSet)}\n\n{greetMessage}");
         }
         
-        [Command("setbye"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator), BotPermission(Permissions.ManageWebhooks),
-         Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
+        [Command("setbye")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
+        [BotPermission(Permissions.ManageWebhooks)]
+        [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task SetByeAsync()
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             if (string.IsNullOrEmpty(guildDb.ByeMessage))
             {
                 await ReplyErrorAsync(Localization.AdministrationByeMessageNotSet);
@@ -138,8 +144,9 @@ namespace Rias.Modules.Administration
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeEnabled)}\n\n{byeMessage}");
         }
         
-        [Command("byemessage"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator)]
+        [Command("byemessage")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
         public async Task ByeMessageAsync([Remainder] string message)
         {
             if (message.Length > 1500)
@@ -156,10 +163,9 @@ namespace Rias.Modules.Administration
                 return;
             }
             
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             guildDb.ByeMessage = message;
             await DbContext.SaveChangesAsync();
-
             
             if (byeMessageParsed)
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeMessageSet)}\n\n{customMessage.Content}", embed: customMessage.Embed);
@@ -167,12 +173,13 @@ namespace Rias.Modules.Administration
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeMessageSet)}\n\n{byeMessage}");
         }
         
-        [Command("setmodlog"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator)]
+        [Command("setmodlog")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
         public async Task SetModLogAsync()
         {
             var modLogSet = false;
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             if (guildDb.ModLogChannelId != Context.Channel.Id)
             {
                 guildDb.ModLogChannelId = Context.Channel.Id;

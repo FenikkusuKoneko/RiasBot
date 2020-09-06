@@ -23,16 +23,18 @@ namespace Rias.Modules.Xp
     {
         private readonly HttpClient _httpClient;
         
-        public XpModule(IServiceProvider serviceProvider) : base(serviceProvider)
+        public XpModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
-        
-        [Command("xp"), Context(ContextType.Guild),
-         Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("xp")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
         public async Task XpAsync(DiscordMember? member = null)
         {
-            member ??= (DiscordMember) Context.User;
+            member ??= (DiscordMember)Context.User;
             await Context.Channel.TriggerTypingAsync();
 
             var currentMember = Context.Guild!.CurrentMember;
@@ -51,9 +53,9 @@ namespace Rias.Modules.Xp
             await using var xpImage = await Service.GenerateXpImageAsync(member);
             await Context.Channel.SendFileAsync($"{member.Id}_xp.png", xpImage);
         }
-        
-        [Command("globalxpleaderboard"),
-         Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("globalxpleaderboard")]
+        [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
         public async Task GlobalXpLeaderboardAsync(int page = 1)
         {
             page--;
@@ -89,9 +91,10 @@ namespace Rias.Modules.Xp
             embed.WithDescription(description.ToString());
             await ReplyAsync(embed);
         }
-        
-        [Command("xpleaderboard"), Context(ContextType.Guild),
-         Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("xpleaderboard")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
         public async Task XpLeaderboardAsync(int page = 1)
         {
             page--;
@@ -132,13 +135,15 @@ namespace Rias.Modules.Xp
             embed.WithDescription(description.ToString());
             await ReplyAsync(embed);
         }
-        
-        [Command("xpnotification"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator), BotPermission(Permissions.ManageWebhooks),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-        public async Task XpNotificationAsync([TextChannel, Remainder] DiscordChannel? channel = null)
+
+        [Command("xpnotification")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
+        [BotPermission(Permissions.ManageWebhooks)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+        public async Task XpNotificationAsync([TextChannel] [Remainder] DiscordChannel? channel = null)
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             
             if (channel is null)
             {
@@ -180,11 +185,12 @@ namespace Rias.Modules.Xp
             }
         }
 
-        [Command("xpmessage"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator)]
+        [Command("xpmessage")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
         public async Task XpMessageAsync([Remainder] string? message = null)
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             if (string.IsNullOrEmpty(message))
             {
                 guildDb.XpLevelUpMessage = null;
@@ -199,7 +205,7 @@ namespace Rias.Modules.Xp
                 return;
             }
 
-            var xpMessage = XpService.ReplacePlaceholders((DiscordMember) Context.User, null, 1, message);
+            var xpMessage = XpService.ReplacePlaceholders((DiscordMember)Context.User, null, 1, message);
             var xpMessageParsed = RiasUtilities.TryParseMessage(xpMessage, out var customMessage);
 
             if (xpMessageParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
@@ -241,12 +247,13 @@ namespace Rias.Modules.Xp
                 await Context.Channel.SendMessageAsync(reply);
             }
         }
-        
-        [Command("xpmessagereward"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator)]
+
+        [Command("xpmessagereward")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
         public async Task XpMessageRewardAsync([Remainder] string? message = null)
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             if (string.IsNullOrEmpty(message))
             {
                 guildDb.XpLevelUpRoleRewardMessage = null;
@@ -266,7 +273,7 @@ namespace Rias.Modules.Xp
             var level = xpRoles.Count != 0 ? xpRoles[0].Level : 0;
             var role = xpRoles.Count != 0 ? Context.Guild!.GetRole(xpRoles[0].RoleId) : null;
 
-            var xpMessageReward = XpService.ReplacePlaceholders((DiscordMember) Context.User, role, level, message);
+            var xpMessageReward = XpService.ReplacePlaceholders((DiscordMember)Context.User, role, level, message);
             var xpMessageRewardParsed = RiasUtilities.TryParseMessage(xpMessageReward, out var customMessage);
             if (xpMessageRewardParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
             {
@@ -307,9 +314,11 @@ namespace Rias.Modules.Xp
                 await Context.Channel.SendMessageAsync(reply);
             }
         }
-        
-        [Command("leveluprolereward"), Context(ContextType.Guild),
-         UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles)]
+
+        [Command("leveluprolereward")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.ManageRoles)]
+        [BotPermission(Permissions.ManageRoles)]
         public async Task LevelUpRoleRewardAsync(int level, [Remainder] DiscordRole? role = null)
         {
             if (level < 1)
@@ -344,17 +353,19 @@ namespace Rias.Modules.Xp
                 return;
             }
 
-            var xpRoleDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id && (x.Level == level || x.RoleId == role.Id),
-                () => new GuildXpRolesEntity {GuildId = Context.Guild!.Id});
+            var xpRoleDb = await DbContext.GetOrAddAsync(
+                x => x.GuildId == Context.Guild!.Id && (x.Level == level || x.RoleId == role.Id),
+                () => new GuildXpRolesEntity { GuildId = Context.Guild!.Id });
             xpRoleDb.Level = level;
             xpRoleDb.RoleId = role.Id;
             
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.XpLevelUpRoleRewardSet, role.Name, level);
         }
-        
-        [Command("leveluprolerewardlist"), Context(ContextType.Guild),
-         BotPermission(Permissions.ManageRoles)]
+
+        [Command("leveluprolerewardlist")]
+        [Context(ContextType.Guild)]
+        [BotPermission(Permissions.ManageRoles)]
         public async Task LevelUpRoleRewardListAsync()
         {
             var levelRoles = await DbContext.GetOrderedListAsync<GuildXpRolesEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Level);
@@ -374,9 +385,10 @@ namespace Rias.Modules.Xp
                 Description = string.Join('\n', items.Select(lr => $"{GetText(Localization.XpLevelX, lr.Level)}: {Context.Guild!.GetRole(lr.RoleId).Mention}"))
             });
         }
-        
-        [Command("resetserverxp"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator)]
+
+        [Command("resetserverxp")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
         public async Task ResetGuildXpAsync()
         {
             await ReplyConfirmationAsync(Localization.XpResetGuildXpConfirmation);

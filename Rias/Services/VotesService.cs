@@ -22,9 +22,9 @@ namespace Rias.Services
     {
         private readonly HttpClient _httpClient;
         private readonly WebSocketClient? _webSocket;
-        private Timer? DblTimer { get; }
-        
-        public VotesService(IServiceProvider serviceProvider) : base(serviceProvider)
+
+        public VotesService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _httpClient = new HttpClient();
             
@@ -46,6 +46,8 @@ namespace Rias.Services
             }
         }
         
+        private Timer? DblTimer { get; }
+        
         private async Task CheckVotesAsync()
         {
             using var scope = RiasBot.CreateScope();
@@ -53,7 +55,7 @@ namespace Rias.Services
             var votes = await db.Votes.Where(x => !x.Checked).ToListAsync();
             foreach (var vote in votes)
             {
-                var userDb = await db.GetOrAddAsync(x => x.UserId == vote.UserId, () => new UsersEntity {UserId = vote.UserId});
+                var userDb = await db.GetOrAddAsync(x => x.UserId == vote.UserId, () => new UsersEntity { UserId = vote.UserId });
                 if (userDb.IsBlacklisted)
                 {
                     db.Remove(vote);
@@ -107,7 +109,7 @@ namespace Rias.Services
                 }
 
                 var reward = voteDb.IsWeekend ? 50 : 25;
-                var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity {UserId = userId});
+                var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity { UserId = userId });
                 userDb.Currency += reward;
 
                 voteDb.Checked = true;

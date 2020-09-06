@@ -12,15 +12,17 @@ namespace Rias.Modules.Commands
     [Name("Commands")]
     public class CommandsModule : RiasModule
     {
-        public CommandsModule(IServiceProvider serviceProvider) : base(serviceProvider)
+        public CommandsModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
         }
         
-        [Command("deletecommandmessage"), Context(ContextType.Guild),
-         UserPermission(Permissions.Administrator)]
+        [Command("deletecommandmessage")]
+        [Context(ContextType.Guild)]
+        [UserPermission(Permissions.Administrator)]
         public async Task DeleteCommandMessageAsync()
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             guildDb.DeleteCommandMessage = !guildDb.DeleteCommandMessage;
             await DbContext.SaveChangesAsync();
             

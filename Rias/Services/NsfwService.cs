@@ -16,45 +16,41 @@ namespace Rias.Services
     [AutoStart]
     public class NsfwService : RiasService
     {
-        private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
-        private readonly HashSet<string> _downloadedTags = new HashSet<string>();
-        private readonly HttpClient _httpClient;
-        
         private const string DanbooruApi = "https://danbooru.donmai.us/posts.json?limit=100&tags=rating:explicit+";
         private const string KonachanApi = "https://konachan.com/post.json?s=post&q=index&limit=100&tags=rating:explicit+";
         private const string YandereApi = "https://yande.re/post.json?limit=100&tags=rating:explicit+";
         private const string GelbooruApi = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=100&tags=rating:explicit+";
+        
+        private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
+        private readonly HashSet<string> _downloadedTags = new HashSet<string>();
+        private readonly HttpClient _httpClient;
 
         private readonly ImmutableHashSet<string> _blacklistTags = ImmutableHashSet.Create("loli", "shota", "cub");
         
-        public bool CacheInitialized { get; private set; }
-        
-        public NsfwService(IServiceProvider serviceProvider) : base(serviceProvider)
+        public NsfwService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             RunTaskAsync(InitializeAsync());
         }
         
-        public async Task InitializeAsync()
+        public enum NsfwImageApiProvider
         {
-            var danbooruImages = await DeserializeJsonHentaiAsync(DanbooruApi);
-            await PopulateCacheAsync(danbooruImages, NsfwImageApiProvider.Danbooru);
-            var konachanImages = await DeserializeJsonHentaiAsync(KonachanApi);
-            await PopulateCacheAsync(konachanImages, NsfwImageApiProvider.Konachan);
-            var yandereImages = await DeserializeJsonHentaiAsync(YandereApi);
-            await PopulateCacheAsync(yandereImages, NsfwImageApiProvider.Yandere);
-            var gelbooruImages = await DeserializeXmlHentaiAsync(GelbooruApi);
-            await PopulateCacheAsync(gelbooruImages, NsfwImageApiProvider.Gelbooru);
-
-            CacheInitialized = true;
+            Danbooru = 0,
+            Konachan = 1,
+            Yandere = 2,
+            Gelbooru = 3,
+            Random = 4
         }
         
+        public bool CacheInitialized { get; private set; }
+
         public async Task<NsfwImage?> GetNsfwImageAsync(NsfwImageApiProvider provider, string? tags = null)
         {
             tags = tags?.ToLower();
             var random = new Random();
             if (provider == NsfwImageApiProvider.Random)
-                provider = (NsfwImageApiProvider) random.Next(4);
+                provider = (NsfwImageApiProvider)random.Next(4);
 
             var nsfwImages = _cache.Get<HashSet<NsfwImage>>(provider);
             List<NsfwImage> nsfwImagesList;
@@ -84,6 +80,20 @@ namespace Rias.Services
                 return null;
             
             return nsfwImagesList[random.Next(nsfwImagesList.Count)];
+        }
+        
+        private async Task InitializeAsync()
+        {
+            var danbooruImages = await DeserializeJsonHentaiAsync(DanbooruApi);
+            await PopulateCacheAsync(danbooruImages, NsfwImageApiProvider.Danbooru);
+            var konachanImages = await DeserializeJsonHentaiAsync(KonachanApi);
+            await PopulateCacheAsync(konachanImages, NsfwImageApiProvider.Konachan);
+            var yandereImages = await DeserializeJsonHentaiAsync(YandereApi);
+            await PopulateCacheAsync(yandereImages, NsfwImageApiProvider.Yandere);
+            var gelbooruImages = await DeserializeXmlHentaiAsync(GelbooruApi);
+            await PopulateCacheAsync(gelbooruImages, NsfwImageApiProvider.Gelbooru);
+
+            CacheInitialized = true;
         }
         
         private async Task PopulateCacheAsync(IList<NsfwImageApi>? nsfwImagesApi, NsfwImageApiProvider provider)
@@ -166,7 +176,7 @@ namespace Rias.Services
                 if (!response.IsSuccessStatusCode) return null;
 
                 await using var stream = await response.Content.ReadAsStreamAsync();
-                using var reader = XmlReader.Create(stream, new XmlReaderSettings {Async = true});
+                using var reader = XmlReader.Create(stream, new XmlReaderSettings { Async = true });
             
                 var nsfwImages = new List<NsfwImageApi>();
                 while (await reader.ReadAsync())
@@ -193,11 +203,13 @@ namespace Rias.Services
                 return null;
             }
         }
-        
+
         public class NsfwImage
         {
             public string? Url { get; set; }
+            
             public IList<string>? Tags { get; set; }
+            
             public NsfwImageApiProvider? Provider { get; set; }
         }
         
@@ -211,15 +223,6 @@ namespace Rias.Services
             
             [JsonProperty("tag_string")]
             public string? TagString { get; set; }
-        }
-        
-        public enum NsfwImageApiProvider
-        {
-            Danbooru = 0,
-            Konachan = 1,
-            Yandere = 2,
-            Gelbooru = 3,
-            Random = 4
         }
     }
 }

@@ -10,64 +10,67 @@ namespace Rias.Implementation
 {
     public class RiasCommandContext : CommandContext
     {
-        /// <summary>
-        /// Gets the main bot.
-        /// </summary>
-        public readonly RiasBot RiasBot;
-
-        /// <summary>
-        /// Gets the logged-in client;
-        /// </summary>
-        public readonly DiscordClient Client;
+        private readonly DiscordClient _client = null!;
+        private readonly DiscordGuild? _guild;
+        private readonly DiscordChannel _channel;
+        private readonly DiscordUser _user;
+        private readonly DiscordMessage _message;
+        private readonly string _prefix;
+        private readonly InteractivityExtension _interactivity;
         
+        public RiasCommandContext(IServiceProvider serviceProvider, DiscordMessage message, string prefix)
+            : base(serviceProvider)
+        {
+            var bot = serviceProvider.GetRequiredService<RiasBot>();
+            _guild = message.Channel.Guild;
+
+            if (_guild is not null)
+                _client = bot.Client.ShardClients.FirstOrDefault(x => x.Value.Guilds.ContainsKey(_guild.Id)).Value;
+
+            _client ??= bot.Client.ShardClients[0];
+            
+            _channel = message.Channel;
+            _user = message.Author;
+            _message = message;
+            _prefix = prefix;
+            _interactivity = Client.GetInteractivity();
+        }
+        
+        /// <summary>
+        /// Gets the logged-in client.
+        /// </summary>
+        public DiscordClient Client => _client;
+
         /// <summary>
         /// Gets the guild where the command was executed, null if context is a DM.
         /// </summary>
-        public readonly DiscordGuild? Guild;
+        public DiscordGuild? Guild => _guild;
 
         /// <summary>
         /// Gets the channel where the command was executed.
         /// </summary>
-        public readonly DiscordChannel Channel;
+        public DiscordChannel Channel => _channel;
 
         /// <summary>
         /// Gets the user that executed the command.
         /// </summary>
-        public readonly DiscordUser User;
+        public DiscordUser User => _user;
 
         /// <summary>
         /// Gets the current logged-in user.
         /// </summary>
-        public DiscordMember? CurrentMember => Guild?.CurrentMember;
+        public DiscordMember? CurrentMember => _guild?.CurrentMember;
 
         /// <summary>
         /// Gets the user's message that executed the command.
         /// </summary>
-        public readonly DiscordMessage Message;
+        public DiscordMessage Message => _message;
 
         /// <summary>
         /// Gets the prefix of the server or the default one.
         /// </summary>
-        public readonly string Prefix;
+        public string Prefix => _prefix;
 
-        public readonly InteractivityExtension Interactivity;
-        
-#pragma warning disable 8618
-        public RiasCommandContext(IServiceProvider serviceProvider, DiscordMessage message, string prefix) : base(serviceProvider)
-#pragma warning restore 8618
-        {
-            RiasBot = serviceProvider.GetRequiredService<RiasBot>();
-            Guild = message.Channel.Guild;
-
-            if (Guild is not null)
-                Client = RiasBot.Client.ShardClients.FirstOrDefault(x => x.Value.Guilds.ContainsKey(Guild.Id)).Value;
-
-            Client ??= RiasBot.Client.ShardClients[0];
-            Channel = message.Channel;
-            User = message.Author;
-            Message = message;
-            Prefix = prefix;
-            Interactivity = Client.GetInteractivity();
-        }
+        public InteractivityExtension Interactivity => _interactivity;
     }
 }

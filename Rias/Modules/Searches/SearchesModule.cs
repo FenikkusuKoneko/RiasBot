@@ -18,12 +18,14 @@ namespace Rias.Modules.Searches
     {
         private readonly HttpClient _httpClient;
         
-        public SearchesModule(IServiceProvider serviceProvider) : base(serviceProvider)
+        public SearchesModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
-        
-        [Command("wikipedia"), Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("wikipedia")]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task WikipediaAsync([Remainder] string title)
         {
             await Context.Channel.TriggerTypingAsync();
@@ -50,8 +52,9 @@ namespace Rias.Modules.Searches
             else
                 await Context.Channel.SendMessageAsync(page.Value<string>("fullurl"));
         }
-        
-        [Command("urbandictionary"), Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("urbandictionary")]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task UrbanDictionary([Remainder] string term)
         {
             if (string.IsNullOrEmpty(Credentials.UrbanDictionaryApiKey))
@@ -115,8 +118,11 @@ namespace Rias.Modules.Searches
         private class UrbanDictionaryDefinition
         {
             public string? Definition { get; set; }
+            
             public string? Permalink { get; set; }
+            
             public string? Word { get; set; }
+            
             public string? Example { get; set; }
         }
     }

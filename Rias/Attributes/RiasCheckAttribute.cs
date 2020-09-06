@@ -7,7 +7,7 @@ namespace Rias.Attributes
     public abstract class RiasCheckAttribute : CheckAttribute
     {
         public override ValueTask<CheckResult> CheckAsync(CommandContext context)
-            => CheckAsync((RiasCommandContext) context);
+            => CheckAsync((RiasCommandContext)context);
 
         public abstract ValueTask<CheckResult> CheckAsync(RiasCommandContext context);
     }

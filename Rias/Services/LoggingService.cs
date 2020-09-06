@@ -12,7 +12,8 @@ namespace Rias.Services
     [AutoStart]
     public class LoggingService : RiasService
     {
-        public LoggingService(IServiceProvider serviceProvider) : base(serviceProvider)
+        public LoggingService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             var commandService = serviceProvider.GetRequiredService<CommandService>();
             
@@ -22,7 +23,7 @@ namespace Rias.Services
 
         private Task CommandExecutedAsync(CommandExecutedEventArgs args)
         {
-            var context = (RiasCommandContext) args.Context;
+            var context = (RiasCommandContext)args.Context;
             var command = context.Command;
 
             Log.Logger.Information($"[Command] \"{command.Name}\"\n" +
@@ -36,7 +37,7 @@ namespace Rias.Services
 
         private Task CommandExecutionFailedAsync(CommandExecutionFailedEventArgs args)
         {
-            var context = (RiasCommandContext) args.Context;
+            var context = (RiasCommandContext)args.Context;
             var command = context.Command;
             var result = args.Result;
 

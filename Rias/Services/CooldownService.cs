@@ -6,12 +6,13 @@ namespace Rias.Services
 {
     public class CooldownService : RiasService
     {
-        public CooldownService(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
         private readonly HashSet<string> _cooldowns = new HashSet<string>();
         private readonly object _lock = new object();
+        
+        public CooldownService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+        }
 
         public void Add(string key)
         {

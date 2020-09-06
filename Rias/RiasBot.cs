@@ -30,25 +30,10 @@ namespace Rias
         public const string Author = "Koneko#0001";
         public const string Version = "3.3.0";
         public static readonly Stopwatch UpTime = new Stopwatch();
-
-        public readonly DiscordShardedClient Client;
-        public DiscordUser? CurrentUser => Client.CurrentUser;
-        public IReadOnlyDictionary<ulong, DiscordGuild> Guilds => Client.ShardClients
-            .SelectMany(x => x.Value.Guilds)
-            .Select(x => x.Value)
-            .ToImmutableDictionary(x => x.Id);
-
+        
         public ConcurrentDictionary<ulong, DiscordUser> Members = new ConcurrentDictionary<ulong, DiscordUser>();
 
-        public IReadOnlyDictionary<ulong, DiscordChannel> Channels => Client.ShardClients
-            .SelectMany(x => x.Value.Guilds)
-            .Select(x => x.Value)
-            .SelectMany(x => x.Channels)
-            .Select(x => x.Value)
-            .ToImmutableDictionary(x => x.Id);
-
-        public double Latency => Client.ShardClients.Average(x => x.Value.Ping);
-
+        private readonly DiscordShardedClient _client;
         private readonly Credentials _credentials;
         private readonly IServiceProvider _serviceProvider;
         
@@ -58,7 +43,7 @@ namespace Rias
             Log.Information(!_credentials.IsDevelopment ? $"Initializing RiasBot version {Version}" : $"Initializing development RiasBot version {Version}");
             VerifyCredentials();
             
-            Client = new DiscordShardedClient(new DiscordConfiguration
+            _client = new DiscordShardedClient(new DiscordConfiguration
             {
                 Token = _credentials.Token,
                 MessageCacheSize = 4096,
@@ -113,12 +98,30 @@ namespace Rias
             
             UpTime.Start();
         }
+        
+        public IReadOnlyDictionary<ulong, DiscordGuild> Guilds => _client.ShardClients
+            .SelectMany(x => x.Value.Guilds)
+            .Select(x => x.Value)
+            .ToImmutableDictionary(x => x.Id);
+        
+        public IReadOnlyDictionary<ulong, DiscordChannel> Channels => _client.ShardClients
+            .SelectMany(x => x.Value.Guilds)
+            .Select(x => x.Value)
+            .SelectMany(x => x.Channels)
+            .Select(x => x.Value)
+            .ToImmutableDictionary(x => x.Id);
+
+        public DiscordShardedClient Client => _client;
+
+        public DiscordUser? CurrentUser => _client.CurrentUser;
+        
+        public double Latency => _client.ShardClients.Average(x => x.Value.Ping);
 
         public Task StartAsync()
-            => Client.StartAsync();
+            => _client.StartAsync();
 
         public int GetShardId(DiscordGuild? guild)
-            => guild != null ? Client.ShardClients.First(x => x.Value.Guilds.ContainsKey(guild.Id)).Value.ShardId : 0;
+            => guild != null ? _client.ShardClients.First(x => x.Value.Guilds.ContainsKey(guild.Id)).Value.ShardId : 0;
 
         public DiscordGuild? GetGuild(ulong id)
             => Guilds.TryGetValue(id, out var guild) ? guild : null;
@@ -166,13 +169,13 @@ namespace Rias
         
         private object? CooldownBucketKeyGenerator(object bucketType, CommandContext context)
         {
-            var riasContext = (RiasCommandContext) context;
+            var riasContext = (RiasCommandContext)context;
             
             // owner doesn't have cooldown
             if (_credentials.MasterId != 0 && riasContext.User.Id == _credentials.MasterId)
                 return null;
             
-            return (BucketType) bucketType switch
+            return (BucketType)bucketType switch
             {
                 BucketType.Guild => riasContext.Guild!.Id.ToString(),
                 BucketType.User => riasContext.User.Id.ToString(),

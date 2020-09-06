@@ -12,9 +12,20 @@ namespace Rias.Services
 {
     public class BlackjackService : RiasService
     {
+        public static readonly DiscordEmoji CardEmoji = DiscordEmoji.FromUnicode("🎴");
+        public static readonly DiscordEmoji HandEmoji = DiscordEmoji.FromUnicode("🤚");
+        public static readonly DiscordEmoji SplitEmoji = DiscordEmoji.FromUnicode("↔");
+        
         private readonly GamblingService _gamblingService;
         
-        public BlackjackService(IServiceProvider serviceProvider) : base(serviceProvider)
+        private readonly IEnumerable<(int, string)> _cards;
+        private readonly string[] _suits = { "♠", "♥", "♣", "♦" };
+        private readonly string[] _highCards = { "A", "J", "Q", "K" };
+        
+        private readonly ConcurrentDictionary<ulong, BlackjackGame> _sessions = new ConcurrentDictionary<ulong, BlackjackGame>();
+
+        public BlackjackService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _gamblingService = serviceProvider.GetRequiredService<GamblingService>();
             _cards = InitializeCards();
@@ -22,16 +33,6 @@ namespace Rias.Services
             RiasBot.Client.MessageReactionRemoved += MessageReactionRemovedAsync;
         }
 
-        private readonly IEnumerable<(int, string)> _cards;
-        private readonly string[] _suits = {"♠", "♥", "♣", "♦"};
-        private readonly string[] _highCards = {"A", "J", "Q", "K"};
-        
-        private readonly ConcurrentDictionary<ulong, BlackjackGame> _sessions = new ConcurrentDictionary<ulong, BlackjackGame>();
-        
-        public readonly DiscordEmoji CardEmoji = DiscordEmoji.FromUnicode("🎴");
-        public readonly DiscordEmoji HandEmoji = DiscordEmoji.FromUnicode("🤚");
-        public readonly DiscordEmoji SplitEmoji = DiscordEmoji.FromUnicode("↔");
-        
         public bool TryGetBlackjack(ulong userId, out BlackjackGame? blackjack)
             => _sessions.TryGetValue(userId, out blackjack);
         
@@ -63,7 +64,7 @@ namespace Rias.Services
         public Task TakeUserCurrencyAsync(ulong userId, int currency)
             => _gamblingService.RemoveUserCurrencyAsync(userId, currency);
         
-        private IEnumerable<(int, string)> InitializeCards()
+        private IEnumerable<(int Value, string Card)> InitializeCards()
         {
             for (var i = 0; i < 14; i++)
             {
@@ -107,7 +108,6 @@ namespace Rias.Services
         
         private async Task ProcessGameAsync(BlackjackGame blackjack, DiscordEmoji emoji)
         {
-            
             if (emoji.Equals(CardEmoji))
                 await RunTaskAsync(blackjack.HitAsync());
         

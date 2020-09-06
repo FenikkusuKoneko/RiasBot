@@ -10,12 +10,9 @@ namespace Rias.Services
 {
     public class WebSocketClient
     {
-        public event Func<string, Task>? DataReceived;
-        public event Func<Task>? Closed;
-        
-        private ClientWebSocket? _webSocket;
-        private IWebSocketConfiguration _configuration;
         private readonly Uri _url;
+        private readonly IWebSocketConfiguration _configuration;
+        private ClientWebSocket? _webSocket;
 
         public WebSocketClient(IWebSocketConfiguration configuration)
         {
@@ -23,6 +20,10 @@ namespace Rias.Services
             var connectionType = configuration.IsSecureConnection ? "wss" : "ws";
             _url = new Uri($"{connectionType}://{configuration.WebSocketHost}:{configuration.WebSocketPort}/{configuration.UrlParameters}");
         }
+        
+        public event Func<string, Task>? DataReceived;
+        
+        public event Func<Task>? Closed;
 
         public async Task ConnectAsync()
         {

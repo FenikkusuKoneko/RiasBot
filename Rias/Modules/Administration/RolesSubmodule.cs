@@ -17,15 +17,17 @@ namespace Rias.Modules.Administration
         [Name("Roles")]
         public class RolesSubmodule : RiasModule
         {
-            public RolesSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public RolesSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
             }
-            
-            [Command("roles"), Context(ContextType.Guild),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Member)]
+
+            [Command("roles")]
+            [Context(ContextType.Guild)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Member)]
             public async Task RolesAsync(DiscordMember? member = null)
             {
-                var roles = (member is null ? Context.Guild!.Roles.Select(x => x.Value) : ((DiscordMember) Context.User).Roles)
+                var roles = (member is null ? Context.Guild!.Roles.Select(x => x.Value) : ((DiscordMember)Context.User).Roles)
                     .Where(x => x.Id != Context.Guild!.EveryoneRole.Id)
                     .OrderByDescending(x => x.Position)
                     .Select(x => $"{x.Mention} | {x.Id}")
@@ -47,19 +49,23 @@ namespace Rias.Modules.Administration
                     Description = string.Join("\n", items.Select(x => $"{++index}. {x}"))
                 });
             }
-            
-            [Command("createrole"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("createrole")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageRoles)]
+            [BotPermission(Permissions.ManageRoles)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateRoleAsync([Remainder]string name)
             {
                 await Context.Guild!.CreateRoleAsync(name);
                 await ReplyConfirmationAsync(Localization.AdministrationRoleCreated, name);
             }
-            
-            [Command("deleterole"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("deleterole")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageRoles)]
+            [BotPermission(Permissions.ManageRoles)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task DeleteRoleAsync([Remainder] DiscordRole role)
             {
                 if (role.Id == Context.Guild!.EveryoneRole.Id) return;
@@ -69,7 +75,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -84,10 +90,12 @@ namespace Rias.Modules.Administration
                 await role.DeleteAsync();
                 await ReplyConfirmationAsync(Localization.AdministrationRoleDeleted, role.Name);
             }
-            
-            [Command("rolecolor"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("rolecolor")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageRoles)]
+            [BotPermission(Permissions.ManageRoles)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RoleColorAsync(DiscordRole role, DiscordColor color)
             {
                 if (role.Id == Context.Guild!.EveryoneRole.Id) return;
@@ -97,7 +105,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -106,10 +114,12 @@ namespace Rias.Modules.Administration
                 await role.ModifyAsync(r => r.Color = color);
                 await ReplyConfirmationAsync(Localization.AdministrationRoleColorChanged, role.Name);
             }
-            
-            [Command("renamerole"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("renamerole")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageRoles)]
+            [BotPermission(Permissions.ManageRoles)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameRoleAsync([Remainder] string names)
             {
                 var roles = names.Split("->", StringSplitOptions.RemoveEmptyEntries);
@@ -130,7 +140,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -140,10 +150,12 @@ namespace Rias.Modules.Administration
                 await role.ModifyAsync(r => r.Name = newName);
                 await ReplyConfirmationAsync(Localization.AdministrationRoleRenamed, oldName, newName);
             }
-            
-            [Command("hoistrole"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("hoistrole")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageRoles)]
+            [BotPermission(Permissions.ManageRoles)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task HoistRoleAsync([Remainder] DiscordRole role)
             {
                 if (role.Id == Context.Guild!.EveryoneRole.Id) return;
@@ -153,7 +165,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -170,10 +182,12 @@ namespace Rias.Modules.Administration
                     await ReplyConfirmationAsync(Localization.AdministrationRoleDisplayed, role.Name);
                 }
             }
-            
-            [Command("mentionrole"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("mentionrole")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageRoles)]
+            [BotPermission(Permissions.ManageRoles)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task MentionRoleAsync([Remainder] DiscordRole role)
             {
                 if (role.Id == Context.Guild!.EveryoneRole.Id) return;
@@ -183,7 +197,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -200,10 +214,12 @@ namespace Rias.Modules.Administration
                     await ReplyConfirmationAsync(Localization.AdministrationRoleMentionable, role.Name);
                 }
             }
-            
-            [Command("addrole"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+
+            [Command("addrole")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageRoles)]
+            [BotPermission(Permissions.ManageRoles)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AddRoleAsync(DiscordMember member, [Remainder] DiscordRole role)
             {
                 if (role.Id == Context.Guild!.EveryoneRole.Id) return;
@@ -213,7 +229,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -235,9 +251,11 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationRoleAdded, role.Name, member.FullName());
             }
 
-            [Command("removerole"), Context(ContextType.Guild),
-            UserPermission(Permissions.ManageRoles), BotPermission(Permissions.ManageRoles),
-            Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("removerole")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageRoles)]
+            [BotPermission(Permissions.ManageRoles)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RemoveRoleAsync(DiscordMember member, [Remainder] DiscordRole role)
             {
                 if (role.Id == Context.Guild!.EveryoneRole.Id) return;
@@ -247,7 +265,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -269,15 +287,16 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationRoleRemoved, role.Name, member.FullName());
             }
 
-            [Command("autoassignablerole"), Context(ContextType.Guild),
-             UserPermission(Permissions.Administrator),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("autoassignablerole")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.Administrator)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AutoAssignableRoleAsync([Remainder] DiscordRole? role = null)
             {
                 GuildsEntity guildDb;
                 if (role is null)
                 {
-                    guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+                    guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
                     guildDb.AutoAssignableRoleId = 0;
                     await DbContext.SaveChangesAsync();
                     await ReplyConfirmationAsync(Localization.AdministrationAarDisabled);
@@ -290,7 +309,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -302,7 +321,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity {GuildId = Context.Guild!.Id});
+                guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
                 guildDb.AutoAssignableRoleId = role.Id;
                 
                 await DbContext.SaveChangesAsync();

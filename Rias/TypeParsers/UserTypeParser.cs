@@ -10,7 +10,7 @@ namespace Rias.TypeParsers
     {
         public override async ValueTask<TypeParserResult<DiscordUser>> ParseAsync(Parameter parameter, string value, RiasCommandContext context)
         {
-            var cachedMemberTypeParser = await new CachedMemberTypeParser().ParseAsync(parameter, value, context);
+            var cachedMemberTypeParser = await new MemberTypeParser().ParseAsync(parameter, value, context);
             if (cachedMemberTypeParser.IsSuccessful)
                 return TypeParserResult<DiscordUser>.Successful(cachedMemberTypeParser.Value);
             

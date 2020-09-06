@@ -21,19 +21,20 @@ namespace Rias.Modules.Searches
         [Name("Anime")]
         public class AnimeSubmodule : RiasModule<AnimeService>
         {
-            public AnimeSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public AnimeSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
             }
-            
-            [Command("anime"),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+            [Command("anime")]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task AnimeAsync([Remainder] string title)
             {
                 var (type, method) = int.TryParse(title, out _) ? ("Int", "id") : ("String", "search");
                 var query = AnimeService.AnimeQuery.Replace("[type]", type)
                     .Replace("[var]", method);
             
-                var anime = await Service.GetAniListInfoAsync<AnimeMangaContent>(query, new {anime = title}, "Media");
+                var anime = await Service.GetAniListInfoAsync<AnimeMangaContent>(query, new { anime = title }, "Media");
                 if (anime is null)
                 {
                     await ReplyErrorAsync(Localization.SearchesAnimeNotFound);
@@ -94,16 +95,16 @@ namespace Rias.Modules.Searches
 
                 await ReplyAsync(embed);
             }
-            
-            [Command("manga"),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+            [Command("manga")]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task MangaAsync([Remainder] string title)
             {
                 var (type, method) = int.TryParse(title, out _) ? ("Int", "id") : ("String", "search");
                 var query = AnimeService.MangaQuery.Replace("[type]", type)
                     .Replace("[var]", method);
             
-                var manga = await Service.GetAniListInfoAsync<AnimeMangaContent>(query, new {manga = title}, "Media");
+                var manga = await Service.GetAniListInfoAsync<AnimeMangaContent>(query, new { manga = title }, "Media");
                 if (manga is null)
                 {
                     await ReplyErrorAsync(Localization.SearchesMangaNotFound);
@@ -166,9 +167,9 @@ namespace Rias.Modules.Searches
 
                 await ReplyAsync(embed);
             }
-            
-            [Command("character"),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+            [Command("character")]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task CharacterAsync([Remainder] string name)
             {
                 CustomCharactersEntity? character;
@@ -213,6 +214,73 @@ namespace Rias.Modules.Searches
 
                 await ReplyAsync(embed);
             }
+
+            [Command("animelist")]
+            [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
+            public async Task AnimeListAsync([Remainder] string title)
+            {
+                var animeList = await Service.GetAniListInfoAsync<List<AnimeMangaContent>>(AnimeService.AnimeListQuery, new { anime = title }, "Page", "media");
+                if (animeList is null || animeList.Count == 0)
+                {
+                    await ReplyErrorAsync(Localization.SearchesAnimeListNotFound);
+                    return;
+                }
+
+                await SendPaginatedMessageAsync(animeList, 10, (items, index) => new DiscordEmbedBuilder
+                {
+                    Color = RiasUtilities.ConfirmColor,
+                    Title = GetText(Localization.SearchesAnimeList, title, Context.Prefix),
+                    Description = string.Join("\n", items.Select(c =>
+                        $"[{(string.IsNullOrEmpty(c.Title.Romaji) ? c.Title.English : c.Title.Romaji)}]({c.SiteUrl}) ({c.Id})"))
+                });
+            }
+
+            [Command("mangalist")]
+            [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
+            public async Task MangaListAsync([Remainder] string title)
+            {
+                var mangaList = await Service.GetAniListInfoAsync<List<AnimeMangaContent>>(AnimeService.MangaListQuery, new { manga = title }, "Page", "media");
+                if (mangaList is null || mangaList.Count == 0)
+                {
+                    await ReplyErrorAsync(Localization.SearchesMangaListNotFound);
+                    return;
+                }
+                
+                await SendPaginatedMessageAsync(mangaList, 10, (items, index) => new DiscordEmbedBuilder
+                {
+                    Color = RiasUtilities.ConfirmColor,
+                    Title = GetText(Localization.SearchesMangaList, title, Context.Prefix),
+                    Description = string.Join("\n", items.Select(c =>
+                        $"[{(string.IsNullOrEmpty(c.Title.Romaji) ? c.Title.English : c.Title.Romaji)}]({c.SiteUrl}) ({c.Id})"))
+                });
+            }
+
+            [Command("characters")]
+            [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
+            public async Task CharactersAsync([Remainder] string name)
+            {
+                var characters = await Service.GetAniListInfoAsync<List<CharacterContent>>(AnimeService.CharacterListQuery, new { character = name }, "Page", "characters");
+                if (characters is null || characters.Count == 0)
+                {
+                    await ReplyErrorAsync(Localization.SearchesCharactersNotFound);
+                    return;
+                }
+
+                await SendPaginatedMessageAsync(characters, 10, (items, index) => new DiscordEmbedBuilder
+                {
+                    Color = RiasUtilities.ConfirmColor,
+                    Title = GetText(Localization.SearchesCharacterList, name, Context.Prefix),
+                    Description = string.Join("\n", items.Select(c =>
+                    {
+                        var fromAnime = GetCharacterSources(c, "anime").FirstOrDefault();
+                        var from = fromAnime != null
+                            ? $"{GetText(Localization.SearchesFromAnime)}: {fromAnime}"
+                            : $"{GetText(Localization.SearchesFromAnime)}: {GetCharacterSources(c, "manga").FirstOrDefault()}";
+                        
+                        return $"• [{c.Name.First} {c.Name.Last}]({c.SiteUrl}) ({c.Id}) | {from}";
+                    }))
+                });
+            }
             
             private async Task AniListCharacterAsync(string name)
             {
@@ -220,7 +288,7 @@ namespace Rias.Modules.Searches
                 var query = AnimeService.CharacterQuery.Replace("[type]", type)
                     .Replace("[var]", method);
             
-                var character = await Service.GetAniListInfoAsync<CharacterContent>(query, new {character = name}, "Character");
+                var character = await Service.GetAniListInfoAsync<CharacterContent>(query, new { character = name }, "Character");
 
                 if (character is null)
                 {
@@ -293,73 +361,6 @@ namespace Rias.Modules.Searches
                     .WithImageUrl(character.Image.Large);
 
                 await ReplyAsync(embed);
-            }
-            
-            [Command("animelist"),
-             Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
-            public async Task AnimeListAsync([Remainder] string title)
-            {
-                var animeList = await Service.GetAniListInfoAsync<List<AnimeMangaContent>>(AnimeService.AnimeListQuery, new {anime = title}, "Page", "media");
-                if (animeList is null || animeList.Count == 0)
-                {
-                    await ReplyErrorAsync(Localization.SearchesAnimeListNotFound);
-                    return;
-                }
-
-                await SendPaginatedMessageAsync(animeList, 10, (items, index) => new DiscordEmbedBuilder
-                {
-                    Color = RiasUtilities.ConfirmColor,
-                    Title = GetText(Localization.SearchesAnimeList, title, Context.Prefix),
-                    Description = string.Join("\n", items.Select(c =>
-                        $"[{(string.IsNullOrEmpty(c.Title.Romaji) ? c.Title.English : c.Title.Romaji)}]({c.SiteUrl}) ({c.Id})"))
-                });
-            }
-            
-            [Command("mangalist"),
-             Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
-            public async Task MangaListAsync([Remainder] string title)
-            {
-                var mangaList = await Service.GetAniListInfoAsync<List<AnimeMangaContent>>(AnimeService.MangaListQuery, new {manga = title}, "Page", "media");
-                if (mangaList is null || mangaList.Count == 0)
-                {
-                    await ReplyErrorAsync(Localization.SearchesMangaListNotFound);
-                    return;
-                }
-                
-                await SendPaginatedMessageAsync(mangaList, 10, (items, index) => new DiscordEmbedBuilder
-                {
-                    Color = RiasUtilities.ConfirmColor,
-                    Title = GetText(Localization.SearchesMangaList, title, Context.Prefix),
-                    Description = string.Join("\n", items.Select(c =>
-                        $"[{(string.IsNullOrEmpty(c.Title.Romaji) ? c.Title.English : c.Title.Romaji)}]({c.SiteUrl}) ({c.Id})"))
-                });
-            }
-            
-            [Command("characters"),
-             Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
-            public async Task CharactersAsync([Remainder] string name)
-            {
-                var characters = await Service.GetAniListInfoAsync<List<CharacterContent>>(AnimeService.CharacterListQuery, new {character = name}, "Page", "characters");
-                if (characters is null || characters.Count == 0)
-                {
-                    await ReplyErrorAsync(Localization.SearchesCharactersNotFound);
-                    return;
-                }
-
-                await SendPaginatedMessageAsync(characters, 10, (items, index) => new DiscordEmbedBuilder
-                {
-                    Color = RiasUtilities.ConfirmColor,
-                    Title = GetText(Localization.SearchesCharacterList, name, Context.Prefix),
-                    Description = string.Join("\n", items.Select(c =>
-                    {
-                        var fromAnime = GetCharacterSources(c, "anime").FirstOrDefault();
-                        var from = fromAnime != null
-                            ? $"{GetText(Localization.SearchesFromAnime)}: {fromAnime}"
-                            : $"{GetText(Localization.SearchesFromAnime)}: {GetCharacterSources(c, "manga").FirstOrDefault()}";
-                        
-                        return $"• [{c.Name.First} {c.Name.Last}]({c.SiteUrl}) ({c.Id}) | {from}";
-                    }))
-                });
             }
 
             private IList<string> GetCharacterSources(CharacterContent character, string from)

@@ -8,6 +8,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using Humanizer;
 using Humanizer.Localisation;
+using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
 using Rias.Commons;
@@ -22,8 +23,12 @@ namespace Rias.Modules.Utility
         [Name("Info")]
         public class InfoSubmodule : RiasModule
         {
-            public InfoSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            private readonly CommandHandlerService _commandHandlerService;
+            
+            public InfoSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
+                _commandHandlerService = serviceProvider.GetRequiredService<CommandHandlerService>();
             }
             
             [Command("stats")]
@@ -47,12 +52,15 @@ namespace Rias.Modules.Utility
                     .AddField(GetText(Localization.UtilityMasterId), Credentials.MasterId.ToString(), true)
                     .AddField(GetText(Localization.UtilityShard), $"{RiasBot.GetShardId(Context.Guild) + 1}/{RiasBot.Client.ShardClients.Count}", true)
                     .AddField(GetText(Localization.UtilityInServer), Context.Guild?.Name ?? "-", true)
-                    .AddField(GetText(Localization.UtilityCommandsAttempted), CommandHandlerService.CommandsAttempted.ToString(), true)
-                    .AddField(GetText(Localization.UtilityCommandsExecuted), CommandHandlerService.CommandsExecuted.ToString(), true)
-                    .AddField(GetText(Localization.UtilityUptime), RiasBot.UpTime.Elapsed.Humanize(5, new CultureInfo(Localization.GetGuildLocale(Context.Guild?.Id)),
-                        TimeUnit.Month, TimeUnit.Second), true)
-                    .AddField(GetText(Localization.UtilityPresence), $"{RiasBot.Guilds.Count} {GetText(Localization.UtilityServers)}\n" +
-                                                                     $"{RiasBot.Members.Count} {GetText(Localization.CommonUsers)}\n", true);
+                    .AddField(GetText(Localization.UtilityCommandsAttempted), _commandHandlerService.CommandsAttempted.ToString(), true)
+                    .AddField(GetText(Localization.UtilityCommandsExecuted), _commandHandlerService.CommandsExecuted.ToString(), true)
+                    .AddField(GetText(Localization.UtilityUptime),
+                        RiasBot.UpTime.Elapsed.Humanize(5, new CultureInfo(Localization.GetGuildLocale(Context.Guild?.Id)), TimeUnit.Month, TimeUnit.Second),
+                        true)
+                    .AddField(GetText(Localization.UtilityPresence),
+                        $"{RiasBot.Guilds.Count} {GetText(Localization.UtilityServers)}\n" +
+                        $"{RiasBot.Members.Count} {GetText(Localization.CommonUsers)}\n",
+                        true);
 
                 var links = new StringBuilder();
                 const string delimiter = " • ";
@@ -81,11 +89,12 @@ namespace Rias.Modules.Utility
 
                 await ReplyAsync(embed);
             }
-            
-            [Command("userinfo"), Context(ContextType.Guild)]
+
+            [Command("userinfo")]
+            [Context(ContextType.Guild)]
             public async Task UserInfoAsync([Remainder] DiscordMember? member = null)
             {
-                member ??= (DiscordMember) Context.User;
+                member ??= (DiscordMember)Context.User;
 
                 var userRoles = member.Roles.Where(x => x.Id != Context.Guild!.EveryoneRole.Id)
                     .OrderByDescending(x => x.Position)
@@ -106,8 +115,9 @@ namespace Rias.Modules.Utility
 
                 await ReplyAsync(embed);
             }
-            
-            [Command("serverinfo"), Context(ContextType.Guild)]
+
+            [Command("serverinfo")]
+            [Context(ContextType.Guild)]
             public async Task ServerInfo()
             {
                 var embed = new DiscordEmbedBuilder
@@ -120,7 +130,8 @@ namespace Rias.Modules.Utility
                     .AddField(GetText(Localization.CommonUsers), Context.Guild.MemberCount.ToString(), true)
                     .AddField(GetText(Localization.UtilityCurrentlyOnline),
                         Context.Guild.Members.Count(x => x.Value.Presence?.Status == UserStatus.Online ||
-                                                         x.Value.Presence?.Status == UserStatus.Idle || x.Value.Presence?.Status == UserStatus.DoNotDisturb).ToString(), true)
+                                                         x.Value.Presence?.Status == UserStatus.Idle || x.Value.Presence?.Status == UserStatus.DoNotDisturb).ToString(),
+                        true)
                     .AddField(GetText(Localization.UtilityBots), Context.Guild.Members.Count(x => x.Value.IsBot).ToString(), true)
                     .AddField(GetText(Localization.UtilityCreatedAt), Context.Guild.CreationTimestamp.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField(GetText(Localization.UtilityTextChannels), Context.Guild.Channels.Count(x => x.Value.Type == ChannelType.Text).ToString(), true)
@@ -157,11 +168,12 @@ namespace Rias.Modules.Utility
 
                 await ReplyAsync(embed);
             }
-            
-            [Command("avatar"), Context(ContextType.Guild)]
+
+            [Command("avatar")]
+            [Context(ContextType.Guild)]
             public async Task AvatarAsync([Remainder] DiscordMember? member = null)
             {
-                member ??= (DiscordMember) Context.User;
+                member ??= (DiscordMember)Context.User;
 
                 var embed = new DiscordEmbedBuilder
                 {
@@ -177,8 +189,9 @@ namespace Rias.Modules.Utility
 
                 await ReplyAsync(embed);
             }
-            
-            [Command("servericon"), Context(ContextType.Guild)]
+
+            [Command("servericon")]
+            [Context(ContextType.Guild)]
             public async Task ServerIconAsync()
             {
                 var embed = new DiscordEmbedBuilder
@@ -195,8 +208,9 @@ namespace Rias.Modules.Utility
 
                 await ReplyAsync(embed);
             }
-            
-            [Command("whoisplaying"), Context(ContextType.Guild)]
+
+            [Command("whoisplaying")]
+            [Context(ContextType.Guild)]
             public async Task WhoIsPlayingAsync([Remainder] string game)
             {
                 var usersActivities = Context.Guild!.Members

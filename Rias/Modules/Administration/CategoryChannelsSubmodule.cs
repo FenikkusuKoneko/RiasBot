@@ -15,13 +15,16 @@ namespace Rias.Modules.Administration
         [Name("Category Channels")]
         public class CategoryChannelsSubmodule : RiasModule
         {
-            public CategoryChannelsSubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public CategoryChannelsSubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
             }
             
-            [Command("createcategory"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("createcategory")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateCategoryAsync([Remainder] string name)
             {
                 if (name.Length < 1 || name.Length > 100)
@@ -34,9 +37,11 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationCategoryChannelCreated, name);
             }
             
-            [Command("deletecategory"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("deletecategory")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task DeleteCategoryAsync([CategoryChannel, Remainder] DiscordChannel category)
             {
                 if (!ChannelExtensions.CheckViewChannelPermission(Context.CurrentMember!, category))
@@ -49,9 +54,11 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationCategoryChannelDeleted, category.Name);
             }
 
-            [Command("renamecategory"), Context(ContextType.Guild),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("renamecategory")]
+            [Context(ContextType.Guild)]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameCategoryAsync([Remainder] string names)
             {
                 var namesSplit = names.Split("->");
@@ -86,9 +93,10 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationCategoryChannelRenamed, oldName, newName);
             }
             
-            [Command("addtextchanneltocategory"),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("addtextchanneltocategory")]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AddTextChannelToCategoryAsync([Remainder] string names)
             {
                 var namesSplit = names.Split("->");
@@ -131,9 +139,10 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationTextChannelAddedToCategory, channel.Name, category.Name);
             }
             
-            [Command("addvoicechanneltocategory"),
-             UserPermission(Permissions.ManageChannels), BotPermission(Permissions.ManageChannels),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            [Command("addvoicechanneltocategory")]
+            [UserPermission(Permissions.ManageChannels)]
+            [BotPermission(Permissions.ManageChannels)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AddVoiceChannelToCategoryAsync([Remainder] string names)
             {
                 var namesSplit = names.Split("->");

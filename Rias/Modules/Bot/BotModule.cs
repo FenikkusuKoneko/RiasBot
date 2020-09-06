@@ -14,11 +14,13 @@ namespace Rias.Modules.Bot
     [Name("Bot")]
     public partial class BotModule : RiasModule<BotService>
     {
-        public BotModule(IServiceProvider serviceProvider) : base(serviceProvider)
+        public BotModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
         }
         
-        [Command("leaveguild"), OwnerOnly]
+        [Command("leaveguild")]
+        [OwnerOnly]
         public async Task LeaveGuildAsync(string name)
         {
             var guild = ulong.TryParse(name, out var guildId)
@@ -40,22 +42,25 @@ namespace Rias.Modules.Bot
             await ReplyAsync(embed);
             await guild.LeaveAsync();
         }
-        
-        [Command("shutdown"), OwnerOnly]
+
+        [Command("shutdown")]
+        [OwnerOnly]
         public async Task ShutdownAsync()
         {
             await ReplyConfirmationAsync(Localization.BotShutdown);
             Environment.Exit(0);
         }
-        
-        [Command("update"), OwnerOnly]
+
+        [Command("update")]
+        [OwnerOnly]
         public async Task UpdateAsync()
         {
             await ReplyConfirmationAsync(Localization.BotUpdate);
             Environment.Exit(69);
         }
         
-        [Command("send"), OwnerOnly]
+        [Command("send")]
+        [OwnerOnly]
         public async Task SendAsync(string id, [Remainder] string message)
         {
             var messageParsed = RiasUtilities.TryParseMessage(message, out var customMessage);
@@ -69,7 +74,9 @@ namespace Rias.Modules.Bot
             {
                 DiscordChannel channel;
                 if (ulong.TryParse(id[2..], out var channelId) && RiasBot.Channels.TryGetValue(channelId, out var c))
+                {
                     channel = c;
+                }
                 else
                 {
                     await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
@@ -108,8 +115,10 @@ namespace Rias.Modules.Bot
             {
                 DiscordMember member;
                 if (ulong.TryParse(id[2..], out var userId) && RiasBot.Members.TryGetValue(userId, out var m))
-                    //TODO: This will throw for sure, ignoring for now
-                    member = (DiscordMember) m;
+                {
+                    // TODO: This will throw for sure, ignoring for now
+                    member = (DiscordMember)m;
+                }
                 else
                 {
                     await ReplyErrorAsync(Localization.AdministrationUserNotFound);
@@ -137,8 +146,9 @@ namespace Rias.Modules.Bot
                 }
             }
         }
-        
-        [Command("edit"), OwnerOnly]
+
+        [Command("edit")]
+        [OwnerOnly]
         public async Task EditAsync(string id, [Remainder] string message)
         {
             var ids = id.Split("|");
@@ -150,7 +160,9 @@ namespace Rias.Modules.Bot
 
             DiscordChannel channel;
             if (ulong.TryParse(ids[0], out var channelId) && RiasBot.Channels.TryGetValue(channelId, out var c))
+            {
                 channel = c;
+            }
             else
             {
                 await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
@@ -178,7 +190,9 @@ namespace Rias.Modules.Bot
 
             DiscordMessage discordMessage;
             if (ulong.TryParse(ids[1], out var messageId))
+            {
                 discordMessage = await channel.GetMessageAsync(messageId);
+            }
             else
             {
                 await ReplyErrorAsync(Localization.BotMessageNotFound);
@@ -217,8 +231,9 @@ namespace Rias.Modules.Bot
 
             await ReplyConfirmationAsync(Localization.BotMessageEdited);
         }
-        
-        [Command("finduser"), OwnerOnly]
+
+        [Command("finduser")]
+        [OwnerOnly]
         public async Task FindUserAsync([Remainder] string value)
         {
             DiscordUser? user = null;
@@ -232,8 +247,10 @@ namespace Rias.Modules.Bot
             {
                 var index = value.LastIndexOf("#", StringComparison.Ordinal);
                 if (index >= 0)
+                {
                     user = RiasBot.Members.FirstOrDefault(x => string.Equals(x.Value.Username, value[..index])
                                                                && string.Equals(x.Value.Discriminator, value[(index + 1)..])).Value;
+                }
             }
             
             if (user is null)
@@ -255,7 +272,8 @@ namespace Rias.Modules.Bot
             await ReplyAsync(embed);
         }
 
-        [Command("evaluate"), OwnerOnly]
+        [Command("evaluate")]
+        [OwnerOnly]
         public async Task EvaluateAsync([Remainder] string code)
         {
             var embed = new DiscordEmbedBuilder

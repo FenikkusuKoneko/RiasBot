@@ -21,7 +21,8 @@ namespace Rias.Modules.Help
     {
         private readonly CommandService _commandService;
         
-        public HelpModule(IServiceProvider serviceProvider) : base(serviceProvider)
+        public HelpModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _commandService = serviceProvider.GetRequiredService<CommandService>();
         }
@@ -184,16 +185,7 @@ namespace Rias.Modules.Help
 
             await ReplyAsync(embed);
         }
-        
-        private Module? GetModuleByAlias(string alias)
-        {
-            if (string.IsNullOrEmpty(alias))
-                return null;
 
-            return _commandService.GetAllModules().FirstOrDefault(x =>
-                x.Aliases.Any(y => string.Equals(y, alias, StringComparison.InvariantCultureIgnoreCase)));
-        }
-        
         [Command("commands")]
         public async Task CommandsAsync([Remainder] string name)
         {
@@ -236,9 +228,9 @@ namespace Rias.Modules.Help
             embed.WithCurrentTimestamp();
             await ReplyAsync(embed);
         }
-        
-        [Command("allcommands"),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+        [Command("allcommands")]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task AllCommandsAsync()
         {
             var embed = new DiscordEmbedBuilder
@@ -292,6 +284,15 @@ namespace Rias.Modules.Help
             await SendAllCommandsMessageAsync(embed);
         }
         
+        private Module? GetModuleByAlias(string alias)
+        {
+            if (string.IsNullOrEmpty(alias))
+                return null;
+
+            return _commandService.GetAllModules().FirstOrDefault(x =>
+                x.Aliases.Any(y => string.Equals(y, alias, StringComparison.InvariantCultureIgnoreCase)));
+        }
+        
         private Command? GetCommand(Module? module, string? alias)
         {
             if (module is null && !string.IsNullOrEmpty(alias))
@@ -312,15 +313,15 @@ namespace Rias.Modules.Help
             return x.Module.Aliases.Count == 0 && x.Aliases.Any(y => string.Equals(y, alias, StringComparison.InvariantCultureIgnoreCase));
         });
 
-        public IReadOnlyList<Command> GetModuleCommands(Module module, bool isOwner) => (isOwner
+        private IReadOnlyList<Command> GetModuleCommands(Module module, bool isOwner) => (isOwner
                 ? module.Commands
                 : module.Commands.Where(x => !x.Checks.Any(c => c is OwnerOnlyAttribute)))
             .GroupBy(x => x.Name)
             .Select(x => x.First())
             .OrderBy(x => x.Name)
             .ToImmutableList();
-        
-        public IReadOnlyList<string> GetCommandsAliases(IEnumerable<Command> commands, string prefix)
+
+        private IReadOnlyList<string> GetCommandsAliases(IEnumerable<Command> commands, string prefix)
             => commands.Select(x =>
             {
                 var nextAliases = string.Join(", ", x.Aliases.Skip(1));
@@ -336,7 +337,7 @@ namespace Rias.Modules.Help
         {
             try
             {
-                await ((DiscordMember) Context.User).SendMessageAsync(embed: embed);
+                await ((DiscordMember)Context.User).SendMessageAsync(embed: embed);
             }
             catch
             {

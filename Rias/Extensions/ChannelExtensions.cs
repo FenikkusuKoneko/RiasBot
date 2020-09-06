@@ -15,6 +15,12 @@ namespace Rias.Extensions
 
         public static async Task<DiscordMessage> SendErrorMessageAsync(this DiscordChannel channel, string message, string? title = null)
             => await SendMessageAsync(channel, message, title, RiasUtilities.ErrorColor);
+        
+        public static bool CheckViewChannelPermission(DiscordMember bot, DiscordChannel channel)
+        {
+            var permissions = bot.PermissionsIn(channel);
+            return permissions.HasPermission(Permissions.AccessChannels);
+        }
 
         private static async Task<DiscordMessage> SendMessageAsync(DiscordChannel channel, string message, string? title, DiscordColor color)
         {
@@ -26,12 +32,6 @@ namespace Rias.Extensions
             };
 
             return await channel.SendMessageAsync(embed: embed);
-        }
-
-        public static bool CheckViewChannelPermission(DiscordMember bot, DiscordChannel channel)
-        {
-            var permissions = bot.PermissionsIn(channel);
-            return permissions.HasPermission(Permissions.AccessChannels);
         }
     }
 }

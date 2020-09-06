@@ -13,37 +13,44 @@ namespace Rias.Modules.Nsfw
     [Name("Nsfw")]
     public class NsfwModule : RiasModule<NsfwService>
     {
-        public NsfwModule(IServiceProvider serviceProvider) : base(serviceProvider)
+        public NsfwModule(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
         }
-        
-        [Command("hentai"), Context(ContextType.Guild),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
-        public async Task HentaiAsync([Remainder] string? tags = null)
-            => await PostHentaiAsync(NsfwService.NsfwImageApiProvider.Random, tags);
 
-        [Command("danbooru"), Context(ContextType.Guild),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
-        public async Task DanbooruAsync([Remainder] string? tags = null)
-            => await PostHentaiAsync(NsfwService.NsfwImageApiProvider.Danbooru, tags);
-        
-        [Command("konachan"), Context(ContextType.Guild),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
-        public async Task KonachanAsync([Remainder] string? tags = null)
-            => await PostHentaiAsync(NsfwService.NsfwImageApiProvider.Konachan, tags);
-        
-        [Command("yandere"), Context(ContextType.Guild),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
-        public async Task YandereAsync([Remainder] string? tags = null)
-            => await PostHentaiAsync(NsfwService.NsfwImageApiProvider.Yandere, tags);
-        
-        [Command("gelbooru"), Context(ContextType.Guild),
-         Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
-        public async Task GelbooruAsync([Remainder] string? tags = null)
-            => await PostHentaiAsync(NsfwService.NsfwImageApiProvider.Gelbooru, tags);
-        
-        [Command("hentaiplus"), Context(ContextType.Guild),
-         Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Channel)]
+        [Command("hentai")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
+        public Task HentaiAsync([Remainder] string? tags = null)
+            => PostHentaiAsync(NsfwService.NsfwImageApiProvider.Random, tags);
+
+        [Command("danbooru")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
+        public Task DanbooruAsync([Remainder] string? tags = null)
+            => PostHentaiAsync(NsfwService.NsfwImageApiProvider.Danbooru, tags);
+
+        [Command("konachan")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
+        public Task KonachanAsync([Remainder] string? tags = null)
+            => PostHentaiAsync(NsfwService.NsfwImageApiProvider.Konachan, tags);
+
+        [Command("yandere")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
+        public Task YandereAsync([Remainder] string? tags = null)
+            => PostHentaiAsync(NsfwService.NsfwImageApiProvider.Yandere, tags);
+
+        [Command("gelbooru")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
+        public Task GelbooruAsync([Remainder] string? tags = null)
+            => PostHentaiAsync(NsfwService.NsfwImageApiProvider.Gelbooru, tags);
+
+        [Command("hentaiplus")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Channel)]
         public async Task HentaiPlusAsync([Remainder] string? tags = null)
         {
             if (!Context.Channel.IsNSFW)

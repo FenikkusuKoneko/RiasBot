@@ -15,12 +15,14 @@ namespace Rias.Modules.Bot
         [Name("Activity")]
         public class ActivitySubmodule : RiasModule<ActivityService>
         {
-            public ActivitySubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public ActivitySubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
             }
             
-            [Command("activity"), OwnerOnly,
-             Priority(0)]
+            [Command("activity")]
+            [OwnerOnly]
+            [Priority(0)]
             public async Task ActivityAsync(string? type = null, [Remainder] string? name = null)
             {
                 await Service.StopActivityRotationAsync();
@@ -40,7 +42,9 @@ namespace Rias.Modules.Bot
                 await ReplyConfirmationAsync(Localization.BotActivitySet, GetText(Localization.BotActivity(type.ToLower()), name.ToLowerInvariant()).ToLowerInvariant());
             }
             
-            [Command("activity"), OwnerOnly, Priority(1)]
+            [Command("activity")]
+            [OwnerOnly]
+            [Priority(1)]
             public async Task ActivityAsync(int period, [Remainder] string activities)
             {
                 if (period < 12)
@@ -58,7 +62,8 @@ namespace Rias.Modules.Bot
                 await ReplyConfirmationAsync(Localization.BotActivityRotationSet, period, string.Join("\n", activitiesEnumerable.Select(x => $"{x.ActivityType} {x.Name}")));
             }
             
-            [Command("status"), OwnerOnly]
+            [Command("status")]
+            [OwnerOnly]
             public async Task SetStatusAsync(string status)
             {
                 if (string.Equals(status, "dnd", StringComparison.InvariantCultureIgnoreCase))

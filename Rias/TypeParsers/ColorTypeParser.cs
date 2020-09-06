@@ -16,7 +16,7 @@ namespace Rias.TypeParsers
                 return TypeParserResult<DiscordColor>.Successful(new DiscordColor(hex.Value));
             
             var color = default(System.Drawing.Color);
-            if (Enum.TryParse<System.Drawing.KnownColor>(value.Replace(" ", ""), true, out var knownColor))
+            if (Enum.TryParse<System.Drawing.KnownColor>(value.Replace(" ", string.Empty), true, out var knownColor))
                 color = System.Drawing.Color.FromKnownColor(knownColor);
 
             if (!color.IsEmpty)

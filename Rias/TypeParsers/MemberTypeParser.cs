@@ -8,7 +8,7 @@ using Rias.Implementation;
 
 namespace Rias.TypeParsers
 {
-    public class CachedMemberTypeParser : RiasTypeParser<DiscordMember>
+    public class MemberTypeParser : RiasTypeParser<DiscordMember>
     {
         public override async ValueTask<TypeParserResult<DiscordMember>> ParseAsync(Parameter parameter, string value, RiasCommandContext context)
         {
@@ -33,7 +33,7 @@ namespace Rias.TypeParsers
             if (index > 0)
             {
                 var username = value[..index];
-                var discriminator = value[(index+1)..];
+                var discriminator = value[(index + 1)..];
                 if (discriminator.Length == 4 && int.TryParse(discriminator, out _))
                 {
                     member = members.FirstOrDefault(u => string.Equals(u.Value.Discriminator, discriminator)

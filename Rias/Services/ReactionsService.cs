@@ -10,7 +10,8 @@ namespace Rias.Services
     {
         private readonly HttpClient _httpClient;
         
-        public ReactionsService(IServiceProvider serviceProvider) : base(serviceProvider)
+        public ReactionsService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Clear();

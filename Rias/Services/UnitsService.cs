@@ -20,40 +20,41 @@ namespace Rias.Services
     [AutoStart]
     public class UnitsService : RiasService
     {
+        private const string ExchangeRatesApi = "https://api.exchangeratesapi.io/latest";
+        private static readonly string UnitsPath = Path.Combine(Environment.CurrentDirectory, "assets/units");
+
         private readonly HttpClient _httpClient;
         private readonly IDatabase _redisDb;
-        
-        private readonly string _unitsPath = Path.Combine(Environment.CurrentDirectory, "assets/units");
-        private const string ExchangeRatesApi = "https://api.exchangeratesapi.io/latest";
-        
+
         private readonly ConcurrentDictionary<string, UnitsCategory> _units = new ConcurrentDictionary<string, UnitsCategory>();
         private readonly ConcurrentDictionary<string, List<Unit>> _unitsSingular = new ConcurrentDictionary<string, List<Unit>>();
         private readonly ConcurrentDictionary<string, List<Unit>> _unitsPlural = new ConcurrentDictionary<string, List<Unit>>();
         private readonly ConcurrentDictionary<string, List<Unit>> _unitsAbbreviations = new ConcurrentDictionary<string, List<Unit>>();
 
-        public UnitsService(IServiceProvider serviceProvider) : base(serviceProvider)
+        public UnitsService(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             _redisDb = serviceProvider.GetRequiredService<ConnectionMultiplexer>().GetDatabase();
             var sw = Stopwatch.StartNew();
             
-            foreach (var unitsFile in Directory.GetFiles(_unitsPath))
+            foreach (var unitsFile in Directory.GetFiles(UnitsPath))
             {
                 var unitsCategory = JsonConvert.DeserializeObject<UnitsCategory>(File.ReadAllText(unitsFile));
                 foreach (var unit in unitsCategory.Units)
                 {
                     unit.Category = unitsCategory;
-                    var nameSingular = unit.Name.Singular.ToLower().Replace(" ", "");
+                    var nameSingular = unit.Name.Singular.ToLower().Replace(" ", string.Empty);
                     if (_unitsSingular.TryGetValue(nameSingular, out var unitsSingular))
                         unitsSingular.Add(unit);
                     else
-                        _unitsSingular[nameSingular] = new List<Unit> {unit};
+                        _unitsSingular[nameSingular] = new List<Unit> { unit };
                     
-                    var namePlural = unit.Name.Plural.ToLower().Replace(" ", "");
+                    var namePlural = unit.Name.Plural.ToLower().Replace(" ", string.Empty);
                     if (_unitsPlural.TryGetValue(namePlural, out var unitsPlural))
                         unitsPlural.Add(unit);
                     else
-                        _unitsPlural[namePlural] = new List<Unit> {unit};
+                        _unitsPlural[namePlural] = new List<Unit> { unit };
 
                     if (unit.Name.Abbreviations is null)
                         continue;
@@ -65,7 +66,7 @@ namespace Rias.Services
                         if (_unitsAbbreviations.TryGetValue(abb, out var unitsAbbreviations))
                             unitsAbbreviations.Add(unit);
                         else
-                            _unitsAbbreviations[abb] = new List<Unit> {unit};
+                            _unitsAbbreviations[abb] = new List<Unit> { unit };
                     }
                 }
                 
@@ -82,11 +83,11 @@ namespace Rias.Services
         {
             var expr = new Expression(unit1.FuncToBase);
             expr.EvaluateParameter += (name, args) => ExpressionEvaluateParameter(name, args, value);
-            var baseResult = (double) expr.Evaluate();
+            var baseResult = (double)expr.Evaluate();
             
             expr = new Expression(unit2.FuncFromBase);
             expr.EvaluateParameter += (name, args) => ExpressionEvaluateParameter(name, args, baseResult);
-            return (double) expr.Evaluate();
+            return (double)expr.Evaluate();
         }
 
         public IEnumerable<UnitsCategory> GetAllUnits()
@@ -100,12 +101,21 @@ namespace Rias.Services
             if (name.Length <= 5 && _unitsAbbreviations.TryGetValue(name, out var unitsAbbreviations))
                 return unitsAbbreviations;
             
-            name = name.ToLower().Replace(" ", "");
+            name = name.ToLower().Replace(" ", string.Empty);
             return _unitsSingular.TryGetValue(name, out var unitsSingular)
                 ? unitsSingular
                 : _unitsPlural.TryGetValue(name, out var unitsPlural)
                     ? unitsPlural
                     : Enumerable.Empty<Unit>();
+        }
+        
+        private static void ExpressionEvaluateParameter(string name, ParameterArgs args, double value)
+        {
+            args.Result = name.ToLowerInvariant() switch
+            {
+                "x" => value,
+                _ => default
+            };
         }
         
         private async Task UpdateCurrencyUnitsAsync()
@@ -126,7 +136,7 @@ namespace Rias.Services
             {
                 var unitAbbreviation = unit.Name.Abbreviations.ElementAt(0);
                 
-                //ignore EUR because it's the base
+                // ignore EUR because it's the base
                 if (string.Equals(unitAbbreviation, "eur", StringComparison.OrdinalIgnoreCase))
                     continue;
                 
@@ -140,15 +150,6 @@ namespace Rias.Services
             var delay = exchangeRatesDataRedis.Expiry ?? TimeSpan.FromHours(1);
             await Task.Delay(delay);
             await RunTaskAsync(UpdateCurrencyUnitsAsync());
-        }
-        
-        private static void ExpressionEvaluateParameter(string name, ParameterArgs args, double value)
-        {
-            args.Result = name.ToLowerInvariant() switch
-            {
-                "x" => value,
-                _ => default
-            };
         }
     }
 }

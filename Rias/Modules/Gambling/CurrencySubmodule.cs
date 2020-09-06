@@ -18,26 +18,32 @@ namespace Rias.Modules.Gambling
         [Name("Currency")]
         public class CurrencySubmodule : RiasModule
         {
-            public CurrencySubmodule(IServiceProvider serviceProvider) : base(serviceProvider)
+            public CurrencySubmodule(IServiceProvider serviceProvider)
+                : base(serviceProvider)
             {
             }
-            
-            [Command("currency"), Context(ContextType.Guild)]
+
+            [Command("currency")]
+            [Context(ContextType.Guild)]
             public async Task CurrencyAsync([Remainder] DiscordMember? member = null)
             {
-                member ??= (DiscordMember) Context.User;
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == member.Id, () => new UsersEntity {UserId = member.Id});
+                member ??= (DiscordMember)Context.User;
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == member.Id, () => new UsersEntity { UserId = member.Id });
                 if (member.Id == Context.User.Id)
                 {
                     var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == member.Id, x => x.DateAdded, true);
 
                     if (string.IsNullOrEmpty(Credentials.DiscordBotList))
+                    {
                         await ReplyConfirmationAsync(Localization.GamblingCurrencyYou, userDb.Currency, Credentials.Currency);
+                    }
                     else
                     {
                         var timeNow = DateTime.UtcNow;
                         if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
+                        {
                             await ReplyConfirmationAsync(Localization.GamblingCurrencyYouVote, userDb.Currency, Credentials.Currency, $"{Credentials.DiscordBotList}/vote", Credentials.Patreon);
+                        }
                         else
                         {
                             var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
@@ -50,30 +56,32 @@ namespace Rias.Modules.Gambling
                     await ReplyConfirmationAsync(Localization.GamblingCurrencyUser, member.FullName(), userDb.Currency, Credentials.Currency);
                 }
             }
-            
-            [Command("reward"), OwnerOnly]
+
+            [Command("reward")]
+            [OwnerOnly]
             public async Task RewardAsync(int amount, [Remainder] DiscordUser user)
             {
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id });
                 var currency = userDb.Currency += amount;
 
                 await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync(Localization.GamblingUserRewarded, amount, Credentials.Currency, user.FullName(), currency);
             }
-            
-            [Command("take"), OwnerOnly]
+
+            [Command("take")]
+            [OwnerOnly]
             public async Task TakeAsync(int amount, [Remainder] DiscordUser user)
             {
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity {UserId = user.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id });
                 amount = Math.Min(amount, userDb.Currency);
                 userDb.Currency -= amount;
 
                 await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync(Localization.GamblingUserTook, amount, Credentials.Currency, user.FullName());
             }
-            
-            [Command("leaderboard"),
-             Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
+
+            [Command("leaderboard")]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task LeaderboardAsync(int page = 1)
             {
                 page--;
@@ -99,17 +107,17 @@ namespace Rias.Modules.Gambling
                         ? m
                         : await RiasBot.Client.ShardClients[0].GetUserAsync(userCurrency.UserId);
                     
-                    embed.AddField($"#{++index + page * 15} {user.FullName()}",
-                        $"{userCurrency.Currency} {Credentials.Currency}", true);
+                    embed.AddField($"#{++index + page * 15} {user.FullName()}", $"{userCurrency.Currency} {Credentials.Currency}", true);
                 }
 
                 await ReplyAsync(embed);
             }
-            
-            [Command("daily"), Context(ContextType.Guild)]
+
+            [Command("daily")]
+            [Context(ContextType.Guild)]
             public async Task DailyAsync()
             {
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity {UserId = Context.User.Id});
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity { UserId = Context.User.Id });
                 var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == Context.User.Id, x => x.DateAdded, true);
                 
                 var timeNow = DateTime.UtcNow;
@@ -118,17 +126,22 @@ namespace Rias.Modules.Gambling
                 {
                     var timeLeftHumanized = (nextDaily - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), minUnit: TimeUnit.Second);
                     if (string.IsNullOrEmpty(Credentials.DiscordBotList))
+                    {
                         await ReplyErrorAsync(Localization.GamblingDailyWait, timeLeftHumanized);
+                    }
                     else
                     {
                         if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
+                        {
                             await ReplyErrorAsync(Localization.GamblingDailyWaitVote, timeLeftHumanized, $"{Credentials.DiscordBotList}/vote", Credentials.Currency, Credentials.Patreon);
+                        }
                         else
                         {
                             var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
                             await ReplyErrorAsync(Localization.GamblingDailyWaitVoted, timeLeftHumanized, $"{Credentials.DiscordBotList}/vote", nextVoteHumanized, Credentials.Patreon);
                         }
                     }
+                    
                     return;
                 }
 
@@ -137,11 +150,15 @@ namespace Rias.Modules.Gambling
 
                 await DbContext.SaveChangesAsync();
                 if (string.IsNullOrEmpty(Credentials.DiscordBotList))
+                {
                     await ReplyConfirmationAsync(Localization.GamblingDailyReceived, 100, Credentials.Currency, userDb.Currency);
+                }
                 else
                 {
                     if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
+                    {
                         await ReplyConfirmationAsync(Localization.GamblingDailyReceivedVote, 100, Credentials.Currency, userDb.Currency, $"{Credentials.DiscordBotList}/vote", Credentials.Patreon);
+                    }
                     else
                     {
                         var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
