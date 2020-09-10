@@ -37,14 +37,15 @@ namespace Rias.Modules.Xp
             member ??= (DiscordMember)Context.User;
             await Context.Channel.TriggerTypingAsync();
 
-            var currentMember = Context.Guild!.CurrentMember;
-            if (!currentMember.GetPermissions().HasPermission(Permissions.AttachFiles))
+            var serverAttachFilesPerm = Context.Guild!.CurrentMember.GetPermissions().HasPermission(Permissions.AttachFiles);
+            var channelAttachFilesPerm = Context.Guild!.CurrentMember.PermissionsIn(Context.Channel).HasPermission(Permissions.AttachFiles);
+            if (!serverAttachFilesPerm && !channelAttachFilesPerm)
             {
                 await ReplyErrorAsync(Localization.XpNoAttachFilesPermission);
                 return;
             }
 
-            if (!currentMember.PermissionsIn(Context.Channel).HasPermission(Permissions.AttachFiles))
+            if (serverAttachFilesPerm && !channelAttachFilesPerm)
             {
                 await ReplyErrorAsync(Localization.XpNoAttachFilesChannelPermission);
                 return;

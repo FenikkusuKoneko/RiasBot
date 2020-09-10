@@ -229,19 +229,20 @@ namespace Rias.Modules.Utility
         [Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.User)]
         public async Task ColorAsync([Remainder] DiscordColor color)
         {
-            var currentMember = Context.Guild?.CurrentMember;
-            if (currentMember != null && !currentMember.GetPermissions().HasPermission(Permissions.AttachFiles))
+            var serverAttachFilesPerm = Context.Guild!.CurrentMember.GetPermissions().HasPermission(Permissions.AttachFiles);
+            var channelAttachFilesPerm = Context.Guild!.CurrentMember.PermissionsIn(Context.Channel).HasPermission(Permissions.AttachFiles);
+            if (!serverAttachFilesPerm && !channelAttachFilesPerm)
             {
                 await ReplyErrorAsync(Localization.UtilityColorNoAttachFilesPermission);
                 return;
             }
 
-            if (currentMember != null && !currentMember.PermissionsIn(Context.Channel).HasPermission(Permissions.AttachFiles))
+            if (serverAttachFilesPerm && !channelAttachFilesPerm)
             {
                 await ReplyErrorAsync(Localization.UtilityColorNoAttachFilesChannelPermission);
-                return; 
+                return;
             }
-            
+
             var hexColor = color.ToString();
             var magickColor = new MagickColor(hexColor);
             var hsl = ColorHSL.FromMagickColor(magickColor);

@@ -159,7 +159,7 @@ namespace Rias.Services
             imageStream.Position = 0;
             return imageStream;
         }
-        
+
         private async Task SendXpNotificationAsync(DiscordMember member, DiscordChannel channel, DiscordRole? role, GuildsEntity guildDb, int level)
         {
             var guild = member.Guild;
@@ -168,15 +168,15 @@ namespace Rias.Services
             if (guildDb.XpWebhookId == 0)
             {
                 if (!currentMember.PermissionsIn(channel).HasPermission(Permissions.SendMessages))
-                {
-                    await DisableXpNotificationAsync(guild);
                     return;
-                }
 
                 if (role is null)
                 {
                     if (guildDb.XpLevelUpMessage is null)
                     {
+                        if (!currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
+                            return;
+                        
                         await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUp, member.Mention, level);
                     }
                     else
@@ -184,8 +184,7 @@ namespace Rias.Services
                         var message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpMessage);
                         if (RiasUtilities.TryParseMessage(message, out var customMessage))
                         {
-                            if (!currentMember.GetPermissions().HasPermission(Permissions.EmbedLinks)
-                                || !currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
+                            if (customMessage.Embed is not null && !currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
                                 return;
                             
                             await channel.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
@@ -200,6 +199,9 @@ namespace Rias.Services
                 {
                     if (guildDb.XpLevelUpRoleRewardMessage is null)
                     {
+                        if (!currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
+                            return;
+                        
                         await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUpRoleReward, member.Mention, level, role);
                     }
                     else
@@ -207,8 +209,7 @@ namespace Rias.Services
                         var message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpRoleRewardMessage);
                         if (RiasUtilities.TryParseMessage(message, out var customMessage))
                         {
-                            if (!currentMember.GetPermissions().HasPermission(Permissions.EmbedLinks)
-                                || !currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
+                            if (customMessage.Embed is not null && !currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
                                 return;
                             
                             await channel.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);

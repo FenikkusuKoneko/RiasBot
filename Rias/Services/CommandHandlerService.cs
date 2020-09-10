@@ -34,9 +34,6 @@ namespace Rias.Services
         private readonly XpService _xpService;
         
         private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.json");
-        
-        private int _commandsAttempted;
-        private int _commandsExecuted;
 
         private List<Type> _typeParsers = new List<Type>();
 
@@ -54,10 +51,10 @@ namespace Rias.Services
             RiasBot.Client.MessageCreated += MessageCreatedAsync;
         }
 
-        public int CommandsAttempted => _commandsAttempted;
-        
-        public int CommandsExecuted => _commandsExecuted;
-        
+        public int CommandsAttempted { get; private set; }
+
+        public int CommandsExecuted { get; private set; }
+
         private void LoadCommands()
         {
             var sw = Stopwatch.StartNew();
@@ -207,16 +204,19 @@ namespace Rias.Services
             if (channel.Type == ChannelType.Text)
             {
                 var channelPermissions = channel.Guild.CurrentMember.PermissionsIn(channel);
+
                 if (!channelPermissions.HasPermission(Permissions.SendMessages))
                     return;
 
-                if (!channel.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks))
+                var channelEmbedPerm = channelPermissions.HasPermission(Permissions.EmbedLinks);
+                var serverEmbedPerm = channel.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks);
+                if (!serverEmbedPerm && !channelEmbedPerm)
                 {
                     await channel.SendMessageAsync(GetText(channel.Guild.Id, Localization.ServiceNoEmbedLinksPermission));
                     return;
                 }
 
-                if ((channelPermissions & Permissions.EmbedLinks) != Permissions.EmbedLinks)
+                if (serverEmbedPerm && !channelEmbedPerm)
                 {
                     await channel.SendMessageAsync(GetText(channel.Guild.Id, Localization.ServiceNoEmbedLinksChannelPermission));
                     return;
@@ -236,11 +236,11 @@ namespace Rias.Services
                     await message.DeleteAsync();
                 }
                 
-                _commandsExecuted++;
+                CommandsExecuted++;
                 return;
             }
             
-            _commandsAttempted++;
+            CommandsAttempted++;
 
             switch (result)
             {
