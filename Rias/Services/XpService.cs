@@ -202,7 +202,7 @@ namespace Rias.Services
                         if (!currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
                             return;
                         
-                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUpRoleReward, member.Mention, level, role);
+                        await ReplyConfirmationAsync(channel, guild.Id, Localization.XpGuildLevelUpRoleReward, member.Mention, level, role.Name);
                     }
                     else
                     {
