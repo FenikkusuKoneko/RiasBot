@@ -17,30 +17,22 @@ namespace Rias.Modules
 {
     public abstract class RiasModule : ModuleBase<RiasCommandContext>, IAsyncDisposable
     {
-        private readonly RiasBot _riasBot;
-        private readonly Credentials _credentials;
-        private readonly Localization _localization;
-        private readonly RiasDbContext _dbContext;
+        public readonly RiasBot RiasBot;
+        public readonly Credentials Credentials;
+        public readonly Localization Localization;
+        public readonly RiasDbContext DbContext;
         
         private readonly IServiceScope _scope;
         
         public RiasModule(IServiceProvider serviceProvider)
         {
-            _riasBot = serviceProvider.GetRequiredService<RiasBot>();
-            _credentials = serviceProvider.GetRequiredService<Credentials>();
-            _localization = serviceProvider.GetRequiredService<Localization>();
+            RiasBot = serviceProvider.GetRequiredService<RiasBot>();
+            Credentials = serviceProvider.GetRequiredService<Credentials>();
+            Localization = serviceProvider.GetRequiredService<Localization>();
 
             _scope = serviceProvider.CreateScope();
-            _dbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            DbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
         }
-
-        public RiasBot RiasBot => _riasBot;
-
-        public Credentials Credentials => _credentials;
-
-        public Localization Localization => _localization;
-
-        public RiasDbContext DbContext => _dbContext;
 
         /// <summary>
         /// Send a confirmation message with or without arguments. The form is an embed with the confirm color.<br/>
@@ -49,7 +41,7 @@ namespace Rias.Modules
         /// </summary>
         public Task<DiscordMessage> ReplyConfirmationAsync(string key, params object[] args)
         {
-            return Context.Channel.SendConfirmationMessageAsync(_localization.GetText(Context.Guild?.Id, key, args));
+            return Context.Channel.SendConfirmationMessageAsync(Localization.GetText(Context.Guild?.Id, key, args));
         }
 
         /// <summary>
@@ -59,7 +51,7 @@ namespace Rias.Modules
         /// </summary>
         public Task<DiscordMessage> ReplyErrorAsync(string key, params object[] args)
         {
-            return Context.Channel.SendErrorMessageAsync(_localization.GetText(Context.Guild?.Id, key, args));
+            return Context.Channel.SendErrorMessageAsync(Localization.GetText(Context.Guild?.Id, key, args));
         }
 
         public async Task<DiscordMessage> ReplyAsync(DiscordEmbedBuilder embed)
@@ -92,7 +84,7 @@ namespace Rias.Modules
         /// </summary>
         public string GetText(string key, params object[] args)
         {
-            return _localization.GetText(Context.Guild?.Id, key, args);
+            return Localization.GetText(Context.Guild?.Id, key, args);
         }
         
         /// <summary>
@@ -129,14 +121,12 @@ namespace Rias.Modules
     public abstract class RiasModule<TService> : RiasModule
         where TService : RiasService
     {
-        private readonly TService _service;
+        public readonly TService Service;
 
         public RiasModule(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _service = serviceProvider.GetRequiredService<TService>();
+            Service = serviceProvider.GetRequiredService<TService>();
         }
-
-        public TService Service => _service;
     }
 }

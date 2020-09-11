@@ -348,76 +348,57 @@ namespace Rias.Services
         
         public class MuteContext
         {
-            private readonly DiscordGuild? _guild;
-            private readonly ulong _guildId;
-            private readonly ulong _moderatorId;
-            private readonly ulong _memberId;
-            private readonly DiscordChannel? _sourceChannel;
-            private readonly string? _reason;
-            private readonly bool _sentByTimer;
-            
-            private DiscordMember? _moderator;
-            private DiscordMember? _member;
+            public readonly DiscordGuild? Guild;
+            public readonly ulong GuildId;
+            public DiscordMember? Moderator;
+            public readonly ulong ModeratorId;
+            public DiscordMember? Member;
+            public readonly ulong MemberId;
+            public readonly DiscordChannel? SourceChannel;
+            public readonly string? Reason;
+            public readonly bool SentByTimer;
 
             public MuteContext(DiscordGuild guild, DiscordMember moderator, DiscordMember member, DiscordChannel channel, string? reason)
             {
-                _guild = guild;
-                _guildId = guild.Id;
-                _moderator = moderator;
-                _moderatorId = moderator.Id;
-                _member = member;
-                _memberId = member.Id;
-                _sourceChannel = channel;
-                _reason = reason;
+                Guild = guild;
+                GuildId = guild.Id;
+                Moderator = moderator;
+                ModeratorId = moderator.Id;
+                Member = member;
+                MemberId = member.Id;
+                SourceChannel = channel;
+                Reason = reason;
             }
 
             public MuteContext(RiasBot riasBot, ulong guildId, ulong moderatorId, ulong memberId, ulong channelId)
             {
-                _guild = riasBot.GetGuild(guildId);
-                _guildId = guildId;
-                _memberId = memberId;
+                Guild = riasBot.GetGuild(guildId);
+                GuildId = guildId;
+                MemberId = memberId;
 
                 if (Guild != null)
                 {
                     if (Guild.Members.TryGetValue(moderatorId, out var moderator))
-                        _moderator = moderator;
+                        Moderator = moderator;
                     
                     if (Guild.Members.TryGetValue(memberId, out var member))
-                        _member = member;
+                        Member = member;
                     
-                    _sourceChannel = Guild.GetChannel(channelId);
+                    SourceChannel = Guild.GetChannel(channelId);
                 }
 
-                _sentByTimer = true;
+                SentByTimer = true;
             }
-
-            public DiscordGuild? Guild => _guild;
-
-            public ulong GuildId => _guildId;
-
-            public DiscordMember? Moderator => _moderator;
-
-            public ulong ModeratorId => _moderatorId;
-
-            public DiscordMember? Member => _member;
-
-            public ulong MemberId => _memberId;
-
-            public DiscordChannel? SourceChannel => _sourceChannel;
-
-            public string? Reason => _reason;
-
-            public bool SentByTimer => _sentByTimer;
 
             public void Update()
             {
                 if (Guild == null) return;
                 
                 if (Guild.Members.TryGetValue(ModeratorId, out var moderator))
-                    _moderator = moderator;
+                    Moderator = moderator;
                     
                 if (Guild.Members.TryGetValue(MemberId, out var member))
-                    _member = member;
+                    Member = member;
             }
         }
     }

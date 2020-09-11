@@ -29,9 +29,9 @@ namespace Rias.Services
     [AutoStart]
     public class BotService : RiasService
     {
-        private readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> _webhooks = new ConcurrentDictionary<ulong, List<DiscordWebhook>>();
-        private readonly ConcurrentDictionary<int, bool> _shardsReady = new ConcurrentDictionary<int, bool>();
+        public readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks = new ConcurrentDictionary<ulong, List<DiscordWebhook>>();
         
+        private readonly ConcurrentDictionary<int, bool> _shardsReady = new ConcurrentDictionary<int, bool>();
         private readonly string[] _codeLanguages = { "cs", "csharp" };
         
         public BotService(IServiceProvider serviceProvider)
@@ -55,8 +55,6 @@ namespace Rias.Services
                 return Task.CompletedTask;
             };
         }
-
-        public ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks => _webhooks;
         
         public static string ReplacePlaceholders(DiscordUser user, string message)
         {
