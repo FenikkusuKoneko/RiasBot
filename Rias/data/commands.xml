@@ -1,0 +1,1512 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<modules>
+  <module>
+    <name>administration</name>
+    <commands>
+      <command>
+        <aliases>setgreet greet</aliases>
+        <description>Toggles the announcements in the current channel when someone joins the server.</description>
+        <remarks>
+          <remark>{0}greet</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>greetmessage greetmsg</aliases>
+        <description>Sets the announcement message when someone joins the server.
+Placeholders:
+`%mention%` - will mention the user
+`%user%` - will write the user's username
+`%server%` or `%guild%` - will put the name of the server
+Embeds are supported, json form. If the preview is not an embed, then it means the json message is not correct</description>
+        <remarks>
+          <remark>{0}greetmsg Welcome %mention% to %guild%...</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>setbye bye</aliases>
+        <description>Toggles the announcements in the current channel when someone leaves the server.</description>
+        <remarks>
+          <remark>{0}bye</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>byemessage byemsg</aliases>
+        <description>Sets the announcement message when someone leaves the server.
+Placeholders:
+`%mention%` - will mention the user
+`%user%` - will write the user's username
+`%server%` or `%guild%` - will put the name of the server
+Embeds are supported, json form.</description>
+        <remarks>
+          <remark>{0}byemsg %user% left %guild%...</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>setmodlog modlog</aliases>
+        <description>Sets the current channel as "mod-log" channel where I will post notifications about warn, mute, unmute, kick, ban, softban, pruneban. Provide no arguments to disable it from the current channel.</description>
+        <remarks>
+          <remark>{0}modlog</remark>
+        </remarks>
+      </command>
+    </commands>
+    <submodules>
+      <submodule>
+        <name>category channels</name>
+        <commands>
+          <command>
+            <aliases>createcategory ccat</aliases>
+            <description>Creates a category channel.</description>
+            <remarks>
+              <remark>{0}ccat MEDIA</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>deletecategory dcat</aliases>
+            <description>Deletes a category channel. The category's ID is supported.</description>
+            <remarks>
+              <remark>{0}dcat MEDIA</remark>
+              <remark>{0}dcat 416510975286444032</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>renamecategory rncat</aliases>
+            <description>Renames a category channel. Separate the old name from the new name with '-&gt;'. The category's ID is supported.</description>
+            <remarks>
+              <remark>{0}rncat 416510975286444032 -&gt; MUSIC</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>addtextchanneltocategory atchtocat</aliases>
+            <description>Adds a text channel to a category channel. Separate the channel name from the category name with '-&gt;'. The category's ID and text channel's ID are supported.</description>
+            <remarks>
+              <remark>{0}atchtocat music -&gt; MEDIA</remark>
+              <remark>{0}atchtocat 476708100930273280 -&gt; 416510975286444032</remark>
+              <remark>{0}atchtocat 476708100930273280 -&gt; MEDIA</remark>
+              <remark>{0}atchtocat music -&gt; 416510975286444032</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>addvoicechanneltocategory avchtocat</aliases>
+            <description>Adds a voice channel to a category channel. Separate the channel name from the category name with '-&gt;'. The category's ID and voice channel's ID are supported.</description>
+            <remarks>
+              <remark>{0}avchtocat Music -&gt; MEDIA</remark>
+              <remark>{0}avchtocat 467279437105463315 -&gt; 416510975286444032</remark>
+              <remark>{0}avchtocat 467279437105463315 -&gt; MEDIA</remark>
+              <remark>{0}avchtocat Music -&gt; 416510975286444032</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>emojis</name>
+        <commands>
+          <command>
+            <aliases>addemoji addemote</aliases>
+            <description>Adds an emoji in this server. PNG, JPG or GIF supported. The image's size must be under 256 KB.</description>
+            <remarks>
+              <remark>{0}addemoji https://i.imgur.com/h86xaCX.png diamond_heart</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>deleteemoji delemoji deleteemote delemote</aliases>
+            <description>Deletes an emoji from this server. 'Mentioning' the emoji is supported.</description>
+            <remarks>
+              <remark>{0}delemoji diamond_heart</remark>
+              <remark>{0}delemoji :diamond_heart:</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>renameemoji rnemoji renameemote rnemote</aliases>
+            <description>Renames an emoji on this server. Separate the old name by the new name with '-&gt;'. 'Mentioning' the emotes are supported.</description>
+            <remarks>
+              <remark>{0}rnemoji heart -&gt; heart_diamond</remark>
+              <remark>{0}rnemoji :heart: -&gt; heart_diamond</remark>
+              <remark>{0}rnemoji heart -&gt; :heart_diamond:</remark>
+              <remark>{0}rnemoji :heart: -&gt; :heart_diamond:</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>moderation</name>
+        <commands>
+          <command>
+            <aliases>kick k</aliases>
+            <description>Kicks a user. If you provide a reason message I will DM the user with the reason.</description>
+            <remarks>
+              <remark>{0}k @User</remark>
+              <remark>{0}k @User Your behavior is bad!</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>ban b</aliases>
+            <description>Bans a user. If you provide a reason message I will DM the user with the reason.</description>
+            <remarks>
+              <remark>{0}b @User</remark>
+              <remark>{0}b @User You've violated many rules!</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>softban sb</aliases>
+            <description>Bans a user with the option to remove his messages from last 7 days, and then unbans it. The result is a kick.</description>
+            <remarks>
+              <remark>{0}sb @User</remark>
+              <remark>{0}sb @User Don't spam here!</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>pruneban pb</aliases>
+            <description>Bans a user with the option to remove his messages from last 7 days. Different from "softban" where the user is unbanned.</description>
+            <remarks>
+              <remark>{0}pb @User</remark>
+              <remark>{0}pb @User DO NOT SPAM HERE!</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>prune purge</aliases>
+            <description>`[prefix]prune x` removes last x number of messages from the channel (up to 100, including yours).
+`[prefix]prune @User` removes all User's messages in the last 100 messages (including yours).</description>
+            <remarks>
+              <remark>{0}prune x</remark>
+              <remark>{0}prune @User</remark>
+              <remark>{0}prune @User x</remark>
+              <remark>{0}prune x @User</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>mute</name>
+        <commands>
+          <command>
+            <aliases>mute</aliases>
+            <description>Mutes a user from text and voice channels. You can mute with a timeout and/or you can provide a reason.</description>
+            <remarks>
+              <remark>{0}mute @User</remark>
+              <remark>{0}mute @User Stop talking off topic</remark>
+              <remark>{0}mute @User 1h</remark>
+              <remark>{0}mute @User 1d2h See you tomorrow</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>unmute</aliases>
+            <description>Unmutes a user from text and voice channels. You can provide a reason.</description>
+            <remarks>
+              <remark>{0}unmute @User</remark>
+              <remark>{0}unmute @User You are forgiven</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>setmute</aliases>
+            <description>Sets the mute role. If the role doesn't exist it will be created.</description>
+            <remarks>
+              <remark>{0}setmute role</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>roles</name>
+        <commands>
+          <command>
+            <aliases>roles</aliases>
+            <description>Shows the roles on this server, paginated.</description>
+            <remarks>
+              <remark>{0}roles</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>createrole cr</aliases>
+            <description>Creates a role with the provided name.</description>
+            <remarks>
+              <remark>{0}cr Rias</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>deleterole dr</aliases>
+            <description>Deletes the role you provide.</description>
+            <remarks>
+              <remark>{0}dr Rias</remark>
+              <remark>{0}dr @Rias</remark>
+              <remark>{0}dr 416771209833742368</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>rolecolor rolecolour rc</aliases>
+            <description>Sets the color for a role. The color can be a hex format or a html name, '#' is optional.
+If the role's name has more than one word use quotation marks to properly take the role.</description>
+            <remarks>
+              <remark>{0}rc Rias #dc143c</remark>
+              <remark>{0}rc Rias crimson</remark>
+              <remark>{0}rc "Rias Gremory" #dc143c</remark>
+              <remark>{0}rc 416771209833742368 ff0000</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>renamerole rnr</aliases>
+            <description>Renames a role. You have to separate the old name by the new name with '-&gt;'.</description>
+            <remarks>
+              <remark>{0}rnr Rias -&gt; Rias-waifu</remark>
+              <remark>{0}rnr @Rias -&gt; Rias-waifu</remark>
+              <remark>{0}rnr 416771209833742368 -&gt; Rias-waifu</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>hoistrole hr</aliases>
+            <description>Sets the role to be or not displayed independently in the users list.</description>
+            <remarks>
+              <remark>{0}hr Admin</remark>
+              <remark>{0}hr @Admin</remark>
+              <remark>{0}hr 581123049408036874</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>mentionrole mr</aliases>
+            <description>Sets the role to be or not mentioned.</description>
+            <remarks>
+              <remark>{0}mr Admin</remark>
+              <remark>{0}mr @Admin</remark>
+              <remark>{0}mr 581123049408036874</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>addrole ar setrole sr</aliases>
+            <description>Adds/Sets a role to a user.</description>
+            <remarks>
+              <remark>{0}ar User Admin</remark>
+              <remark>{0}ar @User @Admin</remark>
+              <remark>{0}ar Nickname 613497353143451649</remark>
+              <remark>{0}ar 327927038360944640 613497353143451649</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>removerole rr</aliases>
+            <description>Removes a role from a user.</description>
+            <remarks>
+              <remark>{0}rr User Admin</remark>
+              <remark>{0}rr @User @Admin</remark>
+              <remark>{0}rr Nickname 613497353143451649</remark>
+              <remark>{0}rr 327927038360944640 613497353143451649</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>autoassignablerole aar</aliases>
+            <description>Sets a role to be auto-assigned for every user who joins the server. Provide no role to deactivate it.</description>
+            <remarks>
+              <remark>{0}aar Member</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>self assignable roles</name>
+        <commands>
+          <command>
+            <aliases>iam</aliases>
+            <description>Assign to yourself a role from this server's self assignable roles list.</description>
+            <remarks>
+              <remark>{0}iam kawaii</remark>
+              <remark>{0}iam 613497353143451649</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>iamnot iamn</aliases>
+            <description>Remove from yourself a role from this server's self assignable roles list.</description>
+            <remarks>
+              <remark>{0}iamn kawaii</remark>
+              <remark>{0}iam 613497353143451649</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>addselfassignablerole asar</aliases>
+            <description>Adds a role in this server's self assignable roles list.</description>
+            <remarks>
+              <remark>{0}asar lewd</remark>
+              <remark>{0}asar 613497353143451649</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>removeselfassignablerole rsar</aliases>
+            <description>Removes a role in this server's self assignable roles list.</description>
+            <remarks>
+              <remark>{0}rsar lewd</remark>
+              <remark>{0}rsar 613497353143451649</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>listselfassignableroles lsar</aliases>
+            <description>Shows this server's self assignable roles list, paginated.</description>
+            <remarks>
+              <remark>{0}lsar</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>server</name>
+        <commands>
+          <command>
+            <aliases>setnickname setnick</aliases>
+            <description>Sets a user's nickname in this server. Provide no arguments to remove its nickname.</description>
+            <remarks>
+              <remark>{0}setnick User nickname</remark>
+              <remark>{0}setnick @User nickname</remark>
+              <remark>{0}setnick 327927038360944640 nickname</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>setmynickname setmynick</aliases>
+            <description>I will set your nickname in this server if you have the permission to change your nickname. Provide no arguments for me to remove your nickname.</description>
+            <remarks>
+              <remark>{0}setmynick nickname</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>setservername ssn</aliases>
+            <description>Sets this server's name.</description>
+            <remarks>
+              <remark>{0}ssr Gremory Castle</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>setservericon ssi</aliases>
+            <description>Sets this server's icon.</description>
+            <remarks>
+              <remark>{0}ssr https://i.imgur.com/SrRA0Bp.png</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>text channels</name>
+        <commands>
+          <command>
+            <aliases>createtextchannel ctch</aliases>
+            <description>Creates a text channel.</description>
+            <remarks>
+              <remark>{0}ctch music</remark>
+              <remark>{0}ctch #music</remark>
+              <remark>{0}ctch 476708100930273280</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>deletetextchannel dtch</aliases>
+            <description>Deletes a text channel.</description>
+            <remarks>
+              <remark>{0}dtch music</remark>
+              <remark>{0}dtch #music</remark>
+              <remark>{0}dtch 476708100930273280</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>renametextchannel rntch</aliases>
+            <description>Renames a text channel. Separate the old name from the new one with '-&gt;'.</description>
+            <remarks>
+              <remark>{0}rntch media -&gt; music</remark>
+              <remark>{0}rntch #media -&gt; music</remark>
+              <remark>{0}rntch 416511169214545920 -&gt; music</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>channeltopic ct</aliases>
+            <description>Shows the current channel topic.</description>
+            <remarks>
+              <remark>{0}ct</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>setchanneltopic sct</aliases>
+            <description>Sets this channel topic.</description>
+            <remarks>
+              <remark>{0}sct topic</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>setnsfwchannel snsfwch</aliases>
+            <description>Toggles this channel or another channel as NSFW.</description>
+            <remarks>
+              <remark>{0}snsfwch</remark>
+              <remark>{0}snsfwch nsfw</remark>
+              <remark>{0}snsfwch #nsfw</remark>
+              <remark>{0}snsfwch 585309508394418176</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>voice channels</name>
+        <commands>
+          <command>
+            <aliases>createvoicechannel cvch</aliases>
+            <description>Creates a voice channel.</description>
+            <remarks>
+              <remark>{0}cvch Music</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>deletevoicechannel dvch</aliases>
+            <description>Deletes a voice channel.</description>
+            <remarks>
+              <remark>{0}dvch Music</remark>
+              <remark>{0}dvch 467279437105463315</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>renamevoicechannel rnvch</aliases>
+            <description>Renames a voice channel. Separate the old name from the new one with '-&gt;'.</description>
+            <remarks>
+              <remark>{0}rnvch Media -&gt; Music</remark>
+              <remark>{0}rnvch 467279437105463315 -&gt; Music</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>warnings</name>
+        <commands>
+          <command>
+            <aliases>warn</aliases>
+            <description>Warn a user. Also, you can specify a reason.</description>
+            <remarks>
+              <remark>{0}warn User</remark>
+              <remark>{0}warn @User</remark>
+              <remark>{0}warn 327927038360944640</remark>
+              <remark>{0}warn User Rule violated...</remark>
+              <remark>{0}warn 327927038360944640 Rule violated...</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>warnings warninglist warnlist</aliases>
+            <description>Shows all warned users in this server, paginated, or shows all warnings for a user.</description>
+            <remarks>
+              <remark>{0}warnings</remark>
+              <remark>{0}warnings User</remark>
+              <remark>{0}warnings @User</remark>
+              <remark>{0}warnings 327927038360944640</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>clearwarning clearwarn</aliases>
+            <description>Clear one warning by ID or all of a user.
+Administrators can clear any warning and moderators can clear only their added warnings to a user.</description>
+            <remarks>
+              <remark>{0}clearwarn User 1</remark>
+              <remark>{0}clearwarn @User 2</remark>
+              <remark>{0}clearwarn 327927038360944640 1</remark>
+              <remark>{0}clearwarn User all</remark>
+              <remark>{0}clearwarn 327927038360944640 all</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>warningpunishment warnpunishment</aliases>
+            <description>Shows the current warning punishment in this server.</description>
+            <remarks>
+              <remark>{0}warnpunishment</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>setwarningpunishment setwarnpunishment</aliases>
+            <description>Sets the warning punishment (mute, kick, ban, softban or pruneban) and the number of warnings (maximum 10) that trigger it.
+ Set it to 0 to disable the current warning punishment.</description>
+            <remarks>
+              <remark>{0}setwarnpunishment 0</remark>
+              <remark>{0}setwarnpunishment 3 mute</remark>
+              <remark>{0}setwarnpunishment 3 kick</remark>
+              <remark>{0}setwarnpunishment 5 ban</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+    </submodules>
+  </module>
+  <module>
+    <name>bot</name>
+    <commands>
+      <command>
+        <aliases>leaveguild leaveserver</aliases>
+        <description>Makes me to leave a guild/server.</description>
+        <remarks>
+          <remark>{0}leaveguild 416492045859946507</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>shutdown</aliases>
+        <description>Bye bye ;-;</description>
+        <remarks>
+          <remark>{0}shutdown</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>update restart</aliases>
+        <description>Yay, a new update &lt;3</description>
+        <remarks>
+          <remark>{0}update</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>send</aliases>
+        <description>I will send a message to a user &lt;u:user-id&gt; or to a channel from a server &lt;c:channel-id&gt;. Embed is supported.</description>
+        <remarks>
+          <remark>{0}send u:327927038360944640 message</remark>
+          <remark>{0}send c:381975649428176907 message</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>edit</aliases>
+        <description>I will edit a message that I own and is available in a server &lt;channel-id|message-id&gt;. Embed is supported.</description>
+        <remarks>
+          <remark>{0}edit 416511999837732864|419897542508281867 message</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>finduser</aliases>
+        <description>Searches a user from Discord and shows its info.</description>
+        <remarks>
+          <remark>{0}finduser 327927038360944640</remark>
+          <remark>{0}finduser Koneko#0001</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>evaluate eval</aliases>
+        <description>Evaluates a C# code.</description>
+        <remarks>
+          <remark>{0}eval code...</remark>
+        </remarks>
+      </command>
+    </commands>
+    <submodules>
+      <submodule>
+        <name>activity</name>
+        <commands>
+          <command>
+            <aliases>activity</aliases>
+            <description>Sets my activity to `Playing`, `Listening to`, `Watching` or `Streaming`. Rotation is supported, in seconds.</description>
+            <remarks>
+              <remark>{0}activity playing r!h for help</remark>
+              <remark>{0}activity streaming https://www.twitch.tv/ twitch</remark>
+              <remark>{0}activity 30 playing r!h for help\nwatching anime</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>status</aliases>
+            <description>Sets my status to Online, Idle/AFK, DnD/DoNotDisturb, Invisible/Offline.</description>
+            <remarks>
+              <remark>{0}status online</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>database</name>
+        <commands>
+          <command>
+            <aliases>delete</aliases>
+            <description>Deletes a user from the database. The currency, global xp, waifus and profile settings will be erased.</description>
+            <remarks>
+              <remark>{0}delete 327927038360944640</remark>
+              <remark>{0}delete Koneko#0001</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>database db</aliases>
+            <description>Shows details about a user from the database.</description>
+            <remarks>
+              <remark>{0}db 327927038360944640</remark>
+              <remark>{0}delete Koneko#0001</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>blacklist</aliases>
+            <description>Adds a user to the blacklist. It will cannot generate global xp and it will cannot receive [currency].</description>
+            <remarks>
+              <remark>{0}blacklist 327927038360944640</remark>
+              <remark>{0}blacklist Koneko#0001</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>removeblacklist</aliases>
+            <description>Removes a user from the blacklist. It will can generate global xp and will can receive [currency].</description>
+            <remarks>
+              <remark>{0}removeblacklist 327927038360944640</remark>
+              <remark>{0}removeblacklist Koneko#0001</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>botban</aliases>
+            <description>Bans a user from using me. It will also be added to the blacklist.</description>
+            <remarks>
+              <remark>{0}botban 327927038360944640</remark>
+              <remark>{0}botban Koneko#0001</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>removebotban</aliases>
+            <description>Unbans a user, allow it to use me. It will not be removed from the blacklist (if it is).</description>
+            <remarks>
+              <remark>{0}removebotban 327927038360944640</remark>
+              <remark>{0}removebotban Koneko#0001</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+    </submodules>
+  </module>
+  <module>
+    <name>commands</name>
+    <commands>
+      <command>
+        <aliases>deletecommandmessage delcmdmsg</aliases>
+        <description>Toggles the deletion of the user's message that triggered the command.</description>
+        <remarks>
+          <remark>{0}delcmdmsg</remark>
+        </remarks>
+      </command>
+    </commands>
+  </module>
+  <module>
+    <name>gambling</name>
+    <commands>
+      <command>
+        <aliases>wheel</aliases>
+        <description>Bet on wheel. You can win up to 2x [currency] of the bet.</description>
+        <remarks>
+          <remark>{0}wheel 1000</remark>
+        </remarks>
+      </command>
+    </commands>
+    <submodules>
+      <submodule>
+        <name>blackjack</name>
+        <aliases>blackjack bj</aliases>
+        <commands>
+          <command>
+            <description>Play a game of blackjack.
+Options:
+- hit(🎴) - draw a card from the deck
+- stand(🤚) - stand with your cards
+- split(↔) - split your hand in two if you have a pair
+
+The game is played with 4 decks. And you lose the draws.</description>
+            <remarks>
+              <remark>{0}blackjack 100</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>resume</aliases>
+            <description>Resumes the blackjack session in this channel.</description>
+            <remarks>
+              <remark>{0}blackjack resume</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>stop</aliases>
+            <description>Stops the blackjack session, you will also lose the bet.</description>
+            <remarks>
+              <remark>{0}blackjack stop</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>currency</name>
+        <commands>
+          <command>
+            <aliases>currency $ hearts</aliases>
+            <description>Shows the currency you have or for a user.</description>
+            <remarks>
+              <remark>{0}$</remark>
+              <remark>{0}$ User</remark>
+              <remark>{0}$ @User</remark>
+              <remark>{0}$ 327927038360944640</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>reward</aliases>
+            <description>Rewards a user with some amount of [currency].</description>
+            <remarks>
+              <remark>{0}reward 100 User</remark>
+              <remark>{0}reward 100 @User</remark>
+              <remark>{0}reward 100 327927038360944640</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>take</aliases>
+            <description>Takes some amount of [currency] from a user.</description>
+            <remarks>
+              <remark>{0}take 100 User</remark>
+              <remark>{0}take 100 @User</remark>
+              <remark>{0}take 100 327927038360944640</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>leaderboard lb</aliases>
+            <description>Shows a list with [currency] of users.</description>
+            <remarks>
+              <remark>{0}lb</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>daily dailies</aliases>
+            <description>Get your daily [currency].</description>
+            <remarks>
+              <remark>{0}daily</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+    </submodules>
+  </module>
+  <module>
+    <name>games</name>
+    <commands>
+      <command>
+        <aliases>rps</aliases>
+        <description>Play a game of rock-paper-scissors.</description>
+        <remarks>
+          <remark>{0}rps rock</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>8ball 8b</aliases>
+        <description>Ask 8 ball a question.</description>
+        <remarks>
+          <remark>{0}8b Should I sleep right now?</remark>
+        </remarks>
+      </command>
+    </commands>
+  </module>
+  <module>
+    <name>help</name>
+    <commands>
+      <command>
+        <aliases>help h</aliases>
+        <description>Shows a help info for a command, or shows the general help info if no arguments are given.</description>
+        <remarks>
+          <remark>{0}h</remark>
+          <remark>{0}h anime</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>modules mdls</aliases>
+        <description>Shows all modules and submodules.</description>
+        <remarks>
+          <remark>{0}mdls</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>commands cmds</aliases>
+        <description>Shows all commands of a module or submodule.</description>
+        <remarks>
+          <remark>{0}cmds Administration</remark>
+          <remark>{0}cmds Moderation</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>allcommands allcmds</aliases>
+        <description>I will DM you with all commands.</description>
+        <remarks>
+          <remark>{0}allcmds</remark>
+        </remarks>
+      </command>
+    </commands>
+  </module>
+  <module>
+    <name>nsfw</name>
+    <commands>
+      <command>
+        <aliases>hentai</aliases>
+        <description>Shows a hentai image. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.</description>
+        <remarks>
+          <remark>{0}hentai</remark>
+          <remark>{0}hentai yuri, uncensored</remark>
+          <remark>{0}hentai Rias Gremory</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>danbooru</aliases>
+        <description>Shows a hentai image from Danbooru. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.</description>
+        <remarks>
+          <remark>{0}danbooru</remark>
+          <remark>{0}danbooru yuri</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>konachan</aliases>
+        <description>Shows a hentai image from Konachan. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.</description>
+        <remarks>
+          <remark>{0}konachan</remark>
+          <remark>{0}konachan yuri</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>yandere</aliases>
+        <description>Shows a hentai image from Yandere. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.</description>
+        <remarks>
+          <remark>{0}yandere</remark>
+          <remark>{0}yandere yuri</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>gelbooru</aliases>
+        <description>Shows a hentai image from Gelbooru. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.</description>
+        <remarks>
+          <remark>{0}gelbooru</remark>
+          <remark>{0}gelbooru yuri</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>hentaiplus hentai+</aliases>
+        <description>Shows multiple hentai images from Danbooru, Konachan, Yandere and Gelbooru. Tags are supported (up to 3), separate them by comma. A tag formed from multiple words contains whitespaces.</description>
+        <remarks>
+          <remark>{0}hentai+</remark>
+          <remark>{0}hentai+ yuri, uncensored</remark>
+          <remark>{0}hentai+ Highschool DxD</remark>
+        </remarks>
+      </command>
+    </commands>
+  </module>
+  <module>
+    <name>profile</name>
+    <aliases>profile</aliases>
+    <commands>
+      <command>
+        <description>Shows your profile or for a user.</description>
+        <remarks>
+          <remark>{0}profile</remark>
+          <remark>{0}profile User</remark>
+          <remark>{0}profile @User</remark>
+          <remark>{0}profile 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>background bg cover image</aliases>
+        <description>Sets the profile's background image. Price: 1000 [currency].
+Only https. Direct image links, png, jpg or jpeg allowed.
+For better results, resize and/or crop the image to 500x250.
+NSFW images are not allowed, you will be banned.</description>
+        <remarks>
+          <remark>{0}profile bg https://i.imgur.com/pQAwZJ3.png</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>dim</aliases>
+        <description>Sets the profile's background dim. Default is 50%. 0 means the background will have the original brightness, 100 means full black.</description>
+        <remarks>
+          <remark>{0}profile dim 50</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>biography bio</aliases>
+        <description>Sets the profile's biography.</description>
+        <remarks>
+          <remark>{0}profile bio Rias is my waifu.</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>color colour</aliases>
+        <description>Sets the profile's color. The color can be a hex format or a html name, '#' is optional.
+Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a custom one you must be a Patron.</description>
+        <remarks>
+          <remark>{0}profile color red</remark>
+          <remark>{0}profile color #dc143c</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>badge</aliases>
+        <description>Sets a profile badge. There are 3 badges that a user can have depending of its Patreon tier. To remove a badge simply provide no text.</description>
+        <remarks>
+          <remark>{0}profile badge 1 2D&gt;3D</remark>
+          <remark>{0}profile badge 2 Hentai</remark>
+          <remark>{0}profile badge 3 Neko</remark>
+        </remarks>
+      </command>
+    </commands>
+  </module>
+  <module>
+    <name>reactions</name>
+    <commands>
+      <command>
+        <aliases>pat pet</aliases>
+        <description>Pat a user &lt;3.</description>
+        <remarks>
+          <remark>{0}pat</remark>
+          <remark>{0}pat User</remark>
+          <remark>{0}pat @User</remark>
+          <remark>{0}pat 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>hug</aliases>
+        <description>Hug a user &lt;3.</description>
+        <remarks>
+          <remark>{0}hug</remark>
+          <remark>{0}hug User</remark>
+          <remark>{0}hug @User</remark>
+          <remark>{0}hug 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>kiss</aliases>
+        <description>Kiss a user :heart:.</description>
+        <remarks>
+          <remark>{0}kiss</remark>
+          <remark>{0}kiss User</remark>
+          <remark>{0}kiss @User</remark>
+          <remark>{0}kiss 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>lick</aliases>
+        <description>Lick a user, lewd.</description>
+        <remarks>
+          <remark>{0}lick</remark>
+          <remark>{0}lick User</remark>
+          <remark>{0}lick @User</remark>
+          <remark>{0}lick 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>cuddle</aliases>
+        <description>Cuddle a user.</description>
+        <remarks>
+          <remark>{0}cuddle</remark>
+          <remark>{0}cuddle User</remark>
+          <remark>{0}cuddle @User</remark>
+          <remark>{0}cuddle 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>bite</aliases>
+        <description>Bite a user.</description>
+        <remarks>
+          <remark>{0}bite</remark>
+          <remark>{0}bite User</remark>
+          <remark>{0}bite @User</remark>
+          <remark>{0}bite 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>slap</aliases>
+        <description>Slap a user.</description>
+        <remarks>
+          <remark>{0}slap</remark>
+          <remark>{0}slap User</remark>
+          <remark>{0}slap @User</remark>
+          <remark>{0}slap 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>cry crying</aliases>
+        <description>If you cry ;-;.</description>
+        <remarks>
+          <remark>{0}cry</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>grope</aliases>
+        <description>Grope a user.</description>
+        <remarks>
+          <remark>{0}grope</remark>
+          <remark>{0}grope User</remark>
+          <remark>{0}grope @User</remark>
+          <remark>{0}grope 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>blush</aliases>
+        <description>You are blushing.</description>
+        <remarks>
+          <remark>{0}blush</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>dance dancing</aliases>
+        <description>Dance alone or with someone.</description>
+        <remarks>
+          <remark>{0}dance</remark>
+          <remark>{0}dance User</remark>
+          <remark>{0}dance @User</remark>
+          <remark>{0}dance 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>poke</aliases>
+        <description>Poke a user.</description>
+        <remarks>
+          <remark>{0}poke</remark>
+          <remark>{0}poke User</remark>
+          <remark>{0}poke @User</remark>
+          <remark>{0}poke 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>pout</aliases>
+        <description>Maybe someone will pat you.</description>
+        <remarks>
+          <remark>{0}pout</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>sleepy sleep</aliases>
+        <description>Good night. See you tomorrow.</description>
+        <remarks>
+          <remark>{0}sleepy</remark>
+        </remarks>
+      </command>
+    </commands>
+  </module>
+  <module>
+    <name>searches</name>
+    <commands>
+      <command>
+        <aliases>wikipedia wiki</aliases>
+        <description>Searches on Wikipedia.</description>
+        <remarks>
+          <remark>{0}wiki anime</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>urbandictionary ud</aliases>
+        <description>Searches on urban dictionary, paginated.</description>
+        <remarks>
+          <remark>{0}ud waifu</remark>
+        </remarks>
+      </command>
+    </commands>
+    <submodules>
+      <submodule>
+        <name>anime</name>
+        <commands>
+          <command>
+            <aliases>anime</aliases>
+            <description>Shows info about an anime from AniList.</description>
+            <remarks>
+              <remark>{0}anime High School DxD</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>manga</aliases>
+            <description>Shows info about a manga from AniList.</description>
+            <remarks>
+              <remark>{0}manga High School DxD</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>character</aliases>
+            <description>Shows info about a character from the database or AniList.
+If the character is not on AniList but it is a custom character in the database use @id.</description>
+            <remarks>
+              <remark>{0}character Rias Gremory</remark>
+              <remark>{0}character 50389</remark>
+              <remark>{0}character @1</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>animelist anilist</aliases>
+            <description>Shows a list with anime and their IDs from AniList matching the title, paginated.</description>
+            <remarks>
+              <remark>{0}anilist High School DxD</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>mangalist</aliases>
+            <description>Shows a list with manga and their IDs from AniList matching the title, paginated.</description>
+            <remarks>
+              <remark>{0}mangalist High School DxD</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>characters</aliases>
+            <description>Shows a list with characters and their IDs from AniList matching the name, paginated.</description>
+            <remarks>
+              <remark>{0}mangalist High School DxD</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+      <submodule>
+        <name>cute girls</name>
+        <commands>
+          <command>
+            <aliases>neko</aliases>
+            <description>Shows a neko girl image.</description>
+            <remarks>
+              <remark>{0}neko</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>kitsune</aliases>
+            <description>Shows a kitsune girl image.</description>
+            <remarks>
+              <remark>{0}kitsune</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+    </submodules>
+  </module>
+  <module>
+    <name>utility</name>
+    <commands>
+      <command>
+        <aliases>prefix</aliases>
+        <description>Shows the current server's prefix.</description>
+        <remarks>
+          <remark>{0}prefix</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>setprefix</aliases>
+        <description>Sets the prefix on this server.</description>
+        <remarks>
+          <remark>{0}setprefix r!</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>languages</aliases>
+        <description>Shows the available languages.</description>
+        <remarks>
+          <remark>{0}languages</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>setlanguage setlang</aliases>
+        <description>Sets my language on this server.</description>
+        <remarks>
+          <remark>{0}setlanguage en</remark>
+          <remark>{0}setlanguage english</remark>
+          <remark>{0}setlanguage ro</remark>
+          <remark>{0}setlanguage romanian</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>invite</aliases>
+        <description>Invite me to your server.</description>
+        <remarks>
+          <remark>{0}invite</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>patreon support donate</aliases>
+        <description>Support this project on Patreon.</description>
+        <remarks>
+          <remark>{0}patreon</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>patrons supporters</aliases>
+        <description>Shows a list with all users that support this project, ordered by their donation amount, paginated.</description>
+        <remarks>
+          <remark>{0}patrons</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>vote</aliases>
+        <description>Vote me to become more popular.</description>
+        <remarks>
+          <remark>{0}vote</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>votes</aliases>
+        <description>Shows a list with all users that voted in the last specified time, default is 12 hours, paginated.</description>
+        <remarks>
+          <remark>{0}votes</remark>
+          <remark>{0}votes 24h</remark>
+          <remark>{0}votes 7d</remark>
+          <remark>{0}votes 30d</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>ping</aliases>
+        <description>Pong.</description>
+        <remarks>
+          <remark>{0}ping</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>choose</aliases>
+        <description>I will choose an item from a list. Separators: `,`, `|`, `;`.</description>
+        <remarks>
+          <remark>{0}choose 1, 2, 3, 4, 5</remark>
+          <remark>{0}choose Rias | Koneko | Kurumi</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>color colour</aliases>
+        <description>Generates a preview image of a hex color or a html name color. '#' is optional.</description>
+        <remarks>
+          <remark>{0}color #dc143c</remark>
+          <remark>{0}color crimson</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>calculator calc</aliases>
+        <description>Calculates a math expression.</description>
+        <remarks>
+          <remark>{0}calc 2+2</remark>
+          <remark>{0}calc sqrt(2)</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>converter convert</aliases>
+        <description>Convert from a unit to another. You don't have to specify the category, but for explicit cases where some units have the same abbreviations in different categories, you can use it.
+The units names can or not contain spaces; if they do use quotes.
+The units singular, plural or abbreviation names can be used, then compatible units will be searched to match with the first unit. The abbreviations are case-sensitive.</description>
+        <remarks>
+          <remark>{0}convert 2 km mi</remark>
+          <remark>{0}convert km mi 2</remark>
+          <remark>{0}convert 5 eur usd</remark>
+          <remark>{0}convert 5 "euro" "united states dollar"</remark>
+          <remark>{0}convert 5 euro unitedstatesdollar</remark>
+          <remark>{0}convert length 1 mi km</remark>
+          <remark>{0}convert time h m 1</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>converterlist convertlist</aliases>
+        <description>Shows all the units categories from the converter, paginated.
+If a category is provided then it shows all the units from that category, paginated.</description>
+        <remarks>
+          <remark>{0}convertlist</remark>
+          <remark>{0}convertlist length</remark>
+          <remark>{0}convertlist currency</remark>
+        </remarks>
+      </command>
+    </commands>
+    <submodules>
+      <submodule>
+        <name>info</name>
+        <commands>
+          <command>
+            <aliases>stats</aliases>
+            <description>Shows my stats.</description>
+            <remarks>
+              <remark>{0}stats</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>userinfo uinfo</aliases>
+            <description>Shows the info for a user. Provide no arguments to show your info.</description>
+            <remarks>
+              <remark>{0}uinfo</remark>
+              <remark>{0}uinfo User</remark>
+              <remark>{0}uinfo @User</remark>
+              <remark>{0}uinfo 327927038360944640</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>serverinfo sinfo</aliases>
+            <description>Shows the info for this server.</description>
+            <remarks>
+              <remark>{0}sinfo</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>shardsinfo shinfo</aliases>
+            <description>Shows the connection state of all shards.</description>
+            <remarks>
+              <remark>{0}shinfo</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>avatar av</aliases>
+            <description>Shows the avatar for a user. Provide no arguments to show your avatar.</description>
+            <remarks>
+              <remark>{0}av</remark>
+              <remark>{0}av User</remark>
+              <remark>{0}av @User</remark>
+              <remark>{0}av 327927038360944640</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>servericon sic</aliases>
+            <description>Shows the icon of this server.</description>
+            <remarks>
+              <remark>{0}sic</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>whoisplaying whosplaying whoplays</aliases>
+            <description>Shows a list with all users from the server that play a game.</description>
+            <remarks>
+              <remark>{0}whoisplaying osu!</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+    </submodules>
+  </module>
+  <module>
+    <name>waifu</name>
+    <commands>
+      <command>
+        <aliases>waifus</aliases>
+        <description>Shows all your waifus or for a user.</description>
+        <remarks>
+          <remark>{0}waifus</remark>
+        </remarks>
+      </command>
+    </commands>
+    <submodules>
+      <submodule>
+        <name>waifu</name>
+        <aliases>waifu</aliases>
+        <commands>
+          <command>
+            <aliases>claim</aliases>
+            <description>Claim a waifu, this can be from the database or AniList.
+              If the ID starts with `@` then the character will be searched by ID on database, if not then the character will be searched first, by name, on database then on AniList.
+
+              The price for every waifu usually starts from 1000 [currency] and grows for each claim with 10 [currency], also it will decrease for each divorce.</description>
+            <remarks>
+              <remark>{0}waifu claim Rias Gremory</remark>
+              <remark>{0}waifu claim 50389</remark>
+              <remark>{0}waifu claim @1</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>divorce</aliases>
+            <description>Divorce from a waifu.</description>
+            <remarks>
+              <remark>{0}waifu divorce Rias Gremory</remark>
+              <remark>{0}waifu divorce 50389</remark>
+              <remark>{0}waifu divorce @1</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>special beloved</aliases>
+            <description>Make a waifu special/beloved. Only one waifu can be special, if you set another one, the previous one will have this status off. The price is 5000 [currency]. This action is not reversible.</description>
+            <remarks>
+              <remark>{0}waifu special Rias Gremory</remark>
+              <remark>{0}waifu special 50389</remark>
+              <remark>{0}waifu special @1</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>image avatar</aliases>
+            <description>Set an image for your special waifu or for your custom ones, the url link comes first then the waifu name or id. Oh and it's free.
+              NSFW images are not allowed, you will be banned.</description>
+            <remarks>
+              <remark>{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg Rias Gremory</remark>
+              <remark>{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg 50389</remark>
+              <remark>{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg @1</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>position</aliases>
+            <description>Set the position of a waifu. Think of it as a list, if you move one above all the others below will have the position incremented.</description>
+            <remarks>
+              <remark>{0}waifu position 1 Rias Gremory</remark>
+              <remark>{0}waifu position 2 50389</remark>
+              <remark>{0}waifu position 3 @1</remark>
+            </remarks>
+          </command>
+          <command>
+            <aliases>create</aliases>
+            <description>Create a waifu. Put a direct link image and a name. The price is 10000 [currency]. She will have the beloved status automatically.</description>
+            <remarks>
+              <remark>{0}waifu create https://i.imgur.com/ZW96TT6.jpg My Waifu</remark>
+            </remarks>
+          </command>
+        </commands>
+      </submodule>
+    </submodules>
+  </module>
+  <module>
+    <name>xp</name>
+    <commands>
+      <command>
+        <aliases>xp</aliases>
+        <description>Shows your global level, global xp, server level and server xp, or for a user.</description>
+        <remarks>
+          <remark>{0}xp</remark>
+          <remark>{0}xp User</remark>
+          <remark>{0}xp @User</remark>
+          <remark>{0}xp 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>globalxpleaderboard gxplb</aliases>
+        <description>Shows the global xp leaderboard.</description>
+        <remarks>
+          <remark>{0}gxplb</remark>
+          <remark>{0}gxplb 5</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>xpleaderboard sxplb xplb</aliases>
+        <description>Shows this server xp leaderboard.</description>
+        <remarks>
+          <remark>{0}xplb</remark>
+          <remark>{0}xplb 5</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>xpnotification xpnotify xpn</aliases>
+        <description>Enables or disables the server xp notifications. By default the notifications will be sent in the channel where the user leveled up. You can provide a channel and the notifications will be sent there.</description>
+        <remarks>
+          <remark>{0}xpnotify</remark>
+          <remark>{0}xpnotify #xp</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>xpmessage xpm</aliases>
+        <description>Sets the xp notification message. Provide no arguments to clear the set xp notification message and use the default one.
+Placeholders:
+`%mention%` - will mention the user
+`%user%` - will write the user's username
+`%server%` or `%guild%` - will put the name of the server
+`%avatar%` - will put the user's avatar url (or preview if used in an embed thumbnail or image)
+`%level%` - will put the user's reached level
+Embeds are supported, json form. If the preview is not an embed, then it means the json message is not correct.</description>
+        <remarks>
+          <remark>{0}xpm</remark>
+          <remark>{0}xpm Congratulations %mention%! You are now level %level%.</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>xpmessagereward xpmr</aliases>
+        <description>Sets the xp notification message for a level up role reward. Provide no arguments to clear the set xp notification message level up role reward and use the default one.
+Placeholders:
+`%mention%` - will mention the user
+`%user%` - will write the user's username
+`%server%` or `%guild%` - will put the name of the server
+`%avatar%` - will put the user's avatar url (or preview if used in an embed thumbnail or image)
+`%level%` - will put the user's reached level
+`%role%` - will put the rewarded role's name
+`%role_mention%` - will put the rewarded role's mention
+Embeds are supported, json form. If the preview is not an embed, then it means the json message is not correct.</description>
+        <remarks>
+          <remark>{0}xpmr</remark>
+          <remark>{0}xpmr Congratulations %mention%! You are now level %level% and received role %role%.</remark>
+          <remark>{0}xpmr Congratulations %mention%! You reached level %level%. You are now %role%.</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>leveluprolereward lurr</aliases>
+        <description>Adds a role in the level up role reward list.
+When a user reaches the level it will be rewarded with the role.
+To remove a role from the list provide no role for the respective level.</description>
+        <remarks>
+          <remark>{0}lurr 5 Active</remark>
+          <remark>{0}lurr 5</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>leveluprolerewardlist lurrl lurrs</aliases>
+        <description>Shows the with level up role reward list.</description>
+        <remarks>
+          <remark>{0}lurrl</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>resetserverxp rsxp</aliases>
+        <description>Resets this server xp leaderboard.</description>
+        <remarks>
+          <remark>{0}rsxp</remark>
+        </remarks>
+      </command>
+    </commands>
+  </module>
+</modules>

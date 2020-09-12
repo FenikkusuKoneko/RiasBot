@@ -89,7 +89,7 @@ namespace Rias.Modules.Help
             };
 
             var moduleName = command.Module.Name;
-            if (command.Module.Parent != null)
+            if (command.Module.Parent != null && !string.Equals(command.Module.Name, command.Module.Parent.Name, StringComparison.OrdinalIgnoreCase))
                 moduleName = $"{command.Module.Parent.Name} -> {moduleName}";
 
             var description = new StringBuilder(command.Description)
@@ -121,7 +121,7 @@ namespace Rias.Modules.Help
                             .ToArray();
                         embed.AddField(GetText(Localization.HelpRequiresBotPermission), string.Join("\n", botPermissions), true);
                         break;
-                    case OwnerOnlyAttribute _:
+                    case OwnerOnlyAttribute:
                         embed.AddField(GetText(Localization.HelpRequiresOwner), GetText(Localization.CommonYes), true);
                         break;
                 }
@@ -155,29 +155,36 @@ namespace Rias.Modules.Help
 
             var isOwner = Context.User.Id == Credentials.MasterId;
 
-            var modules = isOwner
-                ? _commandService.GetAllModules()
-                    .Where(m => m.Parent is null)
-                    .OrderBy(m => m.Name)
-                    .ToArray()
-                : _commandService.GetAllModules()
-                    .Where(m => m.Parent is null && m.Commands.All(c => !c.Checks.Any(x => x is OwnerOnlyAttribute)))
-                    .OrderBy(m => m.Name)
-                    .ToArray();
+            Func<Module, bool> modulesOwnerPredicate;
+            if (isOwner)
+                modulesOwnerPredicate = m => m.Parent is null;
+            else
+                modulesOwnerPredicate = m => m.Parent is null && m.Commands.All(c => !c.Checks.Any(x => x is OwnerOnlyAttribute));
+
+            var modules = _commandService.GetAllModules()
+                .Where(modulesOwnerPredicate)
+                .OrderBy(m => m.Name)
+                .ToList();
+
+            Func<Module, bool> submodulesGroupOwnerPredicate;
+            if (isOwner)
+                submodulesGroupOwnerPredicate = m => !string.Equals(m.Parent.Name, m.Name, StringComparison.OrdinalIgnoreCase);
+            else
+                submodulesGroupOwnerPredicate = m => !string.Equals(m.Parent.Name, m.Name, StringComparison.OrdinalIgnoreCase)
+                                                     && m.Commands.All(c => !c.Checks.Any(x => x is OwnerOnlyAttribute));
             
             foreach (var module in modules)
             {
                 var fieldValue = "\u200B";
                 if (module.Submodules.Count != 0)
                 {
-                    fieldValue = string.Join("\n", isOwner
-                        ? module.Submodules
-                            .OrderBy(m => m.Name)
-                            .Select(x => x.Name)
-                        : module.Submodules
-                            .Where(m => m.Commands.All(c => !c.Checks.Any(x => x is OwnerOnlyAttribute)))
-                            .OrderBy(m => m.Name)
-                            .Select(x => x.Name));
+                    var innerFieldValue = string.Join("\n", module.Submodules
+                        .Where(submodulesGroupOwnerPredicate)
+                        .OrderBy(m => m.Name)
+                        .Select(x => x.Name));
+                    
+                    if (!string.IsNullOrEmpty(innerFieldValue))
+                        fieldValue = innerFieldValue;
                 }
 
                 embed.AddField(module.Name, fieldValue, true);
@@ -213,7 +220,7 @@ namespace Rias.Modules.Help
                 Title = GetText(module.Parent != null ? Localization.HelpAllCommandsForSubmodule : Localization.HelpAllCommandsForModule, module.Name)
             }.AddField(module.Name, string.Join("\n", commandsAliases), true);
 
-            foreach (var submodule in module.Submodules)
+            foreach (var submodule in module.Submodules.Where(x => !string.Equals(x.Name, x.Parent.Name, StringComparison.OrdinalIgnoreCase)).OrderBy(x => x.Name))
             {
                 var submoduleCommands = GetModuleCommands(submodule, isOwner);
                 if (submoduleCommands.Count == 0)
@@ -262,7 +269,7 @@ namespace Rias.Modules.Help
                 if (commandsAliases.Count != 0)
                     embed.AddField(module.Name, string.Join("\n", commandsAliases), true);
 
-                foreach (var submodule in module.Submodules.OrderBy(m => m.Name))
+                foreach (var submodule in module.Submodules.Where(x => !string.Equals(x.Name, x.Parent.Name, StringComparison.OrdinalIgnoreCase)).OrderBy(m => m.Name))
                 {
                     var submoduleCommands = GetModuleCommands(submodule, isOwner);
                     if (submoduleCommands.Count == 0)
@@ -313,13 +320,21 @@ namespace Rias.Modules.Help
             return x.Module.Aliases.Count == 0 && x.Aliases.Any(y => string.Equals(y, alias, StringComparison.InvariantCultureIgnoreCase));
         });
 
-        private IReadOnlyList<Command> GetModuleCommands(Module module, bool isOwner) => (isOwner
-                ? module.Commands
-                : module.Commands.Where(x => !x.Checks.Any(c => c is OwnerOnlyAttribute)))
-            .GroupBy(x => x.Name)
-            .Select(x => x.First())
-            .OrderBy(x => x.Name)
-            .ToImmutableList();
+        private IReadOnlyList<Command> GetModuleCommands(Module module, bool isOwner)
+        {
+            var commands = module.Commands.AsEnumerable();
+            var groupCommands = module.Submodules.FirstOrDefault(x => string.Equals(x.Name, x.Parent.Name, StringComparison.OrdinalIgnoreCase))?.Commands;
+            if (groupCommands != null)
+                commands = commands.Concat(groupCommands);
+
+            return (isOwner
+                ? commands
+                : commands.Where(x => !x.Checks.Any(c => c is OwnerOnlyAttribute)))
+                .GroupBy(x => x.Name)
+                .Select(x => x.First())
+                .OrderBy(x => x.Name)
+                .ToImmutableList();
+        }
 
         private IReadOnlyList<string> GetCommandsAliases(IEnumerable<Command> commands, string prefix)
             => commands.Select(x =>

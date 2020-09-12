@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -14,7 +15,6 @@ using Humanizer;
 using Humanizer.Localisation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using Qmmands;
 using Rias.Attributes;
 using Rias.Commons;
@@ -33,7 +33,7 @@ namespace Rias.Services
         private readonly CooldownService _cooldownService;
         private readonly XpService _xpService;
         
-        private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.json");
+        private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.xml");
 
         private List<Type> _typeParsers = new List<Type>();
 
@@ -58,10 +58,9 @@ namespace Rias.Services
         private void LoadCommands()
         {
             var sw = Stopwatch.StartNew();
-            var modulesInfo = JObject.Parse(File.ReadAllText(_commandsPath))
-                .SelectToken("modules")?
-                .ToObject<List<ModuleInfo>>();
-
+            var commandsXml = XElement.Load(_commandsPath);
+            var modulesInfo = LoadXmlModules(commandsXml.Elements("module")).ToList();
+            
             if (modulesInfo is null)
             {
                 throw new KeyNotFoundException("The modules node array couldn't be loaded");
@@ -73,6 +72,29 @@ namespace Rias.Services
             sw.Stop();
             Log.Information($"Commands loaded: {sw.ElapsedMilliseconds} ms");
         }
+
+        private IEnumerable<ModuleInfo> LoadXmlModules(IEnumerable<XElement> modulesElement)
+            => modulesElement.Select(moduleElement =>
+                new ModuleInfo
+                {
+                    Name = moduleElement.Element("name")!.Value,
+                    Aliases = moduleElement.Element("aliases")?.Value,
+                    Commands = LoadXmlCommands(moduleElement).ToList(),
+                    Submodules = moduleElement.Element("submodules") is not null
+                        ? LoadXmlModules(moduleElement.Element("submodules")!.Elements("submodule")).ToList()
+                        : null
+                });
+
+        private IEnumerable<CommandInfo> LoadXmlCommands(XElement moduleElement)
+            => moduleElement.Element("commands")!
+                .Elements("command")
+                .Select(commandElement =>
+                    new CommandInfo
+                    {
+                        Aliases = commandElement.Element("aliases")?.Value,
+                        Description = commandElement.Element("description")!.Value,
+                        Remarks = commandElement.Element("remarks")!.Elements("remark")!.Select(x => x.Value).ToList()
+                    });
 
         private void SetUpModule(ModuleBuilder module, IReadOnlyList<ModuleInfo> modulesInfo)
         {
