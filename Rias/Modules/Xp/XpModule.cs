@@ -32,7 +32,7 @@ namespace Rias.Modules.Xp
         [Command("xp")]
         [Context(ContextType.Guild)]
         [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
-        public async Task XpAsync(DiscordMember? member = null)
+        public async Task XpAsync([Remainder] DiscordMember? member = null)
         {
             member ??= (DiscordMember)Context.User;
             await Context.Channel.TriggerTypingAsync();
@@ -142,7 +142,7 @@ namespace Rias.Modules.Xp
         [UserPermission(Permissions.Administrator)]
         [BotPermission(Permissions.ManageWebhooks)]
         [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-        public async Task XpNotificationAsync([TextChannel] [Remainder] DiscordChannel? channel = null)
+        public async Task XpNotificationAsync([TextChannel, Remainder] DiscordChannel? channel = null)
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
             

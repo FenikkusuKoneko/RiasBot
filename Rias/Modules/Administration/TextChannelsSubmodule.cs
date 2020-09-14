@@ -42,7 +42,7 @@ namespace Rias.Modules.Administration
             [UserPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task DeleteTextChannelAsync([TextChannel] [Remainder] DiscordChannel channel)
+            public async Task DeleteTextChannelAsync([TextChannel, Remainder] DiscordChannel channel)
             {
                 if (!ChannelExtensions.CheckViewChannelPermission(Context.CurrentMember!, channel))
                 {
@@ -150,7 +150,7 @@ namespace Rias.Modules.Administration
             [UserPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task SetNsfwChannelAsync([TextChannel] [Remainder] DiscordChannel? channel = null)
+            public async Task SetNsfwChannelAsync([TextChannel, Remainder] DiscordChannel? channel = null)
             {
                 channel ??= Context.Channel;
 
