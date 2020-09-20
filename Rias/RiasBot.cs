@@ -28,7 +28,7 @@ namespace Rias
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.3.0";
+        public const string Version = "3.3.1";
         public static readonly Stopwatch UpTime = new Stopwatch();
         
         public ConcurrentDictionary<ulong, DiscordUser> Members = new ConcurrentDictionary<ulong, DiscordUser>();

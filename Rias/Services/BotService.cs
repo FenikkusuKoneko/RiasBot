@@ -271,18 +271,11 @@ namespace Rias.Services
                 webhooks.Add(webhook);
             }
 
-            try
-            {
-                var greetMsg = ReplacePlaceholders(member, guildDb.GreetMessage);
-                if (RiasUtilities.TryParseMessage(greetMsg, out var customMessage))
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed).AddMention(new UserMention(member)));
-                else
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(greetMsg).AddMention(new UserMention(member)));
-            }
-            catch
-            {
-                await DisableGreetAsync(guild);
-            }
+            var greetMsg = ReplacePlaceholders(member, guildDb.GreetMessage);
+            if (RiasUtilities.TryParseMessage(greetMsg, out var customMessage))
+                await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed).AddMention(new UserMention(member)));
+            else
+                await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(greetMsg).AddMention(new UserMention(member)));
         }
         
         private async Task DisableGreetAsync(DiscordGuild guild)
@@ -341,18 +334,11 @@ namespace Rias.Services
                 webhooks.Add(webhook);
             }
 
-            try
-            {
-                var byeMsg = ReplacePlaceholders(member, guildDb.ByeMessage);
-                if (RiasUtilities.TryParseMessage(byeMsg, out var customMessage))
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed).AddMention(new UserMention(member)));
-                else
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(byeMsg).AddMention(new UserMention(member)));
-            }
-            catch
-            {
-                await DisableByeAsync(guild);
-            }
+            var byeMsg = ReplacePlaceholders(member, guildDb.ByeMessage);
+            if (RiasUtilities.TryParseMessage(byeMsg, out var customMessage))
+                await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed).AddMention(new UserMention(member)));
+            else
+                await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(byeMsg).AddMention(new UserMention(member)));
         }
         
         private async Task DisableByeAsync(DiscordGuild guild)

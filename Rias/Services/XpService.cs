@@ -249,55 +249,48 @@ namespace Rias.Services
                 webhooks.Add(webhook);
             }
 
-            try
-            {
-                string? message = null;
-                var customMessage = new CustomMessage();
+            string? webhookMessage = null;
+            var webhookCustomMessage = new CustomMessage();
                 
-                if (role is null)
-                {
-                    if (guildDb.XpLevelUpMessage is null)
-                    {
-                        customMessage.Embed = new DiscordEmbedBuilder
-                        {
-                            Color = RiasUtilities.ConfirmColor,
-                            Description = GetText(guild.Id, Localization.XpGuildLevelUp, member.Mention, level)
-                        };
-                    }
-                    else
-                    {
-                        message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpMessage);
-                        if (RiasUtilities.TryParseMessage(message, out customMessage))
-                            message = null;
-                    }
-                }
-                else
-                {
-                    if (guildDb.XpLevelUpRoleRewardMessage is null)
-                    {
-                        customMessage.Embed = new DiscordEmbedBuilder
-                        {
-                            Color = RiasUtilities.ConfirmColor,
-                            Description = GetText(guild.Id, Localization.XpGuildLevelUpRoleReward, member.Mention, level, role)
-                        };
-                    }
-                    else
-                    {
-                        message = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpRoleRewardMessage);
-                        if (RiasUtilities.TryParseMessage(message, out customMessage))
-                            message = null;
-                    }
-                }
-
-                if (message is not null)
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(message).AddMention(new UserMention(member)));
-                else
-                    await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(customMessage.Content).AddEmbed(customMessage.Embed).AddMention(new UserMention(member)));
-            }
-            catch
+            if (role is null)
             {
-                await DisableXpNotificationAsync(guild);
+                if (guildDb.XpLevelUpMessage is null)
+                {
+                    webhookCustomMessage.Embed = new DiscordEmbedBuilder
+                    {
+                        Color = RiasUtilities.ConfirmColor,
+                        Description = GetText(guild.Id, Localization.XpGuildLevelUp, member.Mention, level)
+                    };
+                }
+                else
+                {
+                    webhookMessage = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpMessage);
+                    if (RiasUtilities.TryParseMessage(webhookMessage, out webhookCustomMessage))
+                        webhookMessage = null;
+                }
             }
+            else
+            {
+                if (guildDb.XpLevelUpRoleRewardMessage is null)
+                {
+                    webhookCustomMessage.Embed = new DiscordEmbedBuilder
+                    {
+                        Color = RiasUtilities.ConfirmColor,
+                        Description = GetText(guild.Id, Localization.XpGuildLevelUpRoleReward, member.Mention, level, role)
+                    };
+                }
+                else
+                {
+                    webhookMessage = ReplacePlaceholders(member, role, level, guildDb.XpLevelUpRoleRewardMessage);
+                    if (RiasUtilities.TryParseMessage(webhookMessage, out webhookCustomMessage))
+                        webhookMessage = null;
+                }
+            }
+
+            if (webhookMessage is not null)
+                await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(webhookMessage).AddMention(new UserMention(member)));
+            else
+                await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(webhookCustomMessage.Content).AddEmbed(webhookCustomMessage.Embed).AddMention(new UserMention(member)));
         }
 
         private async Task DisableXpNotificationAsync(DiscordGuild guild)
