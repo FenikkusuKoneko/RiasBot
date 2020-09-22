@@ -201,8 +201,12 @@ namespace Rias.Services
                 await RunTaskAsync(_botService.AddAssignableRoleAsync((DiscordMember)args.Author));
                 await RunTaskAsync(_xpService.AddUserXpAsync(args.Author));
                 await RunTaskAsync(_xpService.AddGuildUserXpAsync((DiscordMember)args.Author, args.Channel));
+                
+                var channelPermissions = args.Channel.Guild.CurrentMember.PermissionsIn(args.Channel);
+                if (!channelPermissions.HasPermission(Permissions.SendMessages))
+                    return;
             }
-            
+
             var prefix = await GetGuildPrefixAsync(args.Guild);
             if (CommandUtilities.HasPrefix(args.Message.Content, prefix, out var output))
             {
@@ -223,28 +227,6 @@ namespace Rias.Services
             if (await CheckUserBan(message.Author) && message.Author.Id != Credentials.MasterId)
                 return;
 
-            if (channel.Type == ChannelType.Text)
-            {
-                var channelPermissions = channel.Guild.CurrentMember.PermissionsIn(channel);
-
-                if (!channelPermissions.HasPermission(Permissions.SendMessages))
-                    return;
-
-                var channelEmbedPerm = channelPermissions.HasPermission(Permissions.EmbedLinks);
-                var serverEmbedPerm = channel.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks);
-                if (!serverEmbedPerm && !channelEmbedPerm)
-                {
-                    await channel.SendMessageAsync(GetText(channel.Guild.Id, Localization.ServiceNoEmbedLinksPermission));
-                    return;
-                }
-
-                if (serverEmbedPerm && !channelEmbedPerm)
-                {
-                    await channel.SendMessageAsync(GetText(channel.Guild.Id, Localization.ServiceNoEmbedLinksChannelPermission));
-                    return;
-                }
-            }
-            
             var context = new RiasCommandContext(RiasBot, message, prefix);
             var result = await _commandService.ExecuteAsync(output, context);
             

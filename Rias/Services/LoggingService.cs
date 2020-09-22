@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
+using Rias.Commons;
 using Rias.Extensions;
 using Rias.Implementation;
 using Serilog;
@@ -40,6 +41,9 @@ namespace Rias.Services
             var context = (RiasCommandContext)args.Context;
             var command = context.Command;
             var result = args.Result;
+
+            if (result.Exception is CommandNoPermissionsException)
+                return Task.CompletedTask;
 
             Log.Error($"[Command] \"{command.Name}\"\n" +
                             $"\t\t[Arguments] \"{context.RawArguments}\"\n" +

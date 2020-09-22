@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
+using Rias.Commons;
 using Rias.Configuration;
 using Rias.Database;
 using Rias.Extensions;
@@ -32,6 +34,28 @@ namespace Rias.Modules
 
             _scope = serviceProvider.CreateScope();
             DbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+        }
+
+        protected override async ValueTask BeforeExecutedAsync()
+        {
+            if (Context.Channel.Type != ChannelType.Text)
+                return;
+            
+            var channelPermissions = Context.Channel.Guild.CurrentMember.PermissionsIn(Context.Channel);
+            var channelEmbedPerm = channelPermissions.HasPermission(Permissions.EmbedLinks);
+            var serverEmbedPerm = Context.Channel.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks);
+            
+            if (!serverEmbedPerm && !channelEmbedPerm)
+            {
+                await Context.Channel.SendMessageAsync(GetText(Localization.ServiceNoEmbedLinksPermission));
+                throw new CommandNoPermissionsException("No embed links permission.");
+            }
+
+            if (serverEmbedPerm && !channelEmbedPerm)
+            {
+                await Context.Channel.SendMessageAsync(GetText(Localization.ServiceNoEmbedLinksChannelPermission));
+                throw new CommandNoPermissionsException("No embed links permission.");
+            }
         }
 
         /// <summary>
