@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -26,11 +28,17 @@ namespace Rias.Services
         public const int ProfileThirdBadgeTier = 4;
 
         private readonly WebSocketClient? _webSocket;
+        private readonly HttpClient _httpClient;
         private readonly Timer? _sendPatronsTimer;
 
         public PatreonService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
+            _httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromMinutes(1)
+            };
+            
             var credentials = serviceProvider.GetRequiredService<Credentials>();
             if (credentials.PatreonConfig != null)
             {
@@ -40,6 +48,8 @@ namespace Rias.Services
                 _webSocket.Closed += WebSocketClosed;
                 
                 RunTaskAsync(CheckPatronsAsync());
+                
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(credentials.PatreonConfig.Authorization!);
                 _sendPatronsTimer = new Timer(async _ => await SendPatronsAsync(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             }
         }
@@ -145,9 +155,18 @@ namespace Rias.Services
                     };
                 });
 
-            var data = JsonConvert.SerializeObject(patrons, Formatting.Indented);
-            await _webSocket!.SendAsync(data);
-            Log.Debug("Patrons sent over the WebSocket");
+            try
+            {
+                var data = JsonConvert.SerializeObject(patrons, Formatting.Indented);
+#if RELEASE
+                await _httpClient.PostAsync("https://riasbot.me/api/patreon", new StringContent(data));
+#else
+                await _httpClient.PostAsync("https://localhost/api/patreon", new StringContent(data));
+#endif
+            }
+            catch
+            {
+            }
         }
     }
 }
