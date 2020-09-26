@@ -392,13 +392,20 @@ namespace Rias.Services
 
             public void Update()
             {
-                if (Guild == null) return;
-                
-                if (Guild.Members.TryGetValue(ModeratorId, out var moderator))
-                    Moderator = moderator;
-                    
-                if (Guild.Members.TryGetValue(MemberId, out var member))
-                    Member = member;
+                if (Guild == null)
+                {
+                    Moderator = null;
+                    Member = null;
+                    return;
+                }
+
+                Moderator = Guild.Members.TryGetValue(ModeratorId, out var moderator)
+                    ? moderator
+                    : null;
+
+                Member = Guild.Members.TryGetValue(MemberId, out var member)
+                    ? member
+                    : null;
             }
         }
     }
