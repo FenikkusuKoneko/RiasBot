@@ -31,7 +31,7 @@ namespace Rias.Services
         public MuteService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            LoadTimers = new Timer(_ => RunTaskAsync(LoadTimersAsync()), null, TimeSpan.Zero, TimeSpan.FromDays(7));
+            LoadTimers = new Timer(_ => RunTaskAsync(LoadTimersAsync), null, TimeSpan.Zero, TimeSpan.FromDays(7));
         }
         
         private Timer LoadTimers { get; }

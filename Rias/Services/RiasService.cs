@@ -51,17 +51,23 @@ namespace Rias.Services
         {
             return Localization.GetText(guildId, key, args);
         }
+
+        /// <summary>
+        /// Run a task in an async way.
+        /// </summary>
+        public Task RunTaskAsync(Task task)
+            => RunTaskAsync(() => task);
         
         /// <summary>
         /// Run a task in an async way.
         /// </summary>
-        public Task RunTaskAsync(Task func)
+        public Task RunTaskAsync(Func<Task> func)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    await func;
+                    await func.Invoke();
                 }
                 catch (Exception ex)
                 {

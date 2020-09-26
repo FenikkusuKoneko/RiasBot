@@ -31,7 +31,7 @@ namespace Rias.Services
             : base(serviceProvider)
         {
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
-            RunTaskAsync(InitializeAsync());
+            RunTaskAsync(InitializeAsync);
         }
         
         public enum NsfwImageApiProvider

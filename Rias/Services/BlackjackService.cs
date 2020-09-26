@@ -109,13 +109,13 @@ namespace Rias.Services
         private async Task ProcessGameAsync(BlackjackGame blackjack, DiscordEmoji emoji)
         {
             if (emoji.Equals(CardEmoji))
-                await RunTaskAsync(blackjack.HitAsync());
+                await RunTaskAsync(blackjack.HitAsync);
         
             if (emoji.Equals(HandEmoji))
-                await RunTaskAsync(blackjack.StandAsync());
+                await RunTaskAsync(blackjack.StandAsync);
             
             if (emoji.Equals(SplitEmoji) && blackjack.PlayerCanSplit)
-                await RunTaskAsync(blackjack.SplitAsync());
+                await RunTaskAsync(blackjack.SplitAsync);
         }
     }
 }

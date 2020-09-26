@@ -76,7 +76,7 @@ namespace Rias.Services
             sw.Stop();
             Log.Debug($"Units loaded: {sw.ElapsedMilliseconds} ms");
 
-            RunTaskAsync(UpdateCurrencyUnitsAsync());
+            RunTaskAsync(UpdateCurrencyUnitsAsync);
         }
 
         public double Convert(Unit unit1, Unit unit2, double value)
@@ -149,7 +149,7 @@ namespace Rias.Services
 
             var delay = exchangeRatesDataRedis.Expiry ?? TimeSpan.FromHours(1);
             await Task.Delay(delay);
-            await RunTaskAsync(UpdateCurrencyUnitsAsync());
+            await RunTaskAsync(UpdateCurrencyUnitsAsync);
         }
     }
 }

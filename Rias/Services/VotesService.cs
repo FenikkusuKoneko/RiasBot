@@ -32,17 +32,17 @@ namespace Rias.Services
             if (credentials.VotesConfig != null)
             {
                 _webSocket = new WebSocketClient(credentials.VotesConfig);
-                RunTaskAsync(ConnectWebSocket());
+                RunTaskAsync(ConnectWebSocket);
                 _webSocket.DataReceived += VoteReceivedAsync;
                 _webSocket.Closed += WebSocketClosed;
                 
-                RunTaskAsync(CheckVotesAsync());
+                RunTaskAsync(CheckVotesAsync);
             }
 
             if (!string.IsNullOrEmpty(credentials.DiscordBotListToken))
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Credentials.DiscordBotListToken);
-                DblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStats()), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                DblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStats), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             }
         }
         
@@ -127,7 +127,7 @@ namespace Rias.Services
         {
             Log.Warning("Votes WebSocket was closed. Retrying in 10 seconds...");
             await Task.Delay(10000);
-            await RunTaskAsync(ConnectWebSocket());
+            await RunTaskAsync(ConnectWebSocket);
         }
         
         private async Task PostDiscordBotListStats()

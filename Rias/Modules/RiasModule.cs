@@ -114,13 +114,13 @@ namespace Rias.Modules
         /// <summary>
         /// Run a task in an async way.
         /// </summary>
-        public Task RunTaskAsync(Task func)
+        public Task RunTaskAsync(Task task)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    await func;
+                    await task;
                 }
                 catch (Exception ex)
                 {

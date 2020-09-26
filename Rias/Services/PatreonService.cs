@@ -43,14 +43,14 @@ namespace Rias.Services
             if (credentials.PatreonConfig != null)
             {
                 _webSocket = new WebSocketClient(credentials.PatreonConfig);
-                RunTaskAsync(ConnectWebSocket());
+                RunTaskAsync(ConnectWebSocket);
                 _webSocket.DataReceived += PledgeReceivedAsync;
                 _webSocket.Closed += WebSocketClosed;
                 
-                RunTaskAsync(CheckPatronsAsync());
+                RunTaskAsync(CheckPatronsAsync);
                 
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(credentials.PatreonConfig.Authorization!);
-                _sendPatronsTimer = new Timer(_ => RunTaskAsync(SendPatronsAsync()), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                _sendPatronsTimer = new Timer(_ => RunTaskAsync(SendPatronsAsync), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             }
         }
 
@@ -128,7 +128,7 @@ namespace Rias.Services
         {
             Log.Warning("Patreon WebSocket was closed. Retrying in 10 seconds...");
             await Task.Delay(10000);
-            await RunTaskAsync(ConnectWebSocket());
+            await RunTaskAsync(ConnectWebSocket);
         }
 
         private async Task SendPatronsAsync()
