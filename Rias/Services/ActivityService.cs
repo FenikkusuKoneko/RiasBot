@@ -40,7 +40,7 @@ namespace Rias.Services
         public Task StartActivityRotationAsync(TimeSpan period, IEnumerable<DiscordActivity> activities)
         {
             _activities = activities.ToArray();
-            _activityTimer = new Timer(async _ => await SetNextActivityAsync(), null, TimeSpan.Zero, period);
+            _activityTimer = new Timer(_ => RunTaskAsync(SetNextActivityAsync()), null, TimeSpan.Zero, period);
             return Task.CompletedTask;
         }
         

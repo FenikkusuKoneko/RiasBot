@@ -50,7 +50,7 @@ namespace Rias.Services
                 RunTaskAsync(CheckPatronsAsync());
                 
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(credentials.PatreonConfig.Authorization!);
-                _sendPatronsTimer = new Timer(async _ => await SendPatronsAsync(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                _sendPatronsTimer = new Timer(_ => RunTaskAsync(SendPatronsAsync()), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             }
         }
 

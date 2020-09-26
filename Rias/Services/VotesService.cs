@@ -42,7 +42,7 @@ namespace Rias.Services
             if (!string.IsNullOrEmpty(credentials.DiscordBotListToken))
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Credentials.DiscordBotListToken);
-                DblTimer = new Timer(async _ => await PostDiscordBotListStats(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                DblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStats()), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             }
         }
         

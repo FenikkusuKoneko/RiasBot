@@ -31,7 +31,7 @@ namespace Rias.Services
         public MuteService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            LoadTimers = new Timer(_ => LoadTimersAsync(), null, TimeSpan.Zero, TimeSpan.FromDays(7));
+            LoadTimers = new Timer(_ => RunTaskAsync(LoadTimersAsync()), null, TimeSpan.Zero, TimeSpan.FromDays(7));
         }
         
         private Timer LoadTimers { get; }
@@ -208,11 +208,11 @@ namespace Rias.Services
             }
         }
         
-        private void LoadTimersAsync()
+        private async Task LoadTimersAsync()
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var muteTimersDb = db.MuteTimers.ToList();
+            var muteTimersDb = await db.MuteTimers.ToListAsync();
 
             var dateTime = DateTime.UtcNow.AddDays(7);
             foreach (var muteTimerDb in muteTimersDb)
@@ -224,7 +224,7 @@ namespace Rias.Services
                 var dueTime = muteTimerDb.Expiration - DateTime.UtcNow;
                 if (dueTime < TimeSpan.Zero)
                     dueTime = TimeSpan.Zero;
-                var muteTimer = new Timer(async _ => await UnmuteUserAsync(context), null, dueTime, TimeSpan.Zero);
+                var muteTimer = new Timer(_ => RunTaskAsync(UnmuteUserAsync(context)), null, dueTime, TimeSpan.Zero);
                 _timers.TryAdd((muteTimerDb.GuildId, muteTimerDb.UserId), muteTimer);
             }
 
@@ -294,7 +294,7 @@ namespace Rias.Services
             }
 
             var muteContext = new MuteContext(RiasBot, guild.Id, moderator.Id, member.Id, channel.Id);
-            var timer = new Timer(async _ => await UnmuteUserAsync(muteContext), null, timeout.Value, TimeSpan.Zero);
+            var timer = new Timer(_ => RunTaskAsync(UnmuteUserAsync(muteContext)), null, timeout.Value, TimeSpan.Zero);
             _timers.TryAdd((guild.Id, member.Id), timer);
             {
                 Log.Debug("Mute timer added");
