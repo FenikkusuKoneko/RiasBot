@@ -9,6 +9,7 @@ using Rias.Implementation;
 
 namespace Rias.TypeParsers
 {
+#pragma warning disable 8509
     public class ChannelTypeParser : RiasTypeParser<DiscordChannel>
     {
         public override ValueTask<TypeParserResult<DiscordChannel>> ParseAsync(Parameter parameter, string value, RiasCommandContext context)
@@ -36,10 +37,7 @@ namespace Rias.TypeParsers
                 return TypeParserResult<DiscordChannel>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserCachedTextChannelNotGuild));
 
             DiscordChannel? channel;
-            if (!RiasUtilities.TryParseChannelMention(value, out var channelId))
-                ulong.TryParse(value, out channelId);
-
-            if (channelId != 0)
+            if (RiasUtilities.TryParseChannelMention(value, out var channelId) || ulong.TryParse(value, out channelId))
             {
                 channel = context.Guild.GetChannel(channelId);
                 var channelTypeBool = channelType == ChannelType.Text
@@ -49,17 +47,18 @@ namespace Rias.TypeParsers
                 if (channel != null && channelTypeBool)
                     return TypeParserResult<DiscordChannel>.Successful(channel);
             }
-
-#pragma warning disable 8509
-            channel = channelType switch
+            else
             {
-                ChannelType.Category => context.Guild.GetCategoryChannel(value),
-                ChannelType.Text => context.Guild.GetTextChannel(value),
-                ChannelType.Voice => context.Guild.GetVoiceChannel(value)
-            };
+                channel = channelType switch
+                {
+                    ChannelType.Category => context.Guild.GetCategoryChannel(value),
+                    ChannelType.Text => context.Guild.GetTextChannel(value),
+                    ChannelType.Voice => context.Guild.GetVoiceChannel(value)
+                };
             
-            if (channel != null)
-                return TypeParserResult<DiscordChannel>.Successful(channel);
+                if (channel != null)
+                    return TypeParserResult<DiscordChannel>.Successful(channel);
+            }
 
             return channelType switch
             {
@@ -67,7 +66,7 @@ namespace Rias.TypeParsers
                 ChannelType.Text => TypeParserResult<DiscordChannel>.Unsuccessful(localization.GetText(context.Guild.Id, Localization.AdministrationTextChannelNotFound)),
                 ChannelType.Voice => TypeParserResult<DiscordChannel>.Unsuccessful(localization.GetText(context.Guild.Id, Localization.AdministrationVoiceChannelNotFound))
             };
-#pragma warning restore 8509
         }
     }
+#pragma warning restore 8509
 }

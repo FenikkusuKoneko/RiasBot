@@ -17,14 +17,13 @@ namespace Rias.TypeParsers
                 return TypeParserResult<DiscordRole>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserCachedRoleNotGuild));
 
             DiscordRole? role;
-            if (!RiasUtilities.TryParseRoleMention(value, out var roleId))
-                ulong.TryParse(value, out roleId);
-
-            if (roleId != 0)
+            if (!RiasUtilities.TryParseRoleMention(value, out var roleId) || ulong.TryParse(value, out roleId))
             {
                 role = context.Guild.GetRole(roleId);
                 if (role != null)
                     return TypeParserResult<DiscordRole>.Successful(role);
+                
+                return TypeParserResult<DiscordRole>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationRoleNotFound));
             }
 
             role = context.Guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
