@@ -15,14 +15,20 @@ namespace Rias.TypeParsers
                 return TypeParserResult<DiscordUser>.Successful(cachedMemberTypeParser.Value);
             
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
-            DiscordUser? user = null;
 
             if (ulong.TryParse(value, out var id))
-                user = await context.Client.GetUserAsync(id);
+            {
+                try
+                {
+                    var user = await context.Client.GetUserAsync(id);
+                    return TypeParserResult<DiscordUser>.Successful(user);
+                }
+                catch
+                {
+                    return TypeParserResult<DiscordUser>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
+                }
+            }
             
-            if (user != null)
-                return TypeParserResult<DiscordUser>.Successful(user);
-
             return TypeParserResult<DiscordUser>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
         }
     }

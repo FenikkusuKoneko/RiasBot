@@ -169,7 +169,7 @@ namespace Rias.Modules.Administration
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.AdministrationWarnedUsers),
-                    Description = string.Join("\n", items.Select(x => $"{++index}. {x} | {x.Id}")),
+                    Description = string.Join("\n", items.Select(x => $"{++index}. {x.FullName()} | {x.Id}")),
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
                         Text = GetText(Localization.AdministrationWarningListFooter, Context.Prefix)
@@ -183,10 +183,21 @@ namespace Rias.Modules.Administration
             public async Task WarningsAsync([Remainder] DiscordMember member)
             {
                 var warningsDb = await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
-                var moderators = (await Task.WhenAll(warningsDb.Select(x => Context.Guild!.GetMemberAsync(x.ModeratorId)))).ToList();
+                var moderators = (await Task.WhenAll(warningsDb.Select(async x =>
+                {
+                    try
+                    {
+                        return await Context.Guild!.GetMemberAsync(x.ModeratorId);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }))).ToList();
+                
                 var warnings = warningsDb.Select((x, i) => new
                 {
-                    Moderator = moderators[i],
+                    Moderator = moderators[i]?.FullName() ?? x.ModeratorId.ToString(),
                     x.Reason
                 }).ToList();
 

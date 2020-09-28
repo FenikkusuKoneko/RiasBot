@@ -17,14 +17,17 @@ namespace Rias.TypeParsers
                 return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserCachedMemberNotGuild));
 
             DiscordMember member;
-            if (!RiasUtilities.TryParseUserMention(value, out var memberId))
-                ulong.TryParse(value, out memberId);
-
-            if (memberId != 0)
+            if (RiasUtilities.TryParseUserMention(value, out var memberId) || ulong.TryParse(value, out memberId))
             {
-                member = await context.Guild.GetMemberAsync(memberId);
-                if (member != null)
+                try
+                {
+                    member = await context.Guild.GetMemberAsync(memberId);
                     return TypeParserResult<DiscordMember>.Successful(member);
+                }
+                catch
+                {
+                    return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
+                }
             }
 
             var members = context.Guild.Members;

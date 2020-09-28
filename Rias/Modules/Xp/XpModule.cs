@@ -124,13 +124,16 @@ namespace Rias.Modules.Xp
             var index = page * 15;
             foreach (var userDb in xpLeaderboard)
             {
-                var member = await Context.Guild!.GetMemberAsync(userDb.UserId);
-                if (member is null)
-                    continue;
-
-                description.Append($"{++index}. {member.Mention}: " +
-                                   $"`{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} " +
-                                   $"({userDb.Xp} {GetText(Localization.XpXp).ToLowerInvariant()})`\n");
+                try
+                {
+                    var member = await Context.Guild!.GetMemberAsync(userDb.UserId);
+                    description.Append($"{++index}. {member.Mention}: " +
+                                       $"`{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} " +
+                                       $"({userDb.Xp} {GetText(Localization.XpXp).ToLowerInvariant()})`\n");
+                }
+                catch
+                {
+                }
             }
 
             embed.WithDescription(description.ToString());
