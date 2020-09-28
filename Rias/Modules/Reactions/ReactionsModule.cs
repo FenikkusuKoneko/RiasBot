@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Qmmands;
@@ -79,8 +80,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPatYou, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPattedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPattedBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("hug")]
@@ -143,8 +144,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHugYou, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHuggedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHuggedBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("kiss")]
@@ -207,8 +208,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissYou, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsKissedBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("lick")]
@@ -271,8 +272,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickYou, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsLickedBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("cuddle")]
@@ -335,8 +336,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddleYou, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddledBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsCuddledBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("bite")]
@@ -399,8 +400,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBiteYou, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBittenBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBittenBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("slap")]
@@ -463,8 +464,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlapYou, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlappedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSlappedBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("cry")]
@@ -539,8 +540,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropeYou, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGropedBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("blush")]
@@ -601,8 +602,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlush, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlushAt,
-                    ((DiscordMember)Context.User).DisplayName, value.Replace("@everyone", "everyone")), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBlushAt, ((DiscordMember)Context.User).DisplayName, value),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("dance")]
@@ -664,7 +665,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsDance, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsDanceTogether, Context.User.Mention, value.Replace("@everyone", "everyone")), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsDanceTogether, Context.User.Mention, value),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("poke")]
@@ -727,8 +729,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokeYou, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokedBy,
-                    value.Replace("@everyone", "everyone"), ((DiscordMember)Context.User).DisplayName), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPokedBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("pout")]
@@ -789,8 +791,8 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPout, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPoutAt,
-                    ((DiscordMember)Context.User).DisplayName, value.Replace("@everyone", "everyone")), embed: embed);
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPoutAt, ((DiscordMember)Context.User).DisplayName, value),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
 
         [Command("sleepy")]
