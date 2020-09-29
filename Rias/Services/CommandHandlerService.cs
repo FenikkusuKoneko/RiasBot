@@ -72,11 +72,13 @@ namespace Rias.Services
             sw.Stop();
             Log.Information($"Commands loaded: {sw.ElapsedMilliseconds} ms");
         }
-
+        
+#pragma warning disable 8604
         private IEnumerable<ModuleInfo> LoadXmlModules(IEnumerable<XElement> modulesElement)
             => modulesElement.Select(moduleElement =>
                 new ModuleInfo
                 {
+
                     Name = moduleElement.Element("name")!.Value,
                     Aliases = moduleElement.Element("aliases")?.Value,
                     Commands = LoadXmlCommands(moduleElement).ToList(),
@@ -95,6 +97,7 @@ namespace Rias.Services
                         Description = commandElement.Element("description")!.Value,
                         Remarks = commandElement.Element("remarks")!.Elements("remark")!.Select(x => x.Value).ToList()
                     });
+#pragma warning restore 8604
 
         private void SetUpModule(ModuleBuilder module, IReadOnlyList<ModuleInfo> modulesInfo)
         {
@@ -251,9 +254,9 @@ namespace Rias.Services
                 case OverloadsFailedResult overloadsFailedResult:
                     await RunTaskAsync(SendFailedResultsAsync(context, overloadsFailedResult.FailedOverloads.Values));
                     break;
-                case ChecksFailedResult _:
-                case TypeParseFailedResult _:
-                case ArgumentParseFailedResult _:
+                case ChecksFailedResult :
+                case TypeParseFailedResult:
+                case ArgumentParseFailedResult:
                     await RunTaskAsync(SendFailedResultsAsync(context, new[] { (FailedResult)result }));
                     break;
                 case CommandOnCooldownResult commandOnCooldownResult:

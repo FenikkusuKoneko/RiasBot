@@ -509,9 +509,7 @@ namespace Rias.Services
                 .Include(x => x.Character)
                 .Include(x => x.CustomCharacter)
                 .Where(x => x.UserId == member.Id)
-                .AsEnumerable()
-                .Cast<IWaifusEntity>()
-                .ToList();
+                .ToList<IWaifusEntity>();
             
             waifus.AddRange(db.CustomWaifus.Where(x => x.UserId == member.Id));
 

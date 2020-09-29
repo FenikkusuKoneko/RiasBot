@@ -60,13 +60,13 @@ namespace Rias.Modules.Waifu
                         x => x.UserId == Context.User.Id,
                         x => x.Character!,
                         x => x.CustomCharacter!))
-                    .Cast<IWaifusEntity>().ToList();
+                    .ToList<IWaifusEntity>();
             
                 waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
             
                 var waifu = character switch
                 {
-                    CustomCharactersEntity _ => waifus.FirstOrDefault(x => x is WaifusEntity normalWaifu && normalWaifu.CustomCharacterId == character.CharacterId),
+                    CustomCharactersEntity => waifus.FirstOrDefault(x => x is WaifusEntity normalWaifu && normalWaifu.CustomCharacterId == character.CharacterId),
                     _ => waifus.FirstOrDefault(x => x is WaifusEntity normalWaifu && normalWaifu.CharacterId == character.CharacterId)
                 };
             
@@ -317,7 +317,7 @@ namespace Rias.Modules.Waifu
                         x => x.UserId == Context.User.Id,
                         x => x.Character!,
                         x => x.CustomCharacter!))
-                    .Cast<IWaifusEntity>().ToList();
+                    .ToList<IWaifusEntity>();
             
                 waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
             
@@ -414,7 +414,7 @@ namespace Rias.Modules.Waifu
                         x => x.UserId == Context.User.Id,
                         x => x.Character!,
                         x => x.CustomCharacter!))
-                    .Cast<IWaifusEntity>().ToList();
+                    .ToList<IWaifusEntity>();
             
                 waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
 
@@ -438,7 +438,7 @@ namespace Rias.Modules.Waifu
                         x => x.UserId == Context.User.Id,
                         x => x.Character!,
                         x => x.CustomCharacter!))
-                    .Cast<IWaifusEntity>().ToList();
+                    .ToList<IWaifusEntity>();
             
                 waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
             

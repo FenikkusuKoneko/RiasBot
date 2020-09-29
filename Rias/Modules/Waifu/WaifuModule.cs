@@ -30,7 +30,7 @@ namespace Rias.Modules.Waifu
                     x => x.UserId == member.Id,
                     x => x.Character!,
                     x => x.CustomCharacter!))
-                .Cast<IWaifusEntity>().ToList();
+                .ToList<IWaifusEntity>();
             
             allWaifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == member.Id));
             
