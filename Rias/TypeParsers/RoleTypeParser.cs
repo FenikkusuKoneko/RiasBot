@@ -17,7 +17,7 @@ namespace Rias.TypeParsers
                 return TypeParserResult<DiscordRole>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserCachedRoleNotGuild));
 
             DiscordRole? role;
-            if (!RiasUtilities.TryParseRoleMention(value, out var roleId) || ulong.TryParse(value, out roleId))
+            if (RiasUtilities.TryParseRoleMention(value, out var roleId) || ulong.TryParse(value, out roleId))
             {
                 role = context.Guild.GetRole(roleId);
                 if (role != null)
