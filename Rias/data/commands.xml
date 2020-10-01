@@ -1326,13 +1326,6 @@ If a category is provided then it shows all the units from that category, pagina
               <remark>{0}sic</remark>
             </remarks>
           </command>
-          <command>
-            <aliases>whoisplaying whosplaying whoplays</aliases>
-            <description>Shows a list with all users from the server that play a game.</description>
-            <remarks>
-              <remark>{0}whoisplaying osu!</remark>
-            </remarks>
-          </command>
         </commands>
       </submodule>
     </submodules>

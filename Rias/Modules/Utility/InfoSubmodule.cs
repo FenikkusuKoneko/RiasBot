@@ -108,7 +108,6 @@ namespace Rias.Modules.Utility
                     .AddField(GetText(Localization.UtilityUsername), member.FullName(), true)
                     .AddField(GetText(Localization.UtilityNickname), member.Nickname ?? "-", true)
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
-                    .AddField(GetText(Localization.UtilityStatus), member.Presence?.Status.ToString() ?? "-", true)
                     .AddField(GetText(Localization.UtilityJoinedServer), member.JoinedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField(GetText(Localization.UtilityJoinedDiscord), member.CreationTimestamp.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField($"{GetText(Localization.UtilityRoles)} ({userRoles.Count})", userRoles.Count != 0 ? string.Join("\n", userRoles) : "-", true);
@@ -128,10 +127,6 @@ namespace Rias.Modules.Utility
                     .AddField(GetText(Localization.CommonId), Context.Guild.Id.ToString(), true)
                     .AddField(GetText(Localization.UtilityOwner), Context.Guild.Owner.FullName(), true)
                     .AddField(GetText(Localization.CommonUsers), Context.Guild.MemberCount.ToString(), true)
-                    .AddField(GetText(Localization.UtilityCurrentlyOnline),
-                        Context.Guild.Members.Count(x => x.Value.Presence?.Status == UserStatus.Online ||
-                                                         x.Value.Presence?.Status == UserStatus.Idle || x.Value.Presence?.Status == UserStatus.DoNotDisturb).ToString(),
-                        true)
                     .AddField(GetText(Localization.UtilityBots), Context.Guild.Members.Count(x => x.Value.IsBot).ToString(), true)
                     .AddField(GetText(Localization.UtilityCreatedAt), Context.Guild.CreationTimestamp.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField(GetText(Localization.UtilityTextChannels), Context.Guild.Channels.Count(x => x.Value.Type == ChannelType.Text).ToString(), true)
@@ -147,7 +142,8 @@ namespace Rias.Modules.Utility
                     embed.AddField(GetText(Localization.UtilityVanityUrl), (await Context.Guild.GetVanityInviteAsync()).ToString());
 
                 if (Context.Guild.Features.Count != 0)
-                    embed.AddField(GetText(Localization.UtilityFeatures, Context.Guild.Features.Count), string.Join("\n", Context.Guild.Features), true);
+                    embed.AddField(GetText(Localization.UtilityFeatures, Context.Guild.Features.Count),
+                        string.Join("\n", Context.Guild.Features.Select(x => x.ToLower().Humanize(LetterCasing.Sentence))), true);
 
                 var emotes = new StringBuilder();
                 foreach (var (_, emote) in Context.Guild.Emojis)
@@ -159,7 +155,7 @@ namespace Rias.Modules.Utility
                     emotes.Append(emoteString);
                 }
 
-                embed.AddField(GetText(Localization.UtilityEmojis, Context.Guild.Emojis.Count), emotes.Length != 0 ? emotes.ToString() : "-", true);
+                embed.AddField(GetText(Localization.UtilityEmojis, Context.Guild.Emojis.Count), emotes.Length != 0 ? emotes.ToString() : "-");
 
                 if (!string.IsNullOrEmpty(Context.Guild.Banner))
                     embed.WithImageUrl($"{Context.Guild.BannerUrl}?size=2048");
@@ -207,39 +203,6 @@ namespace Rias.Modules.Utility
                 };
 
                 await ReplyAsync(embed);
-            }
-
-            [Command("whoisplaying")]
-            [Context(ContextType.Guild)]
-            public async Task WhoIsPlayingAsync([Remainder] string game)
-            {
-                var usersActivities = Context.Guild!.Members
-                    .Select(x => x.Value)
-                    .Where(x => x.Presence?.Activity != null && x.Presence.Activity.Name.StartsWith(game, StringComparison.InvariantCultureIgnoreCase))
-                    .ToList();
-
-                if (usersActivities.Count == 0)
-                {
-                    await ReplyErrorAsync(Localization.UtilityNoUserIsPlaying, game);
-                    return;
-                }
-
-                var usersActivitiesList = new List<string>();
-                var usersActivitiesGroup = usersActivities.OrderBy(x => x.Username)
-                    .GroupBy(x => x.Presence.Activity.Name);
-
-                foreach (var userActivity in usersActivitiesGroup)
-                {
-                    usersActivitiesList.Add($"•**{userActivity.Key}**");
-                    usersActivitiesList.AddRange(userActivity.Select(x => $"\t~>{x.Username}"));
-                }
-
-                await SendPaginatedMessageAsync(usersActivitiesList, 15, (items, index) => new DiscordEmbedBuilder
-                {
-                    Color = RiasUtilities.ConfirmColor,
-                    Title = GetText(Localization.UtilityUsersPlay, game),
-                    Description = string.Join("\n", items)
-                });
             }
         }
     }

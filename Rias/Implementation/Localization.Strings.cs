@@ -404,7 +404,6 @@ namespace Rias.Implementation
         public const string UtilityJoinedDiscord = "utility_joined_discord";
         public const string UtilityRoles = "utility_roles";
         public const string UtilityOwner = "utility_owner";
-        public const string UtilityCurrentlyOnline = "utility_currently_online";
         public const string UtilityBots = "utility_bots";
         public const string UtilityCreatedAt = "utility_created_at";
         public const string UtilitySystemChannel = "utility_system_channel";
@@ -416,8 +415,6 @@ namespace Rias.Implementation
         public const string UtilityVanityUrl = "utility_vanity_url";
         public const string UtilityFeatures = "utility_features";
         public const string UtilityEmojis = "utility_emojis";
-        public const string UtilityUsersPlay = "utility_users_play";
-        public const string UtilityNoUserIsPlaying = "utility_no_user_is_playing";
         public const string UtilityPrice = "utility_price";
         public const string UtilityTimeLowest = "utility_time_lowest";
         public const string UtilityTimeHighest = "utility_time_highest";

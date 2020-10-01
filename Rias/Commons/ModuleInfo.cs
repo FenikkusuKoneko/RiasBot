@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Rias.Services
+namespace Rias.Commons
 {
     public class ModuleInfo
     {
