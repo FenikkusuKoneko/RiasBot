@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -60,7 +61,7 @@ namespace Rias.Modules.Bot
                     return;
                 }
 
-                var mutualGuilds = user is DiscordMember cachedUser ? cachedUser.GetMutualGuilds(RiasBot).Count : 0;
+                var mutualGuilds = user is DiscordMember cachedUser ? cachedUser.GetMutualGuilds(RiasBot).Count() : 0;
                 
                 var embed = new DiscordEmbedBuilder()
                     .WithColor(RiasUtilities.ConfirmColor)

@@ -97,12 +97,7 @@ namespace Rias
             
             UpTime.Start();
         }
-        
-        public IReadOnlyDictionary<ulong, DiscordGuild> Guilds => Client.ShardClients
-            .SelectMany(x => x.Value.Guilds)
-            .Select(x => x.Value)
-            .ToImmutableDictionary(x => x.Id);
-        
+
         public IReadOnlyDictionary<ulong, DiscordChannel> Channels => Client.ShardClients
             .SelectMany(x => x.Value.Guilds)
             .Select(x => x.Value)
@@ -123,7 +118,9 @@ namespace Rias
             => guild != null ? Client.ShardClients.First(x => x.Value.Guilds.ContainsKey(guild.Id)).Value.ShardId : 0;
 
         public DiscordGuild? GetGuild(ulong id)
-            => Guilds.TryGetValue(id, out var guild) ? guild : null;
+            => Client.ShardClients
+                .SelectMany(x => x.Value.Guilds)
+                .FirstOrDefault(x => x.Value.Id == id).Value;
 
         public DiscordUser? GetMember(ulong id)
             => Members.TryGetValue(id, out var user) ? user : null;

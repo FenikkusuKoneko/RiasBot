@@ -25,7 +25,9 @@ namespace Rias.Modules.Bot
         {
             var guild = ulong.TryParse(name, out var guildId)
                 ? RiasBot.GetGuild(guildId)
-                : RiasBot.Guilds.FirstOrDefault(x => string.Equals(x.Value.Name, name)).Value;
+                : RiasBot.Client.ShardClients
+                    .SelectMany(x => x.Value.Guilds)
+                    .FirstOrDefault(x => string.Equals(x.Value.Name, name)).Value;
 
             if (guild is null)
             {
@@ -272,7 +274,7 @@ namespace Rias.Modules.Bot
                 return;
             }
             
-            var mutualGuilds = user is DiscordMember member ? member.GetMutualGuilds(RiasBot).Count : 0;
+            var mutualGuilds = user is DiscordMember member ? member.GetMutualGuilds(RiasBot).Count() : 0;
             
             var embed = new DiscordEmbedBuilder()
                 .WithColor(RiasUtilities.ConfirmColor)

@@ -140,7 +140,7 @@ namespace Rias.Services
                 using var content = new FormUrlEncodedContent(new[]
                 {
                     new KeyValuePair<string?, string?>("shard_count", RiasBot.Client.ShardClients.Count.ToString()),
-                    new KeyValuePair<string?, string?>("server_count", RiasBot.Guilds.Count.ToString())
+                    new KeyValuePair<string?, string?>("server_count", RiasBot.Client.ShardClients.Sum(x => x.Value.Guilds.Count).ToString())
                 });
                 await _httpClient.PostAsync($"https://top.gg/api/bots/{RiasBot.CurrentUser.Id}/stats", content);
             }

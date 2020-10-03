@@ -57,7 +57,7 @@ namespace Rias.Modules.Utility
                         RiasBot.UpTime.Elapsed.Humanize(5, new CultureInfo(Localization.GetGuildLocale(Context.Guild?.Id)), TimeUnit.Month, TimeUnit.Second),
                         true)
                     .AddField(GetText(Localization.UtilityPresence),
-                        $"{RiasBot.Guilds.Count} {GetText(Localization.UtilityServers)}\n" +
+                        $"{RiasBot.Client.ShardClients.Sum(x => x.Value.Guilds.Count)} {GetText(Localization.UtilityServers)}\n" +
                         $"{RiasBot.Members.Count} {GetText(Localization.CommonUsers)}\n",
                         true);
 

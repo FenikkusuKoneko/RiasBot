@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -17,10 +16,10 @@ namespace Rias.Extensions
             return (permissions & Permissions.Administrator) == Permissions.Administrator ? Permissions.All : permissions;
         }
 
-        public static IReadOnlyDictionary<ulong, DiscordGuild> GetMutualGuilds(this DiscordMember member, RiasBot bot)
-            => bot.Guilds.Where(x => x.Value.Members.ContainsKey(member.Id))
-                .Select(x => x.Value)
-                .ToImmutableDictionary(x => x.Id);
+        public static IEnumerable<KeyValuePair<ulong, DiscordGuild>> GetMutualGuilds(this DiscordMember member, RiasBot bot)
+            => bot.Client.ShardClients
+                .SelectMany(x => x.Value.Guilds)
+                .Where(x => x.Value.Members.ContainsKey(member.Id));
 
         /// <summary>
         /// Check the hierarchy between the current member and another member in the roles hierarchy.
