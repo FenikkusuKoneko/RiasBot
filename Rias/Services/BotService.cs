@@ -42,14 +42,14 @@ namespace Rias.Services
             RiasBot.Client.GuildMemberRemoved += GuildMemberRemovedAsync;
             RiasBot.Client.GuildMemberUpdated += GuildMemberUpdatedAsync;
 
-            RiasBot.Client.GuildDownloadCompleted += args =>
+            RiasBot.Client.GuildDownloadCompleted += (client, args) =>
             {
                 foreach (var (id, member) in args.Guilds.SelectMany(x => x.Value.Members))
                     RiasBot.Members[id] = member;
                 return Task.CompletedTask;
             };
             
-            RiasBot.Client.UserUpdated += args =>
+            RiasBot.Client.UserUpdated += (client, args) =>
             {
                 RiasBot.Members[args.UserAfter.Id] = args.UserAfter;
                 return Task.CompletedTask;
@@ -203,7 +203,7 @@ namespace Rias.Services
             }
         }
         
-        private async Task GuildMemberAddedAsync(GuildMemberAddEventArgs args)
+        private async Task GuildMemberAddedAsync(DiscordClient client, GuildMemberAddEventArgs args)
         {
             var member = args.Member;
             if (RiasBot.CurrentUser != null && member.Id == RiasBot.CurrentUser.Id)
@@ -290,7 +290,7 @@ namespace Rias.Services
             await db.SaveChangesAsync();
         }
         
-        private async Task GuildMemberRemovedAsync(GuildMemberRemoveEventArgs args)
+        private async Task GuildMemberRemovedAsync(DiscordClient client, GuildMemberRemoveEventArgs args)
         {
             if (RiasBot.CurrentUser != null && args.Member.Id == RiasBot.CurrentUser.Id)
                 return;
@@ -353,9 +353,9 @@ namespace Rias.Services
             await db.SaveChangesAsync();
         }
 
-        private async Task ShardReadyAsync(ReadyEventArgs e)
+        private async Task ShardReadyAsync(DiscordClient client, ReadyEventArgs args)
         {
-            _shardsReady.AddOrUpdate(e.Client.ShardId, true, (k, v) => true);
+            _shardsReady.AddOrUpdate(client.ShardId, true, (k, v) => true);
             if (_shardsReady.Count == RiasBot.Client.ShardClients.Count && _shardsReady.All(x => x.Value))
             {
                 RiasBot.Client.Ready -= ShardReadyAsync;
@@ -373,7 +373,7 @@ namespace Rias.Services
             }
         }
 
-        private async Task GuildMemberUpdatedAsync(GuildMemberUpdateEventArgs args)
+        private async Task GuildMemberUpdatedAsync(DiscordClient client, GuildMemberUpdateEventArgs args)
         {
             RiasBot.Members[args.Member.Id] = args.Member;
             

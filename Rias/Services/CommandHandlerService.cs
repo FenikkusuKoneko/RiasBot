@@ -194,7 +194,7 @@ namespace Rias.Services
             }
         }
         
-        private async Task MessageCreatedAsync(MessageCreateEventArgs args)
+        private async Task MessageCreatedAsync(DiscordClient client, MessageCreateEventArgs args)
         {
             if (args.Message.MessageType != MessageType.Default) return;
             if (args.Message.Author.IsBot) return;
@@ -217,11 +217,11 @@ namespace Rias.Services
                 return;
             }
 
-            if (args.Client.CurrentUser is null)
+            if (client.CurrentUser is null)
                 return;
 
-            if (CommandUtilities.HasPrefix(args.Message.Content, args.Client.CurrentUser.Username, StringComparison.InvariantCultureIgnoreCase, out output)
-                || args.Message.HasMentionPrefix(args.Client.CurrentUser, out output))
+            if (CommandUtilities.HasPrefix(args.Message.Content, client.CurrentUser.Username, StringComparison.InvariantCultureIgnoreCase, out output)
+                || args.Message.HasMentionPrefix(client.CurrentUser, out output))
                 await RunTaskAsync(ExecuteCommandAsync(args.Message, args.Channel, prefix, output));
         }
 

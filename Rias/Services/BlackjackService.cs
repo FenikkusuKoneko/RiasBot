@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
@@ -86,7 +87,7 @@ namespace Rias.Services
             }
         }
 
-        private async Task MessageReactionAddedAsync(MessageReactionAddEventArgs args)
+        private async Task MessageReactionAddedAsync(DiscordClient client, MessageReactionAddEventArgs args)
         {
             if (!_sessions.TryGetValue(args.User.Id, out var blackjack))
                 return;
@@ -96,7 +97,7 @@ namespace Rias.Services
             await ProcessGameAsync(blackjack, args.Emoji);
         }
 
-        private async Task MessageReactionRemovedAsync(MessageReactionRemoveEventArgs args)
+        private async Task MessageReactionRemovedAsync(DiscordClient client, MessageReactionRemoveEventArgs args)
         {
             if (!_sessions.TryGetValue(args.User.Id, out var blackjack))
                 return;

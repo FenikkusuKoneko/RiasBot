@@ -80,7 +80,7 @@ namespace Rias.Modules.Utility
         public async Task SetLanguageAsync(string language)
         {
             var (locale, lang) = Localization.Locales.FirstOrDefault(x =>
-                string.Equals(x.Locale, language, StringComparison.OrdinalIgnoreCase) || x.Language.StartsWith(language, StringComparison.OrdinalIgnoreCase));
+                string.Equals(x.Locale, language, StringComparison.OrdinalIgnoreCase) || x.Language.StartsWith(language, StringComparison.OrdinalIgnoreCase))!;
             
             if (string.IsNullOrEmpty(locale))
             {
