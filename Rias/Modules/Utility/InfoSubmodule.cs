@@ -33,6 +33,14 @@ namespace Rias.Modules.Utility
             [Command("stats")]
             public async Task StatsAsync()
             {
+                var commandsStatistics = _commandHandlerService.CommandStatistics;
+                var commandsStatisticsString = $"{GetText(Localization.UtilityExecutedCommands, commandsStatistics.ExecutedCommands)}\n" +
+                                               $"{GetText(Localization.UtilityAttemptedCommands, commandsStatistics.AttemptedCommands)}\n" +
+                                               $"{GetText(Localization.UtilityCommandsPerSecond, commandsStatistics.CommandsPerSecondAverage.ToString("F2"))}\n" +
+                                               $"{GetText(Localization.UtilityCommandsPerMinute, commandsStatistics.CommandsPerMinuteAverage.ToString("F2"))}\n" +
+                                               $"{GetText(Localization.UtilityCommandsPerHour, commandsStatistics.CommandsPerHourAverage.ToString("F2"))}\n" +
+                                               GetText(Localization.UtilityCommandsPerDay, commandsStatistics.CommandsPerDayAverage.ToString("F2"));
+
                 var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
@@ -51,11 +59,10 @@ namespace Rias.Modules.Utility
                     .AddField(GetText(Localization.UtilityMasterId), Credentials.MasterId.ToString(), true)
                     .AddField(GetText(Localization.UtilityShard), $"{RiasBot.GetShardId(Context.Guild) + 1}/{RiasBot.Client.ShardClients.Count}", true)
                     .AddField(GetText(Localization.UtilityInServer), Context.Guild?.Name ?? "-", true)
-                    .AddField(GetText(Localization.UtilityCommandsAttempted), _commandHandlerService.CommandsAttempted.ToString(), true)
-                    .AddField(GetText(Localization.UtilityCommandsExecuted), _commandHandlerService.CommandsExecuted.ToString(), true)
                     .AddField(GetText(Localization.UtilityUptime),
                         RiasBot.UpTime.Elapsed.Humanize(5, new CultureInfo(Localization.GetGuildLocale(Context.Guild?.Id)), TimeUnit.Month, TimeUnit.Second),
                         true)
+                    .AddField(GetText(Localization.UtilityCommandsStatistics), commandsStatisticsString, true)
                     .AddField(GetText(Localization.UtilityPresence),
                         $"{RiasBot.Client.ShardClients.Sum(x => x.Value.Guilds.Count)} {GetText(Localization.UtilityServers)}\n" +
                         $"{RiasBot.Members.Count} {GetText(Localization.CommonUsers)}\n",

@@ -391,8 +391,13 @@ namespace Rias.Implementation
         public const string UtilityMasterId = "utility_master_id";
         public const string UtilityShard = "utility_shard";
         public const string UtilityInServer = "utility_in_server";
-        public const string UtilityCommandsAttempted = "utility_commands_attempted";
-        public const string UtilityCommandsExecuted = "utility_commands_executed";
+        public const string UtilityCommandsStatistics = "utility_commands_statistics";
+        public const string UtilityExecutedCommands = "utility_executed_commands";
+        public const string UtilityAttemptedCommands = "utility_attempted_commands";
+        public const string UtilityCommandsPerSecond = "utility_commands_per_second";
+        public const string UtilityCommandsPerMinute = "utility_commands_per_minute";
+        public const string UtilityCommandsPerHour = "utility_commands_per_hour";
+        public const string UtilityCommandsPerDay = "utility_commands_per_day";
         public const string UtilityUptime = "utility_uptime";
         public const string UtilityPresence = "utility_presence";
         public const string UtilityServers = "utility_servers";

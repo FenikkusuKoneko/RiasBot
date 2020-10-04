@@ -22,6 +22,7 @@ using Rias.Commons;
 using Rias.Database;
 using Rias.Extensions;
 using Rias.Implementation;
+using Rias.Services.Commons;
 using Serilog;
 
 namespace Rias.Services
@@ -29,14 +30,16 @@ namespace Rias.Services
     [AutoStart]
     public class CommandHandlerService : RiasService
     {
+        public readonly CommandStatistics CommandStatistics = new CommandStatistics();
+        
         private readonly CommandService _commandService;
         private readonly BotService _botService;
         private readonly XpService _xpService;
         
+        private readonly ConcurrentHashSet<string> _cooldowns = new ConcurrentHashSet<string>();
         private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.xml");
 
         private List<Type> _typeParsers = new List<Type>();
-        private ConcurrentHashSet<string> _cooldowns = new ConcurrentHashSet<string>();
 
         public CommandHandlerService(IServiceProvider serviceProvider)
             : base(serviceProvider)
@@ -50,10 +53,6 @@ namespace Rias.Services
 
             RiasBot.Client.MessageCreated += MessageCreatedAsync;
         }
-
-        public int CommandsAttempted { get; private set; }
-
-        public int CommandsExecuted { get; private set; }
 
         private void LoadCommands()
         {
@@ -243,11 +242,12 @@ namespace Rias.Services
                     await message.DeleteAsync();
                 }
                 
-                CommandsExecuted++;
+                CommandStatistics.IncrementExecutedCommand();
+                await RunTaskAsync(CommandStatistics.AddCommandTimestampAsync(DateTime.UtcNow));
                 return;
             }
             
-            CommandsAttempted++;
+            CommandStatistics.IncrementAttemptedCommand();
 
             switch (result)
             {
