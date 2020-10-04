@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Interactivity.Concurrency;
 using Humanizer;
 using Humanizer.Localisation;
 using Microsoft.EntityFrameworkCore;
@@ -30,19 +31,18 @@ namespace Rias.Services
     {
         private readonly CommandService _commandService;
         private readonly BotService _botService;
-        private readonly CooldownService _cooldownService;
         private readonly XpService _xpService;
         
         private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.xml");
 
         private List<Type> _typeParsers = new List<Type>();
+        private ConcurrentHashSet<string> _cooldowns = new ConcurrentHashSet<string>();
 
         public CommandHandlerService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
             _commandService = serviceProvider.GetRequiredService<CommandService>();
             _botService = serviceProvider.GetRequiredService<BotService>();
-            _cooldownService = serviceProvider.GetRequiredService<CooldownService>();
             _xpService = serviceProvider.GetRequiredService<XpService>();
             
             LoadCommands();
@@ -331,17 +331,17 @@ namespace Rias.Services
             var (cooldown, retryAfter) = result.Cooldowns[0];
             var cooldownKey = (BucketType)cooldown.BucketType switch
             {
-                BucketType.Guild => _cooldownService.GenerateKey(context.Command.Name, context.Guild!.Id),
-                BucketType.User => _cooldownService.GenerateKey(context.Command.Name, context.User.Id),
-                BucketType.Member => _cooldownService.GenerateKey(context.Command.Name, context.Guild!.Id, context.User.Id),
-                BucketType.Channel => _cooldownService.GenerateKey(context.Command.Name, context.Channel.Id),
+                BucketType.Guild => GenerateCooldownKey(context.Command.Name, context.Guild!.Id),
+                BucketType.User => GenerateCooldownKey(context.Command.Name, context.User.Id),
+                BucketType.Member => GenerateCooldownKey(context.Command.Name, context.Guild!.Id, context.User.Id),
+                BucketType.Channel => GenerateCooldownKey(context.Command.Name, context.Channel.Id),
                 _ => string.Empty
             };
             
-            if (_cooldownService.Has(cooldownKey))
+            if (_cooldowns.Contains(cooldownKey))
                 return;
 
-            _cooldownService.Add(cooldownKey);
+            _cooldowns.Add(cooldownKey);
             
             retryAfter += TimeSpan.FromSeconds(1);
             await context.Channel.SendErrorMessageAsync(GetText(
@@ -350,7 +350,7 @@ namespace Rias.Services
                 retryAfter.Humanize(culture: new CultureInfo(Localization.GetGuildLocale(context.Guild?.Id)), minUnit: TimeUnit.Second)));
             
             await Task.Delay(retryAfter);
-            _cooldownService.Remove(cooldownKey);
+            _cooldowns.TryRemove(cooldownKey);
         }
         
         private async Task<string> GetGuildPrefixAsync(DiscordGuild? guild)
@@ -378,5 +378,8 @@ namespace Rias.Services
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             return (await db.Users.FirstOrDefaultAsync(x => x.UserId == user.Id))?.IsBanned ?? false;
         }
+        
+        private string GenerateCooldownKey(string name, ulong id, ulong? secondId = null)
+            => secondId.HasValue ? $"{name}_{id}_{secondId}" : $"{name}_{id}";
     }
 }
