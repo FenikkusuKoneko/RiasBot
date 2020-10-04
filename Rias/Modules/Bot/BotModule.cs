@@ -124,8 +124,7 @@ namespace Rias.Modules.Bot
                 DiscordMember member;
                 if (ulong.TryParse(id[2..], out var userId) && RiasBot.Members.TryGetValue(userId, out var m))
                 {
-                    // TODO: This will throw for sure, ignoring for now
-                    member = (DiscordMember)m;
+                    member = m;
                 }
                 else
                 {
@@ -259,11 +258,8 @@ namespace Rias.Modules.Bot
                 }
                 else
                 {
-                    try
-                    {
-                        user = await RiasBot.Client.ShardClients[0].GetUserAsync(userId);
-                    }
-                    catch
+                    user = await RiasBot.GetUserAsync(userId);
+                    if (user is null)
                     {
                         await ReplyErrorAsync(Localization.AdministrationUserNotFound);
                         return;

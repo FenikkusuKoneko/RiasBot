@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -10,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Concurrency;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -31,7 +30,8 @@ namespace Rias
         public const string Version = "3.4.0";
         public static readonly Stopwatch UpTime = new Stopwatch();
         
-        public ConcurrentDictionary<ulong, DiscordUser> Members = new ConcurrentDictionary<ulong, DiscordUser>();
+        public readonly ConcurrentHashSet<ulong> DownloadedMembers = new ConcurrentHashSet<ulong>();
+        public readonly ConcurrentDictionary<ulong, DiscordMember> Members = new ConcurrentDictionary<ulong, DiscordMember>();
 
         private readonly Credentials _credentials;
         private readonly IServiceProvider _serviceProvider;
@@ -46,7 +46,7 @@ namespace Rias
             {
                 Token = _credentials.Token,
                 MessageCacheSize = 4096,
-                Intents = DiscordIntents.All,
+                Intents = DiscordIntents.AllUnprivileged | DiscordIntents.GuildMembers,
                 LoggerFactory = new SerilogLoggerFactory(Log.Logger)
             });
             
@@ -115,8 +115,21 @@ namespace Rias
                 .SelectMany(x => x.Value.Guilds)
                 .FirstOrDefault(x => x.Value.Id == id).Value;
 
-        public DiscordUser? GetMember(ulong id)
-            => Members.TryGetValue(id, out var user) ? user : null;
+        public async Task<DiscordUser?> GetUserAsync(ulong id)
+        {
+            if (Members.TryGetValue(id, out var member))
+                return member;
+
+            try
+            {
+                var user = await Client.ShardClients[0].GetUserAsync(id);
+                return user;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         public object? GetService(Type serviceType)
         {

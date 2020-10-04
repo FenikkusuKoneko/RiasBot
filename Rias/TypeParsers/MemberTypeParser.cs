@@ -5,6 +5,7 @@ using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Implementation;
+using Serilog;
 
 namespace Rias.TypeParsers
 {
@@ -15,6 +16,14 @@ namespace Rias.TypeParsers
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
             if (context.Guild is null)
                 return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserCachedMemberNotGuild));
+
+            var riasBot = context.ServiceProvider.GetRequiredService<RiasBot>();
+            if (!riasBot.DownloadedMembers.Contains(context.Guild.Id))
+            {
+                riasBot.DownloadedMembers.Add(context.Guild.Id);
+                await context.Guild.RequestMembersAsync();
+                Log.Debug($"Members requested for {context.Guild.Name} ({context.Guild.Id})");
+            }
 
             DiscordMember member;
             if (RiasUtilities.TryParseUserMention(value, out var memberId) || ulong.TryParse(value, out memberId))

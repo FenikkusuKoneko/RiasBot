@@ -105,9 +105,9 @@ namespace Rias.Modules.Gambling
                 {
                     var user = RiasBot.Members.TryGetValue(userCurrency.UserId, out var m)
                         ? m
-                        : await RiasBot.Client.ShardClients[0].GetUserAsync(userCurrency.UserId);
+                        : await RiasBot.GetUserAsync(userCurrency.UserId);
                     
-                    embed.AddField($"#{++index + page * 15} {user.FullName()}", $"{userCurrency.Currency} {Credentials.Currency}", true);
+                    embed.AddField($"#{++index + page * 15} {user?.FullName()}", $"{userCurrency.Currency} {Credentials.Currency}", true);
                 }
 
                 await ReplyAsync(embed);

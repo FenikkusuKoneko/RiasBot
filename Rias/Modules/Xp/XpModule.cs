@@ -82,9 +82,9 @@ namespace Rias.Modules.Xp
             {
                 var member = RiasBot.Members.TryGetValue(userDb.UserId, out var m)
                     ? m
-                    : await RiasBot.Client.ShardClients[0].GetUserAsync(userDb.UserId);
+                    : await RiasBot.GetUserAsync(userDb.UserId);
                 
-                description.Append($"{++index}. **{member.FullName()}**: " +
+                description.Append($"{++index}. **{member?.FullName()}**: " +
                                    $"`{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} " +
                                    $"({userDb.Xp} {GetText(Localization.XpXp).ToLowerInvariant()})`\n");
             }

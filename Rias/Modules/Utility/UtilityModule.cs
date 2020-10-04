@@ -135,11 +135,15 @@ namespace Rias.Modules.Utility
                 return;
             }
 
+            var users = (await Task.WhenAll(patrons.Select(x => RiasBot.GetUserAsync(x.UserId))))
+                .ToDictionary(x => x!.Id);
+
             await SendPaginatedMessageAsync(patrons, 15, (items, index) => new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityAllPatrons),
-                Description = string.Join("\n", items.Select(p => $"{++index}. {RiasBot.GetMember(p.UserId)?.Mention ?? p.UserId.ToString()}"))
+                Description = string.Join("\n", items.Select(p =>
+                    $"{++index}. {(users.TryGetValue(p.UserId, out var user) ? user?.Mention : p.UserId.ToString())}"))
             });
         }
         
@@ -160,6 +164,7 @@ namespace Rias.Modules.Utility
         }
         
         [Command("votes")]
+        [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task VotesAsync(TimeSpan? timeSpan = null)
         {
             timeSpan ??= TimeSpan.FromHours(12);
@@ -186,10 +191,13 @@ namespace Rias.Modules.Utility
                 .GroupBy(x => x.UserId)
                 .ToList();
 
+            var users = (await Task.WhenAll(votesGroup.Select(x => RiasBot.GetUserAsync(x.Key))))
+                .ToDictionary(x => x!.Id);
+
             var index = 0;
-            var votesList = (from votes in votesGroup
-                let user = RiasBot.GetMember(votes.Key)
-                select $"{++index}. {(user != null ? user.FullName() : votes.Key.ToString())} | {GetText(Localization.UtilityVotes)}: {votes.Count()}").ToList();
+            var votesList = votesGroup.Select(x =>
+                $"{++index}. {(users.TryGetValue(x.Key, out var user) ? user?.FullName() : x.Key.ToString())} | {GetText(Localization.UtilityVotes)}: {x.Count()}")
+                .ToList();
 
             if (votesList.Count == 0)
             {

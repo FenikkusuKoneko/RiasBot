@@ -41,19 +41,7 @@ namespace Rias.Services
             RiasBot.Client.GuildMemberAdded += GuildMemberAddedAsync;
             RiasBot.Client.GuildMemberRemoved += GuildMemberRemovedAsync;
             RiasBot.Client.GuildMemberUpdated += GuildMemberUpdatedAsync;
-
-            RiasBot.Client.GuildDownloadCompleted += (client, args) =>
-            {
-                foreach (var (id, member) in args.Guilds.SelectMany(x => x.Value.Members))
-                    RiasBot.Members[id] = member;
-                return Task.CompletedTask;
-            };
-            
-            RiasBot.Client.UserUpdated += (client, args) =>
-            {
-                RiasBot.Members[args.UserAfter.Id] = args.UserAfter;
-                return Task.CompletedTask;
-            };
+            RiasBot.Client.GuildMembersChunked += GuildMembersChunkedAsync;
         }
         
         public static string ReplacePlaceholders(DiscordUser user, string message)
@@ -392,6 +380,16 @@ namespace Rias.Services
 
             userGuildDb.IsMuted = args.Member.Roles.FirstOrDefault(x => x.Id == guildDb.MuteRoleId) != null;
             await db.SaveChangesAsync();
+        }
+
+        private Task GuildMembersChunkedAsync(DiscordClient client, GuildMembersChunkEventArgs args)
+        {
+            foreach (var member in args.Members)
+            {
+                RiasBot.Members[member.Id] = member;
+            }
+
+            return Task.CompletedTask;
         }
 
         private string SanitizeCode(string code)
