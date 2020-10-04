@@ -98,13 +98,6 @@ namespace Rias
             UpTime.Start();
         }
 
-        public IReadOnlyDictionary<ulong, DiscordChannel> Channels => Client.ShardClients
-            .SelectMany(x => x.Value.Guilds)
-            .Select(x => x.Value)
-            .SelectMany(x => x.Channels)
-            .Select(x => x.Value)
-            .ToImmutableDictionary(x => x.Id);
-
         public DiscordShardedClient Client { get; }
 
         public DiscordUser? CurrentUser => Client.CurrentUser;

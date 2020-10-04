@@ -74,12 +74,18 @@ namespace Rias.Modules.Bot
             
             if (id.StartsWith("c:", StringComparison.InvariantCultureIgnoreCase))
             {
-                DiscordChannel channel;
-                if (ulong.TryParse(id[2..], out var channelId) && RiasBot.Channels.TryGetValue(channelId, out var c))
+                if (!ulong.TryParse(id[2..], out var channelId))
                 {
-                    channel = c;
+                    await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
+                    return;
                 }
-                else
+
+                var channel = RiasBot.Client.ShardClients
+                    .SelectMany(x => x.Value.Guilds)
+                    .SelectMany(x => x.Value.Channels)
+                    .FirstOrDefault(x => x.Key == channelId).Value;
+                
+                if (channel is null)
                 {
                     await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
                     return;
@@ -159,13 +165,19 @@ namespace Rias.Modules.Bot
                 await ReplyErrorAsync(Localization.BotChannelMessageIdsBadFormat);
                 return;
             }
-
-            DiscordChannel channel;
-            if (ulong.TryParse(ids[0], out var channelId) && RiasBot.Channels.TryGetValue(channelId, out var c))
+            
+            if (!ulong.TryParse(ids[0], out var channelId))
             {
-                channel = c;
+                await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
+                return;
             }
-            else
+
+            var channel = RiasBot.Client.ShardClients
+                .SelectMany(x => x.Value.Guilds)
+                .SelectMany(x => x.Value.Channels)
+                .FirstOrDefault(x => x.Key == channelId).Value;
+            
+            if (channel is null)
             {
                 await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
                 return;
