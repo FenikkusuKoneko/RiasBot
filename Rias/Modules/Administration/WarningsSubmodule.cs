@@ -149,6 +149,7 @@ namespace Rias.Modules.Administration
 
             [Command("warnings")]
             [Context(ContextType.Guild)]
+            [CheckDownloadedMembers]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task WarningsAsync()
             {

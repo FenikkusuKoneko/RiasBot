@@ -411,6 +411,9 @@ namespace Rias.Services
                 .ToList();
             
             var userServerXp = serverXpList.FirstOrDefault(x => x.UserId == member.Id);
+            var serverRank = "?";
+            if (userServerXp != null && RiasBot.DownloadedMembers.Contains(member.Guild.Id))
+                serverRank = (serverXpList.IndexOf(userServerXp) + 1).ToString();
             
             var globalXp = userDb?.Xp ?? 0;
             var serverXp = userServerXp?.Xp ?? 0;
@@ -426,7 +429,7 @@ namespace Rias.Services
                     : 0,
                 ServerXp = serverXp,
                 ServerLevel = RiasUtilities.XpToLevel(serverXp, XpThreshold),
-                ServerRank = userServerXp != null ? serverXpList.IndexOf(userServerXp) + 1 : 0,
+                ServerRank = serverRank,
                 Color = profileDb?.Color != null ? new MagickColor($"{profileDb.Color}") : MagickColors.White
             };
         }
@@ -443,7 +446,7 @@ namespace Rias.Services
             
             public int ServerLevel { get; set; }
             
-            public int ServerRank { get; set; }
+            public string? ServerRank { get; set; }
             
             public MagickColor? Color { get; set; }
         }

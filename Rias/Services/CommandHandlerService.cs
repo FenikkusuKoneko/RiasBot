@@ -200,9 +200,10 @@ namespace Rias.Services
             
             if (args.Channel.Type == ChannelType.Text)
             {
-                await RunTaskAsync(_botService.AddAssignableRoleAsync((DiscordMember)args.Author));
+                var member = await args.Guild.GetMemberAsync(args.Author.Id);
+                await RunTaskAsync(_botService.AddAssignableRoleAsync(member));
                 await RunTaskAsync(_xpService.AddUserXpAsync(args.Author));
-                await RunTaskAsync(_xpService.AddGuildUserXpAsync((DiscordMember)args.Author, args.Channel));
+                await RunTaskAsync(_xpService.AddGuildUserXpAsync(member, args.Channel));
                 
                 var channelPermissions = args.Channel.Guild.CurrentMember.PermissionsIn(args.Channel);
                 if (!channelPermissions.HasPermission(Permissions.SendMessages))

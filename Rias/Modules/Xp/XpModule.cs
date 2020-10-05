@@ -31,6 +31,7 @@ namespace Rias.Modules.Xp
 
         [Command("xp")]
         [Context(ContextType.Guild)]
+        [CheckDownloadedMembers]
         [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
         public async Task XpAsync([Remainder] DiscordMember? member = null)
         {
@@ -95,6 +96,7 @@ namespace Rias.Modules.Xp
 
         [Command("xpleaderboard")]
         [Context(ContextType.Guild)]
+        [CheckDownloadedMembers]
         [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
         public async Task XpLeaderboardAsync(int page = 1)
         {
