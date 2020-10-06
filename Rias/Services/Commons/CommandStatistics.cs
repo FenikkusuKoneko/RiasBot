@@ -49,7 +49,7 @@ namespace Rias.Services.Commons
                 CalculateAverage(_commandsPerSecond, ticks, 10_000_000, 60);
                 CalculateAverage(_commandsPerMinute, ticks, 600_000_000, 60);
                 CalculateAverage(_commandsPerHour, ticks, 36_000_000_000, 24);
-                CalculateAverage(_commandsPerDay, ticks, 36_000_000_000, 7);
+                CalculateAverage(_commandsPerDay, ticks, 864_000_000_000, 7);
             }
             
             return Task.CompletedTask;
