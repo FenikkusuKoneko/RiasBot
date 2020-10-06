@@ -407,7 +407,7 @@
   "utility_no_votes": "No vote could be retrieved.",
   "utility_all_votes": "All votes from the last {0}",
   "utility_votes": "Votes",
-  "utility_ping_info": "Websocket latency: {0} ms\nRest latency: {1} ms",
+  "utility_ping_info": "Websocket latency: {0} ms\nRest typing latency: {1} ms\nRest message latency: {2} ms\nRest average: {3} ms",
   "utility_chose": "I chose: **{0}**.",
   "utility_calculator": "Calculator",
   "utility_expression": "Expression",

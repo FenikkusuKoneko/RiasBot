@@ -220,8 +220,20 @@ namespace Rias.Modules.Utility
             var sw = Stopwatch.StartNew();
             await Context.Channel.TriggerTypingAsync();
             sw.Stop();
+            var timeOne = sw.ElapsedMilliseconds;
+            
+            sw.Restart();
+            var msg = await Context.Channel.SendMessageAsync(":ping_pong:");
+            sw.Stop();
+            var timeTwo = sw.ElapsedMilliseconds;
+            
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                Description = GetText(Localization.UtilityPingInfo, RiasBot.Latency.ToString("F3"), timeOne, timeTwo, (timeOne + timeTwo) / 2)
+            };
 
-            await ReplyConfirmationAsync(Localization.UtilityPingInfo, RiasBot.Latency.ToString("F3"), sw.ElapsedMilliseconds);
+            await msg.ModifyAsync(null, embed.Build());
         }
 
         [Command("choose")]
