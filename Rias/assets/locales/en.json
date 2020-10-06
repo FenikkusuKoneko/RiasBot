@@ -428,7 +428,7 @@
   "utility_commands_per_day": "{0} cmds/day",
   "utility_uptime": "Uptime",
   "utility_presence": "Presence",
-  "utility_servers": "Servers",
+  "utility_presence_info": "{0} servers\n{1} total members (contains duplicated)\n{2} cached members",
   "utility_text_channels": "Text channels",
   "utility_voice_channels": "Voice channels",
   "utility_username": "Username",

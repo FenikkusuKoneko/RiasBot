@@ -400,7 +400,7 @@ namespace Rias.Implementation
         public const string UtilityCommandsPerDay = "utility_commands_per_day";
         public const string UtilityUptime = "utility_uptime";
         public const string UtilityPresence = "utility_presence";
-        public const string UtilityServers = "utility_servers";
+        public const string UtilityPresenceInfo = "utility_presence_info";
         public const string UtilityTextChannels = "utility_text_channels";
         public const string UtilityVoiceChannels = "utility_voice_channels";
         public const string UtilityUsername = "utility_username";
