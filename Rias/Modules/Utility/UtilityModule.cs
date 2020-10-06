@@ -215,6 +215,7 @@ namespace Rias.Modules.Utility
         }
         
         [Command("ping")]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Channel)]
         public async Task PingAsync()
         {
             var sw = Stopwatch.StartNew();
@@ -230,7 +231,7 @@ namespace Rias.Modules.Utility
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                Description = GetText(Localization.UtilityPingInfo, RiasBot.Latency.ToString("F3"), timeOne, timeTwo, (timeOne + timeTwo) / 2)
+                Description = GetText(Localization.UtilityPingInfo, RiasBot.Latency, timeOne, timeTwo, (timeOne + timeTwo) / 2)
             };
 
             await msg.ModifyAsync(null, embed.Build());

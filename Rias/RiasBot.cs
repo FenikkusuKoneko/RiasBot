@@ -102,7 +102,7 @@ namespace Rias
 
         public DiscordUser? CurrentUser => Client.CurrentUser;
         
-        public double Latency => Client.ShardClients.Average(x => x.Value.Ping);
+        public int Latency => (int) Client.ShardClients.Average(x => x.Value.Ping);
 
         public Task StartAsync()
             => Client.StartAsync();
