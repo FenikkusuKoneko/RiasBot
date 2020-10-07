@@ -69,7 +69,8 @@ namespace Rias.Services
                 return;
 
             var memberRoles = member.Roles.ToList();
-            if (memberRoles.Count > 1) return;
+            if (memberRoles.Count != 0)
+                return;
 
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
@@ -81,8 +82,7 @@ namespace Rias.Services
             if (aar is null)
                 return;
 
-            if (member.Guild.Members.ContainsKey(member.Id)
-                && currentMember.CheckRoleHierarchy(aar) > 0
+            if (currentMember.CheckRoleHierarchy(aar) > 0
                 && !aar.IsManaged
                 && memberRoles.All(x => x.Id != aar.Id))
                 await member.GrantRoleAsync(aar);

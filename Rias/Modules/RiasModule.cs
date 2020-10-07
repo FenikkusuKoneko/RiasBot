@@ -38,12 +38,12 @@ namespace Rias.Modules
 
         protected override async ValueTask BeforeExecutedAsync()
         {
-            if (Context.Channel.Type != ChannelType.Text)
+            if (Context.Guild is null)
                 return;
-            
-            var channelPermissions = Context.Channel.Guild.CurrentMember.PermissionsIn(Context.Channel);
+
+            var channelPermissions = Context.Guild!.CurrentMember.PermissionsIn(Context.Channel);
             var channelEmbedPerm = channelPermissions.HasPermission(Permissions.EmbedLinks);
-            var serverEmbedPerm = Context.Channel.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks);
+            var serverEmbedPerm = Context.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks);
             
             if (!serverEmbedPerm && !channelEmbedPerm)
             {

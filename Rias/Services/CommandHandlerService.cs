@@ -204,49 +204,48 @@ namespace Rias.Services
             if (args.Message.MessageType != MessageType.Default) return;
             if (args.Message.Author.IsBot) return;
             
-            if (args.Channel.Type == ChannelType.Text)
+            await RunTaskAsync(ExecuteAsync(client, args));
+        }
+
+        private async Task ExecuteAsync(DiscordClient client, MessageCreateEventArgs args)
+        {
+            if (args.Guild is not null)
             {
                 var member = await args.Guild.GetMemberAsync(args.Author.Id);
                 await RunTaskAsync(_botService.AddAssignableRoleAsync(member));
                 await RunTaskAsync(_xpService.AddUserXpAsync(args.Author));
                 await RunTaskAsync(_xpService.AddGuildUserXpAsync(member, args.Channel));
                 
-                var channelPermissions = args.Channel.Guild.CurrentMember.PermissionsIn(args.Channel);
+                var channelPermissions = args.Guild.CurrentMember.PermissionsIn(args.Channel);
                 if (!channelPermissions.HasPermission(Permissions.SendMessages))
                     return;
             }
-
+            
             var prefix = await GetGuildPrefixAsync(args.Guild);
-            if (CommandUtilities.HasPrefix(args.Message.Content, prefix, out var output))
+            if (!CommandUtilities.HasPrefix(args.Message.Content, prefix, out var output))
             {
-                await RunTaskAsync(ExecuteCommandAsync(args.Message, args.Channel, prefix, output));
-                return;
+                if (client.CurrentUser is null)
+                    return;
+
+                if (!CommandUtilities.HasPrefix(args.Message.Content, client.CurrentUser.Username, StringComparison.InvariantCultureIgnoreCase, out output)
+                    && !args.Message.HasMentionPrefix(client.CurrentUser, out output))
+                    return;
             }
 
-            if (client.CurrentUser is null)
+            if (await CheckUserBan(args.Author) && args.Author.Id != Credentials.MasterId)
                 return;
-
-            if (CommandUtilities.HasPrefix(args.Message.Content, client.CurrentUser.Username, StringComparison.InvariantCultureIgnoreCase, out output)
-                || args.Message.HasMentionPrefix(client.CurrentUser, out output))
-                await RunTaskAsync(ExecuteCommandAsync(args.Message, args.Channel, prefix, output));
-        }
-
-        private async Task ExecuteCommandAsync(DiscordMessage message, DiscordChannel channel, string prefix, string output)
-        {
-            if (await CheckUserBan(message.Author) && message.Author.Id != Credentials.MasterId)
-                return;
-
-            var context = new RiasCommandContext(RiasBot, message, prefix);
+            
+            var context = new RiasCommandContext(RiasBot, args.Message, prefix);
             var result = await _commandService.ExecuteAsync(output, context);
             
             if (result.IsSuccessful)
             {
-                if (channel.Type == ChannelType.Text
-                    && channel.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.ManageMessages)
-                    && await CheckGuildCommandMessageDeletion(channel.Guild)
+                if (args.Guild is not null
+                    && args.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.ManageMessages)
+                    && await CheckGuildCommandMessageDeletion(args.Guild)
                     && !string.Equals(context.Command.Name, "prune"))
                 {
-                    await message.DeleteAsync();
+                    await args.Message.DeleteAsync();
                 }
                 
                 CommandStatistics.IncrementExecutedCommand();
