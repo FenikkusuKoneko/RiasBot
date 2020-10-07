@@ -80,7 +80,8 @@ namespace Rias
                 .AddSingleton(redis)
                 .AddSingleton<Localization>()
                 .AddSingleton<HttpClient>()
-                .AddDbContext<RiasDbContext>(x => x.UseNpgsql(databaseConnection).UseSnakeCaseNamingConvention())
+                .AddDbContext<RiasDbContext>(x =>
+                    x.UseNpgsql(databaseConnection, options => options.EnableRetryOnFailure()).UseSnakeCaseNamingConvention())
                 .BuildServiceProvider();
             
             ApplyDatabaseMigrations();
