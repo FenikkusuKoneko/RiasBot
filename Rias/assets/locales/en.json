@@ -557,17 +557,17 @@
   
   "attribute_owner_only": "This command can be ran only by my owner.",
   "attribute_user_guild_permissions": "You must have the {0} server permission(s).",
+  "attribute_user_channel_permissions": "You don't have the {0} permission(s) in this channel.",
   "attribute_user_permission_not_guild": "The `UserPermissionAttribute` requires this command to be used in a server channel.",
   "attribute_bot_guild_permissions": "I must have the {0} server permission(s).",
+  "attribute_bot_channel_permissions": "I don't have the {0} permission(s) in this channel.",
   "attribute_bot_permission_not_guild": "The `BotPermissionAttribute` requires this command to be used in a server channel.",
   "attribute_context": "The command must be used in a {0}.",
 
   "type_parser_primitive_type": "Check the types of your arguments. Check the examples of the command, type `{0}help {1}`",
-  "type_parser_cached_category_channel_not_guild": "The `CachedCategoryChannel TypeParser` cannot be used in a context without a guild!",
-  "type_parser_cached_member_not_guild": "The `CachedMember TypeParser` cannot be used in a context without a guild!",
-  "type_parser_cached_role_not_guild": "The `CachedRole TypeParser` cannot be used in a context without a guild!",
-  "type_parser_cached_text_channel_not_guild": "The CachedTextChannel TypeParser cannot be used in a context without a guild!",
-  "type_parser_cached_voice_channel_not_guild": "The CachedVoiceChannel TypeParser cannot be used in a context without a guild!",
+  "type_parser_channel_not_guild": "`ChannelTypeParser` cannot be used in a context without a guild!",
+  "type_parser_member_not_guild": "`MemberTypeParser` cannot be used in a context without a guild!",
+  "type_parser_role_not_guild": "`RoleTypeParser` cannot be used in a context without a guild!",
   "type_parser_time_span_unsuccessful": "The time provided is not valid.\nFormat mo(nths) w(eeks) d(ays) h(ours) m(inutes) s(econds).\nExamples 1mo2d3h4m5s, 1w2d3h4m5s, 1h2m, 1m2s.",
   "type_parser_invalid_color": "The color is not valid. You can use a hex value (#dc143c) or a html color name (red, green, blue, etc.).",
   

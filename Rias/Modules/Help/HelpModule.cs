@@ -104,7 +104,7 @@ namespace Rias.Modules.Help
                 switch (attribute)
                 {
                     case UserPermissionAttribute userPermissionAttribute:
-                        var userPermissions = userPermissionAttribute.GuildPermissions
+                        var userPermissions = userPermissionAttribute.Permissions
                             .GetValueOrDefault()
                             .ToString()
                             .Split(",", StringSplitOptions.RemoveEmptyEntries)
@@ -113,7 +113,7 @@ namespace Rias.Modules.Help
                         embed.AddField(GetText(Localization.HelpRequiresUserPermission), string.Join("\n", userPermissions), true);
                         break;
                     case BotPermissionAttribute botPermissionAttribute:
-                        var botPermissions = botPermissionAttribute.GuildPermissions
+                        var botPermissions = botPermissionAttribute.Permissions
                             .GetValueOrDefault()
                             .ToString()
                             .Split(",", StringSplitOptions.RemoveEmptyEntries)

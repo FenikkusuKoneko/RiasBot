@@ -15,7 +15,7 @@ namespace Rias.TypeParsers
         {
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
             if (context.Guild is null)
-                return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserCachedMemberNotGuild));
+                return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserMemberNotGuild));
 
             var riasBot = context.ServiceProvider.GetRequiredService<RiasBot>();
             if (!riasBot.DownloadedMembers.Contains(context.Guild.Id))

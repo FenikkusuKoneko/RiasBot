@@ -527,17 +527,17 @@ namespace Rias.Implementation
         
         public const string AttributeOwnerOnly = "attribute_owner_only";
         public const string AttributeUserGuildPermissions = "attribute_user_guild_permissions";
+        public const string AttributeUserChannelPermissions = "attribute_user_channel_permissions";
         public const string AttributeUserPermissionNotGuild = "attribute_user_permission_not_guild";
         public const string AttributeBotGuildPermissions = "attribute_bot_guild_permissions";
+        public const string AttributeBotChannelPermissions = "attribute_bot_channel_permissions";
         public const string AttributeBotPermissionNotGuild = "attribute_bot_permission_not_guild";
         public const string AttributeContext = "attribute_context";
         
         public const string TypeParserPrimitiveType = "type_parser_primitive_type";
-        public const string TypeParserCachedCategoryChannelNotGuild = "type_parser_cached_category_channel_not_guild";
-        public const string TypeParserCachedMemberNotGuild = "type_parser_cached_member_not_guild";
-        public const string TypeParserCachedRoleNotGuild = "type_parser_cached_role_not_guild";
-        public const string TypeParserCachedTextChannelNotGuild = "type_parser_cached_text_channel_not_guild";
-        public const string TypeParserCachedVoiceChannelNotGuild = "type_parser_cached_voice_channel_not_guild";
+        public const string TypeParserChannelNotGuild = "type_parser_channel_not_guild";
+        public const string TypeParserMemberNotGuild = "type_parser_member_not_guild";
+        public const string TypeParserRoleNotGuild = "type_parser_role_not_guild";
         public const string TypeParserTimeSpanUnsuccessful = "type_parser_time_span_unsuccessful";
         public const string TypeParserInvalidColor = "type_parser_invalid_color";
         

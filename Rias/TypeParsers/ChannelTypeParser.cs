@@ -19,9 +19,9 @@ namespace Rias.TypeParsers
             {
                 channelType = attribute switch
                 {
+                    CategoryChannelAttribute => ChannelType.Category,
                     TextChannelAttribute => ChannelType.Text,
                     VoiceChannelAttribute => ChannelType.Voice,
-                    CategoryChannelAttribute => ChannelType.Category,
                     _ => channelType
                 };
 
@@ -34,7 +34,7 @@ namespace Rias.TypeParsers
             
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
             if (context.Guild is null)
-                return TypeParserResult<DiscordChannel>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserCachedTextChannelNotGuild));
+                return TypeParserResult<DiscordChannel>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserChannelNotGuild));
 
             DiscordChannel? channel;
             if (RiasUtilities.TryParseChannelMention(value, out var channelId) || ulong.TryParse(value, out channelId))

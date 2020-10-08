@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using DSharpPlus;
+using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -12,18 +13,18 @@ namespace Rias.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class BotPermissionAttribute : RiasCheckAttribute
     {
-        private readonly Permissions? _guildPermissions;
+        private readonly Permissions? _permissions;
         
-        public Permissions? GuildPermissions => _guildPermissions;
+        public Permissions? Permissions => _permissions;
 
         public BotPermissionAttribute(Permissions permissions)
         {
-            _guildPermissions = permissions;
+            _permissions = permissions;
         }
 
         public override ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {
-            if (!_guildPermissions.HasValue)
+            if (!_permissions.HasValue)
                 return CheckResult.Successful;
 
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
@@ -32,21 +33,36 @@ namespace Rias.Attributes
             if (currentMember is null)
                 return CheckResult.Unsuccessful(localization.GetText(null, Localization.AttributeBotPermissionNotGuild));
 
-            if (currentMember.GetPermissions().HasPermission(_guildPermissions.Value))
-                return CheckResult.Successful;
+            var guildPermissions = currentMember.GetPermissions();
+            var hasGuildPermissions = guildPermissions.HasPermission(_permissions.Value);
+            
+            var channelPermissions = currentMember.PermissionsIn(context.Channel);
+            var hasChannelPerm = channelPermissions.HasPermission(_permissions.Value);
 
-            var botPerms = currentMember.GetPermissions();
-            var requiredPerms = _guildPermissions ^ (_guildPermissions & botPerms);
+            if (!hasGuildPermissions && !hasChannelPerm)
+            {
+                var guildPermsHumanized = HumanizePermissions(context.Guild!, guildPermissions, localization);
+                return CheckResult.Unsuccessful(localization.GetText(context.Guild!.Id, Localization.AttributeBotGuildPermissions, guildPermsHumanized));
+            }
 
+            if (hasGuildPermissions && !hasChannelPerm)
+            {
+                var channelPermsHumanized = HumanizePermissions(context.Guild!, channelPermissions, localization);
+                return CheckResult.Unsuccessful(localization.GetText(context.Guild!.Id, Localization.AttributeBotChannelPermissions, channelPermsHumanized));
+            }
+
+            return CheckResult.Successful;
+        }
+
+        private string HumanizePermissions(DiscordGuild guild, Permissions permissions, Localization localization)
+        {
+            var requiredPerms = _permissions ^ (_permissions & permissions);
             var requiredPermsList = requiredPerms
                 .GetValueOrDefault()
                 .ToString()
                 .Split(",", StringSplitOptions.RemoveEmptyEntries);
 
-            var guildId = context.Guild?.Id;
-            var permsHumanized = requiredPermsList.Humanize(
-                x => $"**{x.Titleize()}**", localization.GetText(guildId, Localization.CommonAnd).ToLowerInvariant());
-            return CheckResult.Unsuccessful(localization.GetText(guildId, Localization.AttributeBotGuildPermissions, permsHumanized));
+            return requiredPermsList.Humanize(x => $"**{x.Titleize()}**", localization!.GetText(guild.Id, Localization.CommonAnd).ToLowerInvariant());
         }
     }
 }
