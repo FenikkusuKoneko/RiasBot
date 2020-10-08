@@ -27,7 +27,7 @@ namespace Rias
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.4.8";
+        public const string Version = "3.4.9";
         public static readonly Stopwatch UpTime = new Stopwatch();
         
         public readonly ConcurrentHashSet<ulong> DownloadedMembers = new ConcurrentHashSet<ulong>();
@@ -45,8 +45,8 @@ namespace Rias
             Client = new DiscordShardedClient(new DiscordConfiguration
             {
                 Token = _credentials.Token,
-                MessageCacheSize = 4096,
                 Intents = DiscordIntents.AllUnprivileged | DiscordIntents.GuildMembers,
+                MessageCacheSize = 0,
                 LoggerFactory = new SerilogLoggerFactory(Log.Logger)
             });
             

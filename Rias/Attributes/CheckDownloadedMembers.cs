@@ -8,7 +8,7 @@ using Serilog;
 namespace Rias.Attributes
 {
     /// <summary>
-    /// Checks if the guild's member are downloaded. If not, they will be requested.
+    /// Checks if the guild's members are downloaded. If not, they will be requested.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class CheckDownloadedMembers : RiasCheckAttribute
