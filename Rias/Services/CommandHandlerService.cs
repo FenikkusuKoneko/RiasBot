@@ -281,6 +281,8 @@ namespace Rias.Services
             };
 
             var reasons = new List<string>();
+            var checksHashSet = new HashSet<Type>();
+
             var parsedPrimitiveType = false;
             var areTooManyArguments = false;
             var areTooLessArguments = false;
@@ -290,7 +292,14 @@ namespace Rias.Services
                 switch (failedResult)
                 {
                     case ChecksFailedResult checksFailedResult:
-                        reasons.AddRange(checksFailedResult.FailedChecks.Select(x => x.Result.Reason));
+                        foreach (var (check, result) in checksFailedResult.FailedChecks)
+                        {
+                            if (checksHashSet.Contains(check.GetType()))
+                                continue;
+                            
+                            reasons.Add(result.Reason);
+                            checksHashSet.Add(check.GetType());
+                        }
                         break;
                     case TypeParseFailedResult typeParseFailedResult:
                         if (_typeParsers.Any(x => x.BaseType!.GetGenericArguments()[0] == typeParseFailedResult.Parameter.Type))
