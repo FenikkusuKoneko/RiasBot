@@ -1093,8 +1093,8 @@ Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a c
           </command>
           <command>
             <aliases>character</aliases>
-            <description>Shows info about a character from the database or AniList.
-If the character is not on AniList but it is a custom character in the database use @id.</description>
+            <description>Shows info about a character AniList or a custom character from the database (i.e. characters from games that are not on AniList).
+You can request a normal waifu using her name or ID, and you can request a custom waifu using her name or `wID` (put a `w` before the ID).</description>
             <remarks>
               <remark>{0}character Rias Gremory</remark>
               <remark>{0}character 50389</remark>
@@ -1117,9 +1117,9 @@ If the character is not on AniList but it is a custom character in the database 
           </command>
           <command>
             <aliases>characters</aliases>
-            <description>Shows a list with characters and their IDs from AniList matching the name, paginated.</description>
+            <description>Shows a list with characters and their IDs from AniList matching the name, paginated. The custom characters are also included.</description>
             <remarks>
-              <remark>{0}mangalist High School DxD</remark>
+              <remark>{0}characters Rias</remark>
             </remarks>
           </command>
         </commands>
@@ -1348,10 +1348,10 @@ If a category is provided then it shows all the units from that category, pagina
         <commands>
           <command>
             <aliases>claim</aliases>
-            <description>Claim a waifu, this can be from the database or AniList.
-              If the ID starts with `@` then the character will be searched by ID on database, if not then the character will be searched first, by name, on database then on AniList.
+            <description>Claim a waifu, this can be any waifu from AniList, or a custom waifu from the database (i.e. the weaifus that are from games and not on AniList).
+You can claim a normal waifu using her name or ID, and you can claim a custom waifu using her name or `wID` (put a `w` before the ID).
 
-              The price for every waifu usually starts from 1000 [currency] and grows for each claim with 10 [currency], also it will decrease for each divorce.</description>
+The price for every waifu usually starts from 1000 [currency] and grows for each claim with 10 [currency], also it will decrease for each divorce.</description>
             <remarks>
               <remark>{0}waifu claim Rias Gremory</remark>
               <remark>{0}waifu claim 50389</remark>

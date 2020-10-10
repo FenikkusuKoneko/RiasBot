@@ -29,7 +29,7 @@ namespace Rias.Services
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             
-            if (name.StartsWith("@") && int.TryParse(name[1..], out var id))
+            if (name.StartsWith("w", StringComparison.OrdinalIgnoreCase) && int.TryParse(name[1..], out var id))
                 return await db.CustomCharacters.FirstOrDefaultAsync(x => x.CharacterId == id);
 
             var characterDb = int.TryParse(name, out id)

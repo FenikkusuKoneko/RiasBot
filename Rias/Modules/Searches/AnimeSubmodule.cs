@@ -173,7 +173,7 @@ namespace Rias.Modules.Searches
             public async Task CharacterAsync([Remainder] string name)
             {
                 CustomCharactersEntity? character;
-                if (name.StartsWith("@") && int.TryParse(name[1..], out var id))
+                if (name.StartsWith("w", StringComparison.OrdinalIgnoreCase) && int.TryParse(name[1..], out var id))
                 {
                     character = await DbContext.CustomCharacters.FirstOrDefaultAsync(x => x.CharacterId == id);
                 }
@@ -186,9 +186,8 @@ namespace Rias.Modules.Searches
                 {
                     character = DbContext.CustomCharacters
                         .AsEnumerable()
-                        .FirstOrDefault(x =>
-                            name.Split(' ')
-                                .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
+                        .FirstOrDefault(x => name.Split(' ')
+                            .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
                     
                     if (character is null)
                     {
@@ -207,7 +206,7 @@ namespace Rias.Modules.Searches
                     {
                         Color = RiasUtilities.ConfirmColor,
                         Title = character.Name
-                    }.AddField(GetText(Localization.CommonId), character.Id.ToString(), true)
+                    }.AddField(GetText(Localization.CommonId), $"w{character.CharacterId}", true)
                     .AddField(GetText(Localization.SearchesSource), GetText(Localization.BotDatabase), true)
                     .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(character.Description) ? $"{character.Description}" : "-")
                     .WithImageUrl(character.ImageUrl);
@@ -259,12 +258,21 @@ namespace Rias.Modules.Searches
             [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
             public async Task CharactersAsync([Remainder] string name)
             {
-                var characters = await Service.GetAniListInfoAsync<List<CharacterContent>>(AnimeService.CharacterListQuery, new { character = name }, "Page", "characters");
-                if (characters is null || characters.Count == 0)
+                var characters = DbContext.CustomCharacters
+                    .AsEnumerable()
+                    .Where(x => name.Split(' ')
+                        .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)))
+                    .ToList<object>();
+
+                var anilistCharacters = await Service.GetAniListInfoAsync<List<CharacterContent>>(AnimeService.CharacterListQuery, new { character = name }, "Page", "characters");
+                if (characters.Count == 0 && (anilistCharacters is null || anilistCharacters.Count == 0))
                 {
                     await ReplyErrorAsync(Localization.SearchesCharactersNotFound);
                     return;
                 }
+
+                if (anilistCharacters != null)
+                    characters.AddRange(anilistCharacters);
 
                 await SendPaginatedMessageAsync(characters, 10, (items, index) => new DiscordEmbedBuilder
                 {
@@ -272,12 +280,16 @@ namespace Rias.Modules.Searches
                     Title = GetText(Localization.SearchesCharacterList, name, Context.Prefix),
                     Description = string.Join("\n", items.Select(c =>
                     {
-                        var fromAnime = GetCharacterSources(c, "anime").FirstOrDefault();
+                        if (c is CustomCharactersEntity customCharacter)
+                            return $"• {customCharacter.Name} (w{customCharacter.CharacterId})";
+
+                        var character = (CharacterContent)c;
+                        var fromAnime = GetCharacterSources(character, "anime").FirstOrDefault();
                         var from = fromAnime != null
                             ? $"{GetText(Localization.SearchesFromAnime)}: {fromAnime}"
-                            : $"{GetText(Localization.SearchesFromAnime)}: {GetCharacterSources(c, "manga").FirstOrDefault()}";
+                            : $"{GetText(Localization.SearchesFromAnime)}: {GetCharacterSources(character, "manga").FirstOrDefault()}";
                         
-                        return $"• [{c.Name.First} {c.Name.Last}]({c.SiteUrl}) ({c.Id}) | {from}";
+                        return $"• [{character.Name.First} {character.Name.Last}]({character.SiteUrl}) ({character.Id}) | {from}";
                     }))
                 });
             }

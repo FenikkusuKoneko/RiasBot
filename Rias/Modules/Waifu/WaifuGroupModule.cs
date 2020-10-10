@@ -443,7 +443,7 @@ namespace Rias.Modules.Waifu
                 waifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == Context.User.Id));
             
                 IWaifusEntity? waifu;
-                if (name.StartsWith("@") && int.TryParse(name[1..], out var id))
+                if (name.StartsWith("w", StringComparison.OrdinalIgnoreCase) && int.TryParse(name[1..], out var id))
                 {
                     waifu = waifus.FirstOrDefault(x => x is WaifusEntity normalWaifu && normalWaifu.CustomCharacterId == id);
                     if (waifu != null)
