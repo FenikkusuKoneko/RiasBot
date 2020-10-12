@@ -314,16 +314,16 @@ namespace Rias.Services
                         
                         break;
                     case ArgumentParseFailedResult argumentParseFailedResult:
-                        var rawArguments = Regex.Matches(argumentParseFailedResult.RawArguments, @"\w+|""[\w\s]*""");
+                        var arguments = CountArguments(context.Message.Content);
                         var parameters = argumentParseFailedResult.Command.Parameters;
 
-                        if (!areTooLessArguments && rawArguments.Count < parameters.Count)
+                        if (!areTooLessArguments && arguments < parameters.Count)
                         {
                             reasons.Add(GetText(guildId, Localization.ServiceCommandLessArguments, context.Prefix, argumentParseFailedResult.Command.Name));
                             areTooLessArguments = true;
                         }
                         
-                        if (!areTooManyArguments && rawArguments.Count > parameters.Count)
+                        if (!areTooManyArguments && arguments > parameters.Count)
                         {
                             reasons.Add(GetText(guildId, Localization.ServiceCommandManyArguments, context.Prefix, argumentParseFailedResult.Command.Name));
                             areTooManyArguments = true;
@@ -396,5 +396,41 @@ namespace Rias.Services
         
         private string GenerateCooldownKey(string name, ulong id, ulong? secondId = null)
             => secondId.HasValue ? $"{name}_{id}_{secondId}" : $"{name}_{id}";
+        
+        private int CountArguments(string arguments)
+        {
+            if (string.IsNullOrWhiteSpace(arguments))
+                return 0;
+
+            var count = 0;
+            var quoteOpened = false;
+
+            for (var i = 0; i < arguments.Length; i++)
+            {
+                var character = arguments[i];
+                
+                if (character == '"' && !quoteOpened)
+                    quoteOpened = true;
+
+                if (char.IsWhiteSpace(character))
+                {
+                    if (quoteOpened && i > 0 && arguments[i - 1] == '"')
+                        quoteOpened = false;
+
+                    if (quoteOpened)
+                        continue;
+
+                    if (i > 0 && char.IsWhiteSpace(arguments[i - 1]))
+                        continue;
+
+                    count++;    
+                }
+            }
+
+            if (!char.IsWhiteSpace(arguments[^1]))
+                count++;
+
+            return count;
+        }
     }
 }

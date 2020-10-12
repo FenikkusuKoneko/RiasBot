@@ -29,7 +29,7 @@ namespace Rias.Modules.Profile
         [Command]
         [Context(ContextType.Guild)]
         [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
-        public async Task ProfileAsync(DiscordMember? member = null)
+        public async Task ProfileAsync([Remainder] DiscordMember? member = null)
         {
             member ??= (DiscordMember)Context.User;
             await Context.Channel.TriggerTypingAsync();
