@@ -132,6 +132,7 @@ namespace Rias.Modules.Administration
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
                     .AddField(GetText(Localization.AdministrationWarningNumber), (warnsCount + 1).ToString(), true)
                     .AddField(GetText(Localization.AdministrationModerator), Context.User.FullName(), true);
+                
                 if (!string.IsNullOrEmpty(reason))
                     embed.AddField(GetText(Localization.CommonReason), reason, true);
 
@@ -513,7 +514,7 @@ namespace Rias.Modules.Administration
                 }
 
                 if (channel.Id != Context.Channel.Id)
-                    await Context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("✅"));
+                    await ReplyConfirmationAsync(Localization.AdministrationUserWasWarned, member.FullName(), channel.Mention);
 
                 await channel.SendMessageAsync(embed);
 

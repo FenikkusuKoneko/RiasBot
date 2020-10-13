@@ -61,7 +61,7 @@ namespace Rias.Services
                 return;
             }
 
-            if (member.Roles.Any(r => r.Id == role.Id))
+            if (member.Roles.Any(r => r.Id == role.Id) && !sentByWarning)
             {
                 await ReplyErrorAsync(channel, guild.Id, Localization.AdministrationUserAlreadyMuted, member.FullName());
                 return;
@@ -101,6 +101,9 @@ namespace Rias.Services
                 {
                     if (!sentByWarning)
                         await channel.SendConfirmationMessageAsync(GetText(guild.Id, Localization.AdministrationUserWasMuted, member.FullName(), modLogChannel.Mention));
+                    else
+                        await channel.SendConfirmationMessageAsync(GetText(guild.Id, Localization.AdministrationUserWasWarned, member.FullName(), modLogChannel.Mention));
+                    
                     channel = modLogChannel;
                 }
             }
