@@ -123,6 +123,9 @@ namespace Rias.Modules.Administration
             public async Task RenameRoleAsync([Remainder] string names)
             {
                 var roles = names.Split("->", StringSplitOptions.RemoveEmptyEntries);
+                if (roles.Length != 2)
+                    return;
+                
                 var oldName = roles[0].TrimEnd();
                 var newName = roles[1].TrimStart();
 

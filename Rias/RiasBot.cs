@@ -6,9 +6,9 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using ConcurrentCollections;
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity.Concurrency;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -27,13 +27,13 @@ namespace Rias
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.5.1";
+        public const string Version = "3.5.2";
         public static readonly Stopwatch UpTime = new Stopwatch();
         
         public readonly ConcurrentHashSet<ulong> DownloadedMembers = new ConcurrentHashSet<ulong>();
         public readonly ConcurrentDictionary<ulong, DiscordMember> Members = new ConcurrentDictionary<ulong, DiscordMember>();
 
-        private readonly Credentials _credentials;
+        private readonly Credentials _credentials; 
         private readonly IServiceProvider _serviceProvider;
         
         public RiasBot()
