@@ -43,10 +43,13 @@ namespace Rias.Implementation
         public const string AdministrationYouAboveMe = "administration_you_above_me";
         public const string AdministrationUserAbove = "administration_user_above";
         public const string AdministrationUserKicked = "administration_user_kicked";
+        public const string AdministrationUserWasKicked = "administration_user_was_kicked";
         public const string AdministrationKickedFrom = "administration_kicked_from";
         public const string AdministrationUserBanned = "administration_user_banned";
+        public const string AdministrationUserWasBanned = "administration_user_was_banned";
         public const string AdministrationBannedFrom = "administration_banned_from";
         public const string AdministrationUserSoftBanned = "administration_user_soft_banned";
+        public const string AdministrationUserWasSoftBanned = "administration_user_was_soft_banned";
         public const string AdministrationPruneLimit = "administration_prune_limit";
         public const string AdministrationCannotMuteOwner = "administration_cannot_mute_owner";
         public const string AdministrationMuteTimeoutLowest = "administration_mute_timeout_lowest";
@@ -54,7 +57,9 @@ namespace Rias.Implementation
         public const string AdministrationUserAlreadyMuted = "administration_user_already_muted";
         public const string AdministrationUserNotMuted = "administration_user_not_muted";
         public const string AdministrationUserMuted = "administration_user_muted";
+        public const string AdministrationUserWasMuted = "administration_user_was_muted";
         public const string AdministrationUserUnmuted = "administration_user_unmuted";
+        public const string AdministrationUserWasUnmuted = "administration_user_was_unmuted";
         public const string AdministrationMuteRoleNotFound = "administration_mute_role_not_found";
         public const string AdministrationNewMuteRoleSet = "administration_new_mute_role_set";
         public const string AdministrationMuteRoleNotSet = "administration_mute_role_not_set";
@@ -126,7 +131,8 @@ namespace Rias.Implementation
         public static string AdministrationWarningUserTypeNoPermissionsPunishment(string userType) => $"administration_warning_{userType}_no_permissions_punishment";
         public const string AdministrationCannotWarnOwner = "administration_cannot_warn_owner";
         public const string AdministrationUserWarningsLimit = "administration_user_warnings_limit";
-        public const string AdministrationWarn = "administration_warn";
+        public const string AdministrationUserWarned = "administration_user_warned";
+        public const string AdministrationUserWasWarned = "administration_user_was_warned";
         public const string AdministrationWarningNumber = "administration_warning_number";
         public const string AdministrationWarningMute = "administration_warning_mute";
         public const string AdministrationWarningKick = "administration_warning_kick";

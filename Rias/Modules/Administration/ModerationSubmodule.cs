@@ -49,7 +49,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                await SendMessageAsync(member, Localization.AdministrationUserKicked, Localization.AdministrationKickedFrom, reason);
+                await SendMessageAsync(member, Localization.AdministrationUserKicked, Localization.AdministrationKickedFrom, Localization.AdministrationUserWasKicked, reason);
                 await member.RemoveAsync(reason);
             }
             
@@ -80,7 +80,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                await SendMessageAsync(member, Localization.AdministrationUserBanned, Localization.AdministrationBannedFrom, reason);
+                await SendMessageAsync(member, Localization.AdministrationUserBanned, Localization.AdministrationBannedFrom, Localization.AdministrationUserWasBanned, reason);
                 await member.BanAsync(reason: reason);
             }
             
@@ -111,7 +111,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                await SendMessageAsync(member, Localization.AdministrationUserSoftBanned, Localization.AdministrationKickedFrom, reason);
+                await SendMessageAsync(member, Localization.AdministrationUserSoftBanned, Localization.AdministrationKickedFrom, Localization.AdministrationUserWasSoftBanned, reason);
                 await member.BanAsync(7, reason);
                 await member.UnbanAsync();
             }
@@ -143,7 +143,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                await SendMessageAsync(member, Localization.AdministrationUserBanned, Localization.AdministrationBannedFrom, reason);
+                await SendMessageAsync(member, Localization.AdministrationUserBanned, Localization.AdministrationBannedFrom, Localization.AdministrationUserWasBanned, reason);
                 await member.BanAsync(7, reason);
             }
             
@@ -216,7 +216,7 @@ namespace Rias.Modules.Administration
                 }
             }
             
-            private async Task SendMessageAsync(DiscordMember member, string moderationType, string fromWhere, string? reason)
+            private async Task SendMessageAsync(DiscordMember member, string moderationType, string fromWhere, string confirmation, string? reason)
             {
                 var embed = new DiscordEmbedBuilder
                     {
@@ -241,7 +241,7 @@ namespace Rias.Modules.Administration
                 }
 
                 if (channel.Id != Context.Channel.Id)
-                    await Context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("✅"));
+                    await ReplyConfirmationAsync(confirmation, member.FullName(), channel.Mention);
 
                 await channel.SendMessageAsync(embed);
 

@@ -41,7 +41,8 @@ namespace Rias.Services
             DiscordMember moderator,
             DiscordMember member,
             string? reason,
-            TimeSpan? timeout = null)
+            TimeSpan? timeout = null,
+            bool sentByWarning = false)
         {
             var guild = member.Guild;
 
@@ -97,7 +98,11 @@ namespace Rias.Services
             {
                 var preconditions = currentMember.PermissionsIn(modLogChannel);
                 if (preconditions.HasPermission(Permissions.AccessChannels) && preconditions.HasPermission(Permissions.SendMessages))
+                {
+                    if (!sentByWarning)
+                        await channel.SendConfirmationMessageAsync(GetText(guild.Id, Localization.AdministrationUserWasMuted, member.FullName(), modLogChannel.Mention));
                     channel = modLogChannel;
+                }
             }
 
             await channel.SendMessageAsync(embed);
@@ -180,7 +185,11 @@ namespace Rias.Services
             {
                 var preconditionsModLog = currentMember.PermissionsIn(modLogChannel);
                 if (preconditionsModLog.HasPermission(Permissions.AccessChannels) && preconditionsModLog.HasPermission(Permissions.SendMessages))
+                {
+                    if (!context.SentByTimer && channel != null)
+                        await channel.SendConfirmationMessageAsync(GetText(context.Guild.Id, Localization.AdministrationUserWasUnmuted, context.Member.FullName(), modLogChannel.Mention));
                     channel = modLogChannel;
+                }
             }
 
             if (channel is null)

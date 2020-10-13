@@ -126,7 +126,7 @@ namespace Rias.Modules.Administration
                 var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.Yellow,
-                        Title = GetText(Localization.AdministrationWarn)
+                        Title = GetText(Localization.AdministrationUserWarned)
                     }.WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto))
                     .AddField(GetText(Localization.CommonUser), member.FullName(), true)
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
@@ -141,7 +141,10 @@ namespace Rias.Modules.Administration
                 {
                     var preconditions = Context.CurrentMember!.PermissionsIn(modLogChannel);
                     if (preconditions.HasPermission(Permissions.AccessChannels) && preconditions.HasPermission(Permissions.SendMessages))
+                    {
+                        await ReplyConfirmationAsync(Localization.AdministrationUserWasWarned, member.FullName(), channel.Mention);
                         channel = modLogChannel;
+                    }
                 }
 
                 await channel.SendMessageAsync(embed);
@@ -464,7 +467,7 @@ namespace Rias.Modules.Administration
                 switch (punishment)
                 {
                     case PunishmentMethod.Mute:
-                        await _muteService.MuteUserAsync(Context.Channel, Context.CurrentMember!, member, GetText(Localization.AdministrationWarningMute));
+                        await _muteService.MuteUserAsync(Context.Channel, Context.CurrentMember!, member, GetText(Localization.AdministrationWarningMute), sentByWarning: true);
                         break;
                     case PunishmentMethod.Kick:
                         await SendMessageAsync(member, guildDb, Localization.AdministrationUserKicked, Localization.AdministrationKickedFrom, GetText(Localization.AdministrationWarningKick));
