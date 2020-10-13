@@ -354,7 +354,7 @@ namespace Rias.Services
             if (!permissions.HasPermission(Permissions.AddReactions))
                 permissions |= Permissions.AddReactions;
             
-            if (permissions > 0)
+            if (permissions > roleOverwrites.Denied)
                 await channel.AddOverwriteAsync(role, deny: permissions);
         }
         
