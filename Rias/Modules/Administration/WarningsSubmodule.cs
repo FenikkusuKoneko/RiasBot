@@ -265,7 +265,7 @@ namespace Rias.Modules.Administration
 
                 DbContext.Remove(warning);
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.AdministrationWarningCleared, member);
+                await ReplyConfirmationAsync(Localization.AdministrationWarningCleared, member.FullName());
             }
 
             [Command("clearwarning")]

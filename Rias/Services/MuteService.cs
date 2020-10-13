@@ -156,7 +156,7 @@ namespace Rias.Services
             if (context.Member.Roles.All(r => r.Id != role.Id))
             {
                 if (!context.SentByTimer)
-                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationUserNotMuted, context.Member);
+                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationUserNotMuted, context.Member.FullName());
                 await RemoveMuteAsync(context);
                 return;
             }
