@@ -48,11 +48,11 @@ namespace Rias.Modules.Gambling
             var multiplier = GamblingService.Multipliers[position];
 
             var win = (int)(bet * multiplier) - bet;
-            await Service.AddUserCurrencyAsync(Context.User.Id, win);
+            currency = await Service.AddUserCurrencyAsync(Context.User.Id, win);
 
             var winString = win >= 0
-                ? GetText(Localization.GamblingYouWon, win, Credentials.Currency)
-                : GetText(Localization.GamblingYouLost, Math.Abs(win), Credentials.Currency);
+                ? GetText(Localization.GamblingYouWon, win, Credentials.Currency, currency)
+                : GetText(Localization.GamblingYouLost, Math.Abs(win), Credentials.Currency, currency);
             
             var embed = new DiscordEmbedBuilder
             {

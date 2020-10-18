@@ -46,40 +46,18 @@ namespace Rias.Modules.Gambling
                     return;
                 }
 
-                if (Service.TryGetBlackjack(Context.User.Id, out _))
-                {
-                    await ReplyErrorAsync(Localization.GamblingBlackjackSession, Context.Prefix);
-                    return;
-                }
-                
-                await Service.CreateBlackjackAsync((DiscordMember)Context.User, Context.Channel, bet);
+                await Service.PlayBlackjackAsync((DiscordMember)Context.User, Context.Channel, bet, Context.Prefix);
             }
 
             [Command("resume")]
             [Context(ContextType.Guild)]
-            public async Task BlackjackResumeAsync()
-            {
-                if (!Service.TryGetBlackjack(Context.User.Id, out var blackjack))
-                {
-                    await ReplyErrorAsync(Localization.GamblingBlackjackNoSession);
-                    return;
-                }
-
-                await blackjack!.ResendMessageAsync(Context.Channel);
-            }
+            public Task BlackjackResumeAsync()
+                => Service.ResumeBlackjackAsync((DiscordMember)Context.User, Context.Channel);
 
             [Command("stop")]
             [Context(ContextType.Guild)]
-            public async Task BlackjackStopAsync()
-            {
-                if (!Service.TryRemoveBlackjack(Context.User.Id, out _))
-                {
-                    await ReplyErrorAsync(Localization.GamblingBlackjackNoSession);
-                    return;
-                }
-                
-                await ReplyConfirmationAsync(Localization.GamblingBlackjackStopped);
-            }
+            public Task BlackjackStopAsync()
+                => Service.StopBlackjackAsync((DiscordMember)Context.User, Context.Channel);
         }
     }
 }

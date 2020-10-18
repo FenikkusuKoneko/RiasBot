@@ -1,122 +1,154 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
+using Rias.Attributes;
+using Rias.Implementation;
 using Rias.Services.Commons;
-using Serilog;
 
 namespace Rias.Services
 {
+    [AutoStart]
     public class BlackjackService : RiasService
     {
-        public static readonly DiscordEmoji CardEmoji = DiscordEmoji.FromUnicode("🎴");
-        public static readonly DiscordEmoji HandEmoji = DiscordEmoji.FromUnicode("🤚");
-        public static readonly DiscordEmoji SplitEmoji = DiscordEmoji.FromUnicode("↔");
+        public readonly DiscordEmoji CardEmoji = DiscordEmoji.FromUnicode("🎴");
+        public readonly DiscordEmoji HandEmoji = DiscordEmoji.FromUnicode("🤚");
+        public readonly DiscordEmoji SplitEmoji = DiscordEmoji.FromUnicode("↔");
         
         private readonly GamblingService _gamblingService;
-        
-        private readonly IEnumerable<(int, string)> _cards;
-        private readonly string[] _suits = { "♠", "♥", "♣", "♦" };
-        private readonly string[] _highCards = { "A", "J", "Q", "K" };
-        
         private readonly ConcurrentDictionary<ulong, BlackjackGame> _sessions = new ConcurrentDictionary<ulong, BlackjackGame>();
 
-        public BlackjackService(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        private string? _spadesEmoji;
+        private string? _heartsEmoji;
+        private string? _clubsEmoji;
+        private string? _diamondEmoji;
+
+        public BlackjackService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _gamblingService = serviceProvider.GetRequiredService<GamblingService>();
-            _cards = InitializeCards();
+
             RiasBot.Client.MessageReactionAdded += MessageReactionAddedAsync;
             RiasBot.Client.MessageReactionRemoved += MessageReactionRemovedAsync;
-        }
-
-        public bool TryGetBlackjack(ulong userId, out BlackjackGame? blackjack)
-            => _sessions.TryGetValue(userId, out blackjack);
-        
-        public async Task CreateBlackjackAsync(DiscordMember member, DiscordChannel channel, int bet)
-        {
-            var blackjack = new BlackjackGame(this, member, bet, _suits, _cards);
-            await blackjack.CreateAsync(channel);
-
-            await blackjack.Message!.CreateReactionAsync(CardEmoji);
-            await blackjack.Message!.CreateReactionAsync(HandEmoji);
-            if (blackjack.PlayerCanSplit)
-                await blackjack.Message!.CreateReactionAsync(SplitEmoji);
-
-            await TakeUserCurrencyAsync(member.Id, bet);
-            _sessions[member.Id] = blackjack;
-            
-            Log.Debug("Blackjack: Session created");
-        }
-        
-        public bool TryRemoveBlackjack(ulong userId, out BlackjackGame? blackjack)
-            => _sessions.TryRemove(userId, out blackjack);
-
-        public Task<int> GetUserCurrencyAsync(ulong userId)
-            => _gamblingService.GetUserCurrencyAsync(userId);
-
-        public Task AddUserCurrencyAsync(ulong userId, int currency)
-            => _gamblingService.AddUserCurrencyAsync(userId, currency);
-        
-        public Task TakeUserCurrencyAsync(ulong userId, int currency)
-            => _gamblingService.RemoveUserCurrencyAsync(userId, currency);
-        
-        private IEnumerable<(int Value, string Card)> InitializeCards()
-        {
-            for (var i = 0; i < 14; i++)
+            RiasBot.Client.GuildDownloadCompleted += (client, args) =>
             {
-                var cardNumber = i + 1;
-                switch (i)
+                foreach (var (_, guild) in args.Guilds)
                 {
-                    case 0:
-                    case 11:
-                    case 12:
-                    case 13:
-                        yield return (cardNumber, _highCards[i % 10]);
-                        continue;
-                    case 10:
-                        continue;
-                    default:
-                        yield return (cardNumber, cardNumber.ToString());
-                        break;
+                    if (_spadesEmoji is null)
+                        if (guild.Emojis.TryGetValue(745275268582735934, out var emoji))
+                            _spadesEmoji = emoji.ToString();
+                    
+                    if (_heartsEmoji is null)
+                        if (guild.Emojis.TryGetValue(745274996787773530, out var emoji))
+                            _heartsEmoji = emoji.ToString();
+                    
+                    if (_clubsEmoji is null)
+                        if (guild.Emojis.TryGetValue(745274996947157112, out var emoji))
+                            _clubsEmoji = emoji.ToString();
+                    
+                    if (_diamondEmoji is null)
+                        if (guild.Emojis.TryGetValue(745274996699561992, out var emoji))
+                            _diamondEmoji = emoji.ToString();
                 }
+
+                return Task.CompletedTask;
+            };
+        }
+        
+        public string SpadesEmoji => _spadesEmoji ?? "♠️";
+        
+        public string HeartsEmoji => _heartsEmoji ?? "♥️";
+        
+        public string ClubsEmoji => _clubsEmoji ?? "♣️";
+        
+        public string DiamondsEmoji => _diamondEmoji ?? "♦️";
+
+        public async Task PlayBlackjackAsync(DiscordMember member, DiscordChannel channel, int bet, string prefix)
+        {
+            if (!_sessions.TryGetValue(member.Id, out var blackjack))
+            {
+                blackjack = new BlackjackGame(this, member);
+                _sessions[member.Id] = blackjack;
+            }
+
+            if (!blackjack.IsRunning)
+                await blackjack.CreateGameAsync(channel, bet);
+            else
+                await ReplyErrorAsync(channel, channel.GuildId, Localization.GamblingBlackjackSession, prefix);
+        }
+
+        public async Task ResumeBlackjackAsync(DiscordMember member, DiscordChannel channel)
+        {
+            if (!_sessions.TryGetValue(member.Id, out var blackjack) || !blackjack.IsRunning)
+                await ReplyErrorAsync(channel, channel.GuildId, Localization.GamblingBlackjackNoSession);
+            else
+                await blackjack.ResumeGameAsync(channel);
+        }
+
+        public async Task StopBlackjackAsync(DiscordMember member, DiscordChannel channel)
+        {
+            if (!_sessions.TryGetValue(member.Id, out var blackjack) || !blackjack.IsRunning)
+                await ReplyErrorAsync(channel, channel.GuildId, Localization.GamblingBlackjackNoSession);
+            else
+            {
+                blackjack.StopGame();
+                await ReplyConfirmationAsync(channel, channel.GuildId, Localization.GamblingBlackjackStopped);
             }
         }
 
-        private async Task MessageReactionAddedAsync(DiscordClient client, MessageReactionAddEventArgs args)
+        /// <summary>
+        /// Gets the user's currency.
+        /// </summary>
+        public Task<int> GetUserCurrencyAsync(ulong userId)
+            => _gamblingService.GetUserCurrencyAsync(userId);
+
+        /// <summary>
+        /// Adds currency to the user and returns the new currency.
+        /// </summary>
+        public Task<int> AddUserCurrencyAsync(ulong userId, int currency)
+            => _gamblingService.AddUserCurrencyAsync(userId, currency);
+
+        /// <summary>
+        /// Remove currency from the user and returns the new currency.
+        /// </summary>
+        public Task<int> RemoveUserCurrencyAsync(ulong userId, int currency)
+            => _gamblingService.RemoveUserCurrencyAsync(userId, currency);
+
+        public void RemoveSession(DiscordMember member)
+            => _sessions.TryRemove(member.Id, out _);
+
+        private Task MessageReactionAddedAsync(DiscordClient client, MessageReactionAddEventArgs args)
         {
             if (!_sessions.TryGetValue(args.User.Id, out var blackjack))
-                return;
-            if (blackjack.Message!.Id != args.Message.Id)
-                return;
+                return Task.CompletedTask;
 
-            await ProcessGameAsync(blackjack, args.Emoji);
-        }
+            if (args.Message.Id != blackjack.Message?.Id)
+                return Task.CompletedTask;
 
-        private async Task MessageReactionRemovedAsync(DiscordClient client, MessageReactionRemoveEventArgs args)
-        {
-            if (!_sessions.TryGetValue(args.User.Id, out var blackjack))
-                return;
-            if (blackjack.Message!.Id != args.Message.Id)
-                return;
-
-            await ProcessGameAsync(blackjack, args.Emoji);
+            return RunTaskAsync(ProcessBlackjackAsync(blackjack, args.Emoji));
         }
         
-        private async Task ProcessGameAsync(BlackjackGame blackjack, DiscordEmoji emoji)
+        private Task MessageReactionRemovedAsync(DiscordClient client, MessageReactionRemoveEventArgs args)
+        {
+            if (!_sessions.TryGetValue(args.User.Id, out var blackjack))
+                return Task.CompletedTask;
+
+            if (args.Message.Id != blackjack.Message?.Id)
+                return Task.CompletedTask;
+            
+            return RunTaskAsync(ProcessBlackjackAsync(blackjack, args.Emoji));
+        }
+
+        private async Task ProcessBlackjackAsync(BlackjackGame blackjack, DiscordEmoji emoji)
         {
             if (emoji.Equals(CardEmoji))
-                await RunTaskAsync(blackjack.HitAsync);
-        
-            if (emoji.Equals(HandEmoji))
-                await RunTaskAsync(blackjack.StandAsync);
-            
-            if (emoji.Equals(SplitEmoji) && blackjack.PlayerCanSplit)
-                await RunTaskAsync(blackjack.SplitAsync);
+                await blackjack.HitAsync();
+            else if (emoji.Equals(HandEmoji))
+                await blackjack.StandAsync();
+            else if (emoji.Equals(SplitEmoji))
+                await blackjack.SplitAsync();
         }
     }
 }

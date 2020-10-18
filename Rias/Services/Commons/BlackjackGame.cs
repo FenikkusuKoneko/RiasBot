@@ -1,329 +1,433 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Rias.Extensions;
 using Rias.Implementation;
+using Serilog;
 
 namespace Rias.Services.Commons
 {
     public class BlackjackGame
-    {
-        private readonly DiscordMember _member;
-
+    { 
         private readonly BlackjackService _service;
-        private readonly DiscordEmbedBuilder _embed;
-
-        private readonly Queue<(int, string, string)> _deck;
-        private readonly string _arrowIndex = "➡";
-        private readonly ulong _guildId;
-
-        private readonly BlackjackHand _playerFirstHand;
-        private readonly BlackjackHand _houseHand;
-        private BlackjackHand? _playerSecondHand;
-        private DiscordMessage? _message;
-
-        private bool _playerCanSplit;
+        private readonly DiscordMember _member;
+        private readonly Queue<(int Value, string Suit)> _deck = new Queue<(int Value, string Suit)>();
+        
+        private DiscordEmbedBuilder? _embed;
+        private DiscordColor _embedColor = new DiscordColor(255, 255, 254);
         private int _bet;
+        private int _userCurrency;
+        
+        private Timer _timer;
 
-        public BlackjackGame(BlackjackService service, DiscordMember member, int bet, IEnumerable<string> suits, IEnumerable<(int Value, string Card)> cards)
+        private BlackjackHand? _playerHand;
+        private BlackjackHand? _playerSecondHand;
+        private BlackjackHand? _houseHand;
+
+        public BlackjackGame(BlackjackService service, DiscordMember member)
         {
-            _member = member;
             _service = service;
-            _embed = new DiscordEmbedBuilder();
-            _deck = new Queue<(int, string, string)>();
-            _guildId = member.Guild.Id;
-            _bet = bet;
-
-            var suitsArray = suits.ToArray();
-            var cardsArray = cards.ToArray();
-            
-            var random = new Random();
-            
-            for (var i = 0; i < 4; i++)
-            {
-                var randomDeck = new Queue<(int, string, string)>((from suit in suitsArray from card in cardsArray select (card.Value, card.Card, suit))
-                    .OrderBy(_ => random.Next()));
-                foreach (var card in randomDeck)
-                {
-                    _deck.Enqueue(card);
-                }
-            }
-            
-            _playerFirstHand = new BlackjackHand().AddCard(_deck.Dequeue()).AddCard(_deck.Dequeue());
-            _houseHand = new BlackjackHand().AddCard(_deck.Dequeue()).AddCard(_deck.Dequeue());
-        }
-
-        public DiscordMessage? Message => _message;
-
-        public bool PlayerCanSplit => _playerCanSplit;
-        
-        public async Task CreateAsync(DiscordChannel channel)
-        {
-            _embed.WithColor(RiasUtilities.Yellow)
-                .WithTitle($"{_service.GetText(_guildId, Localization.GamblingBlackjack)} | {_service.GetText(_guildId, Localization.GamblingBet)}: {_bet} {_service.Credentials.Currency}")
-                .AddField($"{_member.FullName()} ({_playerFirstHand.Score})", _playerFirstHand.ShowCards());
-
-            var playerCards = _playerFirstHand.Cards;
-            if (Math.Min(playerCards[0].Value, 10) == Math.Min(playerCards[1].Value, 10)
-                && await _service.GetUserCurrencyAsync(_member.Id) >= _bet)
-                _playerCanSplit = true;
-
-            var houseFirstCard = _houseHand.Cards[0].Value;
-            if (houseFirstCard > 10)
-                houseFirstCard = 10;
-            if (houseFirstCard == 1)
-                houseFirstCard = 11;
-            
-            _embed.AddField($"{_member.Guild.CurrentMember.FullName()} ({houseFirstCard})", _houseHand.ShowFirstCard("🎴"));
-
-            _message = await channel.SendMessageAsync(_embed);
+            _member = member;
+            _timer = new Timer(_ => TerminateSession(), null, TimeSpan.FromHours(24), TimeSpan.Zero);
         }
         
-        public async Task ResendMessageAsync(DiscordChannel channel)
-        {
-            _message = await channel.SendMessageAsync(_embed);
-            await Message!.CreateReactionAsync(BlackjackService.CardEmoji);
-            await Message!.CreateReactionAsync(BlackjackService.HandEmoji);
-            if (PlayerCanSplit)
-                await Message!.CreateReactionAsync(BlackjackService.SplitEmoji);
-        }
+        public DiscordMessage? Message { get; private set; }
         
-        public async Task HitAsync()
-        {
-            var hand = PlayerTurn();
-            switch (hand.State)
-            {
-                case BlackjackHand.HandState.Playing:
-                    if (PlayerCanSplit)
-                    {
-                        _playerCanSplit = false;
-                        await Message!.DeleteReactionsEmojiAsync(BlackjackService.SplitEmoji);
-                    }
-                    
-                    await Message!.ModifyAsync(embed: EditEmbed().Build());
-                    break;
-                case BlackjackHand.HandState.Blackjack:
-                case BlackjackHand.HandState.Bust:
-                    if (_playerSecondHand is null)
-                        await GameOverAsync();
-                    if (hand != _playerSecondHand)
-                        await Message!.ModifyAsync(embed: EditEmbed().Build());
-                    else
-                        await GameOverAsync();
-                    return;
-            }
-        }
+        public bool IsRunning { get; private set; }
         
-        public async Task StandAsync()
-        {
-            var currentHand = GetCurrentHand();
-            GetCurrentHand().State = BlackjackHand.HandState.Standing;
-            if (_playerSecondHand is null)
-                await GameOverAsync();
-            if (currentHand != _playerSecondHand)
-                await Message!.ModifyAsync(embed: EditEmbed().Build()); 
-            else
-                await GameOverAsync();
-        }
+        private bool IsEnded { get; set; }
         
-        public async Task SplitAsync()
-        {
-            _playerCanSplit = false;
-            await Message!.DeleteReactionsEmojiAsync(BlackjackService.SplitEmoji);
-            
-            var card = _playerFirstHand.RemoveLastCard();
-            _playerFirstHand.AddCard(_deck.Dequeue());
-            _playerSecondHand = new BlackjackHand().AddCard(card).AddCard(_deck.Dequeue());
-            
-            await _service.TakeUserCurrencyAsync(_member.Id, _bet);
-            _bet += _bet;
-
-            EditEmbed().Title = $"{_service.GetText(_guildId, Localization.GamblingBlackjack)} | {_service.GetText(_guildId, Localization.GamblingBet)}: {_bet} {_service.Credentials.Currency}";
-            await Message!.ModifyAsync(embed: EditEmbed().Build());
-        }
-        
-        private BlackjackHand GetCurrentHand()
-            => _playerSecondHand is null || _playerFirstHand.State == BlackjackHand.HandState.Playing ? _playerFirstHand : _playerSecondHand;
-        
-        private BlackjackHand PlayerTurn()
-        {
-            var currentHand = GetCurrentHand();
-            currentHand.AddCard(_deck.Dequeue());
-            if (currentHand.Score == 21)
-                currentHand.State = BlackjackHand.HandState.Blackjack;
-            if (currentHand.Score > 21)
-                currentHand.State = BlackjackHand.HandState.Bust;
-            return currentHand;
-        }
-        
-        private void DealerTurn()
-        {
-            if (_houseHand.Score < 17)
-                _houseHand.AddCard(_deck.Dequeue(), true);
-            else
-                _houseHand.State = _houseHand.Score < 21 ? BlackjackHand.HandState.Standing : BlackjackHand.HandState.Bust;
-        }
-        
-        private DiscordEmbedBuilder EditEmbed(bool showHouseCards = false)
-        {
-            var index = _playerSecondHand != null && _playerFirstHand.State == BlackjackHand.HandState.Playing ? _arrowIndex : null;
-            var playerField = _embed.Fields[0];
-            playerField.Name = $"{index}{_member.FullName()} ({_playerFirstHand.Score})";
-            playerField.Value = _playerFirstHand.ShowCards();
-
-            if (_playerSecondHand != null)
-            {
-                index = _playerFirstHand.State != BlackjackHand.HandState.Playing && _playerSecondHand.State == BlackjackHand.HandState.Playing ? _arrowIndex : null;
-
-                if (_embed.Fields.Count == 2)
-                {
-                    var dealerField = _embed.Fields[1];
-                    _embed.AddField($"{index}{_member.FullName()} ({_playerSecondHand.Score})", _playerSecondHand.ShowCards());
-                    _embed.AddField(dealerField.Name, dealerField.Value);
-                }
-            }
-
-            if (showHouseCards)
-            {
-                var dealerField = _embed.Fields[^1];
-                dealerField.Name = $"{_member.Guild.CurrentMember.FullName()} ({_houseHand.Score})";
-                dealerField.Value = _houseHand.ShowCards();
-            }
-
-            return _embed;
-        }
-        
-        private async Task GameOverAsync(bool busted = false)
-        {
-            await Message!.DeleteAllReactionsAsync();
-            if (!busted)
-            {
-                while (_houseHand.State == BlackjackHand.HandState.Playing)
-                    DealerTurn();
-            }
-
-            var embed = EditEmbed(!busted);
-            var win = AnalyzeWinning();
-
-            embed.Color = win > 0 ? RiasUtilities.Green : RiasUtilities.Red;
-            embed.Description = win == 0
-                ? _service.GetText(_guildId, Localization.GamblingBlackjackDraw, _service.Credentials.Currency)
-                : _service.GetText(_guildId, win > 0 ? Localization.GamblingYouWon : Localization.GamblingYouLost, Math.Abs(win), _service.Credentials.Currency);
-
-            await Message.ModifyAsync(embed: embed.Build());
-            
-            if (win > 0)
-                await _service.AddUserCurrencyAsync(_member.Id, win + _bet);
-            
-            _service.TryRemoveBlackjack(_member.Id, out _);
-        }
-        
-        private int AnalyzeWinning()
-        {
-            var win = 0;
-            var betPerHand = _playerSecondHand is null ? _bet : _bet / 2;
-            
-            CalculateHandWin(_playerFirstHand);
-            
-            if (_playerSecondHand != null)
-                CalculateHandWin(_playerSecondHand);
-
-            void CalculateHandWin(BlackjackHand hand)
-            {
-                if (hand.Score > 21)
-                    win -= betPerHand;
-                else if (hand.Score > _houseHand.Score || _houseHand.Score > 21)
-                    win += betPerHand;
-                else
-                    win -= betPerHand;
-            }
-            
-            return win;
-        }
-    }
-    
-    public class BlackjackHand
-    {
-        public readonly List<(int Value, string Card, string Suit)> Cards = new List<(int, string, string)>();
-        private readonly StringBuilder _handString = new StringBuilder();
-        
-        private bool _softHand;
-
-        public enum HandState
+        private enum HandState
         {
             Playing,
             Standing,
             Bust,
             Blackjack
         }
-        
-        public int Score { get; private set; }
-        
-        public HandState State { get; set; }
-        
-        public BlackjackHand AddCard((int Value, string Card, string Suit) card, bool ignoreSoftHand = false)
+
+        private enum WinningState
         {
-            Cards.Add(card);
-            _handString.Append($"{card.Card}{card.Suit}");
-
-            var cardValue = card.Value;
-            if (cardValue != 1)
-            {
-                Score += Math.Min(cardValue, 10);
-                return this;
-            }
+            Win,
+            Lose,
+            Push,
+            Blackjack
+        }
+        
+        public async Task CreateGameAsync(DiscordChannel channel, int bet)
+        {
+            ShuffleDeck();
             
-            if (!_softHand && Score + 11 <= 21)
-            {
-                Score += 11;
-                _softHand = true;
-                return this;
-            }
+            _embedColor = DiscordColor.White;
+            _bet = bet;
+            IsRunning = true;
+            IsEnded = false;
+            _playerSecondHand = null;
 
-            if (_softHand && !ignoreSoftHand)
-            {
-                // take 10 (A(11) - 1), add A(1)
-                Score -= 9;
-                _softHand = false;
-                return this;
-            }
+            _playerHand = new BlackjackHand();
+            _playerHand.Cards.Add(_deck.Dequeue());
+            _playerHand.Cards.Add(_deck.Dequeue());
+            _playerHand.Process();
 
-            Score += 1;
-            return this;
+            _houseHand = new BlackjackHand();
+            _houseHand.Cards.Add(_deck.Dequeue());
+            _houseHand.Cards.Add(_deck.Dequeue());
+            _houseHand.Process(true);
+
+            _userCurrency = await _service.RemoveUserCurrencyAsync(_member.Id, bet);
+            _embed = new DiscordEmbedBuilder
+                {
+                    Color = _embedColor,
+                    Title = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitleCurrency, _bet, _service.Credentials.Currency, _userCurrency),
+                    Description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackCards, _deck.Count)
+                }.AddField($"{_member.Guild.CurrentMember.FullName()} ({_houseHand!.Score})", _houseHand!.ShowCards(true))
+                .AddField($"{_member.FullName()} ({_playerHand!.Score})", _playerHand!.ShowCards());
+
+            Message = await channel.SendMessageAsync(embed: _embed);
+
+            await Message!.CreateReactionAsync(_service.CardEmoji);
+            await Message!.CreateReactionAsync(_service.HandEmoji);
+            
+            var firstCardValue = _playerHand!.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[0].Value, 10);
+            var secondCardValue = _playerHand!.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[1].Value, 10);
+            
+            if (firstCardValue == secondCardValue && _userCurrency >= _bet)
+                await Message!.CreateReactionAsync(_service.SplitEmoji);
         }
 
-        public (int Value, string Card, string Suit) RemoveLastCard()
+        public async Task ResumeGameAsync(DiscordChannel channel)
         {
-            var card = Cards[^1];
-            Cards.RemoveAt(Cards.Count - 1);
-            
-            var cardValue = card.Value;
-            Score -= Math.Min(cardValue, 10);
+            Message = await channel.SendMessageAsync(embed: _embed);
+            await Message!.CreateReactionAsync(_service.CardEmoji);
+            await Message!.CreateReactionAsync(_service.HandEmoji);
 
-            if (Cards.Count == 1 && Cards[0].Value == 1)
-                Score += 10;
+            var firstCardValue = _playerHand!.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[0].Value, 10);
+            var secondCardValue = _playerHand!.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[1].Value, 10);
 
-            _handString.Remove(_handString.Length - 2, 2);
-            return card;
+            if (_playerSecondHand is null && firstCardValue == secondCardValue && _userCurrency >= _bet)
+                await Message!.CreateReactionAsync(_service.SplitEmoji);
         }
 
-        public string ShowCards()
-            => _handString.ToString();
-
-        public string ShowFirstCard(string value)
+        public Task HitAsync()
         {
-            var sb = new StringBuilder();
-            sb.Append(Cards[0].Card).Append(Cards[0].Suit);
+            if (_playerHand!.HandState == HandState.Playing)
+                _playerHand.Cards.Add(_deck.Dequeue());
+            else if (_playerSecondHand is not null && _playerSecondHand.HandState == HandState.Playing)
+                _playerSecondHand.Cards.Add(_deck.Dequeue());
+            
+            return ProcessGameAsync();
+        }
+        
+        public async Task StandAsync()
+        {
+            if (_playerHand!.HandState == HandState.Playing)
+                _playerHand.Stand();
+            else if (_playerSecondHand is not null && _playerSecondHand.HandState == HandState.Playing)
+                _playerSecondHand.Stand();
 
-            for (var i = 1; i < Cards.Count; i++)
+            await ProcessGameAsync();
+        }
+
+        public async Task SplitAsync()
+        {
+            if (_playerSecondHand is not null)
+                return;
+            
+            var firstCardValue = _playerHand!.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[0].Value, 10);
+            var secondCardValue = _playerHand!.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[1].Value, 10);
+
+            if (firstCardValue != secondCardValue || _userCurrency < _bet)
+                return;
+
+            _userCurrency = await _service.RemoveUserCurrencyAsync(_member.Id, _bet);
+            _bet *= 2;
+            _embed!.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitleCurrency, _bet, _service.Credentials.Currency, _userCurrency));
+            
+            _playerSecondHand = new BlackjackHand();
+            _playerSecondHand.Cards.Add(_playerHand.Cards[1]);
+            _playerHand.Cards[1] = _deck.Dequeue();
+            _playerSecondHand.Cards.Add(_deck.Dequeue());
+
+            // TODO: check for messages permission when deleting the reactions
+            try
             {
-                sb.Append(value);
+                await Message!.DeleteReactionsEmojiAsync(_service.SplitEmoji);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error in BlackjackGame");
+            }
+            
+            await ProcessGameAsync();
+        }
+
+        public void StopGame()
+        {
+            IsRunning = false;
+            if (IsEnded)
+                TerminateSession();
+            else
+                IsRunning = false;
+        }
+
+        private async Task ProcessGameAsync()
+        {
+            var gameEnded = false;
+
+            if (_playerHand!.HandState == HandState.Playing)
+                _playerHand!.Process();
+            if (_playerSecondHand is not null && _playerSecondHand.HandState == HandState.Playing)
+                _playerSecondHand.Process();
+
+            string? description = null;
+
+            if (_playerHand.HandState != HandState.Playing && (_playerSecondHand is null || _playerSecondHand.HandState != HandState.Playing))
+            {
+                gameEnded = true;
+                var winning = _bet;
+                var betPerHand = _playerSecondHand is null ? _bet : _bet / 2;
+
+                if ((_playerHand.HandState != HandState.Bust && _playerSecondHand is null)
+                    || (_playerSecondHand is not null && _playerSecondHand.HandState != HandState.Bust))
+                {
+                    _houseHand!.Process();
+                    while (_houseHand.HandState == HandState.Playing)
+                    {
+                        if (_houseHand.Score < 17 || _houseHand.Score == 17 && _houseHand.Cards.Count(x => x.Value == 1) == 1)
+                            _houseHand.Cards.Add(_deck.Dequeue());
+                        else if (_houseHand.HandState == HandState.Playing)
+                            _houseHand.Stand();
+                    
+                        _houseHand.Process();
+                    }
+                    
+                    _embed!.Fields[0].Name = $"{_member.Guild.CurrentMember.FullName()} ({_houseHand!.Score})";
+                    _embed.Fields[0].Value = _houseHand!.ShowCards();
+                }
+
+                _playerHand.ProcessWinning(_houseHand!);
+                _playerSecondHand?.ProcessWinning(_houseHand!);
+
+                switch (_playerHand.WinningState)
+                {
+                    case WinningState.Win:
+                        winning += betPerHand;
+                        break;
+                    case WinningState.Blackjack:
+                        winning += betPerHand * 3 / 2; // the blackjack payoff is 3/2
+                        if (_playerSecondHand is null)
+                        {
+                            _embedColor = RiasUtilities.Green;
+                            description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackBlackjack, winning, _service.Credentials.Currency, _userCurrency + winning);
+                        }
+                        break;
+                    case WinningState.Push:
+                        if (_playerSecondHand is null)
+                        {
+                            _embedColor = DiscordColor.Yellow;
+                            description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackPush, _userCurrency + winning, _service.Credentials.Currency);
+                        }
+                        break;
+                    case WinningState.Lose:
+                        winning -= betPerHand;
+                        break;
+                }
+
+                if (_playerSecondHand is not null)
+                {
+                    switch (_playerSecondHand.WinningState)
+                    {
+                        case WinningState.Win:
+                            winning += betPerHand;
+                            break;
+                        case WinningState.Blackjack:
+                            winning += betPerHand * 3 / 2;
+                            break;
+                        case WinningState.Lose:
+                            winning -= betPerHand;
+                            break;
+                    }
+                }
+                
+                if (winning > 0)
+                    _userCurrency = await _service.AddUserCurrencyAsync(_member.Id, winning);
+
+                if (string.IsNullOrEmpty(description))
+                {
+                    winning -= _bet;
+                    if (winning > 0)
+                    {
+                        _embedColor = RiasUtilities.Green;
+                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouWon, winning, _service.Credentials.Currency, _userCurrency);
+                    }
+                    else if (winning < 0)
+                    {
+                        _embedColor = RiasUtilities.Red;
+                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouLost, Math.Abs(winning), _service.Credentials.Currency, _userCurrency);
+                    }
+                    else if (_playerSecondHand != null)
+                    {
+                        _embedColor = RiasUtilities.Yellow;
+                        description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTie, _userCurrency, _service.Credentials.Currency);
+                    }
+                }
             }
 
-            return sb.ToString();
+            var firstHandFieldName = $"{_member.FullName()} ({_playerHand!.Score})";
+            if (_playerHand.HandState == HandState.Playing && _playerSecondHand is not null)
+                firstHandFieldName = "▶ " + firstHandFieldName;
+            
+            _embed!.Fields[1].Name = firstHandFieldName;
+            _embed.Fields[1].Value = _playerHand.ShowCards();
+
+            if (_playerSecondHand is not null)
+            {
+                if (_embed.Fields.Count == 2)
+                    _embed.AddField("\u200B", "\u200B");
+
+                var secondHandFieldName = $"{_member.FullName()} ({_playerSecondHand.Score})";
+                if (_playerHand.HandState != HandState.Playing && _playerSecondHand.HandState == HandState.Playing)
+                    secondHandFieldName = "▶ " + secondHandFieldName;
+                
+                _embed.Fields[2].Name = secondHandFieldName;
+                _embed.Fields[2].Value = _playerSecondHand.ShowCards();
+            }
+
+            if (gameEnded)
+            {
+                _embed.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitle, _bet, _service.Credentials.Currency));
+                _embed.WithDescription(description);
+                StopGame();
+                
+                // TODO: check for messages permission when deleting the reactions
+                try
+                {
+                    await Message!.DeleteAllReactionsAsync();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error in BlackjackGame");
+                }
+            }
+            else
+            {
+                _embed.WithDescription(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackCards, _deck.Count));
+            }
+
+            _embed.WithColor(_embedColor);
+            await Message!.ModifyAsync(embed: _embed!.Build());
+        }
+
+        private void ShuffleDeck()
+        {
+            if (_deck.Count > 104)
+                return;
+            
+            _deck.Clear();
+            var random = new Random();
+            var suitsArray = new[] {_service.SpadesEmoji, _service.HeartsEmoji, _service.ClubsEmoji, _service.DiamondsEmoji};
+            
+            for (var i = 0; i < 4; i++)
+            {
+                var randomDeck = new Queue<(int, string)>((from suit in suitsArray from card in InitializeDeck() select (card, suit))
+                    .OrderBy(_ => random.Next()));
+                
+                foreach (var card in randomDeck)
+                    _deck.Enqueue(card);
+            }
+        }
+        
+        private IEnumerable<int> InitializeDeck()
+        {
+            for (var i = 1; i <= 14; i++)
+                if (i != 11)
+                    yield return i;
+        }
+
+        private void TerminateSession()
+        {
+            if (IsRunning)
+            {
+                IsEnded = true;
+                return;
+            }
+            
+            _service.RemoveSession(_member);
+        }
+
+        private class BlackjackHand
+        {
+            public readonly List<(int Value, string Suit)> Cards = new List<(int Value, string Suit)>();
+            
+            public HandState HandState { get; private set; }
+            public WinningState WinningState { get; private set; }
+            
+            public int Score { get; private set; }
+
+            public void Process(bool isHouse = false)
+            {
+                var score = 0;
+                if (!isHouse)
+                {
+                    foreach (var (value, _) in Cards.Where(x => x.Value != 1))
+                        score += Math.Min(value, 10);
+
+                    foreach (var (value, _) in Cards.Where(x => x.Value == 1))
+                        score += score + value > 21 ? 1 : 11;
+                }
+                else
+                {
+                    score = Cards[0].Value == 1 ? 11 : Math.Min(Cards[0].Value, 10);
+                }
+                
+                Score = score;
+                
+                if (score == 21)
+                    HandState = HandState.Blackjack;
+                else if (score > 21)
+                    HandState = HandState.Bust;
+            }
+
+            public void ProcessWinning(BlackjackHand houseHand)
+            {
+                switch (HandState)
+                {
+                    case HandState.Standing when houseHand.HandState == HandState.Bust || Score > houseHand.Score:
+                        WinningState = WinningState.Win;
+                        break;
+                    case HandState.Standing when houseHand.HandState == HandState.Standing && Score == houseHand.Score:
+                    case HandState.Blackjack when houseHand.HandState == HandState.Blackjack:
+                        WinningState = WinningState.Push;
+                        break;
+                    case HandState.Blackjack when houseHand.HandState != HandState.Blackjack:
+                        WinningState = WinningState.Blackjack;
+                        break;
+                    default:
+                        WinningState = WinningState.Lose;
+                        break;
+                }
+            }
+
+            public void Stand()
+            {
+                if (HandState == HandState.Playing)
+                    HandState = HandState.Standing;
+            }
+
+            public string ShowCards(bool isHouse = false)
+                => isHouse ? $"{StringifyCard(Cards[0])}  🎴" : string.Join("  ", Cards.Select(StringifyCard));
+
+            private string StringifyCard((int Value, string Suit) card)
+                => card.Value switch
+                {
+                    1 => $"A{card.Suit}",
+                    12 => $"J{card.Suit}",
+                    13 => $"Q{card.Suit}",
+                    14 => $"K{card.Suit}",
+                    _ => $"{card.Value}{card.Suit}"
+                };
         }
     }
 }

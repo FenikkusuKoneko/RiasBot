@@ -20,6 +20,9 @@ namespace Rias.Services
         {
         }
         
+        /// <summary>
+        /// Gets the user's currency.
+        /// </summary>
         public async Task<int> GetUserCurrencyAsync(ulong userId)
         {
             using var scope = RiasBot.CreateScope();
@@ -27,15 +30,22 @@ namespace Rias.Services
             return (await db.Users.FirstOrDefaultAsync(x => x.UserId == userId))?.Currency ?? 0;
         }
 
-        public async Task AddUserCurrencyAsync(ulong userId, int currency)
+        /// <summary>
+        /// Adds currency to the user and returns the new currency.
+        /// </summary>
+        public async Task<int> AddUserCurrencyAsync(ulong userId, int currency)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity { UserId = userId });
             userDb.Currency += currency;
             await db.SaveChangesAsync();
+            return userDb.Currency;
         }
         
+        /// <summary>
+        /// Remove currency from the user and returns the new currency.
+        /// </summary>
         public async Task<int> RemoveUserCurrencyAsync(ulong userId, int currency)
         {
             using var scope = RiasBot.CreateScope();
@@ -44,19 +54,9 @@ namespace Rias.Services
             
             if (userDb == null) return 0;
 
-            var currencyTaken = currency;
-            if (currency > userDb.Currency)
-            {
-                currencyTaken = userDb.Currency;
-                userDb.Currency = 0;
-            }
-            else
-            {
-                userDb.Currency -= currency;
-            }
-
+            userDb.Currency -= Math.Min(currency, userDb.Currency);
             await db.SaveChangesAsync();
-            return currencyTaken;
+            return userDb.Currency;
         }
     }
 }

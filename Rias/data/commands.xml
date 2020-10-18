@@ -681,12 +681,26 @@ Administrators can clear any warning and moderators can clear only their added w
         <commands>
           <command>
             <description>Play a game of blackjack.
-Options:
-- hit(🎴) - draw a card from the deck
-- stand(🤚) - stand with your cards
-- split(↔) - split your hand in two if you have a pair
 
-The game is played with 4 decks. And you lose the draws.</description>
+**Rules:**
+- 4 decks of cards, re-shuffling when below 2 decks
+- "Push" gives the player the bet back
+- The house draws on soft 17 hand
+- If player and the house have 21 (Blackjack) then it's a push
+- The Blackjack payout is 3:2
+- Splitting is allowed once
+- No half pay on surrender
+- No insurance
+- No double
+
+Some of the non-existent features from above may come in the future.
+
+**Options:**
+- hit (🎴) - draw a card from the deck
+- stand (🤚) - stand with your cards
+- split (↔) - split your hand in two if you have a pair
+
+The blackjack session will be available for 24 hours.</description>
             <remarks>
               <remark>{0}blackjack 100</remark>
             </remarks>
