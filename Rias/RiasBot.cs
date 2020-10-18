@@ -27,10 +27,10 @@ namespace Rias
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.6.0";
+        public const string Version = "3.6.1";
         public static readonly Stopwatch UpTime = new Stopwatch();
         
-        public readonly ConcurrentHashSet<ulong> DownloadedMembers = new ConcurrentHashSet<ulong>();
+        public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new ConcurrentHashSet<ulong>();
         public readonly ConcurrentDictionary<ulong, DiscordMember> Members = new ConcurrentDictionary<ulong, DiscordMember>();
 
         private readonly Credentials _credentials; 

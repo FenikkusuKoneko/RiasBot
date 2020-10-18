@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using ConcurrentCollections;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -33,8 +35,9 @@ namespace Rias.Services
         public readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks = new ConcurrentDictionary<ulong, List<DiscordWebhook>>();
         
         private readonly ConcurrentDictionary<int, bool> _shardsReady = new ConcurrentDictionary<int, bool>();
+        private readonly ConcurrentHashSet<ulong> _unchunkedGuilds = new ConcurrentHashSet<ulong>();
         private readonly string[] _codeLanguages = { "cs", "csharp" };
-        
+
         public BotService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
@@ -43,6 +46,9 @@ namespace Rias.Services
             RiasBot.Client.GuildMemberRemoved += GuildMemberRemovedAsync;
             RiasBot.Client.GuildMemberUpdated += GuildMemberUpdatedAsync;
             RiasBot.Client.GuildMembersChunked += GuildMembersChunkedAsync;
+            RiasBot.Client.GuildDownloadCompleted += GuildDownloadCompletedAsync;
+            
+            RunTaskAsync(RequestMembersAsync(CancellationToken.None));
         }
         
         public static string ReplacePlaceholders(DiscordUser user, string message)
@@ -349,8 +355,6 @@ namespace Rias.Services
             {
                 RiasBot.Client.Ready -= ShardReadyAsync;
                 await RiasBot.Client.UseInteractivityAsync(new InteractivityConfiguration());
-                Log.Information("All shards are connected");
-
                 RiasBot.GetRequiredService<MuteService>();
                 
                 var reactionsService = RiasBot.GetRequiredService<ReactionsService>();
@@ -359,6 +363,7 @@ namespace Rias.Services
 #else
                 reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser!.Username}/{RiasBot.Version}");
 #endif
+                Log.Information("All shards are connected");
             }
         }
 
@@ -386,11 +391,42 @@ namespace Rias.Services
         private Task GuildMembersChunkedAsync(DiscordClient client, GuildMembersChunkEventArgs args)
         {
             foreach (var member in args.Members)
-            {
                 RiasBot.Members[member.Id] = member;
+
+            return Task.CompletedTask;
+        }
+
+        private Task GuildDownloadCompletedAsync(DiscordClient client, GuildDownloadCompletedEventArgs args)
+        {
+            foreach (var (guildId, _) in args.Guilds)
+            {
+                if (RiasBot.ChunkedGuilds.Contains(guildId))
+                    _unchunkedGuilds.Add(guildId);
             }
 
             return Task.CompletedTask;
+        }
+
+        private async Task RequestMembersAsync(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                while (!_unchunkedGuilds.IsEmpty)
+                {
+                    var guildId = _unchunkedGuilds.First();
+                    _unchunkedGuilds.TryRemove(guildId);
+
+                    var guild = RiasBot.GetGuild(guildId);
+                    if (guild is null)
+                        continue;
+                    
+                    Log.Debug($"Requesting members for {guild}");
+                    await guild.RequestMembersAsync();
+                    await Task.Delay(1000);
+                }
+                
+                await Task.Delay(10000);
+            }
         }
 
         private string SanitizeCode(string code)

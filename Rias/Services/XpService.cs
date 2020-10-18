@@ -412,7 +412,7 @@ namespace Rias.Services
             
             var userServerXp = serverXpList.FirstOrDefault(x => x.UserId == member.Id);
             var serverRank = "?";
-            if (userServerXp != null && RiasBot.DownloadedMembers.Contains(member.Guild.Id))
+            if (userServerXp != null && RiasBot.ChunkedGuilds.Contains(member.Guild.Id))
                 serverRank = (serverXpList.IndexOf(userServerXp) + 1).ToString();
             
             var globalXp = userDb?.Xp ?? 0;

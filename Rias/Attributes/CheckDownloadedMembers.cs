@@ -19,9 +19,9 @@ namespace Rias.Attributes
                 return CheckResult.Unsuccessful("Cannot use `CheckDownloadedMembers` outside of a guild.");
             
             var riasBot = context.ServiceProvider.GetRequiredService<RiasBot>();
-            if (!riasBot.DownloadedMembers.Contains(context.Guild.Id))
+            if (!riasBot.ChunkedGuilds.Contains(context.Guild.Id))
             {
-                riasBot.DownloadedMembers.Add(context.Guild.Id);
+                riasBot.ChunkedGuilds.Add(context.Guild.Id);
                 await context.Guild.RequestMembersAsync();
                 Log.Debug($"Members requested for {context.Guild.Name} ({context.Guild.Id})");
             }
