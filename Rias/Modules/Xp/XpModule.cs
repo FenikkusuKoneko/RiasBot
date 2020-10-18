@@ -81,11 +81,8 @@ namespace Rias.Modules.Xp
             var index = page * 15;
             foreach (var userDb in xpLeaderboard)
             {
-                var member = RiasBot.Members.TryGetValue(userDb.UserId, out var m)
-                    ? m
-                    : await RiasBot.GetUserAsync(userDb.UserId);
-                
-                description.Append($"{++index}. **{member?.FullName()}**: " +
+                var user = await RiasBot.GetUserAsync(userDb.UserId);
+                description.Append($"{++index}. **{user?.FullName()}**: " +
                                    $"`{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} " +
                                    $"({userDb.Xp} {GetText(Localization.XpXp).ToLowerInvariant()})`\n");
             }

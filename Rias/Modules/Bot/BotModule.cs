@@ -252,18 +252,11 @@ namespace Rias.Modules.Bot
             DiscordUser? user = null;
             if (ulong.TryParse(value, out var userId))
             {
-                if (RiasBot.Members.TryGetValue(userId, out var u))
+                user = await RiasBot.GetUserAsync(userId);
+                if (user is null)
                 {
-                    user = u;
-                }
-                else
-                {
-                    user = await RiasBot.GetUserAsync(userId);
-                    if (user is null)
-                    {
-                        await ReplyErrorAsync(Localization.AdministrationUserNotFound);
-                        return;
-                    }
+                    await ReplyErrorAsync(Localization.AdministrationUserNotFound);
+                    return;
                 }
             }
             else

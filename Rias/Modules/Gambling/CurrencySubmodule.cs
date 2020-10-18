@@ -103,10 +103,7 @@ namespace Rias.Modules.Gambling
                 var index = 0;
                 foreach (var userCurrency in usersCurrency)
                 {
-                    var user = RiasBot.Members.TryGetValue(userCurrency.UserId, out var m)
-                        ? m
-                        : await RiasBot.GetUserAsync(userCurrency.UserId);
-                    
+                    var user = await RiasBot.GetUserAsync(userCurrency.UserId);
                     embed.AddField($"#{++index + page * 15} {user?.FullName()}", $"{userCurrency.Currency} {Credentials.Currency}", true);
                 }
 
