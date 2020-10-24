@@ -331,6 +331,8 @@ namespace Rias.Implementation
         public const string ReactionsPunchYou = "reactions_punch_you";
         public const string ReactionsPunchedBy = "reactions_punched_by";
         public const string ReactionsShrug = "reactions_shrug";
+        public const string ReactionsHandholding = "reactions_handholding";
+        public const string ReactionsHandholdingUser = "reactions_handholding_user";
         public const string ReactionsWaifuInsult = "reactions_waifu_insult";
         public const string ReactionsWaifuInsultGenerally = "reactions_waifu_insult_generally";
 

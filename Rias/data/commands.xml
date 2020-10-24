@@ -1118,6 +1118,16 @@ Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a c
         </remarks>
       </command>
       <command>
+        <aliases>handholding</aliases>
+        <description>Lewd &gt;///&lt;.</description>
+        <remarks>
+          <remark>{0}handholding</remark>
+          <remark>{0}handholding User</remark>
+          <remark>{0}handholding @User</remark>
+          <remark>{0}handholding 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
         <aliases>waifuinsult</aliases>
         <description>Insult someone's waifu. Optionally you can provide both the user and the waifu.
 Because of that option, if you want to use a multi-word username you will have to wrap it in quotation marks, use mention or ID.

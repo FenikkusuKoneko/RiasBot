@@ -1056,6 +1056,34 @@ namespace Rias.Modules.Reactions
             
             await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsShrug, Context.User.Mention), embed: embed);
         }
+        
+        [Command("handholding")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        public async Task HandholdingAsync([Remainder] DiscordMember? member = null)
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                ImageUrl = await Service.GetReactionAsync("handholding"),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
+                }
+            };
+
+            if (member is null || member.Id == Context.User.Id)
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHandholding, Context.User.Mention), embed: embed);
+            else
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHandholdingUser,
+                    ((DiscordMember)Context.User).DisplayName, member.Mention), embed: embed);
+        }
 
         [Command("waifuinsult")]
         [Context(ContextType.Guild)]

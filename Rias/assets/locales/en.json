@@ -359,6 +359,8 @@
   "reactions_punch_you": "*Punching {0}*",
   "reactions_punched_by": "{0} you have been punched by **{1}**, ouch.",
   "reactions_shrug": "{0} is shrugging.",
+  "reactions_handholding": "Oh, alright, I don't mind to hold your hand {0}, if it makes you feel better >///<.",
+  "reactions_handholding_user": "**{0}** is holding **{1}**'s hand >///<.",
   "reactions_waifu_insult": "Hey {0}, **{1}** wants to say something about your waifu **{2}**.",
   "reactions_waifu_insult_generally": "Hey {0}, **{1}** wants to say something about your waifu.",
   
