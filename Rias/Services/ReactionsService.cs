@@ -26,18 +26,18 @@ namespace Rias.Services
             _httpClient.DefaultRequestHeaders.Add("User-Agent", weebUserAgent);
         }
         
-        public async Task<string?> GetReactionUrlAsync(string type)
+        public async Task<string?> GetReactionAsync(string type)
         {
-            using var response = await _httpClient.GetAsync($"https://api.weeb.sh/images/random?type={type}&filetype=gif");
+            using var response = await _httpClient.GetAsync($"https://api-v3.weeb.sh/images/random?type={type}&filetype=gif");
             if (!response.IsSuccessStatusCode)
                 return null;
 
             return JsonConvert.DeserializeObject<Dictionary<string, object>>(await response.Content.ReadAsStringAsync())["url"].ToString();
         }
 
-        public async Task<string?> GetGropeUrlAsync()
+        public async Task<string?> GetImageAsync(string type)
         {
-            using var response = await _httpClient.GetAsync("https://riasbot.me/api/grope");
+            using var response = await _httpClient.GetAsync($"https://riasbot.me/api/images?type={type}");
             if (!response.IsSuccessStatusCode)
                 return null;
 

@@ -35,7 +35,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("pat"),
+                ImageUrl = await Service.GetReactionAsync("pat"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -70,7 +70,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("pat"),
+                ImageUrl = await Service.GetReactionAsync("pat"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -99,7 +99,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("hug"),
+                ImageUrl = await Service.GetReactionAsync("hug"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -134,7 +134,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("hug"),
+                ImageUrl = await Service.GetReactionAsync("hug"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -163,7 +163,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("kiss"),
+                ImageUrl = await Service.GetReactionAsync("kiss"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -198,7 +198,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("kiss"),
+                ImageUrl = await Service.GetReactionAsync("kiss"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -227,7 +227,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("lick"),
+                ImageUrl = await Service.GetReactionAsync("lick"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -262,7 +262,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("lick"),
+                ImageUrl = await Service.GetReactionAsync("lick"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -291,7 +291,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("cuddle"),
+                ImageUrl = await Service.GetReactionAsync("cuddle"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -326,7 +326,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("cuddle"),
+                ImageUrl = await Service.GetReactionAsync("cuddle"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -355,7 +355,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("bite"),
+                ImageUrl = await Service.GetReactionAsync("bite"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -390,7 +390,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("bite"),
+                ImageUrl = await Service.GetReactionAsync("bite"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -419,7 +419,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("slap"),
+                ImageUrl = await Service.GetReactionAsync("slap"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -454,7 +454,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("slap"),
+                ImageUrl = await Service.GetReactionAsync("slap"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -482,7 +482,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("cry"),
+                ImageUrl = await Service.GetReactionAsync("cry"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -501,7 +501,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetGropeUrlAsync(),
+                ImageUrl = await Service.GetImageAsync("grope"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
@@ -530,7 +530,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetGropeUrlAsync(),
+                ImageUrl = await Service.GetImageAsync("grope"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
@@ -558,7 +558,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("blush"),
+                ImageUrl = await Service.GetReactionAsync("blush"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -592,7 +592,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("blush"),
+                ImageUrl = await Service.GetReactionAsync("blush"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -621,7 +621,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("dance"),
+                ImageUrl = await Service.GetReactionAsync("dance"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -655,7 +655,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("dance"),
+                ImageUrl = await Service.GetReactionAsync("dance"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -684,7 +684,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("poke"),
+                ImageUrl = await Service.GetReactionAsync("poke"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -719,7 +719,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("poke"),
+                ImageUrl = await Service.GetReactionAsync("poke"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -747,7 +747,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("pout"),
+                ImageUrl = await Service.GetReactionAsync("pout"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -781,7 +781,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("pout"),
+                ImageUrl = await Service.GetReactionAsync("pout"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -793,6 +793,30 @@ namespace Rias.Modules.Reactions
             else
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPoutAt, ((DiscordMember)Context.User).DisplayName, value),
                     embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
+        }
+        
+        [Command("goodmorning")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        public async Task GoodMorningAsync()
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                ImageUrl = await Service.GetImageAsync("good_morning"),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
+                }
+            };
+            
+            await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGoodMorning, Context.User.Mention), embed: embed);
         }
 
         [Command("sleepy")]
@@ -809,7 +833,7 @@ namespace Rias.Modules.Reactions
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                ImageUrl = await Service.GetReactionUrlAsync("sleepy"),
+                ImageUrl = await Service.GetReactionAsync("sleepy"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
@@ -817,6 +841,252 @@ namespace Rias.Modules.Reactions
             };
             
             await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSleepy, Context.User.Mention), embed: embed);
+        }
+        
+        [Command("baka")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        public async Task BakaAsync([Remainder] DiscordMember member)
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                ImageUrl = await Service.GetReactionAsync("baka"),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
+                }
+            };
+
+            if (member.Id == Context.User.Id)
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBaka, Context.User.Mention), embed: embed);
+            else
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBakaUser,
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
+        }
+
+        [Command("baka")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        public async Task BakaAsync([Remainder] string? value = null)
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
+                return;
+            }
+            
+            if (value != null && value.Length > ReactionLimit)
+            {
+                await ReplyErrorAsync(Localization.ReactionsLimit);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                ImageUrl = await Service.GetReactionAsync("baka"),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
+                }
+            };
+
+            if (value is null)
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBaka, Context.User.Mention), embed: embed);
+            else
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBakaUser, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
+        }
+        
+        [Command("bang")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
+        public async Task BangAsync([Remainder] DiscordMember member)
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                ImageUrl = await Service.GetReactionAsync("bang"),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
+                }
+            };
+
+            if (member.Id == Context.User.Id)
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBangYou, Context.User.Mention), embed: embed);
+            else
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBangedBy,
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
+        }
+
+        [Command("bang")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
+        public async Task BangAsync([Remainder] string? value = null)
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
+                return;
+            }
+            
+            if (value != null && value.Length > ReactionLimit)
+            {
+                await ReplyErrorAsync(Localization.ReactionsLimit);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                ImageUrl = await Service.GetReactionAsync("bang"),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
+                }
+            };
+
+            if (value is null)
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBangYou, Context.User.Mention), embed: embed);
+            else
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBangedBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
+        }
+        
+        [Command("punch")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(1)]
+        public async Task PunchAsync([Remainder] DiscordMember member)
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                ImageUrl = await Service.GetReactionAsync("punch"),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
+                }
+            };
+
+            if (member.Id == Context.User.Id)
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPunchYou, Context.User.Mention), embed: embed);
+            else
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPunchedBy,
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
+        }
+
+        [Command("punch")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        [Priority(0)]
+        public async Task PunchAsync([Remainder] string? value = null)
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
+                return;
+            }
+            
+            if (value != null && value.Length > ReactionLimit)
+            {
+                await ReplyErrorAsync(Localization.ReactionsLimit);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                ImageUrl = await Service.GetReactionAsync("punch"),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
+                }
+            };
+
+            if (value is null)
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPunchYou, Context.User.Mention), embed: embed);
+            else
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsPunchedBy, value, ((DiscordMember)Context.User).DisplayName),
+                    embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
+        }
+        
+        [Command("shrug")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        public async Task ShrugAsync()
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                ImageUrl = await Service.GetReactionAsync("shrug"),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
+                }
+            };
+            
+            await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsShrug, Context.User.Mention), embed: embed);
+        }
+
+        [Command("waifuinsult")]
+        [Context(ContextType.Guild)]
+        [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
+        public async Task WaifuInsultAsync(DiscordMember member, [Remainder] string? waifu = null)
+        {
+            if (string.IsNullOrEmpty(Credentials.WeebServicesToken))
+            {
+                await ReplyErrorAsync(Localization.ReactionsNoWeebApi);
+                return;
+            }
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                ImageUrl = await Service.GetReactionAsync("waifu_insult"),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} weeb.sh"
+                }
+            };
+
+            if (member.Id == Context.User.Id)
+                return;
+            
+            if (!string.IsNullOrWhiteSpace(waifu))
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsWaifuInsult,
+                    member.Mention, ((DiscordMember)Context.User).DisplayName, waifu), embed: embed);
+            else
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsWaifuInsultGenerally,
+                    member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
     }
 }

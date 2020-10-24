@@ -1028,9 +1028,12 @@ Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a c
       </command>
       <command>
         <aliases>blush</aliases>
-        <description>You are blushing.</description>
+        <description>Blush to a user.</description>
         <remarks>
           <remark>{0}blush</remark>
+          <remark>{0}blush User</remark>
+          <remark>{0}blush @User</remark>
+          <remark>{0}blush 327927038360944640</remark>
         </remarks>
       </command>
       <command>
@@ -1058,13 +1061,75 @@ Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a c
         <description>Maybe someone will pat you.</description>
         <remarks>
           <remark>{0}pout</remark>
+          <remark>{0}pout User</remark>
+          <remark>{0}pout @User</remark>
+          <remark>{0}pout 327927038360944640</remark>
         </remarks>
       </command>
       <command>
-        <aliases>sleepy sleep</aliases>
-        <description>Good night. See you tomorrow.</description>
+        <aliases>goodmorning morning</aliases>
+        <description>Good morning! It's a nice day.</description>
+        <remarks>
+          <remark>{0}goodmorning</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>sleepy sleep goodnight</aliases>
+        <description>Good night! See you tomorrow.</description>
         <remarks>
           <remark>{0}sleepy</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>baka</aliases>
+        <description>Point to someone who is an idiot, it can be you too.</description>
+        <remarks>
+          <remark>{0}baka</remark>
+          <remark>{0}baka User</remark>
+          <remark>{0}baka @User</remark>
+          <remark>{0}baka 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>bang</aliases>
+        <description>Bang a user.</description>
+        <remarks>
+          <remark>{0}bang</remark>
+          <remark>{0}bang User</remark>
+          <remark>{0}bang @User</remark>
+          <remark>{0}bang 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>punch</aliases>
+        <description>Punch a user, ouch.</description>
+        <remarks>
+          <remark>{0}punch</remark>
+          <remark>{0}punch User</remark>
+          <remark>{0}punch @User</remark>
+          <remark>{0}punch 327927038360944640</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>shrug</aliases>
+        <description>Are you impassive?</description>
+        <remarks>
+          <remark>{0}shrug</remark>
+        </remarks>
+      </command>
+      <command>
+        <aliases>waifuinsult</aliases>
+        <description>Insult someone's waifu. Optionally you can provide both the user and the waifu.
+Because of that option, if you want to use a multi-word username you will have to wrap it in quotation marks, use mention or ID.
+This command doesn't work on yourself.</description>
+        <remarks>
+          <remark>{0}waifuinsult User</remark>
+          <remark>{0}waifuinsult User waifu</remark>
+          <remark>{0}waifuinsult "FistName LastName" waifu</remark>
+          <remark>{0}waifuinsult @User</remark>
+          <remark>{0}waifuinsult @User waifu</remark>
+          <remark>{0}waifuinsult 327927038360944640</remark>
+          <remark>{0}waifuinsult 327927038360944640 waifu</remark>
         </remarks>
       </command>
     </commands>

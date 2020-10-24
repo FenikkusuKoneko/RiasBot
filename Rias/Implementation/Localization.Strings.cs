@@ -322,8 +322,18 @@ namespace Rias.Implementation
         public const string ReactionsPokedBy = "reactions_poked_by";
         public const string ReactionsPout = "reactions_pout";
         public const string ReactionsPoutAt = "reactions_pout_at";
+        public const string ReactionsGoodMorning = "reactions_good_morning";
         public const string ReactionsSleepy = "reactions_sleepy";
-        
+        public const string ReactionsBaka = "reactions_baka";
+        public const string ReactionsBakaUser = "reactions_baka_user";
+        public const string ReactionsBangYou = "reactions_bang_you";
+        public const string ReactionsBangedBy = "reactions_banged_by";
+        public const string ReactionsPunchYou = "reactions_punch_you";
+        public const string ReactionsPunchedBy = "reactions_punched_by";
+        public const string ReactionsShrug = "reactions_shrug";
+        public const string ReactionsWaifuInsult = "reactions_waifu_insult";
+        public const string ReactionsWaifuInsultGenerally = "reactions_waifu_insult_generally";
+
         public const string SearchesSource = "searches_source";
         public const string SearchesNotFound = "searches_not_found";
         public const string SearchesUrbanDictionaryNoApiKey = "searches_urban_dictionary_no_api_key";
