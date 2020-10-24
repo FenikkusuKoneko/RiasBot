@@ -104,11 +104,11 @@ namespace Rias.Modules.Utility
             {
                 member ??= (DiscordMember)Context.User;
 
-                var userRoles = member.Roles.Where(x => x.Id != Context.Guild!.EveryoneRole.Id)
-                    .OrderByDescending(x => x.Position)
-                    .Take(10)
-                    .Select(x => x.Mention)
-                    .ToList();
+                var userRoles = member.Roles.OrderByDescending(x => x.Position).ToList();
+                
+                var sbRoles = new StringBuilder();
+                foreach (var mention in userRoles.Select(x => x.Mention).TakeWhile(y => sbRoles.Length + y.Length <= 1024))
+                    sbRoles.Append(mention).Append(' ');
 
                 var embed = new DiscordEmbedBuilder()
                     .WithColor(RiasUtilities.ConfirmColor)
@@ -118,7 +118,7 @@ namespace Rias.Modules.Utility
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
                     .AddField(GetText(Localization.UtilityJoinedServer), member.JoinedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField(GetText(Localization.UtilityJoinedDiscord), member.CreationTimestamp.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
-                    .AddField($"{GetText(Localization.UtilityRoles)} ({userRoles.Count})", userRoles.Count != 0 ? string.Join("\n", userRoles) : "-", true);
+                    .AddField($"{GetText(Localization.UtilityRoles)} ({userRoles.Count})", userRoles.Count != 0 ? sbRoles.ToString() : "-");
 
                 await ReplyAsync(embed);
             }
