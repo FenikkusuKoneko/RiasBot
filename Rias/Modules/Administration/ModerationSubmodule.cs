@@ -163,7 +163,7 @@ namespace Rias.Modules.Administration
                     amount = 100;
 
                 var messages = (await Context.Channel.GetMessagesAsync(amount))
-                    .Where(m => DateTimeOffset.UtcNow.Subtract(m.CreationTimestamp.ToUniversalTime()).Days < 14)
+                    .Where(m => DateTime.UtcNow.Subtract(m.CreationTimestamp.UtcDateTime).Days < 14)
                     .ToList();
 
                 if (messages.Count != 0)
@@ -200,7 +200,7 @@ namespace Rias.Modules.Administration
                     amount = 100;
 
                 var messages = (await Context.Channel.GetMessagesAsync())
-                    .Where(m => m.Author.Id == member.Id && DateTimeOffset.UtcNow.Subtract(m.CreationTimestamp.ToUniversalTime()).Days < 14)
+                    .Where(m => m.Author.Id == member.Id && DateTime.UtcNow.Subtract(m.CreationTimestamp.UtcDateTime).Days < 14)
                     .Take(amount)
                     .ToList();
 

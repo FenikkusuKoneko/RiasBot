@@ -116,8 +116,8 @@ namespace Rias.Modules.Utility
                     .AddField(GetText(Localization.UtilityUsername), member.FullName(), true)
                     .AddField(GetText(Localization.UtilityNickname), member.Nickname ?? "-", true)
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
-                    .AddField(GetText(Localization.UtilityJoinedServer), member.JoinedAt.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
-                    .AddField(GetText(Localization.UtilityJoinedDiscord), member.CreationTimestamp.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                    .AddField(GetText(Localization.UtilityJoinedServer), member.JoinedAt.UtcDateTime.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                    .AddField(GetText(Localization.UtilityJoinedDiscord), member.CreationTimestamp.UtcDateTime.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField($"{GetText(Localization.UtilityRoles)} ({userRoles.Count})", userRoles.Count != 0 ? sbRoles.ToString() : "-");
 
                 await ReplyAsync(embed);
@@ -136,7 +136,7 @@ namespace Rias.Modules.Utility
                     .AddField(GetText(Localization.UtilityOwner), Context.Guild.Owner.FullName(), true)
                     .AddField(GetText(Localization.CommonUsers), Context.Guild.MemberCount.ToString(), true)
                     .AddField(GetText(Localization.UtilityBots), Context.Guild.Members.Count(x => x.Value.IsBot).ToString(), true)
-                    .AddField(GetText(Localization.UtilityCreatedAt), Context.Guild.CreationTimestamp.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                    .AddField(GetText(Localization.UtilityCreatedAt), Context.Guild.CreationTimestamp.UtcDateTime.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField(GetText(Localization.UtilityTextChannels), Context.Guild.Channels.Count(x => x.Value.Type == ChannelType.Text).ToString(), true)
                     .AddField(GetText(Localization.UtilityVoiceChannels), Context.Guild.Channels.Count(x => x.Value.Type == ChannelType.Voice).ToString(), true)
                     .AddField(GetText(Localization.UtilitySystemChannel), Context.Guild.SystemChannel?.Mention ?? "-", true)

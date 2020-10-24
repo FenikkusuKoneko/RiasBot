@@ -281,7 +281,7 @@ namespace Rias.Modules.Bot
                 .WithColor(RiasUtilities.ConfirmColor)
                 .AddField(GetText(Localization.CommonUser), user.FullName(), true)
                 .AddField(GetText(Localization.CommonId), user.Id.ToString(), true)
-                .AddField(GetText(Localization.UtilityJoinedDiscord), user.CreationTimestamp.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                .AddField(GetText(Localization.UtilityJoinedDiscord), user.CreationTimestamp.UtcDateTime.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                 .AddField(GetText(Localization.BotMutualGuilds), mutualGuilds.ToString(), true)
                 .WithImageUrl(user.GetAvatarUrl(ImageFormat.Auto));
 
