@@ -28,16 +28,11 @@ namespace Rias.Modules.Searches
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task NekoAsync()
             {
-                using var response = await _httpClient.GetAsync("https://riasbot.me/api/neko");
-                var nekoImage = response.IsSuccessStatusCode
-                    ? JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())["url"]
-                    : null;
-                
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = GetText(Localization.SearchesNeko),
                     Color = RiasUtilities.ConfirmColor,
-                    ImageUrl = nekoImage,
+                    ImageUrl = await GetImageAsync("neko"),
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
                         Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
@@ -51,16 +46,11 @@ namespace Rias.Modules.Searches
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task KitsuneAsync()
             {
-                using var response = await _httpClient.GetAsync("https://riasbot.me/api/kitsune");
-                var kitsuneImage = response.IsSuccessStatusCode
-                    ? JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())["url"]
-                    : null;
-                
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = GetText(Localization.SearchesKitsune),
                     Color = RiasUtilities.ConfirmColor,
-                    ImageUrl = kitsuneImage,
+                    ImageUrl = await GetImageAsync("kitsune"),
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
                         Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
@@ -68,6 +58,15 @@ namespace Rias.Modules.Searches
                 };
 
                 await ReplyAsync(embed);
+            }
+            
+            private async Task<string?> GetImageAsync(string type)
+            {
+                using var response = await _httpClient.GetAsync($"https://riasbot.me/api/images?type={type}");
+                if (!response.IsSuccessStatusCode)
+                    return null;
+
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())["url"];
             }
         }
     }
