@@ -27,7 +27,7 @@ namespace Rias.Modules.Administration
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Member)]
             public async Task RolesAsync(DiscordMember? member = null)
             {
-                var roles = (member is null ? Context.Guild!.Roles.Select(x => x.Value) : ((DiscordMember)Context.User).Roles)
+                var roles = (member is null ? Context.Guild!.Roles.Select(x => x.Value) : member.Roles)
                     .Where(x => x.Id != Context.Guild!.EveryoneRole.Id)
                     .OrderByDescending(x => x.Position)
                     .Select(x => $"{x.Mention} | {x.Id}")
