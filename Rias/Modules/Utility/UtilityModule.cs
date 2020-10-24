@@ -143,7 +143,7 @@ namespace Rias.Modules.Utility
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityAllPatrons),
                 Description = string.Join("\n", items.Select(p =>
-                    $"{++index}. {(users.TryGetValue(p.UserId, out var user) ? user?.Mention : p.UserId.ToString())}"))
+                    $"{++index}. **{(users.TryGetValue(p.UserId, out var user) ? user?.FullName() : p.UserId.ToString())}**"))
             });
         }
         
