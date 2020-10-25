@@ -302,18 +302,16 @@ namespace Rias.Modules.Bot
             var message = await ReplyAsync(embed);
             var evaluation = await Service.EvaluateAsync(Context, code);
             GC.Collect();
-            
-            if (evaluation is null)
-            {
-                await message.DeleteAsync();
-                return;
-            }
-            
-            embed.AddField(GetText(Localization.BotCode), $"```csharp\n{evaluation.Code}\n```");
+
             if (evaluation.Success)
             {
                 embed.WithDescription(GetText(Localization.BotCodeEvaluated));
-                embed.AddField(evaluation.ReturnType, $"```csharp\n{evaluation.Result}\n```");
+                
+                if (evaluation.ReturnType is null) 
+                    embed.AddField("Null", "null");
+                else
+                    embed.AddField(evaluation.ReturnType, $"```csharp\n{evaluation.Result}\n```");
+                
                 embed.AddField(GetText(Localization.BotCompilationTime), $"{evaluation.CompilationTime?.TotalMilliseconds:F2} ms", true);
                 embed.AddField(GetText(Localization.BotExecutionTime), $"{evaluation.ExecutionTime?.TotalMilliseconds:F2} ms", true);
             }
@@ -334,8 +332,18 @@ namespace Rias.Modules.Bot
                 embed.AddField(GetText(Localization.BotError), $"```\n{evaluation.Exception}\n```");
                 embed.AddField(GetText(Localization.BotCompilationTime), $"{evaluation.CompilationTime?.TotalMilliseconds:F2} ms", true);
             }
-            
+
             await message.ModifyAsync(embed: embed.Build());
+
+            if (evaluation.Success && evaluation.ReturnType is null)
+            {
+                var xEmoji = DiscordEmoji.FromUnicode("❌");
+                await message.CreateReactionAsync(xEmoji);
+                
+                var reactionResult = await Context.Interactivity.WaitForReactionAsync(x => x.Emoji.Equals(xEmoji), message, Context.User);
+                if (!reactionResult.TimedOut)
+                    await message.DeleteAsync();
+            }
         }
     }
 }

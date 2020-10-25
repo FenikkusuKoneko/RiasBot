@@ -95,7 +95,7 @@ namespace Rias.Services
                 await member.GrantRoleAsync(aar);
         }
         
-        public async Task<EvaluationDetails?> EvaluateAsync(RiasCommandContext context, string code)
+        public async Task<EvaluationDetails> EvaluateAsync(RiasCommandContext context, string code)
         {
             var globals = new RoslynGlobals
             {
@@ -139,9 +139,6 @@ namespace Rias.Services
                 var result = await script.RunAsync(globals);
                 sw.Stop();
 
-                if (result.ReturnValue is null)
-                    return null;
-
                 var evaluationDetails = new EvaluationDetails
                 {
                     CompilationTime = compilationTime,
@@ -152,13 +149,13 @@ namespace Rias.Services
                 };
 
                 var returnValue = result.ReturnValue;
-                var type = result.ReturnValue.GetType();
+                var type = result.ReturnValue?.GetType();
 
                 switch (returnValue)
                 {
                     case string str:
-                        evaluationDetails.Result = str;
-                        evaluationDetails.ReturnType = type.Name;
+                        evaluationDetails.Result = string.Equals(str, string.Empty) ? "empty" : str;
+                        evaluationDetails.ReturnType = type?.Name;
                         break;
 
                     case IEnumerable enumerable:
@@ -175,8 +172,8 @@ namespace Rias.Services
                         break;
 
                     default:
-                        evaluationDetails.Result = returnValue.ToString();
-                        evaluationDetails.ReturnType = type.Name;
+                        evaluationDetails.Result = returnValue?.ToString();
+                        evaluationDetails.ReturnType = type?.Name;
                         break;
                 }
 
