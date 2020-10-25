@@ -221,7 +221,7 @@ namespace Rias.Services
             }
             
             var prefix = await GetGuildPrefixAsync(args.Guild);
-            if (!CommandUtilities.HasPrefix(args.Message.Content, prefix, out var output))
+            if (!CommandUtilities.HasPrefix(args.Message.Content, prefix, StringComparison.InvariantCultureIgnoreCase, out var output))
             {
                 if (client.CurrentUser is null)
                     return;
@@ -313,7 +313,7 @@ namespace Rias.Services
                         
                         break;
                     case ArgumentParseFailedResult argumentParseFailedResult:
-                        var arguments = CountArguments(context.Message.Content);
+                        var arguments = CountArguments(context.RawArguments);
                         var parameters = argumentParseFailedResult.Command.Parameters;
 
                         if (!areTooLessArguments && arguments < parameters.Count)
