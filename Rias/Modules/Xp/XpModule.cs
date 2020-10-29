@@ -126,7 +126,7 @@ namespace Rias.Modules.Xp
                 try
                 {
                     var member = await Context.Guild!.GetMemberAsync(userDb.UserId);
-                    description.Append($"{++index}. {member.Mention}: " +
+                    description.Append($"{++index}. **{member.FullName()}**: " +
                                        $"`{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} " +
                                        $"({userDb.Xp} {GetText(Localization.XpXp).ToLowerInvariant()})`\n");
                 }
