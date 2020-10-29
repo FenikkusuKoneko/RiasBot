@@ -1182,12 +1182,12 @@ This command doesn't work on yourself.</description>
           </command>
           <command>
             <aliases>character</aliases>
-            <description>Shows info about a character AniList or a custom character from the database (i.e. characters from games that are not on AniList).
-You can request a normal waifu using her name or ID, and you can request a custom waifu using her name or `wID` (put a `w` before the ID).</description>
+            <description>Shows info about a character from AniList or a custom character from the database (i.e. characters from games that are not on AniList).
+You can request a normal character using her name or ID, and you can request a custom character using her name or `wID` (put a `w` before the ID).</description>
             <remarks>
               <remark>{0}character Rias Gremory</remark>
               <remark>{0}character 50389</remark>
-              <remark>{0}character @1</remark>
+              <remark>{0}character w1</remark>
             </remarks>
           </command>
           <command>
@@ -1444,7 +1444,7 @@ The price for every waifu usually starts from 1000 [currency] and grows for each
             <remarks>
               <remark>{0}waifu claim Rias Gremory</remark>
               <remark>{0}waifu claim 50389</remark>
-              <remark>{0}waifu claim @1</remark>
+              <remark>{0}waifu claim w1</remark>
             </remarks>
           </command>
           <command>
@@ -1453,7 +1453,7 @@ The price for every waifu usually starts from 1000 [currency] and grows for each
             <remarks>
               <remark>{0}waifu divorce Rias Gremory</remark>
               <remark>{0}waifu divorce 50389</remark>
-              <remark>{0}waifu divorce @1</remark>
+              <remark>{0}waifu divorce w1</remark>
             </remarks>
           </command>
           <command>
@@ -1462,17 +1462,17 @@ The price for every waifu usually starts from 1000 [currency] and grows for each
             <remarks>
               <remark>{0}waifu special Rias Gremory</remark>
               <remark>{0}waifu special 50389</remark>
-              <remark>{0}waifu special @1</remark>
+              <remark>{0}waifu special w1</remark>
             </remarks>
           </command>
           <command>
             <aliases>image avatar</aliases>
             <description>Set an image for your special waifu or for your custom ones, the url link comes first then the waifu name or id. Oh and it's free.
-              NSFW images are not allowed, you will be banned.</description>
+NSFW images are not allowed, you will be banned.</description>
             <remarks>
               <remark>{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg Rias Gremory</remark>
               <remark>{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg 50389</remark>
-              <remark>{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg @1</remark>
+              <remark>{0}waifu avatar https://i.imgur.com/ZW96TT6.jpg w1</remark>
             </remarks>
           </command>
           <command>
@@ -1481,7 +1481,7 @@ The price for every waifu usually starts from 1000 [currency] and grows for each
             <remarks>
               <remark>{0}waifu position 1 Rias Gremory</remark>
               <remark>{0}waifu position 2 50389</remark>
-              <remark>{0}waifu position 3 @1</remark>
+              <remark>{0}waifu position 3 w1</remark>
             </remarks>
           </command>
           <command>
