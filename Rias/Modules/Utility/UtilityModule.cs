@@ -324,57 +324,36 @@ namespace Rias.Modules.Utility
 
         [Command("converter")]
         [Priority(2)]
-        public async Task ConverterAsync(string unit1Name, string unit2Name, double value)
+        public async Task ConverterAsync(string unitOneName, string unitTwoName, double value)
         {
-            var units1 = _unitsService.GetUnits(unit1Name).ToList();
-            if (units1.Count == 0)
+            var unitsIndex = _unitsService.GetUnits(ref unitOneName, ref unitTwoName, out var unitOne, out var unitTwo);
+            switch (unitsIndex)
             {
-                await ReplyErrorAsync(Localization.UtilityUnitNotFound, unit1Name);
-                return;
+                case -1:
+                    await ReplyErrorAsync(Localization.UtilityUnitNotFound, unitOneName);
+                    return;
+                case -2:
+                    await ReplyErrorAsync(Localization.UtilityUnitNotFound, unitTwoName);
+                    return;
+                case 0:
+                    await ReplyErrorAsync(
+                        Localization.UtilityUnitsNotCompatible,
+                        $"{unitOne!.Name.Singular} ({unitOne.Category.Name})",
+                        $"{unitTwo!.Name.Singular} ({unitTwo.Category.Name})");
+                    return;
             }
             
-            var units2 = _unitsService.GetUnits(unit2Name).ToList();
-            if (units2.Count == 0)
-            {
-                await ReplyErrorAsync(Localization.UtilityUnitNotFound, unit2Name);
-                return;
-            }
+            var result = _unitsService.Convert(unitOne!, unitTwo!, value);
 
-            Unit? unit1 = null;
-            Unit? unit2 = null;
-            
-            foreach (var u1 in units1.TakeWhile(u1 => unit1 is null && unit2 is null))
-            {
-                var u2 = units2.FirstOrDefault(x => string.Equals(x.Category.Name, u1.Category.Name));
-                if (u2 is null)
-                    continue;
-                
-                unit1 = u1;
-                unit2 = u2;
-                break;
-            }
-
-            if (unit1 is null || unit2 is null)
-            {
-                await ReplyErrorAsync(
-                    Localization.UtilityUnitsNotCompatible,
-                    $"{units1[0].Name.Singular} ({units1[0].Category.Name})",
-                    $"{units2[0].Name.Singular} ({units2[0].Category.Name})");
-                
-                return;
-            }
-
-            var result = _unitsService.Convert(unit1, unit2, value);
-
-            unit1Name = value == 1 ? unit1.Name.Singular! : unit1.Name.Plural!;
-            unit2Name = result == 1 ? unit2.Name.Singular! : unit2.Name.Plural!;
+            unitOneName = value == 1 ? unitOne!.Name.Singular! : unitOne!.Name.Plural!;
+            unitTwoName = result == 1 ? unitTwo!.Name.Singular! : unitTwo!.Name.Plural!;
             
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityConverter),
-                Description = $"**[{unit1.Category.Name}]**\n" +
-                              $"{value} {unit1Name} = {Format(result)} {unit2Name}"
+                Description = $"**[{unitOne.Category.Name}]**\n" +
+                              $"{value} {unitOneName} = {Format(result)} {unitTwoName}"
             };
 
             await ReplyAsync(embed);
@@ -384,10 +363,10 @@ namespace Rias.Modules.Utility
         [Priority(1)]
         public async Task ConverterAsync(string category, double value, string unit1, string unit2)
             => await ConverterAsync(category, unit1, unit2, value);
-
+        
         [Command("converter")]
         [Priority(0)]
-        public async Task ConverterAsync(string category, string unit1Name, string unit2Name, double value)
+        public async Task ConverterAsync(string category, string unitOneName, string unitTwoName, double value)
         {
             var unitsCategory = _unitsService.GetUnitsByCategory(category);
             if (unitsCategory is null)
@@ -395,51 +374,40 @@ namespace Rias.Modules.Utility
                 await ReplyErrorAsync(Localization.UtilityUnitsCategoryNotFound, category);
                 return;
             }
-
-            var units1 = _unitsService.GetUnits(unit1Name).ToList();
-            if (units1.Count == 0)
+            
+            var unitsIndex = _unitsService.GetUnits(ref unitOneName, ref unitTwoName, out var unitOne, out var unitTwo, unitsCategory);
+            switch (unitsIndex)
             {
-                await ReplyErrorAsync(Localization.UtilityUnitNotFound, unit1Name);
-                return;
-            }
-
-            var units2 = _unitsService.GetUnits(unit2Name).ToList();
-            if (units2.Count == 0)
-            {
-                await ReplyErrorAsync(Localization.UtilityUnitNotFound, unit2Name);
-                return;
-            }
-
-            var unit1 = units1.FirstOrDefault(x => string.Equals(x.Category.Name, unitsCategory.Name));
-            if (unit1 is null)
-            {
-                await ReplyErrorAsync(Localization.UtilityUnitNotFoundInCategory, unit1Name, unitsCategory.Name);
-                return;
+                case -1:
+                    await ReplyErrorAsync(Localization.UtilityUnitNotFoundInCategory, unitOneName, unitsCategory.Name);
+                    return;
+                case -2:
+                    await ReplyErrorAsync(Localization.UtilityUnitNotFoundInCategory, unitTwoName, unitsCategory.Name);
+                    return;
+                case 0:
+                    await ReplyErrorAsync(
+                        Localization.UtilityUnitsNotCompatible,
+                        $"{unitOne!.Name.Singular} ({unitOne.Category.Name})",
+                        $"{unitTwo!.Name.Singular} ({unitTwo.Category.Name})");
+                    return;
             }
             
-            var unit2 = units2.FirstOrDefault(x => string.Equals(x.Category.Name, unitsCategory.Name));
-            if (unit2 is null)
-            {
-                await ReplyErrorAsync(Localization.UtilityUnitNotFoundInCategory, unit2Name, unitsCategory.Name);
-                return;
-            }
-
-            var result = _unitsService.Convert(unit1, unit2, value);
-
-            unit1Name = value == 1 ? unit1.Name.Singular! : unit1.Name.Plural!;
-            unit2Name = result == 1 ? unit2.Name.Singular! : unit2.Name.Plural!;
-
+            var result = _unitsService.Convert(unitOne!, unitTwo!, value);
+        
+            unitOneName = value == 1 ? unitOne!.Name.Singular! : unitOne!.Name.Plural!;
+            unitTwoName = result == 1 ? unitTwo!.Name.Singular! : unitTwo!.Name.Plural!;
+        
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.UtilityConverter),
-                Description = $"**[{unit1.Category.Name}]**\n" +
-                              $"{value} {unit1Name} = {Format(result)} {unit2Name}"
+                Description = $"**[{unitOne.Category.Name}]**\n" +
+                              $"{value} {unitOneName} = {Format(result)} {unitTwoName}"
             };
-
+        
             await ReplyAsync(embed);
         }
-
+        
         [Command("converterlist")]
         public async Task ConverterList(string? category = null)
         {

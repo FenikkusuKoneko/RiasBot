@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,6 +11,7 @@ using NCalc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rias.Attributes;
+using Rias.Implementation;
 using Rias.Models;
 using Serilog;
 using StackExchange.Redis;
@@ -26,10 +27,10 @@ namespace Rias.Services
         private readonly HttpClient _httpClient;
         private readonly IDatabase _redisDb;
 
-        private readonly ConcurrentDictionary<string, UnitsCategory> _units = new ConcurrentDictionary<string, UnitsCategory>();
-        private readonly ConcurrentDictionary<string, List<Unit>> _unitsSingular = new ConcurrentDictionary<string, List<Unit>>();
-        private readonly ConcurrentDictionary<string, List<Unit>> _unitsPlural = new ConcurrentDictionary<string, List<Unit>>();
-        private readonly ConcurrentDictionary<string, List<Unit>> _unitsAbbreviations = new ConcurrentDictionary<string, List<Unit>>();
+        private readonly ImmutableDictionary<string, UnitsCategory> _units;
+        private readonly ImmutableDictionary<string, SingleOrList<Unit>> _unitSingulars;
+        private readonly ImmutableDictionary<string, SingleOrList<Unit>> _unitPlurals;
+        private readonly ImmutableDictionary<string, SingleOrList<Unit>> _unitAbbreviations;
 
         public UnitsService(IServiceProvider serviceProvider)
             : base(serviceProvider)
@@ -38,40 +39,49 @@ namespace Rias.Services
             _redisDb = serviceProvider.GetRequiredService<ConnectionMultiplexer>().GetDatabase();
             var sw = Stopwatch.StartNew();
             
+            var units = new Dictionary<string, UnitsCategory>();
+            var unitSingulars = new Dictionary<string, SingleOrList<Unit>>();
+            var unitPlurals = new Dictionary<string, SingleOrList<Unit>>();
+            var unitAbbreviations = new Dictionary<string, SingleOrList<Unit>>();
+            
             foreach (var unitsFile in Directory.GetFiles(UnitsPath))
             {
                 var unitsCategory = JsonConvert.DeserializeObject<UnitsCategory>(File.ReadAllText(unitsFile));
                 foreach (var unit in unitsCategory.Units)
                 {
                     unit.Category = unitsCategory;
-                    var nameSingular = unit.Name.Singular.ToLower().Replace(" ", string.Empty);
-                    if (_unitsSingular.TryGetValue(nameSingular, out var unitsSingular))
-                        unitsSingular.Add(unit);
+                    var nameSingular = unit.Name.Singular.ToLowerInvariant().Replace(" ", string.Empty);
+                    if (unitSingulars.TryGetValue(nameSingular, out var unitSingular))
+                        unitSingulars[nameSingular] = unitSingular.Add(unit);
                     else
-                        _unitsSingular[nameSingular] = new List<Unit> { unit };
+                        unitSingulars[nameSingular] = new SingleOrList<Unit>(unit);
                     
-                    var namePlural = unit.Name.Plural.ToLower().Replace(" ", string.Empty);
-                    if (_unitsPlural.TryGetValue(namePlural, out var unitsPlural))
-                        unitsPlural.Add(unit);
+                    var namePlural = unit.Name.Plural.ToLowerInvariant().Replace(" ", string.Empty);
+                    if (unitPlurals.TryGetValue(namePlural, out var unitPlural))
+                        unitPlurals[namePlural] = unitPlural.Add(unit);
                     else
-                        _unitsPlural[namePlural] = new List<Unit> { unit };
+                        unitPlurals[namePlural] = new SingleOrList<Unit>(unit);
 
                     if (unit.Name.Abbreviations is null)
                         continue;
 
-                    var isCurrencyCategory = unitsCategory.Name.Equals("currency", StringComparison.CurrentCultureIgnoreCase);
                     foreach (var abbreviation in unit.Name.Abbreviations)
                     {
-                        var abb = isCurrencyCategory ? abbreviation.ToLower() : abbreviation; 
-                        if (_unitsAbbreviations.TryGetValue(abb, out var unitsAbbreviations))
-                            unitsAbbreviations.Add(unit);
+                        var abbreviationLowercase = abbreviation.ToLowerInvariant();
+                        if (unitAbbreviations.TryGetValue(abbreviationLowercase, out var unitAbbreviation))
+                            unitAbbreviations[abbreviationLowercase] = unitAbbreviation.Add(unit);
                         else
-                            _unitsAbbreviations[abb] = new List<Unit> { unit };
+                            unitAbbreviations[abbreviationLowercase] = new SingleOrList<Unit>(unit);
                     }
                 }
                 
-                _units.TryAdd(unitsCategory.Name.ToLower(), unitsCategory);
+                units.TryAdd(unitsCategory.Name.ToLowerInvariant(), unitsCategory);
             }
+
+            _units = units.ToImmutableDictionary();
+            _unitSingulars = unitSingulars.ToImmutableDictionary();
+            _unitPlurals = unitPlurals.ToImmutableDictionary();
+            _unitAbbreviations = unitAbbreviations.ToImmutableDictionary();
             
             sw.Stop();
             Log.Debug($"Units loaded: {sw.ElapsedMilliseconds} ms");
@@ -96,18 +106,139 @@ namespace Rias.Services
         public UnitsCategory? GetUnitsByCategory(string category)
             => _units.TryGetValue(category.ToLower(), out var units) ? units : null;
 
-        public IEnumerable<Unit> GetUnits(string name)
+        public int GetUnits(ref string unitOneName, ref string unitTwoName, out Unit? unitOne, out Unit? unitTwo, UnitsCategory? category = null)
         {
-            if (name.Length <= 5 && _unitsAbbreviations.TryGetValue(name, out var unitsAbbreviations))
-                return unitsAbbreviations;
+            unitOne = null;
+            unitTwo = null;
             
-            name = name.ToLower().Replace(" ", string.Empty);
-            return _unitsSingular.TryGetValue(name, out var unitsSingular)
-                ? unitsSingular
-                : _unitsPlural.TryGetValue(name, out var unitsPlural)
-                    ? unitsPlural
-                    : Enumerable.Empty<Unit>();
+            var unitOneCaseSensitive = false;
+            if (unitOneName[0] == '!')
+            {
+                unitOneCaseSensitive = true;
+                unitOneName = unitOneName[1..];
+            }
+            
+            var unitTwoCaseSensitive = false;
+            if (unitTwoName[0] == '!')
+            {
+                unitTwoCaseSensitive = true;
+                unitTwoName = unitTwoName[1..];
+            }
+            
+            var unitsOne = category is null
+                ? GetUnitsInternal(unitOneName, unitOneCaseSensitive)
+                : GetUnitFromCategoryInternal(category, unitOneName, unitOneCaseSensitive);
+            
+            if (unitsOne is null)
+                return -1;
+
+            var unitsTwo = category is null
+                ? GetUnitsInternal(unitTwoName, unitTwoCaseSensitive)
+                : GetUnitFromCategoryInternal(category, unitTwoName, unitTwoCaseSensitive);
+            
+            if (unitsTwo is null)
+                return -2;
+            
+            unitOne = unitsOne.Value.Value;
+            unitTwo = unitsTwo.Value.Value;
+
+            switch (unitOne)
+            {
+                case not null when unitTwo is not null:
+                    return string.Equals(unitOne.Category.Name, unitTwo.Category.Name) ? 1 : 0;
+                case not null when unitTwo is null:
+                    unitTwo = GetCompatibleUnit(unitOne, unitsTwo.Value.List);
+                    var index = unitTwo is not null ? 1 : 0;
+                    unitTwo ??= unitsTwo.Value.List[0];
+                    return index;
+                case null when unitTwo is not null:
+                    unitOne = GetCompatibleUnit(unitTwo, unitsOne.Value.List);
+                    index = unitOne is not null ? 1 : 0;
+                    unitOne ??= unitsOne.Value.List[0];
+                    return index;
+            }
+
+            foreach (var u1 in unitsOne.Value.List)
+            {
+                foreach (var u2 in unitsTwo.Value.List)
+                {
+                    if (string.Equals(u1.Category.Name, u2.Category.Name))
+                    {
+                        unitOne = u1;
+                        unitTwo = u2;
+                        return 1;
+                    }
+                }
+            }
+
+            unitOne ??= unitsOne.Value.List[0];
+            unitTwo ??= unitsTwo.Value.List[0];
+            return 0;
         }
+
+        private SingleOrList<Unit>? GetUnitsInternal(string name, bool caseSensitive)
+        {
+            var nameLowercase = name.ToLowerInvariant().Replace(" ", string.Empty);
+            if (_unitSingulars.TryGetValue(nameLowercase, out var units))
+                return units;
+            
+            if (_unitPlurals.TryGetValue(nameLowercase, out units))
+                return units;
+
+            if (_unitAbbreviations.TryGetValue(nameLowercase, out units))
+            {
+                if (!caseSensitive)
+                    return units;
+
+                if (units.Value?.Name.Abbreviations != null && units.Value.Name.Abbreviations.Any(abb => string.Equals(abb, name)))
+                    return units;
+
+                var unitsList = units.List?.Where(u => u.Name.Abbreviations is not null && u.Name.Abbreviations.Any(abb => string.Equals(abb, name))).ToList();
+                if (unitsList is not null && unitsList.Count != 0)
+                    return new SingleOrList<Unit>(unitsList);
+            }
+
+            return null;
+        }
+
+        private SingleOrList<Unit>? GetUnitFromCategoryInternal(UnitsCategory category, string name, bool caseSensitive)
+        {
+            var nameLowercase = name.ToLowerInvariant().Replace(" ", string.Empty);
+            Unit? unitSingular = null;
+            Unit? unitPlural = null;
+            Unit? unitAbbreviation = null;
+
+            foreach (var unit in category.Units)
+            {
+                if (unitSingular is null
+                    && string.Equals(unit.Name.Singular, nameLowercase, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase))
+                    unitSingular = unit;
+                
+                if (unitPlural is null
+                    && string.Equals(unit.Name.Plural, nameLowercase, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase))
+                    unitPlural = unit;
+
+                if (unitAbbreviation is null
+                    && unit.Name.Abbreviations is not null
+                    && unit.Name.Abbreviations.Any(abb =>
+                        string.Equals(abb, caseSensitive ? name : nameLowercase, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase)))
+                    unitAbbreviation = unit;
+            }
+
+            if (unitSingular is not null)
+                return new SingleOrList<Unit>(unitSingular);
+            
+            if (unitPlural is not null)
+                return new SingleOrList<Unit>(unitPlural);
+            
+            if (unitAbbreviation is not null)
+                return new SingleOrList<Unit>(unitAbbreviation);
+
+            return null;
+        }
+
+        private Unit? GetCompatibleUnit(Unit unit, IEnumerable<Unit> units)
+            => units.FirstOrDefault(x => string.Equals(x.Category.Name, unit.Category.Name));
         
         private static void ExpressionEvaluateParameter(string name, ParameterArgs args, double value)
         {
@@ -143,8 +274,10 @@ namespace Rias.Services
                 var rateValue = exchangeRates![unitAbbreviation];
                 unit.FuncToBase = $"x / ${rateValue}";
                 unit.FuncFromBase = $"x * ${rateValue}";
+                
+                // unit.FuncToBase = $"x / ${rateValue} / 500"
             }
-            
+
             Log.Information("Currency units updated");
 
             var delay = exchangeRatesDataRedis.Expiry ?? TimeSpan.FromHours(1);
