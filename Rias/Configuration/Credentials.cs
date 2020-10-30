@@ -25,6 +25,7 @@ namespace Rias.Configuration
         public string UrbanDictionaryApiKey { get; }
         public string FixerAccessKey { get; }
         public string DiscordBotListToken { get; }
+        public string DiscordBotsToken { get; }
         public string WeebServicesToken { get; }
 
         public DatabaseConfiguration? DatabaseConfig { get; }
@@ -62,6 +63,7 @@ namespace Rias.Configuration
             UrbanDictionaryApiKey = config.GetValue<string>(nameof(UrbanDictionaryApiKey));
             FixerAccessKey = config.GetValue<string>(nameof(FixerAccessKey));
             DiscordBotListToken = config.GetValue<string>(nameof(DiscordBotListToken));
+            DiscordBotsToken = config.GetValue<string>(nameof(DiscordBotsToken));
             WeebServicesToken = config.GetValue<string>(nameof(WeebServicesToken));
 
             var databaseConfig = config.GetSection(nameof(DatabaseConfig));

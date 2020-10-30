@@ -34,14 +34,14 @@ namespace Rias.Services
     public class BotService : RiasService
     {
         public readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks = new ConcurrentDictionary<ulong, List<DiscordWebhook>>();
-
-        private readonly HttpClient DiscordBotsHttpClient;
         
         private readonly ConcurrentDictionary<int, bool> _shardsReady = new ConcurrentDictionary<int, bool>();
         private readonly ConcurrentHashSet<ulong> _unchunkedGuilds = new ConcurrentHashSet<ulong>();
+        private readonly HttpClient _discordBotsHttpClient;
         private readonly string[] _codeLanguages = { "cs", "csharp" };
         
         private Timer? _dblTimer;
+        private Timer? _dbTimer;
 
         public BotService(IServiceProvider serviceProvider)
             : base(serviceProvider)
@@ -55,7 +55,7 @@ namespace Rias.Services
             
             RunTaskAsync(RequestMembersAsync);
             
-            DiscordBotsHttpClient = new HttpClient();
+            _discordBotsHttpClient = new HttpClient();
         }
         
         public static string ReplacePlaceholders(DiscordUser user, string message)
@@ -371,7 +371,10 @@ namespace Rias.Services
 #endif
                 
                 if (!string.IsNullOrEmpty(Credentials.DiscordBotListToken))
-                    _dblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStats), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+                    _dblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStatsAsync), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+                
+                if (!string.IsNullOrEmpty(Credentials.DiscordBotsToken))
+                    _dbTimer = new Timer(_ => RunTaskAsync(PostDiscordBotsStatsAsync), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
             }
         }
 
@@ -438,7 +441,7 @@ namespace Rias.Services
             }
         }
         
-        private async Task PostDiscordBotListStats()
+        private async Task PostDiscordBotListStatsAsync()
         {
             if (RiasBot.CurrentUser is null)
                 return;
@@ -459,7 +462,36 @@ namespace Rias.Services
                 };
                 request.Headers.Add("Authorization", Credentials.DiscordBotListToken);
                 
-                await DiscordBotsHttpClient.SendAsync(request);
+                await _discordBotsHttpClient.SendAsync(request);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
+            }
+        }
+        
+        private async Task PostDiscordBotsStatsAsync()
+        {
+            if (RiasBot.CurrentUser is null)
+                return;
+            
+            try
+            {
+                using var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string?, string?>("shardCount", "14"),
+                    new KeyValuePair<string?, string?>("guildCount", "14400")
+                });
+                
+                using var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri($"https://discord.bots.gg/api/v1/bots/{RiasBot.CurrentUser.Id}/stats"),
+                    Content = content
+                };
+                request.Headers.Add("Authorization", Credentials.DiscordBotsToken);
+                
+                await _discordBotsHttpClient.SendAsync(request);
             }
             catch (Exception ex)
             {
