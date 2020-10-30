@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rias.Attributes;
-using Rias.Configuration;
 using Rias.Database;
 using Rias.Database.Entities;
 using Serilog;
@@ -20,34 +15,21 @@ namespace Rias.Services
     [AutoStart]
     public class VotesService : RiasService
     {
-        private readonly HttpClient _httpClient;
         private readonly WebSocketClient? _webSocket;
 
         public VotesService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = new HttpClient();
+            if (Credentials.VotesConfig == null) return;
             
-            var credentials = serviceProvider.GetRequiredService<Credentials>();
-            if (credentials.VotesConfig != null)
-            {
-                _webSocket = new WebSocketClient(credentials.VotesConfig);
-                RunTaskAsync(ConnectWebSocket);
-                _webSocket.DataReceived += VoteReceivedAsync;
-                _webSocket.Closed += WebSocketClosed;
+            _webSocket = new WebSocketClient(Credentials.VotesConfig);
+            RunTaskAsync(ConnectWebSocket);
+            _webSocket.DataReceived += VoteReceivedAsync;
+            _webSocket.Closed += WebSocketClosed;
                 
-                RunTaskAsync(CheckVotesAsync);
-            }
-
-            if (!string.IsNullOrEmpty(credentials.DiscordBotListToken))
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Credentials.DiscordBotListToken);
-                DblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStats), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
-            }
+            RunTaskAsync(CheckVotesAsync);
         }
-        
-        private Timer? DblTimer { get; }
-        
+
         private async Task CheckVotesAsync()
         {
             using var scope = RiasBot.CreateScope();
@@ -128,26 +110,6 @@ namespace Rias.Services
             Log.Warning("Votes WebSocket was closed. Retrying in 10 seconds...");
             await Task.Delay(10000);
             await RunTaskAsync(ConnectWebSocket);
-        }
-        
-        private async Task PostDiscordBotListStats()
-        {
-            if (RiasBot.CurrentUser is null)
-                return;
-            
-            try
-            {
-                using var content = new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string?, string?>("shard_count", RiasBot.Client.ShardClients.Count.ToString()),
-                    new KeyValuePair<string?, string?>("server_count", RiasBot.Client.ShardClients.Sum(x => x.Value.Guilds.Count).ToString())
-                });
-                await _httpClient.PostAsync($"https://top.gg/api/bots/{RiasBot.CurrentUser.Id}/stats", content);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.ToString());
-            }
         }
     }
 }

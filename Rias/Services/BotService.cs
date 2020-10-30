@@ -4,6 +4,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,14 +35,20 @@ namespace Rias.Services
     public class BotService : RiasService
     {
         public readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks = new ConcurrentDictionary<ulong, List<DiscordWebhook>>();
+
+        private readonly HttpClient _httpClient;
         
         private readonly ConcurrentDictionary<int, bool> _shardsReady = new ConcurrentDictionary<int, bool>();
         private readonly ConcurrentHashSet<ulong> _unchunkedGuilds = new ConcurrentHashSet<ulong>();
         private readonly string[] _codeLanguages = { "cs", "csharp" };
+        
+        private Timer? _dblTimer;
 
         public BotService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
+            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
+            
             RiasBot.Client.Ready += ShardReadyAsync;
             RiasBot.Client.GuildMemberAdded += GuildMemberAddedAsync;
             RiasBot.Client.GuildMemberRemoved += GuildMemberRemovedAsync;
@@ -360,6 +368,12 @@ namespace Rias.Services
 #else
                 reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser!.Username}/{RiasBot.Version}");
 #endif
+                
+                if (!string.IsNullOrEmpty(Credentials.DiscordBotListToken))
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Credentials.DiscordBotListToken);
+                    _dblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStats), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                }
                 Log.Information("All shards are connected");
             }
         }
@@ -423,6 +437,26 @@ namespace Rias.Services
                 }
                 
                 await Task.Delay(10000);
+            }
+        }
+        
+        private async Task PostDiscordBotListStats()
+        {
+            if (RiasBot.CurrentUser is null)
+                return;
+            
+            try
+            {
+                using var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string?, string?>("shard_count", RiasBot.Client.ShardClients.Count.ToString()),
+                    new KeyValuePair<string?, string?>("server_count", RiasBot.Client.ShardClients.Sum(x => x.Value.Guilds.Count).ToString())
+                });
+                await _httpClient.PostAsync($"https://top.gg/api/bots/{RiasBot.CurrentUser.Id}/stats", content);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
             }
         }
 
