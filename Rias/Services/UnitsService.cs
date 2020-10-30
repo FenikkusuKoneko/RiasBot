@@ -21,7 +21,7 @@ namespace Rias.Services
     [AutoStart]
     public class UnitsService : RiasService
     {
-        private const string ExchangeRatesApi = "https://api.exchangeratesapi.io/latest";
+        private const string ExchangeRatesApi = "http://data.fixer.io/api/latest?access_key=";
         private static readonly string UnitsPath = Path.Combine(Environment.CurrentDirectory, "assets/units");
 
         private readonly HttpClient _httpClient;
@@ -254,10 +254,10 @@ namespace Rias.Services
             var exchangeRatesDataRedis = _redisDb.StringGetWithExpiry("converter:currency");
             var exchangeRatesData = !exchangeRatesDataRedis.Value.IsNullOrEmpty
                 ? exchangeRatesDataRedis.Value.ToString()
-                : await _httpClient.GetStringAsync(ExchangeRatesApi);
+                : await _httpClient.GetStringAsync($"{ExchangeRatesApi}{Credentials.FixerAccessKey}");
             
             if (exchangeRatesDataRedis.Expiry is null)
-                await _redisDb.StringSetAsync("converter:currency", exchangeRatesData, TimeSpan.FromMinutes(59));
+                await _redisDb.StringSetAsync("converter:currency", exchangeRatesData, TimeSpan.FromHours(1));
             
             var exchangeRates = JsonConvert.DeserializeObject<JObject>(exchangeRatesData)["rates"]?
                 .ToObject<Dictionary<string, double>>();
@@ -274,8 +274,6 @@ namespace Rias.Services
                 var rateValue = exchangeRates![unitAbbreviation];
                 unit.FuncToBase = $"x / ${rateValue}";
                 unit.FuncFromBase = $"x * ${rateValue}";
-                
-                // unit.FuncToBase = $"x / ${rateValue} / 500"
             }
 
             Log.Information("Currency units updated");

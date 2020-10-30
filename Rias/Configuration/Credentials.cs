@@ -23,6 +23,7 @@ namespace Rias.Configuration
         public string DiscordBotList { get; }
 
         public string UrbanDictionaryApiKey { get; }
+        public string FixerAccessKey { get; }
         public string DiscordBotListToken { get; }
         public string WeebServicesToken { get; }
 
@@ -59,6 +60,7 @@ namespace Rias.Configuration
             DiscordBotList = config.GetValue<string>(nameof(DiscordBotList));
 
             UrbanDictionaryApiKey = config.GetValue<string>(nameof(UrbanDictionaryApiKey));
+            FixerAccessKey = config.GetValue<string>(nameof(FixerAccessKey));
             DiscordBotListToken = config.GetValue<string>(nameof(DiscordBotListToken));
             WeebServicesToken = config.GetValue<string>(nameof(WeebServicesToken));
 
