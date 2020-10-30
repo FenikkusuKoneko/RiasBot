@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +35,7 @@ namespace Rias.Services
     {
         public readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks = new ConcurrentDictionary<ulong, List<DiscordWebhook>>();
 
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient DiscordBotsHttpClient;
         
         private readonly ConcurrentDictionary<int, bool> _shardsReady = new ConcurrentDictionary<int, bool>();
         private readonly ConcurrentHashSet<ulong> _unchunkedGuilds = new ConcurrentHashSet<ulong>();
@@ -47,8 +46,6 @@ namespace Rias.Services
         public BotService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
-            
             RiasBot.Client.Ready += ShardReadyAsync;
             RiasBot.Client.GuildMemberAdded += GuildMemberAddedAsync;
             RiasBot.Client.GuildMemberRemoved += GuildMemberRemovedAsync;
@@ -56,7 +53,9 @@ namespace Rias.Services
             RiasBot.Client.GuildMembersChunked += GuildMembersChunkedAsync;
             RiasBot.Client.GuildDownloadCompleted += GuildDownloadCompletedAsync;
             
-            RunTaskAsync(RequestMembersAsync(CancellationToken.None));
+            RunTaskAsync(RequestMembersAsync);
+            
+            DiscordBotsHttpClient = new HttpClient();
         }
         
         public static string ReplacePlaceholders(DiscordUser user, string message)
@@ -359,6 +358,8 @@ namespace Rias.Services
             if (_shardsReady.Count == RiasBot.Client.ShardClients.Count && _shardsReady.All(x => x.Value))
             {
                 RiasBot.Client.Ready -= ShardReadyAsync;
+                Log.Information("All shards are connected");
+                
                 await RiasBot.Client.UseInteractivityAsync(new InteractivityConfiguration());
                 RiasBot.GetRequiredService<MuteService>();
                 
@@ -370,11 +371,7 @@ namespace Rias.Services
 #endif
                 
                 if (!string.IsNullOrEmpty(Credentials.DiscordBotListToken))
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Credentials.DiscordBotListToken);
-                    _dblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStats), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
-                }
-                Log.Information("All shards are connected");
+                    _dblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStats), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
             }
         }
 
@@ -418,8 +415,9 @@ namespace Rias.Services
             return Task.CompletedTask;
         }
 
-        private async Task RequestMembersAsync(CancellationToken ct)
+        private async Task RequestMembersAsync()
         {
+            var ct = CancellationToken.None;
             while (!ct.IsCancellationRequested)
             {
                 while (!_unchunkedGuilds.IsEmpty)
@@ -452,7 +450,16 @@ namespace Rias.Services
                     new KeyValuePair<string?, string?>("shard_count", RiasBot.Client.ShardClients.Count.ToString()),
                     new KeyValuePair<string?, string?>("server_count", RiasBot.Client.ShardClients.Sum(x => x.Value.Guilds.Count).ToString())
                 });
-                await _httpClient.PostAsync($"https://top.gg/api/bots/{RiasBot.CurrentUser.Id}/stats", content);
+                
+                using var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri($"https://top.gg/api/bots/{RiasBot.CurrentUser.Id}/stats"),
+                    Content = content
+                };
+                request.Headers.Add("Authorization", Credentials.DiscordBotListToken);
+                
+                await DiscordBotsHttpClient.SendAsync(request);
             }
             catch (Exception ex)
             {

@@ -28,17 +28,12 @@ namespace Rias.Services
         public const int ProfileThirdBadgeTier = 4;
 
         private readonly WebSocketClient? _webSocket;
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient? _httpClient;
         private readonly Timer? _sendPatronsTimer;
 
         public PatreonService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = new HttpClient
-            {
-                Timeout = TimeSpan.FromMinutes(1)
-            };
-            
             var credentials = serviceProvider.GetRequiredService<Credentials>();
             if (credentials.PatreonConfig != null)
             {
@@ -49,6 +44,7 @@ namespace Rias.Services
                 
                 RunTaskAsync(CheckPatronsAsync);
                 
+                _httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(1) };
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(credentials.PatreonConfig.Authorization!);
                 _sendPatronsTimer = new Timer(_ => RunTaskAsync(SendPatronsAsync), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             }
@@ -159,9 +155,9 @@ namespace Rias.Services
             {
                 var data = JsonConvert.SerializeObject(patrons, Formatting.Indented);
 #if RIAS_GLOBAL
-                await _httpClient.PostAsync("https://riasbot.me/api/patreon", new StringContent(data));
+                await _httpClient!.PostAsync("https://riasbot.me/api/patreon", new StringContent(data));
 #elif DEBUG
-                await _httpClient.PostAsync("https://localhost/api/patreon", new StringContent(data));
+                await _httpClient!.PostAsync("https://localhost/api/patreon", new StringContent(data));
 #endif
             }
             catch

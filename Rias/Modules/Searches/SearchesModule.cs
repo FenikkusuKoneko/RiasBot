@@ -65,11 +65,11 @@ namespace Rias.Modules.Searches
             
             await Context.Channel.TriggerTypingAsync();
             
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("x-rapidapi-key", Credentials.UrbanDictionaryApiKey);
-            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"https://mashape-community-urban-dictionary.p.rapidapi.com/define?term={Uri.EscapeUriString(term)}");
+            request.Headers.Add("x-rapidapi-key", Credentials.UrbanDictionaryApiKey);
+            request.Headers.Add("Accept", "application/json");
 
-            using var response = await httpClient.GetAsync($"https://mashape-community-urban-dictionary.p.rapidapi.com/define?term={Uri.EscapeUriString(term)}");
+            using var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 await ReplyErrorAsync(Localization.SearchesDefinitionNotFound);

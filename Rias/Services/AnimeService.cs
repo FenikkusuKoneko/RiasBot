@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,7 @@ namespace Rias.Services
         public AnimeService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
         
         public async Task<ICharacterEntity?> GetOrAddCharacterAsync(string name)
@@ -139,7 +140,8 @@ namespace Rias.Services
         {
             try
             {
-                using var response = await _httpClient.GetAsync(characterUrl);
+                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                using var response = await _httpClient.GetAsync(characterUrl, cts.Token);
                 return response.IsSuccessStatusCode;
             }
             catch

@@ -14,8 +14,7 @@ namespace Rias.Services
             : base(serviceProvider)
         {
             _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Add("Authorization", "Wolke " + Credentials.WeebServicesToken);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Wolke {Credentials.WeebServicesToken}");
         }
 
         public void AddWeebUserAgent(string weebUserAgent)

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -45,10 +46,7 @@ namespace Rias.Services
             : base(serviceProvider)
         {
             _animeService = serviceProvider.GetRequiredService<AnimeService>();
-            _httpClient = new HttpClient
-            {
-                Timeout = TimeSpan.FromSeconds(10)
-            };
+            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
         
         public async Task<Stream> GenerateProfileImageAsync(DiscordMember member)
@@ -459,7 +457,8 @@ namespace Rias.Services
                 if (useCustomImage && waifu is WaifusEntity waifus && !string.IsNullOrEmpty(waifus.CustomImageUrl))
                     imageUrl = waifus.CustomImageUrl;
 
-                using var response = await _httpClient.GetAsync(imageUrl);
+                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                using var response = await _httpClient.GetAsync(imageUrl, cts.Token);
                 if (response.IsSuccessStatusCode)
                 {
                     await using var waifuStream = await response.Content.ReadAsStreamAsync();
