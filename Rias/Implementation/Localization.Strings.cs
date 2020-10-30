@@ -226,6 +226,7 @@ namespace Rias.Implementation
         public const string GamblingBlackjackSession = "gambling_blackjack_session";
         public const string GamblingBlackjackNoSession = "gambling_blackjack_no_session";
         public const string GamblingBlackjackStopped = "gambling_blackjack_stopped";
+        public const string GamblingCurrency = "gambling_currency";
         public const string GamblingHearts = "gambling_hearts";
         public const string GamblingCurrencyYou = "gambling_currency_you";
         public const string GamblingCurrencyYouVote = "gambling_currency_you_vote";

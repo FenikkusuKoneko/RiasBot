@@ -33,13 +33,18 @@ namespace Rias
         public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new ConcurrentHashSet<ulong>();
         public readonly ConcurrentDictionary<ulong, DiscordMember> Members = new ConcurrentDictionary<ulong, DiscordMember>();
 
-        private readonly Credentials _credentials; 
+        private readonly Credentials _credentials;
         private readonly IServiceProvider _serviceProvider;
         
         public RiasBot()
         {
+#if DEBUG
+            Log.Information($"Initializing development RiasBot version {Version}");
+#elif RIAS_GLOBAL
+            Log.Information($"Initializing RiasBot version {Version}");
+#endif
+            
             _credentials = new Credentials();
-            Log.Information(!_credentials.IsDevelopment ? $"Initializing RiasBot version {Version}" : $"Initializing development RiasBot version {Version}");
             VerifyCredentials();
             
             Client = new DiscordShardedClient(new DiscordConfiguration

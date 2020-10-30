@@ -23,6 +23,8 @@ namespace Rias.Services
 #if DEBUG
         public const string MuteRole = "rias-mute-dev";
 #elif RELEASE
+        public const string MuteRole = "muted";
+#elif RIAS_GLOBAL
         public const string MuteRole = "rias-mute";
 #endif
         

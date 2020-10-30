@@ -67,7 +67,7 @@ namespace Rias.Services
             var assembly = Assembly.GetAssembly(typeof(RiasBot));
             _commandService.AddModules(assembly, null, module => SetUpModule(module, modulesInfo));
             
-#if RELEASE
+#if !DEBUG
             var testModule = _commandService.GetAllModules().FirstOrDefault(x => string.Equals(x.Name, "Test"));
             if (testModule is not null)
                 _commandService.RemoveModule(testModule);

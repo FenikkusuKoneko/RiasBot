@@ -234,6 +234,7 @@
   "gambling_blackjack_session": "You are already in a blackjack session! Type `{0}blackjack resume` to continue the session in this channel.",
   "gambling_blackjack_no_session": "You are not in a blackjack session.",
   "gambling_blackjack_stopped": "Blackjack stopped.",
+  "gambling_currency": "Currency",
   "gambling_hearts": "Hearts",
   "gambling_currency_you": "You have {0} {1}.",
   "gambling_currency_you_vote": "You have {0} {1}.\n\nDo you want more? You can vote me on [Discord Bot List]({2}) to receive extra {1} and please check the [Patreon page]({3}).",

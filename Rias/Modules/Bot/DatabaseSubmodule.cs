@@ -62,12 +62,18 @@ namespace Rias.Modules.Bot
                 }
 
                 var mutualGuilds = user is DiscordMember cachedUser ? cachedUser.GetMutualGuilds(RiasBot).Count() : 0;
+
+#if RELEASE
+                var currency = GetText(Localization.GamblingCurrency);
+#else
+                var currency = GetText(Localization.GamblingHearts);
+#endif
                 
                 var embed = new DiscordEmbedBuilder()
                     .WithColor(RiasUtilities.ConfirmColor)
                     .WithAuthor(user.FullName(), user.GetAvatarUrl(ImageFormat.Auto))
                     .AddField(GetText(Localization.CommonId), user.Id.ToString(), true)
-                    .AddField(GetText(Localization.GamblingHearts), $"{userDb.Currency} {Credentials.Currency}", true)
+                    .AddField(currency, $"{userDb.Currency} {Credentials.Currency}", true)
                     .AddField(GetText(Localization.XpGlobalLevel), RiasUtilities.XpToLevel(userDb.Xp, 30).ToString(), true)
                     .AddField(GetText(Localization.XpGlobalXp), userDb.Xp.ToString(), true)
                     .AddField(GetText(Localization.BotIsBlacklisted), userDb.IsBlacklisted.ToString(), true)

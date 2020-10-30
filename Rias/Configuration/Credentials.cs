@@ -29,9 +29,7 @@ namespace Rias.Configuration
         public DatabaseConfiguration? DatabaseConfig { get; }
         public VotesConfiguration? VotesConfig { get; }
         public PatreonConfiguration? PatreonConfig { get; }
-
-        public bool IsDevelopment { get; }
-
+        
         private string _credsPath = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
 
         public Credentials()
@@ -94,8 +92,6 @@ namespace Rias.Configuration
                 UrlParameters = patreonConfig.GetValue<string>(nameof(PatreonConfig.UrlParameters)),
                 Authorization = patreonConfig.GetValue<string>(nameof(PatreonConfig.Authorization))
             };
-            
-            IsDevelopment = config.GetValue<bool>(nameof(IsDevelopment));
         }
     }
 }

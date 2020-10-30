@@ -19,7 +19,7 @@ namespace Rias.Services
 {
     public class ProfileService : RiasService
     {
-        private static readonly string _defaultBackgroundPath = Path.Combine(Environment.CurrentDirectory, "assets/images/default_background.png");
+        private static readonly string DefaultBackgroundPath = Path.Combine(Environment.CurrentDirectory, "assets/images/default_background.png");
 
         private readonly AnimeService _animeService;
         private readonly HttpClient _httpClient;
@@ -153,9 +153,16 @@ namespace Rias.Services
             
             settings.FillColor = MagickColors.White;
             settings.FontPointsize = 15;
-
+            
             var guildId = member.Guild.Id;
-            using var currencyTextImage = new MagickImage($"caption:{GetText(guildId, Localization.GamblingHearts)}", settings);
+
+#if RELEASE
+            var currency = GetText(guildId, Localization.GamblingCurrency);
+#else
+            var currency = GetText(guildId, Localization.GamblingHearts);
+#endif
+
+            using var currencyTextImage = new MagickImage($"caption:{currency}", settings);
             image.Draw(new DrawableComposite(segmentLength - (double)currencyTextImage.Width / 2, 315, CompositeOperator.Over, currencyTextImage));
             
             using var waifusTextImage = new MagickImage($"caption:{GetText(guildId, Localization.WaifuWaifus)}", settings);
@@ -250,7 +257,7 @@ namespace Rias.Services
         
         private void AddBackground(MagickImage? backgroundImage, MagickImage image, ProfileInfo profileInfo)
         {
-            using var background = backgroundImage ?? new MagickImage(_defaultBackgroundPath);
+            using var background = backgroundImage ?? new MagickImage(DefaultBackgroundPath);
             var backgroundDrawable = new DrawableComposite(
                 (double)(background.Width - 500) / 2,
                 (double)(background.Height - 250) / 2,
