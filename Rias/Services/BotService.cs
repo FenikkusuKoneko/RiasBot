@@ -479,8 +479,8 @@ namespace Rias.Services
             {
                 using var content = new FormUrlEncodedContent(new[]
                 {
-                    new KeyValuePair<string?, string?>("shardCount", "14"),
-                    new KeyValuePair<string?, string?>("guildCount", "14400")
+                    new KeyValuePair<string?, string?>("shardCount", RiasBot.Client.ShardClients.Count.ToString()),
+                    new KeyValuePair<string?, string?>("guildCount", RiasBot.Client.ShardClients.Sum(x => x.Value.Guilds.Count).ToString())
                 });
                 
                 using var request = new HttpRequestMessage
