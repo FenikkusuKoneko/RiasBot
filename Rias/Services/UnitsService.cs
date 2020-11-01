@@ -279,6 +279,12 @@ namespace Rias.Services
             var exchangeRates = JsonConvert.DeserializeObject<JObject>(exchangeRatesData)["rates"]?
                 .ToObject<Dictionary<string, double>>();
 
+            if (exchangeRates is null)
+            {
+                Log.Error("The \"rates\" field is not present in the exchange rates data!");
+                return;
+            }
+
             var currencyUnits = _units["currency"];
             foreach (var unit in currencyUnits.Units)
             {
@@ -287,8 +293,13 @@ namespace Rias.Services
                 // ignore EUR because it's the base
                 if (string.Equals(unitAbbreviation, "eur", StringComparison.OrdinalIgnoreCase))
                     continue;
+
+                if (!exchangeRates.TryGetValue(unitAbbreviation, out var rateValue))
+                {
+                    Log.Warning($"The unit {unitAbbreviation} is not present in the exchange rates dictionary.");
+                    continue;
+                }
                 
-                var rateValue = exchangeRates![unitAbbreviation];
                 unit.FuncToBase = $"x / ${rateValue}";
                 unit.FuncFromBase = $"x * ${rateValue}";
             }
