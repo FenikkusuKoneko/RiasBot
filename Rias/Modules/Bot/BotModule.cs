@@ -134,7 +134,7 @@ namespace Rias.Modules.Bot
                     return;
                 }
 
-                var permissions = Context.CurrentMember!.PermissionsIn(channel);
+                var permissions = channel.Guild.CurrentMember.PermissionsIn(channel);
                 if (!permissions.HasPermission(Permissions.AccessChannels))
                 {
                     await ReplyErrorAsync(Localization.AdministrationTextChannelNoViewPermission);
@@ -225,7 +225,7 @@ namespace Rias.Modules.Bot
                 return;
             }
             
-            var permissions = Context.CurrentMember!.PermissionsIn(channel);
+            var permissions = channel.Guild.CurrentMember.PermissionsIn(channel);
             if (!permissions.HasPermission(Permissions.AccessChannels))
             {
                 await ReplyErrorAsync(Localization.AdministrationTextChannelNoViewPermission);
@@ -261,7 +261,7 @@ namespace Rias.Modules.Bot
                 return;
             }
 
-            if (discordMessage.Author.Id != Context.CurrentMember.Id)
+            if (discordMessage.Author.Id != channel.Guild.CurrentMember.Id)
             {
                 await ReplyErrorAsync(Localization.BotMessageNotSelf);
                 return;
