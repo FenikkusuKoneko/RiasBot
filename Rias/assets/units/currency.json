@@ -12,9 +12,135 @@
     },
     {
       "name": {
+        "singular": "United Arab Emirates dirham",
+        "plural": "United Arab Emirates dirhams",
+        "abbreviations": [ "AED" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Afghan afghani",
+        "plural": "Afghan afghani",
+        "abbreviations": [ "AFN" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Albanian lek",
+        "plural": "Albanian lekë",
+        "abbreviations": [ "ALL" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Armenian dram",
+        "plural": "Armenian dram",
+        "abbreviations": [ "AMD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Netherlands Antillean guilder",
+        "plural": "Netherlands Antillean guilders",
+        "abbreviations": [ "ANG" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Angolan kwanza",
+        "plural": "ngolan kwanzas",
+        "abbreviations": [ "AOA" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Argentine peso",
+        "plural": "Argentine pesos",
+        "abbreviations": [ "ARS" ]
+      }
+    },
+    {
+      "name": {
         "singular": "Australian dollar",
         "plural": "Australian dollars",
         "abbreviations": [ "AUD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Aruban florin",
+        "plural": "Aruban florin",
+        "abbreviations": [ "AWG" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Azerbaijani manat",
+        "plural": "Azerbaijani manat",
+        "abbreviations": [ "AZN" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Bosnia and Herzegovina convertible mark",
+        "plural": "Bosnia and Herzegovina convertible marks",
+        "abbreviations": [ "BAM" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Barbadian dollar",
+        "plural": "Barbadian dollars",
+        "abbreviations": [ "BBD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Bangladeshi taka",
+        "plural": "Bangladeshi taka",
+        "abbreviations": [ "BDT" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Bulgarian lev",
+        "plural": "Bulgarian leva",
+        "abbreviations": [ "BGN" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Bahraini dinar",
+        "plural": "Bahraini dinar",
+        "abbreviations": [ "BHD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Burundian franc",
+        "plural": "Burundian franc",
+        "abbreviations": [ "BIF" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Bermudian dollar",
+        "plural": "Bermudian dollars",
+        "abbreviations": [ "BMD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Brunei dollar",
+        "plural": "Brunei dollars",
+        "abbreviations": [ "BND" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Bolivian boliviano",
+        "plural": "Bolivian boliviano",
+        "abbreviations": [ "BOB" ]
       }
     },
     {
@@ -26,9 +152,44 @@
     },
     {
       "name": {
-        "singular": "Bulgarian lev",
-        "plural": "Bulgarian leva",
-        "abbreviations": [ "BGN" ]
+        "singular": "Bahamian dollar",
+        "plural": "Bahamian dollars",
+        "abbreviations": [ "BSD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Bitcoin",
+        "plural": "Bitcoins",
+        "abbreviations": [ "BTC" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Bhutanese ngultrum",
+        "plural": "Bhutanese ngultrum",
+        "abbreviations": [ "BTN" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Botswana pula",
+        "plural": "Botswana pula",
+        "abbreviations": [ "BWP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Belarusian ruble",
+        "plural": "Belarusian ruble",
+        "abbreviations": [ "BYN" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Belize dollar",
+        "plural": "Belize dollars",
+        "abbreviations": [ "BYN" ]
       }
     },
     {
