@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NCalc;
@@ -27,10 +28,12 @@ namespace Rias.Services
         private readonly HttpClient _httpClient;
         private readonly IDatabase _redisDb;
 
-        private readonly ImmutableDictionary<string, UnitsCategory> _units;
-        private readonly ImmutableDictionary<string, SingleOrList<Unit>> _unitSingulars;
-        private readonly ImmutableDictionary<string, SingleOrList<Unit>> _unitPlurals;
-        private readonly ImmutableDictionary<string, SingleOrList<Unit>> _unitAbbreviations;
+        private ImmutableDictionary<string, UnitsCategory> _units = null!;
+        private ImmutableDictionary<string, SingleOrList<Unit>> _unitSingulars = null!;
+        private ImmutableDictionary<string, SingleOrList<Unit>> _unitPlurals = null!;
+        private ImmutableDictionary<string, SingleOrList<Unit>> _unitAbbreviations = null!;
+
+        private CancellationTokenSource _updateCurrencyUnitsCts = new CancellationTokenSource();
 
         public UnitsService(IServiceProvider serviceProvider)
             : base(serviceProvider)
@@ -39,6 +42,25 @@ namespace Rias.Services
             _redisDb = serviceProvider.GetRequiredService<ConnectionMultiplexer>().GetDatabase();
             var sw = Stopwatch.StartNew();
             
+            LoadUnits();
+
+            sw.Stop();
+            Log.Debug($"Units loaded: {sw.ElapsedMilliseconds} ms");
+
+            RunTaskAsync(UpdateCurrencyUnitsAsync);
+        }
+
+        public void ReloadUnits()
+        {
+            _updateCurrencyUnitsCts.Cancel();
+            _updateCurrencyUnitsCts.Dispose();
+            _updateCurrencyUnitsCts = new CancellationTokenSource();
+            LoadUnits();
+            RunTaskAsync(UpdateCurrencyUnitsAsync);
+        }
+
+        private void LoadUnits()
+        {
             var units = new Dictionary<string, UnitsCategory>();
             var unitSingulars = new Dictionary<string, SingleOrList<Unit>>();
             var unitPlurals = new Dictionary<string, SingleOrList<Unit>>();
@@ -82,11 +104,6 @@ namespace Rias.Services
             _unitSingulars = unitSingulars.ToImmutableDictionary();
             _unitPlurals = unitPlurals.ToImmutableDictionary();
             _unitAbbreviations = unitAbbreviations.ToImmutableDictionary();
-            
-            sw.Stop();
-            Log.Debug($"Units loaded: {sw.ElapsedMilliseconds} ms");
-
-            RunTaskAsync(UpdateCurrencyUnitsAsync);
         }
 
         public double Convert(Unit unit1, Unit unit2, double value)
@@ -279,7 +296,10 @@ namespace Rias.Services
             Log.Information("Currency units updated");
 
             var delay = exchangeRatesDataRedis.Expiry ?? TimeSpan.FromHours(1);
-            await Task.Delay(delay);
+            await Task.Delay(delay, _updateCurrencyUnitsCts.Token);
+            if (_updateCurrencyUnitsCts.IsCancellationRequested)
+                return;
+            
             await RunTaskAsync(UpdateCurrencyUnitsAsync);
         }
     }

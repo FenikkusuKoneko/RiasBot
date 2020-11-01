@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
 using Rias.Extensions;
@@ -14,9 +15,16 @@ namespace Rias.Modules.Bot
     [Name("Bot")]
     public partial class BotModule : RiasModule<BotService>
     {
+        private readonly IServiceProvider _serviceProvider;
+        private readonly CommandHandlerService _commandHandlerService;
+        private readonly UnitsService _unitsService;
+        
         public BotModule(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
+            _serviceProvider = serviceProvider;
+            _commandHandlerService = serviceProvider.GetRequiredService<CommandHandlerService>();
+            _unitsService = serviceProvider.GetRequiredService<UnitsService>();
         }
         
         [Command("leaveguild")]
@@ -59,6 +67,35 @@ namespace Rias.Modules.Bot
         {
             await ReplyConfirmationAsync(Localization.BotUpdate);
             Environment.Exit(69);
+        }
+
+        [Command("reload")]
+        [OwnerOnly]
+        public async Task ReloadAsync(string subcommand)
+        {
+            switch (subcommand.ToLower())
+            {
+                case "config":
+                case "configuration":
+                case "creds":
+                case "credentials":
+                    Credentials.LoadCredentials();
+                    await ReplyConfirmationAsync(Localization.BotCredentialsReloaded);
+                    break;
+                case "commands":
+                    _commandHandlerService.ReloadCommands();
+                    await ReplyConfirmationAsync(Localization.BotCommandsReloaded);
+                    break;
+                case "locales":
+                case "translations":
+                    Localization.Reload(_serviceProvider);
+                    await ReplyConfirmationAsync(Localization.BotLocalesReloaded);
+                    break;
+                case "units":
+                    _unitsService.ReloadUnits();
+                    await ReplyConfirmationAsync(Localization.BotUnitsReloaded);
+                    break;
+            }
         }
         
         [Command("send")]

@@ -544,6 +544,18 @@ Administrators can clear any warning and moderators can clear only their added w
         </remarks>
       </command>
       <command>
+        <aliases>reload refresh</aliases>
+        <description>Reload the credentials, commands information, the translations/locales or the converter units from their json/xml files.</description>
+        <remarks>
+          <remark>{0}reload creds</remark>
+          <remark>{0}reload config</remark>
+          <remark>{0}reload locales</remark>
+          <remark>{0}reload translations</remark>
+          <remark>{0}reload commands</remark>
+          <remark>{0}reload units</remark>
+        </remarks>
+      </command>
+      <command>
         <aliases>send</aliases>
         <description>I will send a message to a user &lt;u:user-id&gt; or to a channel from a server &lt;c:channel-id&gt;. Embed is supported.</description>
         <remarks>

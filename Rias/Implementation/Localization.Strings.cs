@@ -166,6 +166,10 @@ namespace Rias.Implementation
         public const string BotLeftGuild = "bot_left_guild";
         public const string BotShutdown = "bot_shutdown";
         public const string BotUpdate = "bot_update";
+        public const string BotCredentialsReloaded = "bot_credentials_reloaded";
+        public const string BotCommandsReloaded = "bot_commands_reloaded";
+        public const string BotLocalesReloaded = "bot_locales_reloaded";
+        public const string BotUnitsReloaded = "bot_units_reloaded";
         public const string BotChannelNotTextChannel = "bot_channel_not_text_channel";
         public const string BotTextChannelNoSendMessagesPermission = "bot_text_channel_no_send_messages_permission";
         public const string BotUserIsBot = "bot_user_is_bot";

@@ -23,7 +23,20 @@ namespace Rias.Implementation
         public Localization(IServiceProvider serviceProvider)
         {
             var sw = Stopwatch.StartNew();
-            
+            Load(serviceProvider);
+            sw.Stop();
+            Log.Information($"Locales loaded: {sw.ElapsedMilliseconds} ms");
+        }
+
+        public void Reload(IServiceProvider serviceProvider)
+        {
+            _locales.Clear();
+            _guildLocales.Clear();
+            Load(serviceProvider);
+        }
+
+        private void Load(IServiceProvider serviceProvider)
+        {
             foreach (var locale in Directory.GetFiles(_localesPath))
             {
                 var fileName = Path.GetFileNameWithoutExtension(locale);
@@ -38,9 +51,6 @@ namespace Rias.Implementation
             {
                 _guildLocales.TryAdd(localeDb.GuildId, localeDb.Locale!);
             }
-            
-            sw.Stop();
-            Log.Information($"Locales loaded: {sw.ElapsedMilliseconds} ms");
         }
         
         public void SetGuildLocale(ulong guildId, string locale)

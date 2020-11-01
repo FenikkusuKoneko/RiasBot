@@ -47,15 +47,21 @@ namespace Rias.Services
             _botService = serviceProvider.GetRequiredService<BotService>();
             _xpService = serviceProvider.GetRequiredService<XpService>();
             
-            LoadCommands();
-            LoadTypeParsers();
-
             RiasBot.Client.MessageCreated += MessageCreatedAsync;
+            
+            var sw = Stopwatch.StartNew();
+            LoadCommands();
+            sw.Stop();
+            Log.Information($"Commands loaded: {sw.ElapsedMilliseconds} ms");
+            
+            LoadTypeParsers();
         }
 
-        private void LoadCommands()
+        public void ReloadCommands()
+            => LoadCommands(true);
+
+        private void LoadCommands(bool reload = false)
         {
-            var sw = Stopwatch.StartNew();
             var commandsXml = XElement.Load(_commandsPath);
             var modulesInfo = LoadXmlModules(commandsXml.Elements("module")).ToList();
             
@@ -63,6 +69,9 @@ namespace Rias.Services
             {
                 throw new KeyNotFoundException("The modules node array couldn't be loaded");
             }
+            
+            if (reload)
+                _commandService.RemoveAllModules();
 
             var assembly = Assembly.GetAssembly(typeof(RiasBot));
             _commandService.AddModules(assembly, null, module => SetUpModule(module, modulesInfo));
@@ -72,9 +81,6 @@ namespace Rias.Services
             if (testModule is not null)
                 _commandService.RemoveModule(testModule);
 #endif
-
-            sw.Stop();
-            Log.Information($"Commands loaded: {sw.ElapsedMilliseconds} ms");
         }
         
 #pragma warning disable 8604

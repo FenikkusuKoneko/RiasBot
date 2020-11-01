@@ -8,33 +8,40 @@ namespace Rias.Configuration
 {
     public class Credentials
     {
-        public string Prefix { get; }
-        public string Token { get; }
+        public string Prefix { get; private set; } = null!;
+        public string Token { get; private set; } = null!;
 
-        public ulong MasterId { get; }
-        public string Currency { get; }
+        public ulong MasterId { get; private set; }
+        public string Currency { get; private set; } = null!;
 
-        public string Invite { get; }
-        public string OwnerServerInvite { get; }
-        public ulong OwnerServerId { get; }
+        public string? Invite { get; private set; }
+        public string? OwnerServerInvite { get; private set; }
+        public ulong OwnerServerId { get; private set; }
 
-        public string Patreon { get; }
-        public string Website { get; }
-        public string DiscordBotList { get; }
+        
+        // TODO: If Patreon is null then disable related commands
+        public string Patreon { get; private set; } = null!;
+        public string? Website { get; private set; }
+        public string? DiscordBotList { get; private set; }
 
-        public string UrbanDictionaryApiKey { get; }
-        public string FixerAccessKey { get; }
-        public string DiscordBotListToken { get; }
-        public string DiscordBotsToken { get; }
-        public string WeebServicesToken { get; }
+        public string? UrbanDictionaryApiKey { get; private set; }
+        public string? FixerAccessKey { get; private set; }
+        public string? DiscordBotListToken { get; private set; }
+        public string? DiscordBotsToken { get; private set; }
+        public string? WeebServicesToken { get; private set; }
 
-        public DatabaseConfiguration? DatabaseConfig { get; }
-        public VotesConfiguration? VotesConfig { get; }
-        public PatreonConfiguration? PatreonConfig { get; }
+        public DatabaseConfiguration? DatabaseConfig { get; private set; }
+        public VotesConfiguration? VotesConfig { get; private set; }
+        public PatreonConfiguration? PatreonConfig { get; private set; }
         
         private string _credsPath = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
 
         public Credentials()
+        {
+            LoadCredentials();
+        }
+
+        public void LoadCredentials()
         {
             var config = new ConfigurationBuilder().AddJsonFile(_credsPath).Build();
 
