@@ -466,7 +466,7 @@ namespace Rias.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex.ToString());
+                Log.Warning(ex.ToString());
             }
         }
         
@@ -495,7 +495,7 @@ namespace Rias.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex.ToString());
+                Log.Warning(ex.ToString());
             }
         }
 

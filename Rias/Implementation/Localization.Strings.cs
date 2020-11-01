@@ -575,7 +575,8 @@ namespace Rias.Implementation
         
         public static readonly (string Locale, string Language)[] Locales =
         {
-            ("EN", "English")
+            ("EN", "English"),
+            ("FR", "French")
         };
     }
 }
