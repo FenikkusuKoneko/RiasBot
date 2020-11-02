@@ -127,6 +127,9 @@ namespace Rias.Services
             if (args.Message.Id != blackjack.Message?.Id)
                 return Task.CompletedTask;
 
+            if (!blackjack.IsRunning)
+                return Task.CompletedTask;
+
             return RunTaskAsync(ProcessBlackjackAsync(blackjack, args.Emoji));
         }
         
@@ -136,6 +139,9 @@ namespace Rias.Services
                 return Task.CompletedTask;
 
             if (args.Message.Id != blackjack.Message?.Id)
+                return Task.CompletedTask;
+            
+            if (!blackjack.IsRunning)
                 return Task.CompletedTask;
             
             return RunTaskAsync(ProcessBlackjackAsync(blackjack, args.Emoji));

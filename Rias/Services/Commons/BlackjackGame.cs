@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using Rias.Extensions;
 using Rias.Implementation;
-using Serilog;
 
 namespace Rias.Services.Commons
 {
@@ -22,6 +22,7 @@ namespace Rias.Services.Commons
         private int _userCurrency;
         
         private Timer _timer;
+        private bool _isEnded;
 
         private BlackjackHand? _playerHand;
         private BlackjackHand? _playerSecondHand;
@@ -37,9 +38,7 @@ namespace Rias.Services.Commons
         public DiscordMessage? Message { get; private set; }
         
         public bool IsRunning { get; private set; }
-        
-        private bool IsEnded { get; set; }
-        
+
         private enum HandState
         {
             Playing,
@@ -63,7 +62,7 @@ namespace Rias.Services.Commons
             _embedColor = DiscordColor.White;
             _bet = bet;
             IsRunning = true;
-            IsEnded = false;
+            _isEnded = false;
             _playerSecondHand = null;
 
             _playerHand = new BlackjackHand();
@@ -149,24 +148,17 @@ namespace Rias.Services.Commons
             _playerSecondHand.Cards.Add(_playerHand.Cards[1]);
             _playerHand.Cards[1] = _deck.Dequeue();
             _playerSecondHand.Cards.Add(_deck.Dequeue());
-
-            // TODO: check for messages permission when deleting the reactions
-            try
-            {
-                await Message!.DeleteReactionsEmojiAsync(_service.SplitEmoji);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error in BlackjackGame");
-            }
             
+            if (CheckManageMessagesPermission())
+                await Message!.DeleteReactionsEmojiAsync(_service.SplitEmoji);
+
             await ProcessGameAsync();
         }
 
         public void StopGame()
         {
             IsRunning = false;
-            if (IsEnded)
+            if (_isEnded)
                 TerminateSession();
             else
                 IsRunning = false;
@@ -300,16 +292,9 @@ namespace Rias.Services.Commons
                 _embed.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitle, _bet, _service.Credentials.Currency));
                 _embed.WithDescription(description);
                 StopGame();
-                
-                // TODO: check for messages permission when deleting the reactions
-                try
-                {
+
+                if (CheckManageMessagesPermission())
                     await Message!.DeleteAllReactionsAsync();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Error in BlackjackGame");
-                }
             }
             else
             {
@@ -350,11 +335,26 @@ namespace Rias.Services.Commons
         {
             if (IsRunning)
             {
-                IsEnded = true;
+                _isEnded = true;
                 return;
             }
             
             _service.RemoveSession(_member);
+        }
+
+        private bool CheckManageMessagesPermission()
+        {
+            var currentMember = _member.Guild.CurrentMember;
+            var channel = Message!.Channel;
+                
+            var channelPermissions = currentMember.PermissionsIn(channel);
+            var channelManageMessagesPerm = channelPermissions.HasPermission(Permissions.ManageMessages);
+            var guildManageMessagesPerm = currentMember.GetPermissions().HasPermission(Permissions.ManageMessages);
+
+            if (channelManageMessagesPerm && guildManageMessagesPerm)
+                return true;
+            
+            return channelManageMessagesPerm;
         }
 
         private class BlackjackHand
