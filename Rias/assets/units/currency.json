@@ -5,10 +5,8 @@
       "name": {
         "singular": "Euro",
         "plural": "Euro",
-        "abbreviations": [ "EUR" ]
-      },
-      "func_to_base": "x",
-      "func_from_base": "x"
+        "abbreviations": [ "EUR", "€" ]
+      }
     },
     {
       "name": {
@@ -111,14 +109,14 @@
     {
       "name": {
         "singular": "Bahraini dinar",
-        "plural": "Bahraini dinar",
+        "plural": "Bahraini dinars",
         "abbreviations": [ "BHD" ]
       }
     },
     {
       "name": {
         "singular": "Burundian franc",
-        "plural": "Burundian franc",
+        "plural": "Burundian francs",
         "abbreviations": [ "BIF" ]
       }
     },
@@ -189,7 +187,7 @@
       "name": {
         "singular": "Belize dollar",
         "plural": "Belize dollars",
-        "abbreviations": [ "BYN" ]
+        "abbreviations": [ "BZD" ]
       }
     },
     {
@@ -201,16 +199,72 @@
     },
     {
       "name": {
-        "singular": "Chinese yuan",
-        "plural": "Chinese yuans",
-        "abbreviations": [ "CNY" ]
+        "singular": "Congolese franc",
+        "plural": "Congolese francs",
+        "abbreviations": [ "CDF" ]
       }
     },
     {
       "name": {
-        "singular": "Croatian kuna",
-        "plural": "Croatian kune",
-        "abbreviations": [ "HRK" ]
+        "singular": "Swiss franc",
+        "plural": "Swiss francs",
+        "abbreviations": [ "CHF" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Unidad de Fomento",
+        "plural": "Unidades de Fomento",
+        "abbreviations": [ "CLF" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Chilean peso",
+        "plural": "Chilean pesos",
+        "abbreviations": [ "CLP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Chinese yuan",
+        "plural": "Chinese yuans",
+        "abbreviations": [ "CNY", "yuan", "yuans" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Colombian peso",
+        "plural": "Colombian pesos",
+        "abbreviations": [ "COP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Costa Rican colón",
+        "plural": "Costa Rican colónes",
+        "abbreviations": [ "CRC" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Cuban convertible peso",
+        "plural": "Cuban convertible pesos",
+        "abbreviations": [ "CUC" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Cuban peso",
+        "plural": "Cuban pesos",
+        "abbreviations": ["CUP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Cape Verdean escudo",
+        "plural": "Cape Verdean escudo",
+        "abbreviations": [ "CVE" ]
       }
     },
     {
@@ -222,9 +276,128 @@
     },
     {
       "name": {
+        "singular": "Djiboutian franc",
+        "plural": "Djiboutian francs",
+        "abbreviations": [ "DJF" ]
+      }
+    },
+    {
+      "name": {
         "singular": "Danish krone",
         "plural": "Danish kroner",
         "abbreviations": [ "DKK" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Dominican peso",
+        "plural": "Dominican pesos",
+        "abbreviations": [ "DOP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Algerian dinar",
+        "plural": "Algerian dinars",
+        "abbreviations": [ "DZD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Egyptian pound",
+        "plural": "Egyptian pounds",
+        "abbreviations": [ "EGP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Eritrean nakfa",
+        "plural": "Eritrean nakfa",
+        "abbreviations": [ "ERN" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Ethiopian birr",
+        "plural": "Ethiopian birr",
+        "abbreviations": [ "ETB" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Fijian dollar",
+        "plural": "Fijian dollars",
+        "abbreviations": [ "FJD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Falkland Islands pound",
+        "plural": "Falkland Islands pounds",
+        "abbreviations": [ "FKP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Pound sterling",
+        "plural": "Pounds sterling",
+        "abbreviations": [ "GBP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Georgian lari",
+        "plural": "Georgian lari",
+        "abbreviations": [ "GEL" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Guernsey pound",
+        "plural": "Guernsey pounds",
+        "abbreviations": [ "GGP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Ghanaian cedi",
+        "plural": "Ghanaian cedi",
+        "abbreviations": [ "GHS" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Gibraltar pound",
+        "plural": "Gibraltar pounds",
+        "abbreviations": [ "GIP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Gambian dalasi",
+        "plural": "Gambian dalasis",
+        "abbreviations": [ "GMD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Guinean franc",
+        "plural": "Guinean francs",
+        "abbreviations": [ "GNF" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Guatemalan quetzal",
+        "plural": "Guatemalan quetzales",
+        "abbreviations": [ "GTQ" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Guyanese dollar",
+        "plural": "Guyanese dollars",
+        "abbreviations": [ "GYD" ]
       }
     },
     {
@@ -236,23 +409,30 @@
     },
     {
       "name": {
+        "singular": "Honduran lempira",
+        "plural": "Honduran lempira",
+        "abbreviations": [ "HNL" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Croatian kuna",
+        "plural": "Croatian kuna",
+        "abbreviations": [ "HRK" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Haitian gourde",
+        "plural": "Haitian gourdes",
+        "abbreviations": [ "HTG" ]
+      }
+    },
+    {
+      "name": {
         "singular": "Hungarian forint",
         "plural": "Hungarian forints",
         "abbreviations": [ "HUF" ]
-      }
-    },
-    {
-      "name": {
-        "singular": "Icelandic króna",
-        "plural": "Icelandic krónur",
-        "abbreviations": [ "ISK" ]
-      }
-    },
-    {
-      "name": {
-        "singular": "Indian rupee",
-        "plural": "Indian rupees",
-        "abbreviations": [ "INR" ]
       }
     },
     {
@@ -271,30 +451,261 @@
     },
     {
       "name": {
+        "singular": "Manx pound",
+        "plural": "Manx pound",
+        "abbreviations": [ "IMP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Indian rupee",
+        "plural": "Indian rupees",
+        "abbreviations": [ "INR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Iraqi dinar",
+        "plural": "Iraqi dinars",
+        "abbreviations": [ "IQD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Iranian rial",
+        "plural": "Iranian rials",
+        "abbreviations": [ "IRR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Icelandic króna",
+        "plural": "Icelandic krónur",
+        "abbreviations": [ "ISK" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Jersey pound",
+        "plural": "Jersey pounds",
+        "abbreviations": [ "JEP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Jamaican dollar",
+        "plural": "Jamaican dollars",
+        "abbreviations": [ "JMD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Jordanian dinar",
+        "plural": "Jordanian dinars",
+        "abbreviations": [ "JOD" ]
+      }
+    },
+    {
+      "name": {
         "singular": "Japanese yen",
         "plural": "Japanese yens",
-        "abbreviations": [ "JPY" ]
+        "abbreviations": [ "JPY", "yen", "yens" ]
       }
     },
     {
       "name": {
-        "singular": "New Zealand dollar",
-        "plural": "New Zealand dollars",
-        "abbreviations": [ "NZD" ]
+        "singular": "Kenyan shilling",
+        "plural": "Kenyan shillings",
+        "abbreviations": [ "KES" ]
       }
     },
     {
       "name": {
-        "singular": "Norwegian krone",
-        "plural": "Norwegian kroner",
-        "abbreviations": [ "NOK" ]
+        "singular": "Kyrgyzstani som",
+        "plural": "Kyrgyzstani som",
+        "abbreviations": [ "KGS" ]
       }
     },
     {
       "name": {
-        "singular": "Malaysian ringgit",
-        "plural": "Malaysian ringgit",
-        "abbreviations": [ "MYR" ]
+        "singular": "Cambodian riel",
+        "plural": "Cambodian riels",
+        "abbreviations": [ "KHR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Comorian franc",
+        "plural": "Comorian francs",
+        "abbreviations": [ "KMF" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "North Korean won",
+        "plural": "North Korean won",
+        "abbreviations": [ "KPW" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "South Korean won",
+        "plural": "South Korean won",
+        "abbreviations": [ "KRW", "won" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Kuwaiti dinar",
+        "plural": "Kuwaiti dinars",
+        "abbreviations": [ "KWD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Cayman Islands dollar",
+        "plural": "Cayman Islands dollars",
+        "abbreviations": [ "KYD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Kazakhstani tenge",
+        "plural": "Kazakhstani tenge",
+        "abbreviations": [ "KZT" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Lao kip",
+        "plural": "Lao kip",
+        "abbreviations": [ "LAK" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Lebanese pound",
+        "plural": "Lebanese pounds",
+        "abbreviations": [ "LBP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Sri Lankan rupee",
+        "plural": "Sri Lankan rupees",
+        "abbreviations": [ "LKR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Liberian dollar",
+        "plural": "Liberian dollars",
+        "abbreviations": [ "LRD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Lesotho loti",
+        "plural": "Lesotho maloti",
+        "abbreviations": [ "LSL" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Lithuanian litas",
+        "plural": "Lithuanian litai",
+        "abbreviations": [ "LTL" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Latvian lats",
+        "plural": "Latvian lati",
+        "abbreviations": [ "LVL" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Libyan dinar",
+        "plural": "Libyan dinars",
+        "abbreviations": [ "LYD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Moroccan dirham",
+        "plural": "Moroccan dirhams",
+        "abbreviations": [ "MAD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Moldovan leu",
+        "plural": "Moldovan lei",
+        "abbreviations": [ "MDL" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Malagasy ariary",
+        "plural": "Malagasy ariary",
+        "abbreviations": [ "MGA" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Macedonian denar",
+        "plural": "Macedonian denars",
+        "abbreviations": [ "MKD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Burmese kyat",
+        "plural": "Burmese kyat",
+        "abbreviations": [ "MMK" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Mongolian tögrög",
+        "plural": "Mongolian tögrög",
+        "abbreviations": [ "MNT" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Macanese pataca",
+        "plural": "Macanese patacas",
+        "abbreviations": [ "MOP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Mauritanian ouguiya",
+        "plural": "Mauritanian ouguiya",
+        "abbreviations": [ "MRO" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Mauritian rupee",
+        "plural": "Mauritian rupees",
+        "abbreviations": [ "MUR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Maldivian rufiyaa",
+        "plural": "Maldivian rufiyaa",
+        "abbreviations": [ "MVR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Malawian kwacha",
+        "plural": "Malawian kwacha",
+        "abbreviations": [ "MWK" ]
       }
     },
     {
@@ -306,9 +717,100 @@
     },
     {
       "name": {
+        "singular": "Malaysian ringgit",
+        "plural": "Malaysian ringgit",
+        "abbreviations": [ "MYR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Mozambican metical",
+        "plural": "Mozambican meticais",
+        "abbreviations": [ "MZN" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Namibian dollar",
+        "plural": "Namibian dollars",
+        "abbreviations": [ "NAD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Nigerian naira",
+        "plural": "Nigerian naira",
+        "abbreviations": [ "NGN" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Nicaraguan córdoba",
+        "plural": "Nicaraguan córdoba",
+        "abbreviations": [ "NIO" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Norwegian krone",
+        "plural": "Norwegian kroner",
+        "abbreviations": [ "NOK" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Nepalese rupee",
+        "plural": "Nepalese rupees",
+        "abbreviations": [ "NPR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "New Zealand dollar",
+        "plural": "New Zealand dollars",
+        "abbreviations": [ "NZD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Omani rial",
+        "plural": "Omani rials",
+        "abbreviations": [ "OMR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Panamanian balboa",
+        "plural": "Panamanian balboa",
+        "abbreviations": [ "PAB" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Peruvian sol",
+        "plural": "Peruvian soles",
+        "abbreviations": [ "PEN" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Papua New Guinean kina",
+        "plural": "Papua New Guinean kina",
+        "abbreviations": [ "PGK" ]
+      }
+    },
+    {
+      "name": {
         "singular": "Philippine peso",
         "plural": "Philippine pesos",
         "abbreviations": [ "PHP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Pakistani rupee",
+        "plural": "Pakistani rupees",
+        "abbreviations": [ "PKR" ]
       }
     },
     {
@@ -320,16 +822,30 @@
     },
     {
       "name": {
-        "singular": "Pound sterling",
-        "plural": "Pounds sterling",
-        "abbreviations": [ "GBP" ]
+        "singular": "Paraguayan guaraní",
+        "plural": "Paraguayan guaraníes",
+        "abbreviations": [ "PYG" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Qatari riyal",
+        "plural": "Qatari riyals",
+        "abbreviations": [ "QAR" ]
       }
     },
     {
       "name": {
         "singular": "Romanian leu",
         "plural": "Romanian lei",
-        "abbreviations": [ "RON", "LEI" ]
+        "abbreviations": [ "RON", "leu", "lei" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Serbian dinar",
+        "plural": "Serbian dinars",
+        "abbreviations": [ "RSD" ]
       }
     },
     {
@@ -341,23 +857,37 @@
     },
     {
       "name": {
-        "singular": "Singapore dollar",
-        "plural": "Singapore dollars",
-        "abbreviations": [ "SGD" ]
+        "singular": "Rwandan franc",
+        "plural": "Rwandan francs",
+        "abbreviations": [ "RWF" ]
       }
     },
     {
       "name": {
-        "singular": "South African rand",
-        "plural": "South African rand",
-        "abbreviations": [ "ZAR" ]
+        "singular": "Saudi riyal",
+        "plural": "Saudi riyals",
+        "abbreviations": [ "SAR" ]
       }
     },
     {
       "name": {
-        "singular": "South Korean won",
-        "plural": "South Korean won",
-        "abbreviations": [ "KRW" ]
+        "singular": "Solomon Islands dollar",
+        "plural": "Solomon Islands dollars",
+        "abbreviations": [ "SBD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Seychellois rupee",
+        "plural": "Seychellois rupees",
+        "abbreviations": [ "SCR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Sudanese pound",
+        "plural": "Sudanese pounds",
+        "abbreviations": [ "SDG" ]
       }
     },
     {
@@ -369,9 +899,65 @@
     },
     {
       "name": {
-        "singular": "Swiss franc",
-        "plural": "Swiss francs",
-        "abbreviations": [ "CHF" ]
+        "singular": "Singapore dollar",
+        "plural": "Singapore dollars",
+        "abbreviations": [ "SGD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Saint Helena pound",
+        "plural": "Saint Helena pounds",
+        "abbreviations": [ "SHP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Sierra Leonean leone",
+        "plural": "Sierra Leonean leones",
+        "abbreviations": [ "SLL" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Somali shilling",
+        "plural": "Somali shillings",
+        "abbreviations": [ "SOS" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Surinamese dollar",
+        "plural": "Surinamese dollars",
+        "abbreviations": [ "SRD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "São Tomé and Príncipe dobra",
+        "plural": "São Tomé and Príncipe dobras",
+        "abbreviations": [ "STD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Salvadoran colón",
+        "plural": "Salvadoran colónes",
+        "abbreviations": [ "SVC" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Syrian pound",
+        "plural": "Syrian pounds",
+        "abbreviations": [ "SYP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Swazi lilangeni",
+        "plural": "Swazi emalangeni",
+        "abbreviations": [ "SZL" ]
       }
     },
     {
@@ -383,16 +969,191 @@
     },
     {
       "name": {
+        "singular": "Tajikistani somoni",
+        "plural": "Tajikistani somoni",
+        "abbreviations": [ "TJS" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Turkmenistan manat",
+        "plural": "Turkmenistan manat",
+        "abbreviations": [ "TMT" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Tunisian dinar",
+        "plural": "Tunisian dinars",
+        "abbreviations": [ "TND" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Tongan paʻanga",
+        "plural": "Tongan paʻanga",
+        "abbreviations": [ "TOP" ]
+      }
+    },
+    {
+      "name": {
         "singular": "Turkish lira",
-        "plural": "Turkish liras",
+        "plural": "Turkish liralar",
         "abbreviations": [ "TRY" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Trinidad and Tobago dollar",
+        "plural": "Trinidad and Tobago dollars",
+        "abbreviations": [ "TTD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "New Taiwan dollar",
+        "plural": "New Taiwan dollars",
+        "abbreviations": [ "TWD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Tanzanian shilling",
+        "plural": "Tanzanian shillings",
+        "abbreviations": [ "TZS" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Ukrainian hryvnia",
+        "plural": "Ukrainian hryvni",
+        "abbreviations": [ "UAH" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Ugandan shilling",
+        "plural": "Ugandan shillings",
+        "abbreviations": [ "UGX" ]
       }
     },
     {
       "name": {
         "singular": "United States dollar",
         "plural": "United States dollars",
-        "abbreviations": [ "USD" ]
+        "abbreviations": [ "USD", "$" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Uruguayan peso",
+        "plural": "Uruguayan pesos",
+        "abbreviations": [ "UYU" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Uzbekistani soʻm",
+        "plural": "Uzbekistani soʻm",
+        "abbreviations": [ "UZS" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Vietnamese đồng",
+        "plural": "Vietnamese đồng",
+        "abbreviations": [ "VND" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Vanuatu vatu",
+        "plural": "Vanuatu vatu",
+        "abbreviations": [ "VUV" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Samoan tālā",
+        "plural": "Samoan tālā",
+        "abbreviations": [ "WST" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Central African CFA franc",
+        "plural": "Central African CFA francs",
+        "abbreviations": [ "XAF" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Silver",
+        "plural": "Silver",
+        "abbreviations": [ "XAG" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Gold",
+        "plural": "Gold",
+        "abbreviations": [ "XAU" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Eastern Caribbean dollar",
+        "plural": "Eastern Caribbean dollars",
+        "abbreviations": [ "XCD" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Special drawing rights",
+        "plural": "Special drawing rights",
+        "abbreviations": [ "XDR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "West African CFA franc",
+        "plural": "West African CFA francs",
+        "abbreviations": [ "XOF" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "CFP franc",
+        "plural": "CFP francs",
+        "abbreviations": [ "XPF" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Yemeni rial",
+        "plural": "Yemeni rials",
+        "abbreviations": [ "YER" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "South African rand",
+        "plural": "South African rand",
+        "abbreviations": [ "ZAR" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Zambian kwacha",
+        "plural": "Zambian kwacha",
+        "abbreviations": [ "ZMW" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Zimbabwean dollar",
+        "plural": "Zimbabwean dollars",
+        "abbreviations": [ "ZWL" ]
       }
     }
   ]

@@ -69,6 +69,25 @@ namespace Rias.Services
             foreach (var unitsFile in Directory.GetFiles(UnitsPath))
             {
                 var unitsCategory = JsonConvert.DeserializeObject<UnitsCategory>(File.ReadAllText(unitsFile));
+                
+#if DEBUG || RIAS_GLOBAL
+                if (string.Equals(unitsCategory.Name, "currency", StringComparison.OrdinalIgnoreCase))
+                {
+                    var currencyUnits = unitsCategory.Units.ToList();
+                    currencyUnits.Add(new Unit
+                    {
+                        Category = unitsCategory,
+                        Name = new Unit.UnitName
+                        {
+                            Singular = "Heart",
+                            Plural = "Hearts",
+                            Abbreviations = new []{ "HRT" }
+                        }
+                    });
+                    unitsCategory.Units = currencyUnits;
+                }
+#endif
+                
                 foreach (var unit in unitsCategory.Units)
                 {
                     unit.Category = unitsCategory;
@@ -96,7 +115,7 @@ namespace Rias.Services
                             unitAbbreviations[abbreviationLowercase] = new SingleOrList<Unit>(unit);
                     }
                 }
-                
+
                 units.TryAdd(unitsCategory.Name.ToLowerInvariant(), unitsCategory);
             }
 
@@ -290,9 +309,12 @@ namespace Rias.Services
             {
                 var unitAbbreviation = unit.Name.Abbreviations.ElementAt(0);
                 
-                // ignore EUR because it's the base
                 if (string.Equals(unitAbbreviation, "eur", StringComparison.OrdinalIgnoreCase))
+                {
+                    unit.FuncToBase = "x";
+                    unit.FuncFromBase = "x";
                     continue;
+                }
 
                 if (!exchangeRates.TryGetValue(unitAbbreviation, out var rateValue))
                 {
@@ -303,6 +325,14 @@ namespace Rias.Services
                 unit.FuncToBase = $"x / ${rateValue}";
                 unit.FuncFromBase = $"x * ${rateValue}";
             }
+            
+#if DEBUG || RIAS_GLOBAL
+            var heartsUnit = currencyUnits.Units.First(x => string.Equals(x.Name.Abbreviations.First(), "HRT"));
+            var usdUnit = currencyUnits.Units.First(x => string.Equals(x.Name.Abbreviations.First(), "USD"));
+            
+            heartsUnit.FuncToBase = $"500 / {usdUnit.FuncToBase}";
+            heartsUnit.FuncFromBase = $"500 * {usdUnit.FuncFromBase}";
+#endif
 
             Log.Information("Currency units updated");
 
