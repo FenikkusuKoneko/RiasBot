@@ -143,7 +143,7 @@ namespace Rias.Modules.Administration
                     var preconditions = Context.CurrentMember!.PermissionsIn(modLogChannel);
                     if (preconditions.HasPermission(Permissions.AccessChannels) && preconditions.HasPermission(Permissions.SendMessages))
                     {
-                        await ReplyConfirmationAsync(Localization.AdministrationUserWasWarned, member.FullName(), channel.Mention);
+                        await ReplyConfirmationAsync(Localization.AdministrationUserWasWarned, member.FullName(), modLogChannel.Mention);
                         channel = modLogChannel;
                     }
                 }

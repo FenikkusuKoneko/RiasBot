@@ -237,11 +237,11 @@ namespace Rias.Modules.Administration
                 {
                     var preconditions = Context.CurrentMember!.PermissionsIn(modLogChannel);
                     if (preconditions.HasPermission(Permissions.AccessChannels) && preconditions.HasPermission(Permissions.SendMessages))
+                    {
+                        await ReplyConfirmationAsync(confirmation, member.FullName(), modLogChannel.Mention);
                         channel = modLogChannel;
+                    }
                 }
-
-                if (channel.Id != Context.Channel.Id)
-                    await ReplyConfirmationAsync(confirmation, member.FullName(), channel.Mention);
 
                 await channel.SendMessageAsync(embed);
 
