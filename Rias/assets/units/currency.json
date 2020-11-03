@@ -6,7 +6,9 @@
         "singular": "Euro",
         "plural": "Euro",
         "abbreviations": [ "EUR", "€" ]
-      }
+      },
+      "func_to_base": "x",
+      "func_from_base": "x"
     },
     {
       "name": {
@@ -1056,6 +1058,13 @@
         "singular": "Uzbekistani soʻm",
         "plural": "Uzbekistani soʻm",
         "abbreviations": [ "UZS" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Venezuelan bolívar",
+        "plural": "Venezuelan bolívares",
+        "abbreviations": [ "VEF" ]
       }
     },
     {

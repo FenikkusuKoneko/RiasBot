@@ -310,11 +310,7 @@ namespace Rias.Services
                 var unitAbbreviation = unit.Name.Abbreviations.ElementAt(0);
                 
                 if (string.Equals(unitAbbreviation, "eur", StringComparison.OrdinalIgnoreCase))
-                {
-                    unit.FuncToBase = "x";
-                    unit.FuncFromBase = "x";
                     continue;
-                }
 
                 if (!exchangeRates.TryGetValue(unitAbbreviation, out var rateValue))
                 {
