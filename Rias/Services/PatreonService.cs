@@ -38,7 +38,7 @@ namespace Rias.Services
             if (credentials.PatreonConfig != null)
             {
                 _webSocket = new WebSocketClient(credentials.PatreonConfig);
-                RunTaskAsync(ConnectWebSocket);
+                RunTaskAsync(ConnectWebSocket());
                 _webSocket.DataReceived += PledgeReceivedAsync;
                 _webSocket.Closed += WebSocketClosed;
                 
@@ -70,7 +70,7 @@ namespace Rias.Services
             await db.SaveChangesAsync();
         }
 
-        private async Task ConnectWebSocket()
+        private async Task ConnectWebSocket(bool recheckPatrons = false)
         {
             while (true)
             {
@@ -78,6 +78,10 @@ namespace Rias.Services
                 {
                     await _webSocket!.ConnectAsync();
                     Log.Information("Patreon WebSocket connected.");
+                    
+                    if (recheckPatrons)
+                        await RunTaskAsync(CheckPatronsAsync);
+                    
                     break;
                 }
                 catch
@@ -124,7 +128,7 @@ namespace Rias.Services
         {
             Log.Warning("Patreon WebSocket was closed. Retrying in 10 seconds...");
             await Task.Delay(10000);
-            await RunTaskAsync(ConnectWebSocket);
+            await RunTaskAsync(ConnectWebSocket(true));
         }
 
         private async Task SendPatronsAsync()

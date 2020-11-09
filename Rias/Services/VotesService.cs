@@ -16,14 +16,14 @@ namespace Rias.Services
     public class VotesService : RiasService
     {
         private readonly WebSocketClient? _webSocket;
-
+        
         public VotesService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
             if (Credentials.VotesConfig == null) return;
             
             _webSocket = new WebSocketClient(Credentials.VotesConfig);
-            RunTaskAsync(ConnectWebSocket);
+            RunTaskAsync(ConnectWebSocket());
             _webSocket.DataReceived += VoteReceivedAsync;
             _webSocket.Closed += WebSocketClosed;
                 
@@ -55,7 +55,7 @@ namespace Rias.Services
             await db.SaveChangesAsync();
         }
 
-        private async Task ConnectWebSocket()
+        private async Task ConnectWebSocket(bool recheckVotes = false)
         {
             while (true)
             {
@@ -63,6 +63,10 @@ namespace Rias.Services
                 {
                     await _webSocket!.ConnectAsync();
                     Log.Information("Votes WebSocket connected.");
+
+                    if (recheckVotes)
+                        await RunTaskAsync(CheckVotesAsync);
+                    
                     break;
                 }
                 catch
@@ -109,7 +113,7 @@ namespace Rias.Services
         {
             Log.Warning("Votes WebSocket was closed. Retrying in 10 seconds...");
             await Task.Delay(10000);
-            await RunTaskAsync(ConnectWebSocket);
+            await RunTaskAsync(ConnectWebSocket(true));
         }
     }
 }
