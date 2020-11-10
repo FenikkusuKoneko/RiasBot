@@ -110,7 +110,7 @@ namespace Rias.Modules.Administration
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task DeleteEmojiAsync([Remainder] string name)
             {
-                var emoji = await GetEmojiAsync(name);
+                var emoji = GetEmoji(name);
                 if (emoji is null)
                 {
                     await ReplyErrorAsync(Localization.AdministrationEmojiNotFound);
@@ -119,7 +119,8 @@ namespace Rias.Modules.Administration
 
                 try
                 {
-                    await Context.Guild!.DeleteEmojiAsync(emoji);
+                    var guildEmoji = await Context.Guild!.GetEmojiAsync(emoji.Id);
+                    await Context.Guild.DeleteEmojiAsync(guildEmoji);
                     await ReplyConfirmationAsync(Localization.AdministrationEmojiDeleted, emoji.Name);
                 }
                 catch
@@ -143,7 +144,7 @@ namespace Rias.Modules.Administration
                 var oldName = emojis[0].TrimEnd();
                 var newName = emojis[1].TrimStart();
 
-                var emoji = await GetEmojiAsync(oldName);
+                var emoji = GetEmoji(oldName);
                 if (emoji is null)
                 {
                     await ReplyErrorAsync(Localization.AdministrationEmojiNotFound);
@@ -153,7 +154,8 @@ namespace Rias.Modules.Administration
                 try
                 {
                     newName = newName.Replace(" ", "_");
-                    await Context.Guild!.ModifyEmojiAsync(emoji, newName);
+                    var guildEmoji = await Context.Guild!.GetEmojiAsync(emoji.Id);
+                    await Context.Guild.ModifyEmojiAsync(guildEmoji, newName);
                     await ReplyConfirmationAsync(Localization.AdministrationEmojiRenamed, oldName, newName);
                 }
                 catch
@@ -162,19 +164,20 @@ namespace Rias.Modules.Administration
                 }
             }
             
-            private async Task<DiscordGuildEmoji?> GetEmojiAsync(string value)
+            private DiscordEmoji? GetEmoji(string value)
             {
                 if (!RiasUtilities.TryParseEmoji(value, out var emojiId))
                     ulong.TryParse(value, out emojiId);
                 
                 if (emojiId > 0)
                 {
-                    return (await Context.Guild!.GetEmojisAsync()).FirstOrDefault(x => x.Id == emojiId)
-                           ?? await Context.Guild!.GetEmojiAsync(emojiId);
+                    var emoji = Context.Guild!.Emojis.FirstOrDefault(x => x.Value.Id == emojiId).Value;
+                    if (emoji is not null)
+                        return emoji;
                 }
 
                 value = value.Replace(" ", "_");
-                return (await Context.Guild!.GetEmojisAsync()).FirstOrDefault(e => string.Equals(e.Name, value, StringComparison.OrdinalIgnoreCase));
+                return Context.Guild!.Emojis.FirstOrDefault(e => string.Equals(e.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
             }
         }
     }
