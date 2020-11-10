@@ -15,7 +15,6 @@ using Rias.Database;
 using Rias.Database.Entities;
 using Rias.Models;
 using Serilog;
-using PatronStatus = Rias.Models.PatronStatus;
 
 namespace Rias.Services
 {

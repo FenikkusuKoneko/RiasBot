@@ -20,14 +20,7 @@ namespace Rias.Services
 {
     public class MuteService : RiasService
     {
-#if DEBUG
-        public const string MuteRole = "rias-mute-dev";
-#elif RELEASE
-        public const string MuteRole = "muted";
-#elif RIAS_GLOBAL
-        public const string MuteRole = "rias-mute";
-#endif
-        
+        public const string MuteRole = "Muted";
         private readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), Timer> _timers = new ConcurrentDictionary<(ulong, ulong), Timer>();
         
         public MuteService(IServiceProvider serviceProvider)
@@ -53,7 +46,7 @@ namespace Rias.Services
             var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
 
             var role = (guild.GetRole(guildDb?.MuteRoleId ?? 0)
-                        ?? guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole) && !x.Value.IsManaged).Value)
+                        ?? guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole, StringComparison.InvariantCultureIgnoreCase) && !x.Value.IsManaged).Value)
                        ?? await guild.CreateRoleAsync(MuteRole);
 
             var currentMember = guild.CurrentMember;
@@ -128,7 +121,7 @@ namespace Rias.Services
             var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == context.Guild.Id);
 
             var role = context.Guild.GetRole(guildDb?.MuteRoleId ?? 0)
-                       ?? context.Guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole) && !x.Value.IsManaged).Value;
+                       ?? context.Guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole, StringComparison.InvariantCultureIgnoreCase) && !x.Value.IsManaged).Value;
 
             if (role is null)
             {
