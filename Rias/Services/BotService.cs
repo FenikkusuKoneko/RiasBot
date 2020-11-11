@@ -23,7 +23,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Rias.Attributes;
 using Rias.Commons;
 using Rias.Database;
-using Rias.Database.Entities;
 using Rias.Extensions;
 using Rias.Implementation;
 using Serilog;
@@ -210,35 +209,16 @@ namespace Rias.Services
 
             RiasBot.Members[args.Member.Id] = args.Member;
             await RunTaskAsync(AddAssignableRoleAsync(member));
-
+            await RunTaskAsync(SendGreetMessageAsync(member));
+            await RunTaskAsync(AddMuteRoleAsync(member));
+        }
+        
+        private async Task SendGreetMessageAsync(DiscordMember member)
+        {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == member.Guild.Id);
-            await SendGreetMessageAsync(guildDb, member);
-
-            var currentUser = member.Guild.CurrentMember;
-            if (!currentUser.GetPermissions().HasPermission(Permissions.ManageRoles)) return;
-
-            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
-            if (userGuildDb is null) return;
-            if (!userGuildDb.IsMuted) return;
-
-            var role = member.Guild.GetRole(guildDb?.MuteRoleId ?? 0)
-                       ?? member.Guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteService.MuteRole)).Value;
             
-            if (role != null)
-            {
-                await member.GrantRoleAsync(role);
-            }
-            else
-            {
-                userGuildDb.IsMuted = false;
-                await db.SaveChangesAsync();
-            }
-        }
-        
-        private async Task SendGreetMessageAsync(GuildsEntity? guildDb, DiscordMember member)
-        {
             var guild = member.Guild;
             var currentMember = guild.CurrentMember;
             if (!currentMember.GetPermissions().HasPermission(Permissions.ManageWebhooks))
@@ -288,19 +268,48 @@ namespace Rias.Services
             guildDb.GreetNotification = false;
             await db.SaveChangesAsync();
         }
+
+        private async Task AddMuteRoleAsync(DiscordMember member)
+        {
+            var currentUser = member.Guild.CurrentMember;
+            if (!currentUser.GetPermissions().HasPermission(Permissions.ManageRoles))
+                return;
+            
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id);
+            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
+            
+            if (userGuildDb is null)
+                return;
+            
+            if (!userGuildDb.IsMuted)
+                return;
+
+            var role = member.Guild.GetRole(guildDb?.MuteRoleId ?? 0)
+                       ?? member.Guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteService.MuteRole)).Value;
+            
+            if (role != null)
+            {
+                await member.GrantRoleAsync(role);
+            }
+            else
+            {
+                userGuildDb.IsMuted = false;
+                await db.SaveChangesAsync();
+            }
+        }
         
         private async Task GuildMemberRemovedAsync(DiscordClient client, GuildMemberRemoveEventArgs args)
         {
             if (RiasBot.CurrentUser != null && args.Member.Id == RiasBot.CurrentUser.Id)
                 return;
             
-            using var scope = RiasBot.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == args.Guild.Id);
-            await SendByeMessageAsync(guildDb, args.Member);
+            await RunTaskAsync(SendByeMessageAsync(args.Member));
         }
 
-        private async Task SendByeMessageAsync(GuildsEntity? guildDb, DiscordMember member)
+        private async Task SendByeMessageAsync(DiscordMember member)
         {
             var guild = member.Guild;
             var currentMember = guild.CurrentMember;
@@ -310,9 +319,18 @@ namespace Rias.Services
                 return;
             }
             
-            if (guildDb is null) return;
-            if (!guildDb.ByeNotification) return;
-            if (string.IsNullOrEmpty(guildDb.ByeMessage)) return;
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == guild.Id);
+            if (guildDb is null)
+                return;
+            
+            if (!guildDb.ByeNotification)
+                return;
+            
+            if (string.IsNullOrEmpty(guildDb.ByeMessage))
+                return;
             
             if (!Webhooks.TryGetValue(guild.Id, out var webhooks))
             {
@@ -344,6 +362,7 @@ namespace Rias.Services
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            
             var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
             if (guildDb is null)
                 return;
@@ -388,12 +407,14 @@ namespace Rias.Services
 
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            
             var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == args.Guild.Id);
-
-            if (guildDb is null) return;
+            if (guildDb is null)
+                return;
 
             var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == args.Guild.Id && x.UserId == args.Member.Id);
-            if (userGuildDb is null) return;
+            if (userGuildDb is null)
+                return;
 
             userGuildDb.IsMuted = args.Member.Roles.FirstOrDefault(x => x.Id == guildDb.MuteRoleId) != null;
             await db.SaveChangesAsync();
