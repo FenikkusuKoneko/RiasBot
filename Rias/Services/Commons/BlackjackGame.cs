@@ -13,9 +13,9 @@ namespace Rias.Services.Commons
     public class BlackjackGame
     { 
         private readonly BlackjackService _service;
-        private readonly DiscordMember _member;
         private readonly Queue<(int Value, string Suit)> _deck = new Queue<(int Value, string Suit)>();
         
+        private DiscordMember? _member;
         private DiscordEmbedBuilder? _embed;
         private DiscordColor _embedColor = new DiscordColor(255, 255, 254);
         private int _bet;
@@ -28,10 +28,9 @@ namespace Rias.Services.Commons
         private BlackjackHand? _playerSecondHand;
         private BlackjackHand? _houseHand;
 
-        public BlackjackGame(BlackjackService service, DiscordMember member)
+        public BlackjackGame(BlackjackService service)
         {
             _service = service;
-            _member = member;
             _timer = new Timer(_ => TerminateSession(), null, TimeSpan.FromHours(24), TimeSpan.Zero);
         }
         
@@ -55,10 +54,11 @@ namespace Rias.Services.Commons
             Blackjack
         }
         
-        public async Task CreateGameAsync(DiscordChannel channel, int bet)
+        public async Task CreateGameAsync(DiscordMember member, DiscordChannel channel, int bet)
         {
             ShuffleDeck();
-            
+
+            _member = member;
             _embedColor = DiscordColor.White;
             _bet = bet;
             IsRunning = true;
@@ -96,8 +96,9 @@ namespace Rias.Services.Commons
                 await Message!.CreateReactionAsync(_service.SplitEmoji);
         }
 
-        public async Task ResumeGameAsync(DiscordChannel channel)
+        public async Task ResumeGameAsync(DiscordMember member, DiscordChannel channel)
         {
+            _member = member;
             Message = await channel.SendMessageAsync(embed: _embed);
             await Message!.CreateReactionAsync(_service.CardEmoji);
             await Message!.CreateReactionAsync(_service.HandEmoji);
@@ -140,7 +141,7 @@ namespace Rias.Services.Commons
             if (firstCardValue != secondCardValue || _userCurrency < _bet)
                 return;
 
-            _userCurrency = await _service.RemoveUserCurrencyAsync(_member.Id, _bet);
+            _userCurrency = await _service.RemoveUserCurrencyAsync(_member!.Id, _bet);
             _bet *= 2;
             _embed!.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitleCurrency, _bet, _service.Credentials.Currency, _userCurrency));
             
@@ -195,7 +196,7 @@ namespace Rias.Services.Commons
                         _houseHand.Process();
                     }
                     
-                    _embed!.Fields[0].Name = $"{_member.Guild.CurrentMember.FullName()} ({_houseHand!.Score})";
+                    _embed!.Fields[0].Name = $"{_member!.Guild.CurrentMember.FullName()} ({_houseHand!.Score})";
                     _embed.Fields[0].Value = _houseHand!.ShowCards();
                 }
 
@@ -212,14 +213,14 @@ namespace Rias.Services.Commons
                         if (_playerSecondHand is null)
                         {
                             _embedColor = RiasUtilities.Green;
-                            description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackBlackjack, winning, _service.Credentials.Currency, _userCurrency + winning);
+                            description = _service.GetText(_member!.Guild.Id, Localization.GamblingBlackjackBlackjack, winning, _service.Credentials.Currency, _userCurrency + winning);
                         }
                         break;
                     case WinningState.Push:
                         if (_playerSecondHand is null)
                         {
                             _embedColor = DiscordColor.Yellow;
-                            description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackPush, _userCurrency + winning, _service.Credentials.Currency);
+                            description = _service.GetText(_member!.Guild.Id, Localization.GamblingBlackjackPush, _userCurrency + winning, _service.Credentials.Currency);
                         }
                         break;
                     case WinningState.Lose:
@@ -244,7 +245,7 @@ namespace Rias.Services.Commons
                 }
                 
                 if (winning > 0)
-                    _userCurrency = await _service.AddUserCurrencyAsync(_member.Id, winning);
+                    _userCurrency = await _service.AddUserCurrencyAsync(_member!.Id, winning);
 
                 if (string.IsNullOrEmpty(description))
                 {
@@ -252,22 +253,22 @@ namespace Rias.Services.Commons
                     if (winning > 0)
                     {
                         _embedColor = RiasUtilities.Green;
-                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouWon, winning, _service.Credentials.Currency, _userCurrency);
+                        description = _service.GetText(_member!.Guild.Id, Localization.GamblingYouWon, winning, _service.Credentials.Currency, _userCurrency);
                     }
                     else if (winning < 0)
                     {
                         _embedColor = RiasUtilities.Red;
-                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouLost, Math.Abs(winning), _service.Credentials.Currency, _userCurrency);
+                        description = _service.GetText(_member!.Guild.Id, Localization.GamblingYouLost, Math.Abs(winning), _service.Credentials.Currency, _userCurrency);
                     }
                     else if (_playerSecondHand != null)
                     {
                         _embedColor = RiasUtilities.Yellow;
-                        description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTie, _userCurrency, _service.Credentials.Currency);
+                        description = _service.GetText(_member!.Guild.Id, Localization.GamblingBlackjackTie, _userCurrency, _service.Credentials.Currency);
                     }
                 }
             }
 
-            var firstHandFieldName = $"{_member.FullName()} ({_playerHand!.Score})";
+            var firstHandFieldName = $"{_member!.FullName()} ({_playerHand!.Score})";
             if (_playerHand.HandState == HandState.Playing && _playerSecondHand is not null)
                 firstHandFieldName = "▶ " + firstHandFieldName;
             
@@ -279,7 +280,7 @@ namespace Rias.Services.Commons
                 if (_embed.Fields.Count == 2)
                     _embed.AddField("\u200B", "\u200B");
 
-                var secondHandFieldName = $"{_member.FullName()} ({_playerSecondHand.Score})";
+                var secondHandFieldName = $"{_member!.FullName()} ({_playerSecondHand.Score})";
                 if (_playerHand.HandState != HandState.Playing && _playerSecondHand.HandState == HandState.Playing)
                     secondHandFieldName = "▶ " + secondHandFieldName;
                 
@@ -289,7 +290,7 @@ namespace Rias.Services.Commons
 
             if (gameEnded)
             {
-                _embed.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitle, _bet, _service.Credentials.Currency));
+                _embed.WithTitle(_service.GetText(_member!.Guild.Id, Localization.GamblingBlackjackTitle, _bet, _service.Credentials.Currency));
                 _embed.WithDescription(description);
                 StopGame();
 
@@ -298,7 +299,7 @@ namespace Rias.Services.Commons
             }
             else
             {
-                _embed.WithDescription(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackCards, _deck.Count));
+                _embed.WithDescription(_service.GetText(_member!.Guild.Id, Localization.GamblingBlackjackCards, _deck.Count));
             }
 
             _embed.WithColor(_embedColor);
@@ -339,12 +340,12 @@ namespace Rias.Services.Commons
                 return;
             }
             
-            _service.RemoveSession(_member);
+            _service.RemoveSession(_member!);
         }
 
         private bool CheckManageMessagesPermission()
         {
-            var currentMember = _member.Guild.CurrentMember;
+            var currentMember = _member!.Guild.CurrentMember;
             var channel = Message!.Channel;
                 
             var channelPermissions = currentMember.PermissionsIn(channel);

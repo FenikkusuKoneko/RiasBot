@@ -69,12 +69,12 @@ namespace Rias.Services
         {
             if (!_sessions.TryGetValue(member.Id, out var blackjack))
             {
-                blackjack = new BlackjackGame(this, member);
+                blackjack = new BlackjackGame(this);
                 _sessions[member.Id] = blackjack;
             }
 
             if (!blackjack.IsRunning)
-                await blackjack.CreateGameAsync(channel, bet);
+                await blackjack.CreateGameAsync(member, channel, bet);
             else
                 await ReplyErrorAsync(channel, channel.GuildId, Localization.GamblingBlackjackSession, prefix);
         }
@@ -84,7 +84,7 @@ namespace Rias.Services
             if (!_sessions.TryGetValue(member.Id, out var blackjack) || !blackjack.IsRunning)
                 await ReplyErrorAsync(channel, channel.GuildId, Localization.GamblingBlackjackNoSession);
             else
-                await blackjack.ResumeGameAsync(channel);
+                await blackjack.ResumeGameAsync(member, channel);
         }
 
         public async Task StopBlackjackAsync(DiscordMember member, DiscordChannel channel)
