@@ -141,7 +141,7 @@ namespace Rias.Modules.Xp
 
         [Command("xpnotification")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.Administrator)]
+        [MemberPermission(Permissions.Administrator)]
         [BotPermission(Permissions.ManageWebhooks)]
         [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task XpNotificationAsync([TextChannel, Remainder] DiscordChannel? channel = null)
@@ -190,7 +190,7 @@ namespace Rias.Modules.Xp
 
         [Command("xpmessage")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.Administrator)]
+        [MemberPermission(Permissions.Administrator)]
         public async Task XpMessageAsync([Remainder] string? message = null)
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
@@ -253,7 +253,7 @@ namespace Rias.Modules.Xp
 
         [Command("xpmessagereward")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.Administrator)]
+        [MemberPermission(Permissions.Administrator)]
         public async Task XpMessageRewardAsync([Remainder] string? message = null)
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
@@ -320,7 +320,7 @@ namespace Rias.Modules.Xp
 
         [Command("leveluprolereward")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.ManageRoles)]
+        [MemberPermission(Permissions.ManageRoles)]
         [BotPermission(Permissions.ManageRoles)]
         public async Task LevelUpRoleRewardAsync(int level, [Remainder] DiscordRole? role = null)
         {
@@ -391,7 +391,7 @@ namespace Rias.Modules.Xp
 
         [Command("resetserverxp")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.Administrator)]
+        [MemberPermission(Permissions.Administrator)]
         public async Task ResetGuildXpAsync()
         {
             await ReplyConfirmationAsync(Localization.XpResetGuildXpConfirmation);

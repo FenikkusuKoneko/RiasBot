@@ -22,7 +22,7 @@ namespace Rias.Modules.Administration
 
             [Command("createvoicechannel")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateVoiceChannelAsync([Remainder] string name)
@@ -39,7 +39,7 @@ namespace Rias.Modules.Administration
 
             [Command("deletevoicechannel")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task DeleteVoiceChannelAsync([VoiceChannel, Remainder] DiscordChannel channel)
@@ -56,7 +56,7 @@ namespace Rias.Modules.Administration
 
             [Command("renamevoicechannel")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameVoiceChannelAsync([Remainder] string names)

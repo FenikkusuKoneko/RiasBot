@@ -27,7 +27,7 @@ namespace Rias.Modules.Administration
             
             [Command("mute")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.MuteMembers)]
+            [MemberPermission(Permissions.MuteMembers)]
             [BotPermission(Permissions.MuteMembers | Permissions.ManageRoles | Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(0)]
@@ -47,13 +47,13 @@ namespace Rias.Modules.Administration
 
                 if (Context.CurrentMember!.CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAboveMe);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAboveMe);
                     return;
                 }
                 
                 if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAbove);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
                 }
 
@@ -62,7 +62,7 @@ namespace Rias.Modules.Administration
             
             [Command("mute")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.MuteMembers)]
+            [MemberPermission(Permissions.MuteMembers)]
             [BotPermission(Permissions.MuteMembers | Permissions.ManageRoles | Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(1)]
@@ -99,13 +99,13 @@ namespace Rias.Modules.Administration
 
                 if (Context.CurrentMember!.CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAboveMe);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAboveMe);
                     return;
                 }
                 
                 if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAbove);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
                 }
 
@@ -114,7 +114,7 @@ namespace Rias.Modules.Administration
             
             [Command("unmute")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.MuteMembers)]
+            [MemberPermission(Permissions.MuteMembers)]
             [BotPermission(Permissions.MuteMembers | Permissions.ManageRoles | Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task UnmuteAsync(DiscordMember member, [Remainder] string? reason = null)
@@ -137,7 +137,7 @@ namespace Rias.Modules.Administration
             
             [Command("setmute")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageRoles | Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageRoles | Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageRoles | Permissions.ManageChannels)]
             [Cooldown(1, 30, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(1)]
@@ -166,7 +166,7 @@ namespace Rias.Modules.Administration
 
             [Command("setmute")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageRoles | Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageRoles | Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageRoles | Permissions.ManageChannels)]
             [Cooldown(1, 30, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(0)]

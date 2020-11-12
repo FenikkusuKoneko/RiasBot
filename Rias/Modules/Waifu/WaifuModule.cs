@@ -39,7 +39,7 @@ namespace Rias.Modules.Waifu
                 if (member.Id == Context.User.Id)
                     await ReplyErrorAsync(Localization.WaifuNoWaifus);
                 else
-                    await ReplyErrorAsync(Localization.WaifuUserNoWaifus, member.FullName());
+                    await ReplyErrorAsync(Localization.WaifuMemberNoWaifus, member.FullName());
                 
                 return;
             }
@@ -69,7 +69,7 @@ namespace Rias.Modules.Waifu
                 var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
-                    Title = member.Id == Context.User.Id ? GetText(Localization.WaifuAllWaifus) : GetText(Localization.WaifuAllUserWaifus, member.FullName()),
+                    Title = member.Id == Context.User.Id ? GetText(Localization.WaifuAllWaifus) : GetText(Localization.WaifuAllMemberWaifus, member.FullName()),
                     Description = specialWaifuString,
                 }.WithThumbnail(specialWaifuImage);
 
@@ -80,7 +80,7 @@ namespace Rias.Modules.Waifu
             await SendPaginatedMessageAsync(waifus, 10, (items, _) => new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                Title = member.Id == Context.User.Id ? GetText(Localization.WaifuAllWaifus) : GetText(Localization.WaifuAllUserWaifus, member.FullName()),
+                Title = member.Id == Context.User.Id ? GetText(Localization.WaifuAllWaifus) : GetText(Localization.WaifuAllMemberWaifus, member.FullName()),
                 Description = $"{specialWaifuString}\n\n{string.Join("\n\n", items.Select(StringifyWaifu))}",
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {

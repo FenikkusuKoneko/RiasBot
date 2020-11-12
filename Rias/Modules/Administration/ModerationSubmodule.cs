@@ -24,7 +24,7 @@ namespace Rias.Modules.Administration
             
             [Command("kick")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.KickMembers)]
+            [MemberPermission(Permissions.KickMembers)]
             [BotPermission(Permissions.KickMembers)]
             public async Task KickAsync(DiscordMember member, [Remainder] string? reason = null)
             {
@@ -39,23 +39,23 @@ namespace Rias.Modules.Administration
 
                 if (Context.CurrentMember!.CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAboveMe);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAboveMe);
                     return;
                 }
                 
                 if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAbove);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
                 }
 
-                await SendMessageAsync(member, Localization.AdministrationUserKicked, Localization.AdministrationKickedFrom, Localization.AdministrationUserWasKicked, reason);
+                await SendMessageAsync(member, Localization.AdministrationMemberKicked, Localization.AdministrationKickedFrom, Localization.AdministrationMemberWasKicked, reason);
                 await member.RemoveAsync(reason);
             }
             
             [Command("ban")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.BanMembers)]
+            [MemberPermission(Permissions.BanMembers)]
             [BotPermission(Permissions.BanMembers)]
             public async Task BanAsync(DiscordMember member, [Remainder] string? reason = null)
             {
@@ -70,23 +70,23 @@ namespace Rias.Modules.Administration
 
                 if (Context.CurrentMember!.CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAboveMe);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAboveMe);
                     return;
                 }
                 
                 if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAbove);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
                 }
 
-                await SendMessageAsync(member, Localization.AdministrationUserBanned, Localization.AdministrationBannedFrom, Localization.AdministrationUserWasBanned, reason);
+                await SendMessageAsync(member, Localization.AdministrationMemberBanned, Localization.AdministrationBannedFrom, Localization.AdministrationMemberWasBanned, reason);
                 await member.BanAsync(reason: reason);
             }
             
             [Command("softban")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.KickMembers)]
+            [MemberPermission(Permissions.KickMembers)]
             [BotPermission(Permissions.KickMembers | Permissions.BanMembers)]
             public async Task SoftBanAsync(DiscordMember member, [Remainder] string? reason = null)
             {
@@ -101,24 +101,24 @@ namespace Rias.Modules.Administration
 
                 if (Context.CurrentMember!.CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAboveMe);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAboveMe);
                     return;
                 }
                 
                 if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAbove);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
                 }
 
-                await SendMessageAsync(member, Localization.AdministrationUserSoftBanned, Localization.AdministrationKickedFrom, Localization.AdministrationUserWasSoftBanned, reason);
+                await SendMessageAsync(member, Localization.AdministrationMemberSoftBanned, Localization.AdministrationKickedFrom, Localization.AdministrationMemberWasSoftBanned, reason);
                 await member.BanAsync(7, reason);
                 await member.UnbanAsync();
             }
             
             [Command("pruneban")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.BanMembers)]
+            [MemberPermission(Permissions.BanMembers)]
             [BotPermission(Permissions.BanMembers)]
             public async Task PruneBanAsync(DiscordMember member, [Remainder] string? reason = null)
             {
@@ -133,23 +133,23 @@ namespace Rias.Modules.Administration
 
                 if (Context.CurrentMember!.CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAboveMe);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAboveMe);
                     return;
                 }
                 
                 if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAbove);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
                 }
 
-                await SendMessageAsync(member, Localization.AdministrationUserBanned, Localization.AdministrationBannedFrom, Localization.AdministrationUserWasBanned, reason);
+                await SendMessageAsync(member, Localization.AdministrationMemberBanned, Localization.AdministrationBannedFrom, Localization.AdministrationMemberWasBanned, reason);
                 await member.BanAsync(7, reason);
             }
             
             [Command("prune")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageMessages)]
+            [MemberPermission(Permissions.ManageMessages)]
             [BotPermission(Permissions.ManageMessages)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(2)]
@@ -174,7 +174,7 @@ namespace Rias.Modules.Administration
 
             [Command("prune")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageMessages)]
+            [MemberPermission(Permissions.ManageMessages)]
             [BotPermission(Permissions.ManageMessages)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(1)]
@@ -183,7 +183,7 @@ namespace Rias.Modules.Administration
 
             [Command("prune")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageMessages)]
+            [MemberPermission(Permissions.ManageMessages)]
             [BotPermission(Permissions.ManageMessages)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(0)]
@@ -223,7 +223,7 @@ namespace Rias.Modules.Administration
                         Color = RiasUtilities.ErrorColor,
                         Title = GetText(moderationType)
                     }.WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto))
-                    .AddField(GetText(Localization.CommonUser), member.FullName(), true)
+                    .AddField(GetText(Localization.CommonMember), member.FullName(), true)
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
                     .AddField(GetText(Localization.AdministrationModerator), Context.User.FullName(), true);
 

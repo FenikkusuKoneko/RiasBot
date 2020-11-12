@@ -57,7 +57,7 @@ namespace Rias.Modules.Bot
                 var userDb = await DbContext.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
                 if (userDb is null)
                 {
-                    await ReplyErrorAsync(Localization.BotUserNotInDatabase);
+                    await ReplyErrorAsync(Localization.BotUserNotInDatabase, user.FullName());
                     return;
                 }
 
@@ -88,7 +88,7 @@ namespace Rias.Modules.Bot
             [OwnerOnly]
             public async Task BlacklistAsync([Remainder] DiscordUser user)
             {
-                await ReplyConfirmationAsync(Localization.BotBlacklistDialog);
+                await ReplyConfirmationAsync(Localization.BotBlacklistDialog, user.FullName());
                 var messageReceived = await NextMessageAsync();
                 if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -118,7 +118,7 @@ namespace Rias.Modules.Bot
             [OwnerOnly]
             public async Task BotBanAsync([Remainder] DiscordUser user)
             {
-                await ReplyConfirmationAsync(Localization.BotBotBanDialog);
+                await ReplyConfirmationAsync(Localization.BotBotBanDialog, user.FullName());
                 var messageReceived = await NextMessageAsync();
                 if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
                 {

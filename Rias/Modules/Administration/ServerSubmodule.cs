@@ -28,7 +28,7 @@ namespace Rias.Modules.Administration
 
             [Command("setnickname")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageNicknames)]
+            [MemberPermission(Permissions.ManageNicknames)]
             [BotPermission(Permissions.ManageNicknames)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetNicknameAsync(DiscordMember user, [Remainder] string? nickname = null)
@@ -41,13 +41,13 @@ namespace Rias.Modules.Administration
 
                 if (Context.CurrentMember!.CheckHierarchy(user) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAboveMe);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAboveMe);
                     return;
                 }
                 
                 if (((DiscordMember)Context.User).CheckHierarchy(user) <= 0)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationUserAbove);
+                    await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
                 }
 
@@ -94,7 +94,7 @@ namespace Rias.Modules.Administration
 
             [Command("setservername")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageGuild)]
+            [MemberPermission(Permissions.ManageGuild)]
             [BotPermission(Permissions.ManageGuild)]
             [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetServerNameAsync([Remainder] string name)
@@ -111,7 +111,7 @@ namespace Rias.Modules.Administration
 
             [Command("setservericon")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageGuild)]
+            [MemberPermission(Permissions.ManageGuild)]
             [BotPermission(Permissions.ManageGuild)]
             [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetServerIconAsync(string url)

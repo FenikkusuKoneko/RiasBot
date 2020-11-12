@@ -53,7 +53,7 @@ namespace Rias.Modules.Gambling
                 }
                 else
                 {
-                    await ReplyConfirmationAsync(Localization.GamblingCurrencyUser, member.FullName(), userDb.Currency, Credentials.Currency);
+                    await ReplyConfirmationAsync(Localization.GamblingCurrencyMember, member.FullName(), userDb.Currency, Credentials.Currency);
                 }
             }
 

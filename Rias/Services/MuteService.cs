@@ -58,7 +58,7 @@ namespace Rias.Services
 
             if (member.Roles.Any(r => r.Id == role.Id) && !sentByWarning)
             {
-                await ReplyErrorAsync(channel, guild.Id, Localization.AdministrationUserAlreadyMuted, member.FullName());
+                await ReplyErrorAsync(channel, guild.Id, Localization.AdministrationMemberAlreadyMuted, member.FullName());
                 return;
             }
 
@@ -70,9 +70,9 @@ namespace Rias.Services
             var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.Yellow,
-                    Description = GetText(guild.Id, Localization.AdministrationUserMuted)
+                    Description = GetText(guild.Id, Localization.AdministrationMemberMuted)
                 }
-                .AddField(GetText(guild.Id, Localization.CommonUser), member.FullName(), true)
+                .AddField(GetText(guild.Id, Localization.CommonMember), member.FullName(), true)
                 .AddField(GetText(guild.Id, Localization.CommonId), member.Id.ToString(), true)
                 .AddField(GetText(guild.Id, Localization.AdministrationModerator), moderator.FullName(), true);
 
@@ -95,9 +95,9 @@ namespace Rias.Services
                 if (preconditions.HasPermission(Permissions.AccessChannels) && preconditions.HasPermission(Permissions.SendMessages))
                 {
                     if (!sentByWarning)
-                        await channel.SendConfirmationMessageAsync(GetText(guild.Id, Localization.AdministrationUserWasMuted, member.FullName(), modLogChannel.Mention));
+                        await channel.SendConfirmationMessageAsync(GetText(guild.Id, Localization.AdministrationMemberWasMuted, member.FullName(), modLogChannel.Mention));
                     else
-                        await channel.SendConfirmationMessageAsync(GetText(guild.Id, Localization.AdministrationUserWasWarned, member.FullName(), modLogChannel.Mention));
+                        await channel.SendConfirmationMessageAsync(GetText(guild.Id, Localization.AdministrationMemberWasWarned, member.FullName(), modLogChannel.Mention));
                     
                     channel = modLogChannel;
                 }
@@ -143,7 +143,7 @@ namespace Rias.Services
             if (currentMember.CheckHierarchy(context.Member) <= 0)
             {
                 if (!context.SentByTimer)
-                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationUserAboveMe);
+                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationMemberAboveMe);
                 await RemoveMuteAsync(context);
                 return;
             }
@@ -151,7 +151,7 @@ namespace Rias.Services
             if (context.Member.Roles.All(r => r.Id != role.Id))
             {
                 if (!context.SentByTimer)
-                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationUserNotMuted, context.Member.FullName());
+                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationMemberNotMuted, context.Member.FullName());
                 await RemoveMuteAsync(context);
                 return;
             }
@@ -162,9 +162,9 @@ namespace Rias.Services
             var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.Yellow,
-                    Description = GetText(context.Guild.Id, Localization.AdministrationUserUnmuted)
+                    Description = GetText(context.Guild.Id, Localization.AdministrationMemberUnmuted)
                 }
-                .AddField(GetText(context.Guild.Id, Localization.CommonUser), context.Member.FullName(), true)
+                .AddField(GetText(context.Guild.Id, Localization.CommonMember), context.Member.FullName(), true)
                 .AddField(GetText(context.Guild.Id, Localization.CommonId), context.MemberId.ToString(), true)
                 .AddField(GetText(context.Guild.Id, Localization.AdministrationModerator), context.SentByTimer ? currentMember.FullName() : context.Moderator?.FullName() ?? "-", true);
 
@@ -185,7 +185,7 @@ namespace Rias.Services
                 if (preconditionsModLog.HasPermission(Permissions.AccessChannels) && preconditionsModLog.HasPermission(Permissions.SendMessages))
                 {
                     if (!context.SentByTimer && channel != null)
-                        await channel.SendConfirmationMessageAsync(GetText(context.Guild.Id, Localization.AdministrationUserWasUnmuted, context.Member.FullName(), modLogChannel.Mention));
+                        await channel.SendConfirmationMessageAsync(GetText(context.Guild.Id, Localization.AdministrationMemberWasUnmuted, context.Member.FullName(), modLogChannel.Mention));
                     channel = modLogChannel;
                 }
             }

@@ -134,7 +134,7 @@ namespace Rias.Modules.Utility
                     }.WithThumbnail(Context.Guild.GetIconUrl())
                     .AddField(GetText(Localization.CommonId), Context.Guild.Id.ToString(), true)
                     .AddField(GetText(Localization.UtilityOwner), Context.Guild.Owner.FullName(), true)
-                    .AddField(GetText(Localization.CommonUsers), Context.Guild.MemberCount.ToString(), true)
+                    .AddField(GetText(Localization.CommonMembers), Context.Guild.MemberCount.ToString(), true)
                     .AddField(GetText(Localization.UtilityBots), Context.Guild.Members.Count(x => x.Value.IsBot).ToString(), true)
                     .AddField(GetText(Localization.UtilityCreatedAt), Context.Guild.CreationTimestamp.UtcDateTime.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
                     .AddField(GetText(Localization.UtilityTextChannels), Context.Guild.Channels.Count(x => x.Value.Type == ChannelType.Text).ToString(), true)

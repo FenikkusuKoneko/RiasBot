@@ -29,7 +29,7 @@ namespace Rias.Modules.Administration
             
             [Command("addemoji")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageEmojis)]
+            [MemberPermission(Permissions.ManageEmojis)]
             [BotPermission(Permissions.ManageEmojis)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AddEmojiAsync(string url, [Remainder] string name)
@@ -105,7 +105,7 @@ namespace Rias.Modules.Administration
             
             [Command("deleteemoji")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageEmojis)]
+            [MemberPermission(Permissions.ManageEmojis)]
             [BotPermission(Permissions.ManageEmojis)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task DeleteEmojiAsync([Remainder] string name)
@@ -131,7 +131,7 @@ namespace Rias.Modules.Administration
             
             [Command("renameemoji")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageEmojis)]
+            [MemberPermission(Permissions.ManageEmojis)]
             [BotPermission(Permissions.ManageEmojis)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameEmojiAsync([Remainder] string names)

@@ -867,7 +867,7 @@ namespace Rias.Modules.Reactions
             if (member.Id == Context.User.Id)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBaka, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBakaUser,
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBakaMember,
                     member.Mention, ((DiscordMember)Context.User).DisplayName), embed: embed);
         }
 
@@ -901,7 +901,7 @@ namespace Rias.Modules.Reactions
             if (value is null)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBaka, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBakaUser, value, ((DiscordMember)Context.User).DisplayName),
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsBakaMember, value, ((DiscordMember)Context.User).DisplayName),
                     embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention)new UserMention(x)));
         }
         
@@ -1081,7 +1081,7 @@ namespace Rias.Modules.Reactions
             if (member is null || member.Id == Context.User.Id)
                 await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHandholding, Context.User.Mention), embed: embed);
             else
-                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHandholdingUser,
+                await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsHandholdingMember,
                     ((DiscordMember)Context.User).DisplayName, member.Mention), embed: embed);
         }
 

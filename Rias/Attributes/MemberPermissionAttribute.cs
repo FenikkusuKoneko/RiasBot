@@ -11,11 +11,11 @@ using Rias.Implementation;
 namespace Rias.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class UserPermissionAttribute : RiasCheckAttribute
+    public class MemberPermissionAttribute : RiasCheckAttribute
     {
         private readonly Permissions? _permissions;
 
-        public UserPermissionAttribute(Permissions permissions)
+        public MemberPermissionAttribute(Permissions permissions)
         {
             _permissions = permissions;
         }
@@ -30,7 +30,7 @@ namespace Rias.Attributes
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
 
             if (!(context.User is DiscordMember member))
-                return CheckResult.Unsuccessful(localization.GetText(null, Localization.AttributeUserPermissionNotGuild));
+                return CheckResult.Unsuccessful(localization.GetText(null, Localization.AttributeMemberPermissionNotGuild));
             
             var guildPermissions = member.GetPermissions();
             var hasGuildPermissions = guildPermissions.HasPermission(_permissions.Value);
@@ -41,13 +41,13 @@ namespace Rias.Attributes
             if (!hasGuildPermissions && !hasChannelPerm)
             {
                 var guildPermsHumanized = HumanizePermissions(context.Guild!, guildPermissions, localization);
-                return CheckResult.Unsuccessful(localization.GetText(context.Guild!.Id, Localization.AttributeUserGuildPermissions, guildPermsHumanized));
+                return CheckResult.Unsuccessful(localization.GetText(context.Guild!.Id, Localization.AttributeMemberGuildPermissions, guildPermsHumanized));
             }
 
             if (hasGuildPermissions && !hasChannelPerm)
             {
                 var channelPermsHumanized = HumanizePermissions(context.Guild!, channelPermissions, localization);
-                return CheckResult.Unsuccessful(localization.GetText(context.Guild!.Id, Localization.AttributeUserChannelPermissions, channelPermsHumanized));
+                return CheckResult.Unsuccessful(localization.GetText(context.Guild!.Id, Localization.AttributeMemberChannelPermissions, channelPermsHumanized));
             }
 
             return CheckResult.Successful;

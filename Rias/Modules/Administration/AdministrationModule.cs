@@ -27,7 +27,7 @@ namespace Rias.Modules.Administration
         
         [Command("setgreet")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.Administrator)]
+        [MemberPermission(Permissions.Administrator)]
         [BotPermission(Permissions.ManageWebhooks)]
         [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task SetGreetAsync()
@@ -72,7 +72,7 @@ namespace Rias.Modules.Administration
         
         [Command("greetmessage")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.Administrator)]
+        [MemberPermission(Permissions.Administrator)]
         public async Task GreetMessageAsync([Remainder] string message)
         {
             if (message.Length > 1500)
@@ -101,7 +101,7 @@ namespace Rias.Modules.Administration
         
         [Command("setbye")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.Administrator)]
+        [MemberPermission(Permissions.Administrator)]
         [BotPermission(Permissions.ManageWebhooks)]
         [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task SetByeAsync()
@@ -146,7 +146,7 @@ namespace Rias.Modules.Administration
         
         [Command("byemessage")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.Administrator)]
+        [MemberPermission(Permissions.Administrator)]
         public async Task ByeMessageAsync([Remainder] string message)
         {
             if (message.Length > 1500)
@@ -175,7 +175,7 @@ namespace Rias.Modules.Administration
         
         [Command("setmodlog")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.Administrator)]
+        [MemberPermission(Permissions.Administrator)]
         public async Task SetModLogAsync()
         {
             var modLogSet = false;

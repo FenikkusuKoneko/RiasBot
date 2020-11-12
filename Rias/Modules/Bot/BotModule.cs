@@ -47,7 +47,7 @@ namespace Rias.Modules.Bot
             {
                 Color = RiasUtilities.ConfirmColor,
                 Description = GetText(Localization.BotLeftGuild, guild.Name)
-            }.AddField(GetText(Localization.CommonId), guild.Id.ToString(), true).AddField(GetText(Localization.CommonUsers), guild.MemberCount.ToString(), true);
+            }.AddField(GetText(Localization.CommonId), guild.Id.ToString(), true).AddField(GetText(Localization.CommonMembers), guild.MemberCount.ToString(), true);
 
             await ReplyAsync(embed);
             await guild.LeaveAsync();

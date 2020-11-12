@@ -84,7 +84,7 @@ namespace Rias.Modules.Administration
 
             [Command("addselfassignablerole")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageRoles)]
+            [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
             public async Task AddSelfAssignableRoleAsync([Remainder] DiscordRole role)
             {
@@ -121,7 +121,7 @@ namespace Rias.Modules.Administration
 
             [Command("removeselfassignablerole")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageRoles)]
+            [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
             public async Task RemoveSelfAssignableRoleAsync([Remainder] DiscordRole role)
             {

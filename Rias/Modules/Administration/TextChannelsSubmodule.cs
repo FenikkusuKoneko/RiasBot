@@ -22,7 +22,7 @@ namespace Rias.Modules.Administration
 
             [Command("createtextchannel")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateTextChannelAsync([Remainder] string name)
@@ -39,7 +39,7 @@ namespace Rias.Modules.Administration
 
             [Command("deletetextchannel")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task DeleteTextChannelAsync([TextChannel, Remainder] DiscordChannel channel)
@@ -57,7 +57,7 @@ namespace Rias.Modules.Administration
 
             [Command("renametextchannel")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task RenameTextChannelAsync([Remainder] string names)
@@ -116,7 +116,7 @@ namespace Rias.Modules.Administration
 
             [Command("setchanneltopic")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetChannelTopic([Remainder] string? topic = null)
@@ -147,7 +147,7 @@ namespace Rias.Modules.Administration
 
             [Command("setnsfwchannel")]
             [Context(ContextType.Guild)]
-            [UserPermission(Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetNsfwChannelAsync([TextChannel, Remainder] DiscordChannel? channel = null)

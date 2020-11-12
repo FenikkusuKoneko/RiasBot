@@ -41,7 +41,7 @@ namespace Rias.Modules.Utility
 
         [Command("setprefix")]
         [Context(ContextType.Guild)]
-        [UserPermission(Permissions.Administrator)]
+        [MemberPermission(Permissions.Administrator)]
         public async Task SetPrefixAsync([Remainder] string prefix)
         {
             if (prefix.Length > 15)

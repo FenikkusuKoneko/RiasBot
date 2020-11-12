@@ -35,7 +35,7 @@ namespace Rias.TypeParsers
                 }
                 catch
                 {
-                    return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
+                    return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationMemberNotFound));
                 }
             }
 
@@ -63,7 +63,7 @@ namespace Rias.TypeParsers
             if (member != null)
                 return TypeParserResult<DiscordMember>.Successful(member);
             
-            return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
+            return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationMemberNotFound));
         }
     }
 }
