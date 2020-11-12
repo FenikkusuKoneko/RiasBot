@@ -14,9 +14,9 @@ namespace Rias.Services.Commons
     { 
         private readonly BlackjackService _service;
         private readonly Queue<(int Value, string Suit)> _deck = new Queue<(int Value, string Suit)>();
-        
-        private DiscordMember? _member;
-        private DiscordEmbedBuilder? _embed;
+
+        private DiscordMember _member = null!;
+        private DiscordEmbedBuilder _embed = null!;
         private DiscordColor _embedColor = new DiscordColor(255, 255, 254);
         private int _bet;
         private int _userCurrency;
@@ -24,9 +24,9 @@ namespace Rias.Services.Commons
         private Timer _timer;
         private bool _isEnded;
 
-        private BlackjackHand? _playerHand;
+        private BlackjackHand _playerHand = null!;
         private BlackjackHand? _playerSecondHand;
-        private BlackjackHand? _houseHand;
+        private BlackjackHand _houseHand = null!;
 
         public BlackjackGame(BlackjackService service)
         {
@@ -81,16 +81,16 @@ namespace Rias.Services.Commons
                     Color = _embedColor,
                     Title = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitleCurrency, _bet, _service.Credentials.Currency, _userCurrency),
                     Description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackCards, _deck.Count)
-                }.AddField($"{_member.Guild.CurrentMember.FullName()} ({_houseHand!.Score})", _houseHand!.ShowCards(true))
-                .AddField($"{_member.FullName()} ({_playerHand!.Score})", _playerHand!.ShowCards());
+                }.AddField($"{_member.Guild.CurrentMember.FullName()} ({_houseHand.Score})", _houseHand.ShowCards(true))
+                .AddField($"{_member.FullName()} ({_playerHand.Score})", _playerHand.ShowCards());
 
             Message = await channel.SendMessageAsync(embed: _embed);
 
             await Message!.CreateReactionAsync(_service.CardEmoji);
             await Message!.CreateReactionAsync(_service.HandEmoji);
             
-            var firstCardValue = _playerHand!.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[0].Value, 10);
-            var secondCardValue = _playerHand!.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[1].Value, 10);
+            var firstCardValue = _playerHand.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand.Cards[0].Value, 10);
+            var secondCardValue = _playerHand.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand.Cards[1].Value, 10);
             
             if (firstCardValue == secondCardValue && _userCurrency >= _bet)
                 await Message!.CreateReactionAsync(_service.SplitEmoji);
@@ -103,8 +103,8 @@ namespace Rias.Services.Commons
             await Message!.CreateReactionAsync(_service.CardEmoji);
             await Message!.CreateReactionAsync(_service.HandEmoji);
 
-            var firstCardValue = _playerHand!.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[0].Value, 10);
-            var secondCardValue = _playerHand!.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[1].Value, 10);
+            var firstCardValue = _playerHand.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand.Cards[0].Value, 10);
+            var secondCardValue = _playerHand.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand.Cards[1].Value, 10);
 
             if (_playerSecondHand is null && firstCardValue == secondCardValue && _userCurrency >= _bet)
                 await Message!.CreateReactionAsync(_service.SplitEmoji);
@@ -112,7 +112,7 @@ namespace Rias.Services.Commons
 
         public Task HitAsync()
         {
-            if (_playerHand!.HandState == HandState.Playing)
+            if (_playerHand.HandState == HandState.Playing)
                 _playerHand.Cards.Add(_deck.Dequeue());
             else if (_playerSecondHand is not null && _playerSecondHand.HandState == HandState.Playing)
                 _playerSecondHand.Cards.Add(_deck.Dequeue());
@@ -122,7 +122,7 @@ namespace Rias.Services.Commons
         
         public async Task StandAsync()
         {
-            if (_playerHand!.HandState == HandState.Playing)
+            if (_playerHand.HandState == HandState.Playing)
                 _playerHand.Stand();
             else if (_playerSecondHand is not null && _playerSecondHand.HandState == HandState.Playing)
                 _playerSecondHand.Stand();
@@ -135,15 +135,15 @@ namespace Rias.Services.Commons
             if (_playerSecondHand is not null)
                 return;
             
-            var firstCardValue = _playerHand!.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[0].Value, 10);
-            var secondCardValue = _playerHand!.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand!.Cards[1].Value, 10);
+            var firstCardValue = _playerHand.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand.Cards[0].Value, 10);
+            var secondCardValue = _playerHand.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand.Cards[1].Value, 10);
 
             if (firstCardValue != secondCardValue || _userCurrency < _bet)
                 return;
 
-            _userCurrency = await _service.RemoveUserCurrencyAsync(_member!.Id, _bet);
+            _userCurrency = await _service.RemoveUserCurrencyAsync(_member.Id, _bet);
             _bet *= 2;
-            _embed!.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitleCurrency, _bet, _service.Credentials.Currency, _userCurrency));
+            _embed.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitleCurrency, _bet, _service.Credentials.Currency, _userCurrency));
             
             _playerSecondHand = new BlackjackHand();
             _playerSecondHand.Cards.Add(_playerHand.Cards[1]);
@@ -169,8 +169,8 @@ namespace Rias.Services.Commons
         {
             var gameEnded = false;
 
-            if (_playerHand!.HandState == HandState.Playing)
-                _playerHand!.Process();
+            if (_playerHand.HandState == HandState.Playing)
+                _playerHand.Process();
             if (_playerSecondHand is not null && _playerSecondHand.HandState == HandState.Playing)
                 _playerSecondHand.Process();
 
@@ -185,7 +185,7 @@ namespace Rias.Services.Commons
                 if ((_playerHand.HandState != HandState.Bust && _playerSecondHand is null)
                     || (_playerSecondHand is not null && _playerSecondHand.HandState != HandState.Bust))
                 {
-                    _houseHand!.Process();
+                    _houseHand.Process();
                     while (_houseHand.HandState == HandState.Playing)
                     {
                         if (_houseHand.Score < 17 || _houseHand.Score == 17 && _houseHand.Cards.Count(x => x.Value == 1) == 1)
@@ -196,12 +196,12 @@ namespace Rias.Services.Commons
                         _houseHand.Process();
                     }
                     
-                    _embed!.Fields[0].Name = $"{_member!.Guild.CurrentMember.FullName()} ({_houseHand!.Score})";
-                    _embed.Fields[0].Value = _houseHand!.ShowCards();
+                    _embed.Fields[0].Name = $"{_member.Guild.CurrentMember.FullName()} ({_houseHand.Score})";
+                    _embed.Fields[0].Value = _houseHand.ShowCards();
                 }
 
-                _playerHand.ProcessWinning(_houseHand!);
-                _playerSecondHand?.ProcessWinning(_houseHand!);
+                _playerHand.ProcessWinning(_houseHand);
+                _playerSecondHand?.ProcessWinning(_houseHand);
 
                 switch (_playerHand.WinningState)
                 {
@@ -213,14 +213,14 @@ namespace Rias.Services.Commons
                         if (_playerSecondHand is null)
                         {
                             _embedColor = RiasUtilities.Green;
-                            description = _service.GetText(_member!.Guild.Id, Localization.GamblingBlackjackBlackjack, winning, _service.Credentials.Currency, _userCurrency + winning);
+                            description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackBlackjack, winning, _service.Credentials.Currency, _userCurrency + winning);
                         }
                         break;
                     case WinningState.Push:
                         if (_playerSecondHand is null)
                         {
                             _embedColor = DiscordColor.Yellow;
-                            description = _service.GetText(_member!.Guild.Id, Localization.GamblingBlackjackPush, _userCurrency + winning, _service.Credentials.Currency);
+                            description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackPush, _userCurrency + winning, _service.Credentials.Currency);
                         }
                         break;
                     case WinningState.Lose:
@@ -245,7 +245,7 @@ namespace Rias.Services.Commons
                 }
                 
                 if (winning > 0)
-                    _userCurrency = await _service.AddUserCurrencyAsync(_member!.Id, winning);
+                    _userCurrency = await _service.AddUserCurrencyAsync(_member.Id, winning);
 
                 if (string.IsNullOrEmpty(description))
                 {
@@ -253,26 +253,26 @@ namespace Rias.Services.Commons
                     if (winning > 0)
                     {
                         _embedColor = RiasUtilities.Green;
-                        description = _service.GetText(_member!.Guild.Id, Localization.GamblingYouWon, winning, _service.Credentials.Currency, _userCurrency);
+                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouWon, winning, _service.Credentials.Currency, _userCurrency);
                     }
                     else if (winning < 0)
                     {
                         _embedColor = RiasUtilities.Red;
-                        description = _service.GetText(_member!.Guild.Id, Localization.GamblingYouLost, Math.Abs(winning), _service.Credentials.Currency, _userCurrency);
+                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouLost, Math.Abs(winning), _service.Credentials.Currency, _userCurrency);
                     }
                     else if (_playerSecondHand != null)
                     {
                         _embedColor = RiasUtilities.Yellow;
-                        description = _service.GetText(_member!.Guild.Id, Localization.GamblingBlackjackTie, _userCurrency, _service.Credentials.Currency);
+                        description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTie, _userCurrency, _service.Credentials.Currency);
                     }
                 }
             }
 
-            var firstHandFieldName = $"{_member!.FullName()} ({_playerHand!.Score})";
+            var firstHandFieldName = $"{_member.FullName()} ({_playerHand.Score})";
             if (_playerHand.HandState == HandState.Playing && _playerSecondHand is not null)
                 firstHandFieldName = "▶ " + firstHandFieldName;
             
-            _embed!.Fields[1].Name = firstHandFieldName;
+            _embed.Fields[1].Name = firstHandFieldName;
             _embed.Fields[1].Value = _playerHand.ShowCards();
 
             if (_playerSecondHand is not null)
@@ -280,7 +280,7 @@ namespace Rias.Services.Commons
                 if (_embed.Fields.Count == 2)
                     _embed.AddField("\u200B", "\u200B");
 
-                var secondHandFieldName = $"{_member!.FullName()} ({_playerSecondHand.Score})";
+                var secondHandFieldName = $"{_member.FullName()} ({_playerSecondHand.Score})";
                 if (_playerHand.HandState != HandState.Playing && _playerSecondHand.HandState == HandState.Playing)
                     secondHandFieldName = "▶ " + secondHandFieldName;
                 
@@ -290,7 +290,7 @@ namespace Rias.Services.Commons
 
             if (gameEnded)
             {
-                _embed.WithTitle(_service.GetText(_member!.Guild.Id, Localization.GamblingBlackjackTitle, _bet, _service.Credentials.Currency));
+                _embed.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitle, _bet, _service.Credentials.Currency));
                 _embed.WithDescription(description);
                 StopGame();
 
@@ -299,11 +299,11 @@ namespace Rias.Services.Commons
             }
             else
             {
-                _embed.WithDescription(_service.GetText(_member!.Guild.Id, Localization.GamblingBlackjackCards, _deck.Count));
+                _embed.WithDescription(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackCards, _deck.Count));
             }
 
             _embed.WithColor(_embedColor);
-            await Message!.ModifyAsync(embed: _embed!.Build());
+            await Message!.ModifyAsync(embed: _embed.Build());
         }
 
         private void ShuffleDeck()
@@ -340,12 +340,12 @@ namespace Rias.Services.Commons
                 return;
             }
             
-            _service.RemoveSession(_member!);
+            _service.RemoveSession(_member);
         }
 
         private bool CheckManageMessagesPermission()
         {
-            var currentMember = _member!.Guild.CurrentMember;
+            var currentMember = _member.Guild.CurrentMember;
             var channel = Message!.Channel;
                 
             var channelPermissions = currentMember.PermissionsIn(channel);
