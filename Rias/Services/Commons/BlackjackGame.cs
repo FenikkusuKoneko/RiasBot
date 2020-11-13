@@ -18,12 +18,13 @@ namespace Rias.Services.Commons
         private DiscordMember _member = null!;
         private DiscordEmbedBuilder _embed = null!;
         private DiscordColor _embedColor = new DiscordColor(255, 255, 254);
+        
         private int _bet;
         private int _userCurrency;
+        private bool _canSplit;
+        private bool _isEnded;
         
         private Timer _timer;
-        private bool _isEnded;
-
         private BlackjackHand _playerHand = null!;
         private BlackjackHand? _playerSecondHand;
         private BlackjackHand _houseHand = null!;
@@ -66,8 +67,8 @@ namespace Rias.Services.Commons
             _playerSecondHand = null;
 
             _playerHand = new BlackjackHand();
-            _playerHand.Cards.Add(_deck.Dequeue());
-            _playerHand.Cards.Add(_deck.Dequeue());
+            _playerHand.Cards.Add((6, _service.SpadesEmoji));
+            _playerHand.Cards.Add((6, _service.HeartsEmoji));
             _playerHand.Process();
 
             _houseHand = new BlackjackHand();
@@ -91,9 +92,12 @@ namespace Rias.Services.Commons
             
             var firstCardValue = _playerHand.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand.Cards[0].Value, 10);
             var secondCardValue = _playerHand.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand.Cards[1].Value, 10);
-            
+
             if (firstCardValue == secondCardValue && _userCurrency >= _bet)
+            {
                 await Message!.CreateReactionAsync(_service.SplitEmoji);
+                _canSplit = true;
+            }
         }
 
         public async Task ResumeGameAsync(DiscordMember member, DiscordChannel channel)
@@ -107,17 +111,23 @@ namespace Rias.Services.Commons
             var secondCardValue = _playerHand.Cards[1].Value == 1 ? 11 : Math.Min(_playerHand.Cards[1].Value, 10);
 
             if (_playerSecondHand is null && firstCardValue == secondCardValue && _userCurrency >= _bet)
+            {
                 await Message!.CreateReactionAsync(_service.SplitEmoji);
+                _canSplit = true;
+            }
         }
 
-        public Task HitAsync()
+        public async Task HitAsync()
         {
             if (_playerHand.HandState == HandState.Playing)
                 _playerHand.Cards.Add(_deck.Dequeue());
             else if (_playerSecondHand is not null && _playerSecondHand.HandState == HandState.Playing)
                 _playerSecondHand.Cards.Add(_deck.Dequeue());
             
-            return ProcessGameAsync();
+            if (_canSplit && CheckManageMessagesPermission())
+                await Message!.DeleteReactionsEmojiAsync(_service.SplitEmoji);
+            
+            await ProcessGameAsync();
         }
         
         public async Task StandAsync()
@@ -126,13 +136,16 @@ namespace Rias.Services.Commons
                 _playerHand.Stand();
             else if (_playerSecondHand is not null && _playerSecondHand.HandState == HandState.Playing)
                 _playerSecondHand.Stand();
+            
+            if (_canSplit && CheckManageMessagesPermission())
+                await Message!.DeleteReactionsEmojiAsync(_service.SplitEmoji);
 
             await ProcessGameAsync();
         }
 
         public async Task SplitAsync()
         {
-            if (_playerSecondHand is not null)
+            if (!_canSplit)
                 return;
             
             var firstCardValue = _playerHand.Cards[0].Value == 1 ? 11 : Math.Min(_playerHand.Cards[0].Value, 10);
