@@ -14,8 +14,8 @@
         <aliases>greetmessage greetmsg</aliases>
         <description>Sets the announcement message when someone joins the server.
 Placeholders:
-`%mention%` - will mention the user
-`%user%` - will write the user's username
+`%mention%` - will mention the member
+`%member%` - will write the member's username
 `%server%` or `%guild%` - will put the name of the server
 Embeds are supported, json form. If the preview is not an embed, then it means the json message is not correct</description>
         <remarks>
@@ -33,12 +33,12 @@ Embeds are supported, json form. If the preview is not an embed, then it means t
         <aliases>byemessage byemsg</aliases>
         <description>Sets the announcement message when someone leaves the server.
 Placeholders:
-`%mention%` - will mention the user
-`%user%` - will write the user's username
+`%mention%` - will mention the member
+`%member%` - will write the member's username
 `%server%` or `%guild%` - will put the name of the server
 Embeds are supported, json form.</description>
         <remarks>
-          <remark>{0}byemsg %user% left %guild%...</remark>
+          <remark>{0}byemsg %member% left %guild%...</remark>
         </remarks>
       </command>
       <command>
@@ -132,45 +132,45 @@ Embeds are supported, json form.</description>
         <commands>
           <command>
             <aliases>kick k</aliases>
-            <description>Kicks a user. If you provide a reason message I will DM the user with the reason.</description>
+            <description>Kicks a member. If you provide a reason message I will DM the member with the reason.</description>
             <remarks>
-              <remark>{0}k @User</remark>
-              <remark>{0}k @User Your behavior is bad!</remark>
+              <remark>{0}k @Member</remark>
+              <remark>{0}k @Member Your behavior is bad!</remark>
             </remarks>
           </command>
           <command>
             <aliases>ban b</aliases>
-            <description>Bans a user. If you provide a reason message I will DM the user with the reason.</description>
+            <description>Bans a member. If you provide a reason message I will DM the member with the reason.</description>
             <remarks>
-              <remark>{0}b @User</remark>
-              <remark>{0}b @User You've violated many rules!</remark>
+              <remark>{0}b @Member</remark>
+              <remark>{0}b @Member You've violated many rules!</remark>
             </remarks>
           </command>
           <command>
             <aliases>softban sb</aliases>
-            <description>Bans a user with the option to remove his messages from last 7 days, and then unbans it. The result is a kick.</description>
+            <description>Bans a member with the option to remove his messages from last 7 days, and then unbans it. The result is a kick.</description>
             <remarks>
-              <remark>{0}sb @User</remark>
-              <remark>{0}sb @User Don't spam here!</remark>
+              <remark>{0}sb @Member</remark>
+              <remark>{0}sb @Member Don't spam here!</remark>
             </remarks>
           </command>
           <command>
             <aliases>pruneban pb</aliases>
-            <description>Bans a user with the option to remove his messages from last 7 days. Different from "softban" where the user is unbanned.</description>
+            <description>Bans a member with the option to remove his messages from last 7 days. Different from "softban" where the member is unbanned.</description>
             <remarks>
-              <remark>{0}pb @User</remark>
-              <remark>{0}pb @User DO NOT SPAM HERE!</remark>
+              <remark>{0}pb @Member</remark>
+              <remark>{0}pb @Member DO NOT SPAM HERE!</remark>
             </remarks>
           </command>
           <command>
             <aliases>prune purge</aliases>
             <description>`[prefix]prune x` removes last x number of messages from the channel (up to 100, including yours).
-`[prefix]prune @User` removes all User's messages in the last 100 messages (including yours).</description>
+`[prefix]prune @Member` removes all Member's messages in the last 100 messages (including yours).</description>
             <remarks>
               <remark>{0}prune x</remark>
-              <remark>{0}prune @User</remark>
-              <remark>{0}prune @User x</remark>
-              <remark>{0}prune x @User</remark>
+              <remark>{0}prune @Member</remark>
+              <remark>{0}prune @Member x</remark>
+              <remark>{0}prune x @Member</remark>
             </remarks>
           </command>
         </commands>
@@ -180,20 +180,20 @@ Embeds are supported, json form.</description>
         <commands>
           <command>
             <aliases>mute</aliases>
-            <description>Mutes a user from text and voice channels. You can mute with a timeout and/or you can provide a reason.</description>
+            <description>Mutes a member from text and voice channels. You can mute with a timeout and/or you can provide a reason.</description>
             <remarks>
-              <remark>{0}mute @User</remark>
-              <remark>{0}mute @User Stop talking off topic</remark>
-              <remark>{0}mute @User 1h</remark>
-              <remark>{0}mute @User 1d2h See you tomorrow</remark>
+              <remark>{0}mute @Member</remark>
+              <remark>{0}mute @Member Stop talking off topic</remark>
+              <remark>{0}mute @Member 1h</remark>
+              <remark>{0}mute @Member 1d2h See you tomorrow</remark>
             </remarks>
           </command>
           <command>
             <aliases>unmute</aliases>
-            <description>Unmutes a user from text and voice channels. You can provide a reason.</description>
+            <description>Unmutes a member from text and voice channels. You can provide a reason.</description>
             <remarks>
-              <remark>{0}unmute @User</remark>
-              <remark>{0}unmute @User You are forgiven</remark>
+              <remark>{0}unmute @Member</remark>
+              <remark>{0}unmute @Member You are forgiven</remark>
             </remarks>
           </command>
           <command>
@@ -253,7 +253,7 @@ If the role's name has more than one word use quotation marks to properly take t
           </command>
           <command>
             <aliases>hoistrole hr</aliases>
-            <description>Sets the role to be or not displayed independently in the users list.</description>
+            <description>Sets the role to be or not displayed independently in the member list.</description>
             <remarks>
               <remark>{0}hr Admin</remark>
               <remark>{0}hr @Admin</remark>
@@ -271,27 +271,27 @@ If the role's name has more than one word use quotation marks to properly take t
           </command>
           <command>
             <aliases>addrole ar setrole sr</aliases>
-            <description>Adds/Sets a role to a user.</description>
+            <description>Adds/Sets a role to a member.</description>
             <remarks>
-              <remark>{0}ar User Admin</remark>
-              <remark>{0}ar @User @Admin</remark>
+              <remark>{0}ar Member Admin</remark>
+              <remark>{0}ar @Member @Admin</remark>
               <remark>{0}ar Nickname 613497353143451649</remark>
               <remark>{0}ar 327927038360944640 613497353143451649</remark>
             </remarks>
           </command>
           <command>
             <aliases>removerole rr</aliases>
-            <description>Removes a role from a user.</description>
+            <description>Removes a role from a member.</description>
             <remarks>
-              <remark>{0}rr User Admin</remark>
-              <remark>{0}rr @User @Admin</remark>
+              <remark>{0}rr Member Admin</remark>
+              <remark>{0}rr @Member @Admin</remark>
               <remark>{0}rr Nickname 613497353143451649</remark>
               <remark>{0}rr 327927038360944640 613497353143451649</remark>
             </remarks>
           </command>
           <command>
             <aliases>autoassignablerole aar</aliases>
-            <description>Sets a role to be auto-assigned for every user who joins the server. Provide no role to deactivate it.</description>
+            <description>Sets a role to be auto-assigned for every member who joins the server. Provide no role to deactivate it.</description>
             <remarks>
               <remark>{0}aar Member</remark>
             </remarks>
@@ -347,10 +347,10 @@ If the role's name has more than one word use quotation marks to properly take t
         <commands>
           <command>
             <aliases>setnickname setnick</aliases>
-            <description>Sets a user's nickname in this server. Provide no arguments to remove its nickname.</description>
+            <description>Sets a member's nickname in this server. Provide no arguments to remove its nickname.</description>
             <remarks>
-              <remark>{0}setnick User nickname</remark>
-              <remark>{0}setnick @User nickname</remark>
+              <remark>{0}setnick Member nickname</remark>
+              <remark>{0}setnick @Member nickname</remark>
               <remark>{0}setnick 327927038360944640 nickname</remark>
             </remarks>
           </command>
@@ -466,34 +466,34 @@ If the role's name has more than one word use quotation marks to properly take t
         <commands>
           <command>
             <aliases>warn</aliases>
-            <description>Warn a user. Also, you can specify a reason.</description>
+            <description>Warn a member. Also, you can specify a reason.</description>
             <remarks>
-              <remark>{0}warn User</remark>
-              <remark>{0}warn @User</remark>
+              <remark>{0}warn Member</remark>
+              <remark>{0}warn @Member</remark>
               <remark>{0}warn 327927038360944640</remark>
-              <remark>{0}warn User Rule violated...</remark>
+              <remark>{0}warn Member Rule violated...</remark>
               <remark>{0}warn 327927038360944640 Rule violated...</remark>
             </remarks>
           </command>
           <command>
             <aliases>warnings warninglist warnlist</aliases>
-            <description>Shows all warned users in this server, paginated, or shows all warnings for a user.</description>
+            <description>Shows all warned members in this server, paginated, or shows all warnings for a member.</description>
             <remarks>
               <remark>{0}warnings</remark>
-              <remark>{0}warnings User</remark>
-              <remark>{0}warnings @User</remark>
+              <remark>{0}warnings Member</remark>
+              <remark>{0}warnings @Member</remark>
               <remark>{0}warnings 327927038360944640</remark>
             </remarks>
           </command>
           <command>
             <aliases>clearwarning clearwarn</aliases>
-            <description>Clear one warning by ID or all of a user.
-Administrators can clear any warning and moderators can clear only their added warnings to a user.</description>
+            <description>Clear one warning by ID or all of a member.
+Administrators can clear any warning and moderators can clear only their added warnings to a member.</description>
             <remarks>
-              <remark>{0}clearwarn User 1</remark>
-              <remark>{0}clearwarn @User 2</remark>
+              <remark>{0}clearwarn Member 1</remark>
+              <remark>{0}clearwarn @Member 2</remark>
               <remark>{0}clearwarn 327927038360944640 1</remark>
-              <remark>{0}clearwarn User all</remark>
+              <remark>{0}clearwarn Member all</remark>
               <remark>{0}clearwarn 327927038360944640 all</remark>
             </remarks>
           </command>
@@ -557,7 +557,7 @@ Administrators can clear any warning and moderators can clear only their added w
       </command>
       <command>
         <aliases>send</aliases>
-        <description>I will send a message to a user &lt;u:user-id&gt; or to a channel from a server &lt;c:channel-id&gt;. Embed is supported.</description>
+        <description>I will send a message to a member &lt;u:user-id&gt; or to a channel from a server &lt;c:channel-id&gt;. Embed is supported.</description>
         <remarks>
           <remark>{0}send u:327927038360944640 message</remark>
           <remark>{0}send c:381975649428176907 message</remark>
@@ -668,7 +668,7 @@ Administrators can clear any warning and moderators can clear only their added w
     <commands>
       <command>
         <aliases>deletecommandmessage delcmdmsg</aliases>
-        <description>Toggles the deletion of the user's message that triggered the command.</description>
+        <description>Toggles the deletion of the member's message that triggered the command.</description>
         <remarks>
           <remark>{0}delcmdmsg</remark>
         </remarks>
@@ -738,11 +738,11 @@ The blackjack session will be available for 24 hours.</description>
         <commands>
           <command>
             <aliases>currency $ hearts</aliases>
-            <description>Shows the currency you have or for a user.</description>
+            <description>Shows the currency you have or for a member.</description>
             <remarks>
               <remark>{0}$</remark>
-              <remark>{0}$ User</remark>
-              <remark>{0}$ @User</remark>
+              <remark>{0}$ Member</remark>
+              <remark>{0}$ @Member</remark>
               <remark>{0}$ 327927038360944640</remark>
             </remarks>
           </command>
@@ -750,8 +750,8 @@ The blackjack session will be available for 24 hours.</description>
             <aliases>reward</aliases>
             <description>Rewards a user with some amount of [currency].</description>
             <remarks>
-              <remark>{0}reward 100 User</remark>
-              <remark>{0}reward 100 @User</remark>
+              <remark>{0}reward 100 Member</remark>
+              <remark>{0}reward 100 @Member</remark>
               <remark>{0}reward 100 327927038360944640</remark>
             </remarks>
           </command>
@@ -759,8 +759,8 @@ The blackjack session will be available for 24 hours.</description>
             <aliases>take</aliases>
             <description>Takes some amount of [currency] from a user.</description>
             <remarks>
-              <remark>{0}take 100 User</remark>
-              <remark>{0}take 100 @User</remark>
+              <remark>{0}take 100 Member</remark>
+              <remark>{0}take 100 @Member</remark>
               <remark>{0}take 100 327927038360944640</remark>
             </remarks>
           </command>
@@ -896,11 +896,11 @@ The blackjack session will be available for 24 hours.</description>
     <aliases>profile</aliases>
     <commands>
       <command>
-        <description>Shows your profile or for a user.</description>
+        <description>Shows your profile or for a member.</description>
         <remarks>
           <remark>{0}profile</remark>
-          <remark>{0}profile User</remark>
-          <remark>{0}profile @User</remark>
+          <remark>{0}profile Member</remark>
+          <remark>{0}profile @Member</remark>
           <remark>{0}profile 327927038360944640</remark>
         </remarks>
       </command>
@@ -953,71 +953,71 @@ Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a c
     <commands>
       <command>
         <aliases>pat pet</aliases>
-        <description>Pat a user &lt;3.</description>
+        <description>Pat a member &lt;3.</description>
         <remarks>
           <remark>{0}pat</remark>
-          <remark>{0}pat User</remark>
-          <remark>{0}pat @User</remark>
+          <remark>{0}pat Member</remark>
+          <remark>{0}pat @Member</remark>
           <remark>{0}pat 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>hug</aliases>
-        <description>Hug a user &lt;3.</description>
+        <description>Hug a member &lt;3.</description>
         <remarks>
           <remark>{0}hug</remark>
-          <remark>{0}hug User</remark>
-          <remark>{0}hug @User</remark>
+          <remark>{0}hug Member</remark>
+          <remark>{0}hug @Member</remark>
           <remark>{0}hug 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>kiss</aliases>
-        <description>Kiss a user :heart:.</description>
+        <description>Kiss a member :heart:.</description>
         <remarks>
           <remark>{0}kiss</remark>
-          <remark>{0}kiss User</remark>
-          <remark>{0}kiss @User</remark>
+          <remark>{0}kiss Member</remark>
+          <remark>{0}kiss @Member</remark>
           <remark>{0}kiss 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>lick</aliases>
-        <description>Lick a user, lewd.</description>
+        <description>Lick a member, lewd.</description>
         <remarks>
           <remark>{0}lick</remark>
-          <remark>{0}lick User</remark>
-          <remark>{0}lick @User</remark>
+          <remark>{0}lick Member</remark>
+          <remark>{0}lick @Member</remark>
           <remark>{0}lick 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>cuddle</aliases>
-        <description>Cuddle a user.</description>
+        <description>Cuddle a member.</description>
         <remarks>
           <remark>{0}cuddle</remark>
-          <remark>{0}cuddle User</remark>
-          <remark>{0}cuddle @User</remark>
+          <remark>{0}cuddle Member</remark>
+          <remark>{0}cuddle @Member</remark>
           <remark>{0}cuddle 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>bite</aliases>
-        <description>Bite a user.</description>
+        <description>Bite a member.</description>
         <remarks>
           <remark>{0}bite</remark>
-          <remark>{0}bite User</remark>
-          <remark>{0}bite @User</remark>
+          <remark>{0}bite Member</remark>
+          <remark>{0}bite @Member</remark>
           <remark>{0}bite 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>slap</aliases>
-        <description>Slap a user.</description>
+        <description>Slap a member.</description>
         <remarks>
           <remark>{0}slap</remark>
-          <remark>{0}slap User</remark>
-          <remark>{0}slap @User</remark>
+          <remark>{0}slap Member</remark>
+          <remark>{0}slap @Member</remark>
           <remark>{0}slap 327927038360944640</remark>
         </remarks>
       </command>
@@ -1030,21 +1030,21 @@ Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a c
       </command>
       <command>
         <aliases>grope</aliases>
-        <description>Grope a user.</description>
+        <description>Grope a member.</description>
         <remarks>
           <remark>{0}grope</remark>
-          <remark>{0}grope User</remark>
-          <remark>{0}grope @User</remark>
+          <remark>{0}grope Member</remark>
+          <remark>{0}grope @Member</remark>
           <remark>{0}grope 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>blush</aliases>
-        <description>Blush to a user.</description>
+        <description>Blush to a member.</description>
         <remarks>
           <remark>{0}blush</remark>
-          <remark>{0}blush User</remark>
-          <remark>{0}blush @User</remark>
+          <remark>{0}blush Member</remark>
+          <remark>{0}blush @Member</remark>
           <remark>{0}blush 327927038360944640</remark>
         </remarks>
       </command>
@@ -1053,18 +1053,18 @@ Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a c
         <description>Dance alone or with someone.</description>
         <remarks>
           <remark>{0}dance</remark>
-          <remark>{0}dance User</remark>
-          <remark>{0}dance @User</remark>
+          <remark>{0}dance Member</remark>
+          <remark>{0}dance @Member</remark>
           <remark>{0}dance 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>poke</aliases>
-        <description>Poke a user.</description>
+        <description>Poke a member.</description>
         <remarks>
           <remark>{0}poke</remark>
-          <remark>{0}poke User</remark>
-          <remark>{0}poke @User</remark>
+          <remark>{0}poke Member</remark>
+          <remark>{0}poke @Member</remark>
           <remark>{0}poke 327927038360944640</remark>
         </remarks>
       </command>
@@ -1073,8 +1073,8 @@ Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a c
         <description>Maybe someone will pat you.</description>
         <remarks>
           <remark>{0}pout</remark>
-          <remark>{0}pout User</remark>
-          <remark>{0}pout @User</remark>
+          <remark>{0}pout Member</remark>
+          <remark>{0}pout @Member</remark>
           <remark>{0}pout 327927038360944640</remark>
         </remarks>
       </command>
@@ -1097,28 +1097,28 @@ Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a c
         <description>Point to someone who is an idiot, it can be you too.</description>
         <remarks>
           <remark>{0}baka</remark>
-          <remark>{0}baka User</remark>
-          <remark>{0}baka @User</remark>
+          <remark>{0}baka Member</remark>
+          <remark>{0}baka @Member</remark>
           <remark>{0}baka 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>bang</aliases>
-        <description>Bang a user.</description>
+        <description>Bang a member.</description>
         <remarks>
           <remark>{0}bang</remark>
-          <remark>{0}bang User</remark>
-          <remark>{0}bang @User</remark>
+          <remark>{0}bang Member</remark>
+          <remark>{0}bang @Member</remark>
           <remark>{0}bang 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>punch</aliases>
-        <description>Punch a user, ouch.</description>
+        <description>Punch a member, ouch.</description>
         <remarks>
           <remark>{0}punch</remark>
-          <remark>{0}punch User</remark>
-          <remark>{0}punch @User</remark>
+          <remark>{0}punch Member</remark>
+          <remark>{0}punch @Member</remark>
           <remark>{0}punch 327927038360944640</remark>
         </remarks>
       </command>
@@ -1134,22 +1134,22 @@ Only White, Red, Green, Cyan, Orange, HotPink and Magenta are available. For a c
         <description>Lewd &gt;///&lt;.</description>
         <remarks>
           <remark>{0}handholding</remark>
-          <remark>{0}handholding User</remark>
-          <remark>{0}handholding @User</remark>
+          <remark>{0}handholding Member</remark>
+          <remark>{0}handholding @Member</remark>
           <remark>{0}handholding 327927038360944640</remark>
         </remarks>
       </command>
       <command>
         <aliases>waifuinsult</aliases>
-        <description>Insult someone's waifu. Optionally you can provide both the user and the waifu.
+        <description>Insult someone's waifu. Optionally you can provide both the member and the waifu.
 Because of that option, if you want to use a multi-word username you will have to wrap it in quotation marks, use mention or ID.
 This command doesn't work on yourself.</description>
         <remarks>
-          <remark>{0}waifuinsult User</remark>
-          <remark>{0}waifuinsult User waifu</remark>
+          <remark>{0}waifuinsult Member</remark>
+          <remark>{0}waifuinsult Member waifu</remark>
           <remark>{0}waifuinsult "FistName LastName" waifu</remark>
-          <remark>{0}waifuinsult @User</remark>
-          <remark>{0}waifuinsult @User waifu</remark>
+          <remark>{0}waifuinsult @Member</remark>
+          <remark>{0}waifuinsult @Member waifu</remark>
           <remark>{0}waifuinsult 327927038360944640</remark>
           <remark>{0}waifuinsult 327927038360944640 waifu</remark>
         </remarks>
@@ -1389,12 +1389,12 @@ If a category is provided then it shows all the units from that category, pagina
             </remarks>
           </command>
           <command>
-            <aliases>userinfo uinfo</aliases>
-            <description>Shows the info for a user. Provide no arguments to show your info.</description>
+            <aliases>memberinfo minfo userinfo uinfo</aliases>
+            <description>Shows the info for a member. Provide no arguments to show your info.</description>
             <remarks>
               <remark>{0}uinfo</remark>
-              <remark>{0}uinfo User</remark>
-              <remark>{0}uinfo @User</remark>
+              <remark>{0}uinfo Member</remark>
+              <remark>{0}uinfo @Member</remark>
               <remark>{0}uinfo 327927038360944640</remark>
             </remarks>
           </command>
@@ -1414,11 +1414,11 @@ If a category is provided then it shows all the units from that category, pagina
           </command>
           <command>
             <aliases>avatar av</aliases>
-            <description>Shows the avatar for a user. Provide no arguments to show your avatar.</description>
+            <description>Shows the avatar for a member. Provide no arguments to show your avatar.</description>
             <remarks>
               <remark>{0}av</remark>
-              <remark>{0}av User</remark>
-              <remark>{0}av @User</remark>
+              <remark>{0}av Member</remark>
+              <remark>{0}av @Member</remark>
               <remark>{0}av 327927038360944640</remark>
             </remarks>
           </command>
@@ -1438,7 +1438,7 @@ If a category is provided then it shows all the units from that category, pagina
     <commands>
       <command>
         <aliases>waifus</aliases>
-        <description>Shows all your waifus or for a user.</description>
+        <description>Shows all your waifus or for a member.</description>
         <remarks>
           <remark>{0}waifus</remark>
         </remarks>
@@ -1514,11 +1514,11 @@ NSFW images are not allowed, you will be banned.</description>
     <commands>
       <command>
         <aliases>xp</aliases>
-        <description>Shows your global level, global xp, server level and server xp, or for a user.</description>
+        <description>Shows your global level, global xp, server level and server xp, or for a member.</description>
         <remarks>
           <remark>{0}xp</remark>
-          <remark>{0}xp User</remark>
-          <remark>{0}xp @User</remark>
+          <remark>{0}xp Member</remark>
+          <remark>{0}xp @Member</remark>
           <remark>{0}xp 327927038360944640</remark>
         </remarks>
       </command>
@@ -1540,7 +1540,7 @@ NSFW images are not allowed, you will be banned.</description>
       </command>
       <command>
         <aliases>xpnotification xpnotify xpn</aliases>
-        <description>Enables or disables the server xp notifications. By default the notifications will be sent in the channel where the user leveled up. You can provide a channel and the notifications will be sent there.</description>
+        <description>Enables or disables the server xp notifications. By default the notifications will be sent in the channel where the member leveled up. You can provide a channel and the notifications will be sent there.</description>
         <remarks>
           <remark>{0}xpnotify</remark>
           <remark>{0}xpnotify #xp</remark>
@@ -1550,11 +1550,11 @@ NSFW images are not allowed, you will be banned.</description>
         <aliases>xpmessage xpm</aliases>
         <description>Sets the xp notification message. Provide no arguments to clear the set xp notification message and use the default one.
 Placeholders:
-`%mention%` - will mention the user
-`%user%` - will write the user's username
+`%mention%` - will mention the member
+`%member%` - will write the member's username
 `%server%` or `%guild%` - will put the name of the server
-`%avatar%` - will put the user's avatar url (or preview if used in an embed thumbnail or image)
-`%level%` - will put the user's reached level
+`%avatar%` - will put the member's avatar url (or preview if used in an embed thumbnail or image)
+`%level%` - will put the member's reached level
 Embeds are supported, json form. If the preview is not an embed, then it means the json message is not correct.</description>
         <remarks>
           <remark>{0}xpm</remark>
@@ -1565,11 +1565,11 @@ Embeds are supported, json form. If the preview is not an embed, then it means t
         <aliases>xpmessagereward xpmr</aliases>
         <description>Sets the xp notification message for a level up role reward. Provide no arguments to clear the set xp notification message level up role reward and use the default one.
 Placeholders:
-`%mention%` - will mention the user
-`%user%` - will write the user's username
+`%mention%` - will mention the member
+`%member%` - will write the member's username
 `%server%` or `%guild%` - will put the name of the server
-`%avatar%` - will put the user's avatar url (or preview if used in an embed thumbnail or image)
-`%level%` - will put the user's reached level
+`%avatar%` - will put the member's avatar url (or preview if used in an embed thumbnail or image)
+`%level%` - will put the member's reached level
 `%role%` - will put the rewarded role's name
 `%role_mention%` - will put the rewarded role's mention
 Embeds are supported, json form. If the preview is not an embed, then it means the json message is not correct.</description>
@@ -1582,7 +1582,7 @@ Embeds are supported, json form. If the preview is not an embed, then it means t
       <command>
         <aliases>leveluprolereward lurr</aliases>
         <description>Adds a role in the level up role reward list.
-When a user reaches the level it will be rewarded with the role.
+When a member reaches the level it will be rewarded with the role.
 To remove a role from the list provide no role for the respective level.</description>
         <remarks>
           <remark>{0}lurr 5 Active</remark>

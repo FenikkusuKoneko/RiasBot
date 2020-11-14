@@ -60,7 +60,7 @@ namespace Rias.Services
         public static string ReplacePlaceholders(DiscordUser user, string message)
         {
             var sb = new StringBuilder(message)
-                
+                .Replace("%member%", user.FullName())
                 .Replace("%user%", user.FullName())
                 .Replace("%user_id%", user.Id.ToString())
                 .Replace("%avatar%", user.GetAvatarUrl(ImageFormat.Auto));

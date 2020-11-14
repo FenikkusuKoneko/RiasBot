@@ -46,6 +46,7 @@ namespace Rias.Services
         {
             var sb = new StringBuilder(message)
                 .Replace("%mention%", member.Mention)
+                .Replace("%member%", member.Username)
                 .Replace("%user%", member.Username)
                 .Replace("%guild%", member.Guild.Name)
                 .Replace("%server%", member.Guild.Name)
