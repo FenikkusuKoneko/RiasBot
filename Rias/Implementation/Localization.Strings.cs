@@ -189,7 +189,6 @@ namespace Rias.Implementation
         public const string BotCodeCompiledWithError = "bot_code_compiled_with_error";
         public const string BotCompilationTime = "bot_compilation_time";
         public const string BotExecutionTime = "bot_execution_time";
-        public const string BotCode = "bot_code";
         public const string BotError = "bot_error";
         public const string BotActivitySet = "bot_activity_set";
         public const string BotActivityRemoved = "bot_activity_removed";

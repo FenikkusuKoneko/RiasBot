@@ -190,7 +190,6 @@
   "bot_code_compiled_with_error": "Code compiled but threw an error on execution.",
   "bot_compilation_time": "Compilation time",
   "bot_execution_time": "Execution time",
-  "bot_code": "Code",
   "bot_error": "Error",
   "bot_activity_set": "I am **{0}**.",
   "bot_activity_removed": "Activity removed.",

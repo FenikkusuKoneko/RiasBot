@@ -15,7 +15,7 @@
         <description>Sets the announcement message when someone joins the server.
 Placeholders:
 `%mention%` - will mention the member
-`%member%` - will write the member's username
+`%member% or %user%` - will write the member's username
 `%server%` or `%guild%` - will put the name of the server
 Embeds are supported, json form. If the preview is not an embed, then it means the json message is not correct</description>
         <remarks>
@@ -34,7 +34,7 @@ Embeds are supported, json form. If the preview is not an embed, then it means t
         <description>Sets the announcement message when someone leaves the server.
 Placeholders:
 `%mention%` - will mention the member
-`%member%` - will write the member's username
+`%member% or %user%` - will write the member's username
 `%server%` or `%guild%` - will put the name of the server
 Embeds are supported, json form.</description>
         <remarks>
@@ -62,7 +62,7 @@ Embeds are supported, json form.</description>
           </command>
           <command>
             <aliases>deletecategory dcat</aliases>
-            <description>Deletes a category channel. The category's ID is supported.</description>
+            <description>Deletes a category channel.</description>
             <remarks>
               <remark>{0}dcat MEDIA</remark>
               <remark>{0}dcat 416510975286444032</remark>
@@ -70,29 +70,32 @@ Embeds are supported, json form.</description>
           </command>
           <command>
             <aliases>renamecategory rncat</aliases>
-            <description>Renames a category channel. Separate the old name from the new name with '-&gt;'. The category's ID is supported.</description>
+            <description>Renames a category channel. Separate the category from the new name with '-&gt;'.</description>
             <remarks>
+              <remark>{0}rncat MEDIA -&gt; MUSIC</remark>
+              <remark>{0}rncat A B -&gt; C D</remark>
               <remark>{0}rncat 416510975286444032 -&gt; MUSIC</remark>
             </remarks>
           </command>
           <command>
             <aliases>addtextchanneltocategory atchtocat</aliases>
-            <description>Adds a text channel to a category channel. Separate the channel name from the category name with '-&gt;'. The category's ID and text channel's ID are supported.</description>
+            <description>Adds a text channel to a category channel. Separate the text channel from the category name with '-&gt;'.</description>
             <remarks>
+              <remark>{0}atchtocat #music -&gt; MEDIA</remark>
               <remark>{0}atchtocat music -&gt; MEDIA</remark>
-              <remark>{0}atchtocat 476708100930273280 -&gt; 416510975286444032</remark>
-              <remark>{0}atchtocat 476708100930273280 -&gt; MEDIA</remark>
+              <remark>{0}atchtocat 717131629478543500 -&gt; MEDIA</remark>
               <remark>{0}atchtocat music -&gt; 416510975286444032</remark>
+              <remark>{0}atchtocat 717131629478543500 -&gt; 416510975286444032</remark>
             </remarks>
           </command>
           <command>
             <aliases>addvoicechanneltocategory avchtocat</aliases>
-            <description>Adds a voice channel to a category channel. Separate the channel name from the category name with '-&gt;'. The category's ID and voice channel's ID are supported.</description>
+            <description>Adds a voice channel to a category channel. Separate the voice channel from the category name with '-&gt;'. The category's ID and voice channel's ID are supported.</description>
             <remarks>
               <remark>{0}avchtocat Music -&gt; MEDIA</remark>
-              <remark>{0}avchtocat 467279437105463315 -&gt; 416510975286444032</remark>
-              <remark>{0}avchtocat 467279437105463315 -&gt; MEDIA</remark>
               <remark>{0}avchtocat Music -&gt; 416510975286444032</remark>
+              <remark>{0}avchtocat 467279437105463315 -&gt; MEDIA</remark>
+              <remark>{0}avchtocat 467279437105463315 -&gt; 416510975286444032</remark>
             </remarks>
           </command>
         </commands>
@@ -109,7 +112,7 @@ Embeds are supported, json form.</description>
           </command>
           <command>
             <aliases>deleteemoji delemoji deleteemote delemote</aliases>
-            <description>Deletes an emoji from this server. 'Mentioning' the emoji is supported.</description>
+            <description>Deletes an emoji from this server.</description>
             <remarks>
               <remark>{0}delemoji diamond_heart</remark>
               <remark>{0}delemoji :diamond_heart:</remark>
@@ -117,12 +120,10 @@ Embeds are supported, json form.</description>
           </command>
           <command>
             <aliases>renameemoji rnemoji renameemote rnemote</aliases>
-            <description>Renames an emoji on this server. Separate the old name by the new name with '-&gt;'. 'Mentioning' the emotes are supported.</description>
+            <description>Renames an emoji on this server. Separate the old emoji by the new name with '-&gt;'.</description>
             <remarks>
-              <remark>{0}rnemoji heart -&gt; heart_diamond</remark>
-              <remark>{0}rnemoji :heart: -&gt; heart_diamond</remark>
-              <remark>{0}rnemoji heart -&gt; :heart_diamond:</remark>
-              <remark>{0}rnemoji :heart: -&gt; :heart_diamond:</remark>
+              <remark>{0}rnemoji :heart: -&gt; diamond_heart</remark>
+              <remark>{0}rnemoji heart -&gt; diamond_heart</remark>
             </remarks>
           </command>
         </commands>
@@ -148,7 +149,7 @@ Embeds are supported, json form.</description>
           </command>
           <command>
             <aliases>softban sb</aliases>
-            <description>Bans a member with the option to remove his messages from last 7 days, and then unbans it. The result is a kick.</description>
+            <description>Bans a member with the option to remove his messages from last 7 days, and then unbans it. The result is a kick. If you provide a reason message I will DM the member with the reason.</description>
             <remarks>
               <remark>{0}sb @Member</remark>
               <remark>{0}sb @Member Don't spam here!</remark>
@@ -156,7 +157,7 @@ Embeds are supported, json form.</description>
           </command>
           <command>
             <aliases>pruneban pb</aliases>
-            <description>Bans a member with the option to remove his messages from last 7 days. Different from "softban" where the member is unbanned.</description>
+            <description>Bans a member with the option to remove his messages from last 7 days. Different from "softban" where the member is unbanned. If you provide a reason message I will DM the member with the reason.</description>
             <remarks>
               <remark>{0}pb @Member</remark>
               <remark>{0}pb @Member DO NOT SPAM HERE!</remark>
@@ -180,7 +181,7 @@ Embeds are supported, json form.</description>
         <commands>
           <command>
             <aliases>mute</aliases>
-            <description>Mutes a member from text and voice channels. You can mute with a timeout and/or you can provide a reason.</description>
+            <description>Mutes a member from text and voice channels. You can provide a timeout or mute permannelty and you can provide a reason.</description>
             <remarks>
               <remark>{0}mute @Member</remark>
               <remark>{0}mute @Member Stop talking off topic</remark>
@@ -210,7 +211,7 @@ Embeds are supported, json form.</description>
         <commands>
           <command>
             <aliases>roles</aliases>
-            <description>Shows the roles on this server, paginated.</description>
+            <description>Shows the roles on this server or a member's roles, paginated.</description>
             <remarks>
               <remark>{0}roles</remark>
             </remarks>
@@ -224,7 +225,7 @@ Embeds are supported, json form.</description>
           </command>
           <command>
             <aliases>deleterole dr</aliases>
-            <description>Deletes the role you provide.</description>
+            <description>Deletes a role.</description>
             <remarks>
               <remark>{0}dr Rias</remark>
               <remark>{0}dr @Rias</remark>
@@ -232,7 +233,7 @@ Embeds are supported, json form.</description>
             </remarks>
           </command>
           <command>
-            <aliases>rolecolor rolecolour rc</aliases>
+            <aliases>rolecolour rolecolor rc</aliases>
             <description>Sets the color for a role. The color can be a hex format or a html name, '#' is optional.
 If the role's name has more than one word use quotation marks to properly take the role.</description>
             <remarks>
@@ -1551,7 +1552,7 @@ NSFW images are not allowed, you will be banned.</description>
         <description>Sets the xp notification message. Provide no arguments to clear the set xp notification message and use the default one.
 Placeholders:
 `%mention%` - will mention the member
-`%member%` - will write the member's username
+`%member% or %user%` - will write the member's username
 `%server%` or `%guild%` - will put the name of the server
 `%avatar%` - will put the member's avatar url (or preview if used in an embed thumbnail or image)
 `%level%` - will put the member's reached level
@@ -1566,7 +1567,7 @@ Embeds are supported, json form. If the preview is not an embed, then it means t
         <description>Sets the xp notification message for a level up role reward. Provide no arguments to clear the set xp notification message level up role reward and use the default one.
 Placeholders:
 `%mention%` - will mention the member
-`%member%` - will write the member's username
+`%member% or %user%` - will write the member's username
 `%server%` or `%guild%` - will put the name of the server
 `%avatar%` - will put the member's avatar url (or preview if used in an embed thumbnail or image)
 `%level%` - will put the member's reached level

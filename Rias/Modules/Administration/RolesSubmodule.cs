@@ -25,7 +25,7 @@ namespace Rias.Modules.Administration
             [Command("roles")]
             [Context(ContextType.Guild)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Member)]
-            public async Task RolesAsync(DiscordMember? member = null)
+            public async Task RolesAsync([Remainder] DiscordMember? member = null)
             {
                 var roles = (member is null ? Context.Guild!.Roles.Select(x => x.Value) : member.Roles)
                     .Where(x => x.Id != Context.Guild!.EveryoneRole.Id)
