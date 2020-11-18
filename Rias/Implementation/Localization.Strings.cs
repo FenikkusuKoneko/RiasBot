@@ -259,10 +259,11 @@ namespace Rias.Implementation
         public const string HelpWebsite = "help_website";
         public const string HelpDonate = "help_donate";
         public const string HelpCommandNotFound = "help_command_not_found";
-        public const string HelpRequiresMemberPermission = "help_requires_member_permission";
-        public const string HelpRequiresBotPermission = "help_requires_bot_permission";
-        public const string HelpRequiresOwner = "help_requires_owner";
         public const string HelpModule = "help_module";
+        public const string HelpOwnerOnly = "help_owner_only";
+        public const string HelpRequiresPermissions = "help_requires_permissions";
+        public const string HelpRequiresBotPermissions = "help_requires_bot_permissions";
+        public const string HelpRequiresMemberPermissions = "help_requires_member_permissions";
         public const string HelpModulesListTitle = "help_modules_list_title";
         public const string HelpModulesListFooter = "help_modules_list_footer";
         public const string HelpModuleNotFound = "help_module_not_found";
@@ -541,6 +542,8 @@ namespace Rias.Implementation
         public const string CommonId = "common_id";
         public const string CommonTimesUp = "common_times_up";
         public const string CommonExample = "common_example";
+        public const string CommonExamples = "common_examples";
+        public const string CommonUsages = "common_usages";
         public const string CommonCooldown = "common_cooldown";
         public static string CommonCooldownBucketType(string bucketType) => $"common_{bucketType}";
         public const string CommonAmount = "common_amount";

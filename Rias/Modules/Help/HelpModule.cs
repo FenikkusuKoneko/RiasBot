@@ -74,30 +74,30 @@ namespace Rias.Modules.Help
                 await ReplyErrorAsync(Localization.HelpCommandNotFound, Context.Prefix);
                 return;
             }
+            
+            var moduleName = command.Module.Name;
+            if (command.Module.Parent != null && !string.Equals(command.Module.Name, command.Module.Parent.Name, StringComparison.OrdinalIgnoreCase))
+                moduleName = $"{command.Module.Parent.Name} -> {moduleName}";
 
             var moduleAlias = module != null ? $"{module.Aliases[0]} " : string.Empty;
             var title = string.Join(" / ", command.Aliases.Select(a => $"{Context.Prefix}{moduleAlias}{a}"));
             if (string.IsNullOrEmpty(title))
             {
                 title = $"{Context.Prefix}{moduleAlias}";
-            } 
-            
+            }
+
             var embed = new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
-                Title = title
+                Author = new DiscordEmbedBuilder.EmbedAuthor
+                {
+                    Name = GetText(Localization.HelpModule, moduleName)
+                },
+                Title = title,
+                Description = Formatter.BlockCode(command.Description.Replace("[prefix]", Context.Prefix).Replace("[currency]", Credentials.Currency))
             };
 
-            var moduleName = command.Module.Name;
-            if (command.Module.Parent != null && !string.Equals(command.Module.Name, command.Module.Parent.Name, StringComparison.OrdinalIgnoreCase))
-                moduleName = $"{command.Module.Parent.Name} -> {moduleName}";
-
-            var description = new StringBuilder(command.Description)
-                .Append($"\n\n**{GetText(Localization.HelpModule)}**\n{moduleName}")
-                .Replace("[prefix]", Context.Prefix)
-                .Replace("[currency]", Credentials.Currency);
-
-            embed.WithDescription(description.ToString());
+            var permissions = new StringBuilder();
 
             foreach (var attribute in command.Checks)
             {
@@ -108,25 +108,34 @@ namespace Rias.Modules.Help
                             .GetValueOrDefault()
                             .ToString()
                             .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => x.Humanize(LetterCasing.Title))
+                            .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
                             .ToArray();
-                        embed.AddField(GetText(Localization.HelpRequiresMemberPermission), string.Join("\n", userPermissions), true);
+                        permissions.Append(GetText(Localization.HelpRequiresMemberPermissions, string.Join(", ", userPermissions)));
                         break;
                     case BotPermissionAttribute botPermissionAttribute:
                         var botPermissions = botPermissionAttribute.Permissions
                             .GetValueOrDefault()
                             .ToString()
                             .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => x.Humanize(LetterCasing.Title))
+                            .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
                             .ToArray();
-                        embed.AddField(GetText(Localization.HelpRequiresBotPermission), string.Join("\n", botPermissions), true);
+                        
+                        if (permissions.Length > 0)
+                            permissions.AppendLine();
+                        
+                        permissions.Append(GetText(Localization.HelpRequiresBotPermissions,  RiasBot.Client.CurrentUser.Username, string.Join(", ", botPermissions)));
                         break;
                     case OwnerOnlyAttribute:
-                        embed.AddField(GetText(Localization.HelpRequiresOwner), GetText(Localization.CommonYes), true);
+                        title = $"{title} **({GetText(Localization.HelpOwnerOnly)})**";
                         break;
                 }
             }
 
+            if (permissions.Length != 0)
+                embed.AddField(GetText(Localization.HelpRequiresPermissions), permissions.ToString());
+            
+            embed.AddField(GetText(Localization.CommonExamples), Formatter.InlineCode(string.Format(command.Remarks, Context.Prefix)), true);
+            
             var commandCooldown = command.Cooldowns.FirstOrDefault();
             if (commandCooldown != null)
             {
@@ -134,13 +143,10 @@ namespace Rias.Modules.Help
                 embed.AddField(GetText(Localization.CommonCooldown),
                     $"{GetText(Localization.CommonAmount)}: **{commandCooldown.Amount}**\n" +
                     $"{GetText(Localization.CommonPeriod)}: **{commandCooldown.Per.Humanize(culture: new CultureInfo(locale))}**\n" +
-                    $"{GetText(Localization.CommonPer)}: **{GetText(Localization.CommonCooldownBucketType(commandCooldown.BucketType.Humanize(LetterCasing.LowerCase).Underscore()))}**",
-                    true);
+                    $"{GetText(Localization.CommonPer)}: **{GetText(Localization.CommonCooldownBucketType(commandCooldown.BucketType.Humanize(LetterCasing.LowerCase).Underscore()))}**");
             }
-
-            embed.AddField(GetText(Localization.CommonExample), string.Format(command.Remarks, Context.Prefix));
+            
             embed.WithCurrentTimestamp();
-
             await ReplyAsync(embed);
         }
         
@@ -344,7 +350,7 @@ namespace Rias.Modules.Help
                     nextAliases = $" [{nextAliases}]";
 
                 var moduleAlias = x.Module.Aliases.Count != 0 ? $"{x.Module.Aliases[0]} " : null;
-                var isOwnerString = x.Checks.Any(c => c is OwnerOnlyAttribute) ? $" **({GetText(Localization.HelpRequiresOwner).ToLowerInvariant()})**" : null;
+                var isOwnerString = x.Checks.Any(c => c is OwnerOnlyAttribute) ? $" **({GetText(Localization.HelpOwnerOnly).ToLowerInvariant()})**" : null;
                 return $"{prefix}{moduleAlias}{x.Aliases.FirstOrDefault()}{nextAliases}{isOwnerString}";
             }).ToImmutableList();
         
