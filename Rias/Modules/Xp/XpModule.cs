@@ -381,7 +381,7 @@ namespace Rias.Modules.Xp
                 return;
             }
 
-            await SendPaginatedMessageAsync(levelRoles, 15, (items, indes) => new DiscordEmbedBuilder
+            await SendPaginatedMessageAsync(levelRoles, 15, (items, _) => new DiscordEmbedBuilder
             {
                 Color = RiasUtilities.ConfirmColor,
                 Title = GetText(Localization.XpLevelUpRoleRewardList),

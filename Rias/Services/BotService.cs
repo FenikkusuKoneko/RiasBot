@@ -373,7 +373,7 @@ namespace Rias.Services
 
         private async Task ShardReadyAsync(DiscordClient client, ReadyEventArgs args)
         {
-            _shardsReady.AddOrUpdate(client.ShardId, true, (k, v) => true);
+            _shardsReady.AddOrUpdate(client.ShardId, true, (_, _) => true);
             if (_shardsReady.Count == RiasBot.Client.ShardClients.Count && _shardsReady.All(x => x.Value))
             {
                 RiasBot.Client.Ready -= ShardReadyAsync;

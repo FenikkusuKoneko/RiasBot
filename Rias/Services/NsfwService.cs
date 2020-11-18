@@ -119,7 +119,7 @@ namespace Rias.Services
 
             foreach (var image in imagesApi)
             {
-                var nsfwList = await _cache.GetOrCreateAsync(provider, x => Task.FromResult(new HashSet<NsfwImage>()));
+                var nsfwList = await _cache.GetOrCreateAsync(provider, _ => Task.FromResult(new HashSet<NsfwImage>()));
                 if (!nsfwList.Contains(image))
                     nsfwList.Add(image);
             }

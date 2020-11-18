@@ -225,7 +225,7 @@ namespace Rias.Modules.Searches
                     return;
                 }
 
-                await SendPaginatedMessageAsync(animeList, 10, (items, index) => new DiscordEmbedBuilder
+                await SendPaginatedMessageAsync(animeList, 10, (items, _) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.SearchesAnimeList, title, Context.Prefix),
@@ -245,7 +245,7 @@ namespace Rias.Modules.Searches
                     return;
                 }
                 
-                await SendPaginatedMessageAsync(mangaList, 10, (items, index) => new DiscordEmbedBuilder
+                await SendPaginatedMessageAsync(mangaList, 10, (items, _) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.SearchesMangaList, title, Context.Prefix),
@@ -274,7 +274,7 @@ namespace Rias.Modules.Searches
                 if (anilistCharacters != null)
                     characters.AddRange(anilistCharacters);
 
-                await SendPaginatedMessageAsync(characters, 10, (items, index) => new DiscordEmbedBuilder
+                await SendPaginatedMessageAsync(characters, 10, (items, _) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.SearchesCharacterList, name, Context.Prefix),

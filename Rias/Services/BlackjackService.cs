@@ -32,7 +32,7 @@ namespace Rias.Services
 
             RiasBot.Client.MessageReactionAdded += MessageReactionAddedAsync;
             RiasBot.Client.MessageReactionRemoved += MessageReactionRemovedAsync;
-            RiasBot.Client.GuildDownloadCompleted += (client, args) =>
+            RiasBot.Client.GuildDownloadCompleted += (_, args) =>
             {
                 foreach (var (_, guild) in args.Guilds)
                 {

@@ -55,7 +55,7 @@ namespace Rias.Implementation
         
         public void SetGuildLocale(ulong guildId, string locale)
         {
-            _guildLocales.AddOrUpdate(guildId, locale, (id, old) => locale);
+            _guildLocales.AddOrUpdate(guildId, locale, (_, _) => locale);
         }
         
         public string GetGuildLocale(ulong? guildId)
