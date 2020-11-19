@@ -33,9 +33,11 @@ namespace Rias.Services
     public class BotService : RiasService
     {
         public readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks = new ConcurrentDictionary<ulong, List<DiscordWebhook>>();
+        public readonly ConcurrentDictionary<ulong, TaskCompletionSource> GuildsTcs = new ConcurrentDictionary<ulong, TaskCompletionSource>();
         
         private readonly ConcurrentDictionary<int, bool> _shardsReady = new ConcurrentDictionary<int, bool>();
         private readonly ConcurrentHashSet<ulong> _unchunkedGuilds = new ConcurrentHashSet<ulong>();
+
         private readonly HttpClient _discordBotsHttpClient;
         private readonly string[] _codeLanguages = { "cs", "csharp" };
         
@@ -450,6 +452,9 @@ namespace Rias.Services
 
         private Task GuildMembersChunkedAsync(DiscordClient client, GuildMembersChunkEventArgs args)
         {
+            if (args.ChunkIndex + 1 == args.ChunkCount && GuildsTcs.TryGetValue(args.Guild.Id, out var tcs))
+                tcs.TrySetResult();
+
             foreach (var member in args.Members)
                 RiasBot.Members[member.Id] = member;
 

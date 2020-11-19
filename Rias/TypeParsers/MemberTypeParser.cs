@@ -5,6 +5,7 @@ using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Implementation;
+using Rias.Services;
 using Serilog;
 
 namespace Rias.TypeParsers
@@ -20,9 +21,25 @@ namespace Rias.TypeParsers
             var riasBot = context.ServiceProvider.GetRequiredService<RiasBot>();
             if (!riasBot.ChunkedGuilds.Contains(context.Guild.Id))
             {
+                var botService = context.ServiceProvider.GetRequiredService<BotService>();
+                var tcs = new TaskCompletionSource();
+                botService.GuildsTcs[context.Guild.Id] = tcs;
+                
                 riasBot.ChunkedGuilds.Add(context.Guild.Id);
                 await context.Guild.RequestMembersAsync();
                 Log.Debug($"Members requested for {context.Guild.Name} ({context.Guild.Id})");
+
+                var delayTimeout = context.Guild.MemberCount switch
+                {
+                    <= 1000 => 2000,
+                    <= 5000 => 3000,
+                    _ => 5000
+                };
+                
+                var delay = Task.Delay(delayTimeout);
+
+                await Task.WhenAny(tcs.Task, delay);
+                botService.GuildsTcs.TryRemove(context.Guild.Id, out _);
             }
 
             DiscordMember member;
