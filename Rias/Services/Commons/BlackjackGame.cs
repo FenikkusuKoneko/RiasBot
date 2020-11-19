@@ -67,8 +67,8 @@ namespace Rias.Services.Commons
             _playerSecondHand = null;
 
             _playerHand = new BlackjackHand();
-            _playerHand.Cards.Add((6, _service.SpadesEmoji));
-            _playerHand.Cards.Add((6, _service.HeartsEmoji));
+            _playerHand.Cards.Add(_deck.Dequeue());
+            _playerHand.Cards.Add(_deck.Dequeue());
             _playerHand.Process();
 
             _houseHand = new BlackjackHand();
