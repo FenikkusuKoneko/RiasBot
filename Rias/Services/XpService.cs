@@ -289,9 +289,23 @@ namespace Rias.Services
             }
 
             if (webhookMessage is not null)
-                await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(webhookMessage).AddMention(new UserMention(member)));
+            {
+                await webhook.ExecuteAsync(new DiscordWebhookBuilder
+                {
+                    Username = currentMember.Username,
+                    AvatarUrl = currentMember.AvatarUrl,
+                    Content = webhookMessage
+                }.AddMention(new UserMention(member)));
+            }
             else
-                await webhook.ExecuteAsync(new DiscordWebhookBuilder().WithContent(webhookCustomMessage.Content).AddEmbed(webhookCustomMessage.Embed).AddMention(new UserMention(member)));
+            {
+                await webhook.ExecuteAsync(new DiscordWebhookBuilder
+                {
+                    Username = currentMember.Username,
+                    AvatarUrl = currentMember.AvatarUrl,
+                    Content = webhookCustomMessage.Content
+                }.AddEmbed(webhookCustomMessage.Embed).AddMention(new UserMention(member)));
+            }
         }
 
         private async Task DisableXpNotificationAsync(DiscordGuild guild)
