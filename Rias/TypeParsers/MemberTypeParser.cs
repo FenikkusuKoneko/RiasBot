@@ -42,18 +42,15 @@ namespace Rias.TypeParsers
                 botService.GuildsTcs.TryRemove(context.Guild.Id, out _);
             }
 
-            DiscordMember member;
+            DiscordMember? member;
             if (RiasUtilities.TryParseUserMention(value, out var memberId) || ulong.TryParse(value, out memberId))
             {
-                try
-                {
-                    member = await context.Guild.GetMemberAsync(memberId);
-                    return TypeParserResult<DiscordMember>.Successful(member);
-                }
-                catch
-                {
-                    return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationMemberNotFound));
-                }
+                var bot = context.ServiceProvider.GetRequiredService<RiasBot>();
+                member = await bot.GetMemberAsync(context.Guild, memberId);
+                
+                return member is not null
+                    ? TypeParserResult<DiscordMember>.Successful(member)
+                    : TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationMemberNotFound));
             }
 
             var members = context.Guild.Members;

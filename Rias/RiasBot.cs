@@ -27,7 +27,7 @@ namespace Rias
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.8.12";
+        public const string Version = "3.8.13";
         public static readonly Stopwatch UpTime = new Stopwatch();
         
         public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new ConcurrentHashSet<ulong>();
@@ -130,6 +130,23 @@ namespace Rias
             {
                 var user = await Client.ShardClients[0].GetUserAsync(id);
                 return user;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<DiscordMember?> GetMemberAsync(DiscordGuild guild, ulong id)
+        {
+            try
+            {
+                var member = await guild.GetMemberAsync(id);
+                
+                if (member is not null)
+                    Members[member.Id] = member;
+
+                return member;
             }
             catch
             {

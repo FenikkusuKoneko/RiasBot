@@ -14,7 +14,7 @@ namespace Rias.Implementation
         /// <summary>
         /// Gets the logged-in client.
         /// </summary>
-        public readonly DiscordClient Client = null!;
+        public readonly DiscordClient Client;
 
         /// <summary>
         /// Gets the guild where the command was executed, null if context is a DM.
@@ -27,9 +27,9 @@ namespace Rias.Implementation
         public readonly DiscordChannel Channel;
 
         /// <summary>
-        /// Gets the user that executed the command.
+        /// Gets the user that executed the command. If the command was executed in a guild, then this will contain the command's member.
         /// </summary>
-        public readonly DiscordUser User;
+        public DiscordUser User { get; set; }
 
         /// <summary>
         /// Gets the current logged-in user.
@@ -54,10 +54,9 @@ namespace Rias.Implementation
             var bot = serviceProvider.GetRequiredService<RiasBot>();
             Guild = message.Channel.Guild;
 
-            if (Guild is not null)
-                Client = bot.Client.ShardClients.FirstOrDefault(x => x.Value.Guilds.ContainsKey(Guild.Id)).Value;
-
-            Client ??= bot.Client.ShardClients[0];
+            Client = Guild is not null
+                ? bot.Client.ShardClients.FirstOrDefault(x => x.Value.Guilds.ContainsKey(Guild.Id)).Value
+                : bot.Client.ShardClients[0];
             
             Channel = message.Channel;
             User = message.Author;

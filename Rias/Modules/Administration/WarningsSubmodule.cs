@@ -188,17 +188,7 @@ namespace Rias.Modules.Administration
             public async Task WarningsAsync([Remainder] DiscordMember member)
             {
                 var warningsDb = await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
-                var moderators = (await Task.WhenAll(warningsDb.Select(async x =>
-                {
-                    try
-                    {
-                        return await Context.Guild!.GetMemberAsync(x.ModeratorId);
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                }))).ToList();
+                var moderators = (await Task.WhenAll(warningsDb.Select(async x => await RiasBot.GetMemberAsync(Context.Guild!, x.ModeratorId)))).ToList();
                 
                 var warnings = warningsDb.Select((x, i) => new
                 {
