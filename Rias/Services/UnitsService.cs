@@ -33,7 +33,7 @@ namespace Rias.Services
         private ImmutableDictionary<string, SingleOrList<Unit>> _unitPlurals = null!;
         private ImmutableDictionary<string, SingleOrList<Unit>> _unitAbbreviations = null!;
 
-        private CancellationTokenSource _updateCurrencyUnitsCts = new CancellationTokenSource();
+        private CancellationTokenSource _updateCurrencyUnitsCts = new();
 
         public UnitsService(IServiceProvider serviceProvider)
             : base(serviceProvider)

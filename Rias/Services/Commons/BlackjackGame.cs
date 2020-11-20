@@ -13,11 +13,11 @@ namespace Rias.Services.Commons
     public class BlackjackGame
     { 
         private readonly BlackjackService _service;
-        private readonly Queue<(int Value, string Suit)> _deck = new Queue<(int Value, string Suit)>();
+        private readonly Queue<(int Value, string Suit)> _deck = new();
 
         private DiscordMember _member = null!;
         private DiscordEmbedBuilder _embed = null!;
-        private DiscordColor _embedColor = new DiscordColor(255, 255, 254);
+        private DiscordColor _embedColor = new(255, 255, 254);
         
         private int _bet;
         private int _userCurrency;
@@ -373,7 +373,7 @@ namespace Rias.Services.Commons
 
         private class BlackjackHand
         {
-            public readonly List<(int Value, string Suit)> Cards = new List<(int Value, string Suit)>();
+            public readonly List<(int Value, string Suit)> Cards = new();
             
             public HandState HandState { get; private set; }
             public WinningState WinningState { get; private set; }

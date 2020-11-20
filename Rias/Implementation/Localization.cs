@@ -14,10 +14,9 @@ namespace Rias.Implementation
     {
         private const string DefaultLocale = "en";
 
-        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _locales =
-            new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _locales = new();
 
-        private readonly ConcurrentDictionary<ulong, string> _guildLocales = new ConcurrentDictionary<ulong, string>();
+        private readonly ConcurrentDictionary<ulong, string> _guildLocales = new();
         private readonly string _localesPath = Path.Combine(Environment.CurrentDirectory, "assets/locales");
 
         public Localization(IServiceProvider serviceProvider)

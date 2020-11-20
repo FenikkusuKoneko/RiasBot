@@ -21,7 +21,7 @@ namespace Rias.Services
     public class MuteService : RiasService
     {
         public const string MuteRole = "Muted";
-        private readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), Timer> _timers = new ConcurrentDictionary<(ulong, ulong), Timer>();
+        private readonly ConcurrentDictionary<(ulong GuildId, ulong UserId), Timer> _timers = new();
         
         public MuteService(IServiceProvider serviceProvider)
             : base(serviceProvider)

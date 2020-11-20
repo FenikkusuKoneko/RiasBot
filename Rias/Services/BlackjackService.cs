@@ -19,7 +19,7 @@ namespace Rias.Services
         public readonly DiscordEmoji SplitEmoji = DiscordEmoji.FromUnicode("↔");
         
         private readonly GamblingService _gamblingService;
-        private readonly ConcurrentDictionary<ulong, BlackjackGame> _sessions = new ConcurrentDictionary<ulong, BlackjackGame>();
+        private readonly ConcurrentDictionary<ulong, BlackjackGame> _sessions = new();
 
         private string? _spadesEmoji;
         private string? _heartsEmoji;

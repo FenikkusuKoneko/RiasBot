@@ -33,13 +33,13 @@ namespace Rias.Services
 
         private readonly DiscordColor[] _colors =
         {
-            new DiscordColor(255, 255, 255),    // white
-            new DiscordColor(255, 0, 0),        // red
-            new DiscordColor(0, 255, 0),        // green
-            new DiscordColor(0, 255, 255),      // cyan/aqua
-            new DiscordColor(255, 165, 0),      // orange
-            new DiscordColor(255, 105, 180),    // hot pink
-            new DiscordColor(255, 0, 255)       // magenta
+            new(255, 255, 255),    // white
+            new(255, 0, 0),        // red
+            new(0, 255, 0),        // green
+            new(0, 255, 255),      // cyan/aqua
+            new(255, 165, 0),      // orange
+            new(255, 105, 180),    // hot pink
+            new(255, 0, 255)       // magenta
         };
         
         public ProfileService(IServiceProvider serviceProvider)

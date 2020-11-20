@@ -13,22 +13,22 @@ namespace Rias.Implementation
     {
         // these are the color used by the confirmation message embed and error message embed
         // these are modified from the Credentials class
-        public static readonly DiscordColor Red = new DiscordColor(0xFF0000);
-        public static readonly DiscordColor Green = new DiscordColor(0x00FF00);
-        public static readonly DiscordColor Yellow = new DiscordColor(0xFFFF00);
+        public static readonly DiscordColor Red = new(0xFF0000);
+        public static readonly DiscordColor Green = new(0x00FF00);
+        public static readonly DiscordColor Yellow = new(0xFFFF00);
 
         public static DiscordColor ConfirmColor { get; set; } = Green;
 
         public static DiscordColor ErrorColor { get; set; } = Red;
 
-        private static readonly Regex TimeSpanRegex = new Regex(
+        private static readonly Regex TimeSpanRegex = new(
             @"^(?:(?<months>\d{1,2})mo)?(?:(?<weeks>\d{1,3})w)?(?:(?<days>\d{1,3})d)?(?:(?<hours>\d{1,4})h)?(?:(?<minutes>\d{1,5})m)?(?:(?<seconds>\d{1,5})s)?$",
             RegexOptions.ECMAScript | RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 
-        private static readonly Regex UserRegex = new Regex(@"^<@\!?(\d+?)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
-        private static readonly Regex RoleRegex = new Regex(@"^<@&(\d+?)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
-        private static readonly Regex ChannelRegex = new Regex(@"^<#(\d+)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
-        private static readonly Regex EmojiRegex = new Regex(@"^<a?:.+:(\d+)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
+        private static readonly Regex UserRegex = new(@"^<@\!?(\d+?)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
+        private static readonly Regex RoleRegex = new(@"^<@&(\d+?)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
+        private static readonly Regex ChannelRegex = new(@"^<#(\d+)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
+        private static readonly Regex EmojiRegex = new(@"^<a?:.+:(\d+)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
 
         /// <summary>
         /// Checks if the user's message has the bot mention.

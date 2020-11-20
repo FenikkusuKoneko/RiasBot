@@ -29,16 +29,16 @@ namespace Rias.Services
     [AutoStart]
     public class CommandHandlerService : RiasService
     {
-        public readonly CommandStatistics CommandStatistics = new CommandStatistics();
+        public readonly CommandStatistics CommandStatistics = new();
         
         private readonly CommandService _commandService;
         private readonly BotService _botService;
         private readonly XpService _xpService;
         
-        private readonly ConcurrentHashSet<string> _cooldowns = new ConcurrentHashSet<string>();
+        private readonly ConcurrentHashSet<string> _cooldowns = new();
         private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.xml");
 
-        private List<Type> _typeParsers = new List<Type>();
+        private List<Type> _typeParsers = new();
 
         public CommandHandlerService(IServiceProvider serviceProvider)
             : base(serviceProvider)

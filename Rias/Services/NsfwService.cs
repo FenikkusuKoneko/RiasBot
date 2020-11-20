@@ -21,8 +21,8 @@ namespace Rias.Services
         private const string YandereApi = "https://yande.re/post.json?limit=100&tags=rating:explicit+";
         private const string GelbooruApi = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=100&tags=rating:explicit+";
         
-        private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
-        private readonly HashSet<string> _downloadedTags = new HashSet<string>();
+        private readonly MemoryCache _cache = new(new MemoryCacheOptions());
+        private readonly HashSet<string> _downloadedTags = new();
         private readonly HttpClient _httpClient;
 
         private readonly ImmutableHashSet<string> _blacklistTags = ImmutableHashSet.Create("loli", "shota", "cub");

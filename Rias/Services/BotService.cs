@@ -32,11 +32,11 @@ namespace Rias.Services
     [AutoStart]
     public class BotService : RiasService
     {
-        public readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks = new ConcurrentDictionary<ulong, List<DiscordWebhook>>();
-        public readonly ConcurrentDictionary<ulong, TaskCompletionSource> GuildsTcs = new ConcurrentDictionary<ulong, TaskCompletionSource>();
+        public readonly ConcurrentDictionary<ulong, List<DiscordWebhook>> Webhooks = new();
+        public readonly ConcurrentDictionary<ulong, TaskCompletionSource> GuildsTcs = new();
         
-        private readonly ConcurrentDictionary<int, bool> _shardsReady = new ConcurrentDictionary<int, bool>();
-        private readonly ConcurrentHashSet<ulong> _unchunkedGuilds = new ConcurrentHashSet<ulong>();
+        private readonly ConcurrentDictionary<int, bool> _shardsReady = new();
+        private readonly ConcurrentHashSet<ulong> _unchunkedGuilds = new();
 
         private readonly HttpClient _discordBotsHttpClient;
         private readonly string[] _codeLanguages = { "cs", "csharp" };

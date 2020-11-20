@@ -6,11 +6,11 @@ namespace Rias.Services.Commons
 {
     public class CommandStatistics
     {
-        private readonly object _lock = new object();
-        private readonly CommandsAverage _commandsPerSecond = new CommandsAverage();
-        private readonly CommandsAverage _commandsPerMinute = new CommandsAverage();
-        private readonly CommandsAverage _commandsPerHour = new CommandsAverage();
-        private readonly CommandsAverage _commandsPerDay = new CommandsAverage();
+        private readonly object _lock = new();
+        private readonly CommandsAverage _commandsPerSecond = new();
+        private readonly CommandsAverage _commandsPerMinute = new();
+        private readonly CommandsAverage _commandsPerHour = new();
+        private readonly CommandsAverage _commandsPerDay = new();
         
         private int _executedCommands;
         private int _attemptedCommands;

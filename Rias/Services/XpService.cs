@@ -26,8 +26,8 @@ namespace Rias.Services
         private readonly BotService _botService;
         private readonly HttpClient _httpClient;
         
-        private readonly ConcurrentDictionary<ulong, DateTime> _usersXp = new ConcurrentDictionary<ulong, DateTime>();
-        private readonly ConcurrentDictionary<(ulong, ulong), DateTime> _guildUsersXp = new ConcurrentDictionary<(ulong, ulong), DateTime>();
+        private readonly ConcurrentDictionary<ulong, DateTime> _usersXp = new();
+        private readonly ConcurrentDictionary<(ulong, ulong), DateTime> _guildUsersXp = new();
 
         private readonly MagickColor _dark = MagickColor.FromRgb(36, 36, 36);
         private readonly MagickColor _darker = MagickColor.FromRgb(32, 32, 32);

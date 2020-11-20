@@ -28,10 +28,10 @@ namespace Rias
     {
         public const string Author = "Koneko#0001";
         public const string Version = "3.8.14";
-        public static readonly Stopwatch UpTime = new Stopwatch();
+        public static readonly Stopwatch UpTime = new();
         
-        public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new ConcurrentHashSet<ulong>();
-        public readonly ConcurrentDictionary<ulong, DiscordMember> Members = new ConcurrentDictionary<ulong, DiscordMember>();
+        public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new();
+        public readonly ConcurrentDictionary<ulong, DiscordMember> Members = new();
 
         private readonly Credentials _credentials;
         private readonly IServiceProvider _serviceProvider;
