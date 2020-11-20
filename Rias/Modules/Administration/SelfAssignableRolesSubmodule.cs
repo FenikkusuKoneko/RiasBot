@@ -100,6 +100,12 @@ namespace Rias.Modules.Administration
                     await ReplyErrorAsync(Localization.AdministrationRoleAboveMe);
                     return;
                 }
+                
+                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
+                {
+                    await ReplyErrorAsync(Localization.AdministrationRoleAbove);
+                    return;
+                }
 
                 var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
                 if (sarDb is null)
@@ -125,6 +131,12 @@ namespace Rias.Modules.Administration
             [BotPermission(Permissions.ManageRoles)]
             public async Task RemoveSelfAssignableRoleAsync([Remainder] DiscordRole role)
             {
+                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
+                {
+                    await ReplyErrorAsync(Localization.AdministrationRoleAbove);
+                    return;
+                }
+                
                 var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
                 if (sarDb != null)
                 {
