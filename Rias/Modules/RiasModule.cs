@@ -40,9 +40,6 @@ namespace Rias.Modules
         {
             if (Context.Guild is null)
                 return;
-            
-            var member = await RiasBot.GetMemberAsync(Context.Guild, Context.User.Id);
-            Context.User = member!;
 
             var channelPermissions = Context.Guild!.CurrentMember.PermissionsIn(Context.Channel);
             var channelEmbedPerm = channelPermissions.HasPermission(Permissions.EmbedLinks);

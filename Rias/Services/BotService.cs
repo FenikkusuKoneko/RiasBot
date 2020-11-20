@@ -210,6 +210,7 @@ namespace Rias.Services
                 return;
 
             RiasBot.Members[args.Member.Id] = args.Member;
+            
             await RunTaskAsync(AddAssignableRoleAsync(member));
             await RunTaskAsync(SendGreetMessageAsync(member));
             await RunTaskAsync(AddMuteRoleAsync(member));

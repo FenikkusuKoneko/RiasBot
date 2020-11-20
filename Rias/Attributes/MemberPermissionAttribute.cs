@@ -22,18 +22,16 @@ namespace Rias.Attributes
 
         public Permissions? Permissions => _permissions;
 
-        public override async ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
+        public override ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {
             if (!_permissions.HasValue)
                 return CheckResult.Successful;
 
-            var bot = context.ServiceProvider.GetRequiredService<RiasBot>();
             var localization = context.ServiceProvider.GetRequiredService<Localization>();
             
-            if (context.Guild is null)
+            if (context.User is not DiscordMember member)
                 return CheckResult.Unsuccessful(localization.GetText(null, Localization.AttributeMemberPermissionNotGuild));
 
-            var member = await bot.GetMemberAsync(context.Guild, context.User.Id);
             var guildPermissions = member!.GetPermissions();
             var hasGuildPermissions = guildPermissions.HasPermission(_permissions.Value);
             

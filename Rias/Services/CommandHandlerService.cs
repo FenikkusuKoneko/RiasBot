@@ -216,7 +216,9 @@ namespace Rias.Services
         {
             if (args.Guild is not null)
             {
-                var member = await args.Guild.GetMemberAsync(args.Author.Id);
+                var member = (DiscordMember) args.Author;
+                RiasBot.Members[member.Id] = member;
+                
                 await RunTaskAsync(_botService.AddAssignableRoleAsync(member));
                 await RunTaskAsync(_xpService.AddUserXpAsync(args.Author));
                 await RunTaskAsync(_xpService.AddGuildUserXpAsync(member, args.Channel));
