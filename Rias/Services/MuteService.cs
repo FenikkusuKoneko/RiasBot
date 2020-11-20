@@ -203,14 +203,14 @@ namespace Rias.Services
             var categories = guild.Channels.Where(x => x.Value.Type == ChannelType.Category);
             foreach (var (_, category) in categories)
             {
-                if (guild.CurrentMember.PermissionsIn(category).HasPermission(Permissions.AccessChannels))
+                if (guild.CurrentMember.PermissionsIn(category).HasPermission(Permissions.AccessChannels | Permissions.ManageRoles))
                     await AddPermissionOverwriteAsync(category, role);
             }
 
             var channels = guild.Channels;
             foreach (var (_, channel) in channels)
             {
-                if (guild.CurrentMember.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
+                if (guild.CurrentMember.PermissionsIn(channel).HasPermission(Permissions.AccessChannels | Permissions.ManageRoles))
                     await AddPermissionOverwriteAsync(channel, role);
             }
         }

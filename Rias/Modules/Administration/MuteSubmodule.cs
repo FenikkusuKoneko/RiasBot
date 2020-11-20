@@ -28,7 +28,7 @@ namespace Rias.Modules.Administration
             [Command("mute")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.MuteMembers)]
-            [BotPermission(Permissions.MuteMembers | Permissions.ManageRoles | Permissions.ManageChannels)]
+            [BotPermission(Permissions.MuteMembers | Permissions.ManageRoles)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(0)]
             public async Task MuteAsync(DiscordMember member, [Remainder] string? reason = null)
@@ -63,7 +63,7 @@ namespace Rias.Modules.Administration
             [Command("mute")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.MuteMembers)]
-            [BotPermission(Permissions.MuteMembers | Permissions.ManageRoles | Permissions.ManageChannels)]
+            [BotPermission(Permissions.MuteMembers | Permissions.ManageRoles)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(1)]
             public async Task MuteAsync(DiscordMember member, TimeSpan timeout, [Remainder] string? reason = null)
@@ -115,7 +115,7 @@ namespace Rias.Modules.Administration
             [Command("unmute")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.MuteMembers)]
-            [BotPermission(Permissions.MuteMembers | Permissions.ManageRoles | Permissions.ManageChannels)]
+            [BotPermission(Permissions.MuteMembers | Permissions.ManageRoles)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task UnmuteAsync(DiscordMember member, [Remainder] string? reason = null)
             {
@@ -137,8 +137,8 @@ namespace Rias.Modules.Administration
             
             [Command("setmute")]
             [Context(ContextType.Guild)]
-            [MemberPermission(Permissions.ManageRoles | Permissions.ManageChannels)]
-            [BotPermission(Permissions.ManageRoles | Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageRoles)]
+            [BotPermission(Permissions.ManageRoles)]
             [Cooldown(1, 30, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(1)]
             public async Task SetMuteAsync([Remainder] DiscordRole role)
@@ -166,8 +166,8 @@ namespace Rias.Modules.Administration
 
             [Command("setmute")]
             [Context(ContextType.Guild)]
-            [MemberPermission(Permissions.ManageRoles | Permissions.ManageChannels)]
-            [BotPermission(Permissions.ManageRoles | Permissions.ManageChannels)]
+            [MemberPermission(Permissions.ManageRoles)]
+            [BotPermission(Permissions.ManageRoles)]
             [Cooldown(1, 30, CooldownMeasure.Seconds, BucketType.Guild)]
             [Priority(0)]
             public async Task SetMuteAsync([Remainder] string name)
