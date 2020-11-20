@@ -27,7 +27,7 @@ namespace Rias.Modules.Gambling
             [Context(ContextType.Guild)]
             public async Task CurrencyAsync([Remainder] DiscordMember? member = null)
             {
-                member ??= (DiscordMember)Context.User;
+                member ??= (DiscordMember) Context.User;
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == member.Id, () => new UsersEntity { UserId = member.Id });
                 if (member.Id == Context.User.Id)
                 {

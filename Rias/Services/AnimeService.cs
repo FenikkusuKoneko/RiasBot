@@ -40,7 +40,7 @@ namespace Rias.Services
                       .FirstOrDefault(x =>
                           name.Split(' ')
                               .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)))
-                  ?? (ICharacterEntity?)db.Characters
+                  ?? (ICharacterEntity?) db.Characters
                       .AsEnumerable()
                       .FirstOrDefault(x =>
                           name.Split(' ')

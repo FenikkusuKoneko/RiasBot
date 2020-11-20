@@ -43,7 +43,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                var member = (DiscordMember)Context.User;
+                var member = (DiscordMember) Context.User;
                 if (member.Roles.Any(x => x.Id == sarDb.RoleId))
                 {
                     await ReplyErrorAsync(Localization.AdministrationYouAlreadyAre, role.Name);
@@ -73,7 +73,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                var member = (DiscordMember)Context.User;
+                var member = (DiscordMember) Context.User;
                 if (member.Roles.Any(x => x.Id == sarDb.RoleId))
                 {
                     await member.RevokeRoleAsync(role);

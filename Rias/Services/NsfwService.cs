@@ -50,7 +50,7 @@ namespace Rias.Services
             tags = tags?.ToLower();
             var random = new Random();
             if (provider == NsfwImageApiProvider.Random)
-                provider = (NsfwImageApiProvider)random.Next(4);
+                provider = (NsfwImageApiProvider) random.Next(4);
 
             var nsfwImages = _cache.Get<HashSet<NsfwImage>>(provider);
             List<NsfwImage> nsfwImagesList;

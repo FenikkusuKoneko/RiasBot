@@ -268,7 +268,7 @@ namespace Rias.Services
                 case ChecksFailedResult :
                 case TypeParseFailedResult:
                 case ArgumentParseFailedResult:
-                    await RunTaskAsync(SendFailedResultsAsync(context, new[] { (FailedResult)result }));
+                    await RunTaskAsync(SendFailedResultsAsync(context, new[] { (FailedResult) result }));
                     break;
                 case CommandOnCooldownResult commandOnCooldownResult:
                     await RunTaskAsync(SendCommandOnCooldownMessageAsync(context, commandOnCooldownResult));
@@ -349,7 +349,7 @@ namespace Rias.Services
         private async Task SendCommandOnCooldownMessageAsync(RiasCommandContext context, CommandOnCooldownResult result)
         {
             var (cooldown, retryAfter) = result.Cooldowns[0];
-            var cooldownKey = (BucketType)cooldown.BucketType switch
+            var cooldownKey = (BucketType) cooldown.BucketType switch
             {
                 BucketType.Guild => GenerateCooldownKey(context.Command.Name, context.Guild!.Id),
                 BucketType.User => GenerateCooldownKey(context.Command.Name, context.User.Id),

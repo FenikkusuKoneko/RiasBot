@@ -32,14 +32,14 @@ namespace Rias.Modules.Games
             if (!Enum.TryParse<Rps>(value, true, out var userRps)) return;
 
             var random = new Random();
-            var botRps = (Rps)random.Next(1, 4);
+            var botRps = (Rps) random.Next(1, 4);
             var botRpsString = botRps.ToString().ToLower();
 
-            if ((int)botRps % 3 + 1 == (int)userRps)
+            if ((int) botRps % 3 + 1 == (int) userRps)
             {
                 await ReplyConfirmationAsync(Localization.GamesRpsWon, botRpsString);
             }
-            else if ((int)userRps % 3 + 1 == (int)botRps)
+            else if ((int) userRps % 3 + 1 == (int) botRps)
             {
                 await ReplyErrorAsync(Localization.GamesRpsLost, botRpsString);
             }

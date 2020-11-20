@@ -54,7 +54,7 @@ namespace Rias.Modules.Administration
             {
                 var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
 
-                var userRequiredPermissions = CheckRequiredPermissions((DiscordMember)Context.User, guildDb);
+                var userRequiredPermissions = CheckRequiredPermissions((DiscordMember) Context.User, guildDb);
                 if (userRequiredPermissions != PermissionRequired.NoPermission)
                 {
                     await SendMissingPermissionsAsync("member", userRequiredPermissions, guildDb);
@@ -83,7 +83,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
@@ -219,7 +219,7 @@ namespace Rias.Modules.Administration
                 if (--warningIndex < 0)
                     return;
 
-                var permissions = ((DiscordMember)Context.User).GetPermissions();
+                var permissions = ((DiscordMember) Context.User).GetPermissions();
                 if (!(permissions.HasPermission(Permissions.Administrator)
                       || permissions.HasPermission(Permissions.MuteMembers)
                       || permissions.HasPermission(Permissions.KickMembers)
@@ -266,7 +266,7 @@ namespace Rias.Modules.Administration
                 if (!string.Equals(all, "all", StringComparison.InvariantCultureIgnoreCase))
                     return;
 
-                var permissions = ((DiscordMember)Context.User).GetPermissions();
+                var permissions = ((DiscordMember) Context.User).GetPermissions();
                 if (!(permissions.HasPermission(Permissions.Administrator)
                       || permissions.HasPermission(Permissions.MuteMembers)
                       || permissions.HasPermission(Permissions.KickMembers)

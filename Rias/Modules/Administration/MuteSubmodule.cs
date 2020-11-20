@@ -51,13 +51,13 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
                 }
 
-                await Service.MuteUserAsync(Context.Channel, (DiscordMember)Context.User, member, reason);
+                await Service.MuteUserAsync(Context.Channel, (DiscordMember) Context.User, member, reason);
             }
             
             [Command("mute")]
@@ -103,13 +103,13 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
                 }
 
-                await Service.MuteUserAsync(Context.Channel, (DiscordMember)Context.User, member, reason, timeout);
+                await Service.MuteUserAsync(Context.Channel, (DiscordMember) Context.User, member, reason, timeout);
             }
             
             [Command("unmute")]
@@ -131,7 +131,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                var muteContext = new MuteService.MuteContext(Context.Guild!, (DiscordMember)Context.User, member, Context.Channel, reason);
+                var muteContext = new MuteService.MuteContext(Context.Guild!, (DiscordMember) Context.User, member, Context.Channel, reason);
                 await Service.UnmuteUserAsync(muteContext);
             }
             

@@ -283,7 +283,7 @@ namespace Rias.Modules.Searches
                         if (c is CustomCharactersEntity customCharacter)
                             return $"• {customCharacter.Name} (w{customCharacter.CharacterId})";
 
-                        var character = (CharacterContent)c;
+                        var character = (CharacterContent) c;
                         var fromAnime = GetCharacterSources(character, "anime").FirstOrDefault();
                         var from = fromAnime != null
                             ? $"{GetText(Localization.SearchesFromAnime)}: {fromAnime}"

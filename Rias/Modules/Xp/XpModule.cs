@@ -35,7 +35,7 @@ namespace Rias.Modules.Xp
         [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
         public async Task XpAsync([Remainder] DiscordMember? member = null)
         {
-            member ??= (DiscordMember)Context.User;
+            member ??= (DiscordMember) Context.User;
             await Context.Channel.TriggerTypingAsync();
 
             var serverAttachFilesPerm = Context.Guild!.CurrentMember.GetPermissions().HasPermission(Permissions.AttachFiles);
@@ -208,7 +208,7 @@ namespace Rias.Modules.Xp
                 return;
             }
 
-            var xpMessage = XpService.ReplacePlaceholders((DiscordMember)Context.User, null, 1, message);
+            var xpMessage = XpService.ReplacePlaceholders((DiscordMember) Context.User, null, 1, message);
             var xpMessageParsed = RiasUtilities.TryParseMessage(xpMessage, out var customMessage);
 
             if (xpMessageParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
@@ -276,7 +276,7 @@ namespace Rias.Modules.Xp
             var level = xpRoles.Count != 0 ? xpRoles[0].Level : 0;
             var role = xpRoles.Count != 0 ? Context.Guild!.GetRole(xpRoles[0].RoleId) : null;
 
-            var xpMessageReward = XpService.ReplacePlaceholders((DiscordMember)Context.User, role, level, message);
+            var xpMessageReward = XpService.ReplacePlaceholders((DiscordMember) Context.User, role, level, message);
             var xpMessageRewardParsed = RiasUtilities.TryParseMessage(xpMessageReward, out var customMessage);
             if (xpMessageRewardParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
             {

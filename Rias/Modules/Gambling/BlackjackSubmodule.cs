@@ -46,18 +46,18 @@ namespace Rias.Modules.Gambling
                     return;
                 }
 
-                await Service.PlayBlackjackAsync((DiscordMember)Context.User, Context.Channel, bet, Context.Prefix);
+                await Service.PlayBlackjackAsync((DiscordMember) Context.User, Context.Channel, bet, Context.Prefix);
             }
 
             [Command("resume")]
             [Context(ContextType.Guild)]
             public Task BlackjackResumeAsync()
-                => Service.ResumeBlackjackAsync((DiscordMember)Context.User, Context.Channel);
+                => Service.ResumeBlackjackAsync((DiscordMember) Context.User, Context.Channel);
 
             [Command("stop")]
             [Context(ContextType.Guild)]
             public Task BlackjackStopAsync()
-                => Service.StopBlackjackAsync((DiscordMember)Context.User, Context.Channel);
+                => Service.StopBlackjackAsync((DiscordMember) Context.User, Context.Channel);
         }
     }
 }

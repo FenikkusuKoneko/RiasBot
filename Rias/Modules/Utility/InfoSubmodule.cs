@@ -102,7 +102,7 @@ namespace Rias.Modules.Utility
             [Context(ContextType.Guild)]
             public async Task UserInfoAsync([Remainder] DiscordMember? member = null)
             {
-                member ??= (DiscordMember)Context.User;
+                member ??= (DiscordMember) Context.User;
 
                 var userRoles = member.Roles.OrderByDescending(x => x.Position).ToList();
                 
@@ -177,7 +177,7 @@ namespace Rias.Modules.Utility
             [Context(ContextType.Guild)]
             public async Task AvatarAsync([Remainder] DiscordMember? member = null)
             {
-                member ??= (DiscordMember)Context.User;
+                member ??= (DiscordMember) Context.User;
 
                 var embed = new DiscordEmbedBuilder
                 {

@@ -161,7 +161,7 @@ namespace Rias.Modules.Waifu
                 if (waifu is CustomWaifusEntity customWaifu)
                     DbContext.Remove(customWaifu);
                 else
-                    DbContext.Remove((WaifusEntity)waifu);
+                    DbContext.Remove((WaifusEntity) waifu);
             
                 await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync(Localization.WaifuDivorced, waifu.Name!);
@@ -209,7 +209,7 @@ namespace Rias.Modules.Waifu
                 }
             
                 userDb.Currency -= SpecialWaifuPrice;
-                var currentSpecialWaifu = (IWaifusEntity)await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
+                var currentSpecialWaifu = (IWaifusEntity) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
                                           ?? await DbContext.CustomWaifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial);
 
                 if (currentSpecialWaifu != null)
@@ -277,7 +277,7 @@ namespace Rias.Modules.Waifu
                 if (waifu is WaifusEntity normalWaifuDb)
                     normalWaifuDb.CustomImageUrl = url;
                 else
-                    ((CustomWaifusEntity)waifu).ImageUrl = url;
+                    ((CustomWaifusEntity) waifu).ImageUrl = url;
                 
                 await DbContext.SaveChangesAsync();
                 await ReplyConfirmationAsync(Localization.WaifuImageSet, waifu.Name!);
@@ -400,7 +400,7 @@ namespace Rias.Modules.Waifu
                 }
             
                 userDb.Currency -= WaifuCreationPrice;
-                var currentSpecialWaifu = (IWaifusEntity)await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
+                var currentSpecialWaifu = (IWaifusEntity) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
                                           ?? await DbContext.CustomWaifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial);
 
                 if (currentSpecialWaifu != null)

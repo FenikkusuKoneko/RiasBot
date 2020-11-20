@@ -43,7 +43,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
@@ -74,7 +74,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
@@ -105,7 +105,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;
@@ -137,7 +137,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckHierarchy(member) <= 0)
+                if (((DiscordMember) Context.User).CheckHierarchy(member) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberAbove);
                     return;

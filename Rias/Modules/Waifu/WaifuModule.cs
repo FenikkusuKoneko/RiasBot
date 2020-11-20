@@ -24,7 +24,7 @@ namespace Rias.Modules.Waifu
         [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task AllWaifusAsync([Remainder] DiscordMember? member = null)
         {
-            member ??= (DiscordMember)Context.User;
+            member ??= (DiscordMember) Context.User;
 
             var allWaifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>(
                     x => x.UserId == member.Id,

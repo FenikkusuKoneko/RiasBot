@@ -15,12 +15,12 @@ namespace Rias.Attributes
     {
         private readonly Permissions? _permissions;
         
-        public Permissions? Permissions => _permissions;
-
         public BotPermissionAttribute(Permissions permissions)
         {
             _permissions = permissions;
         }
+        
+        public Permissions? Permissions => _permissions;
 
         public override ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {

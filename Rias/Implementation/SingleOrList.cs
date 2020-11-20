@@ -21,6 +21,7 @@ namespace Rias.Implementation
         }
 
         public T Value => List is null ? _value : default;
+        
         public IList<T> List => _list;
 
         public SingleOrList<T> Add(T item)

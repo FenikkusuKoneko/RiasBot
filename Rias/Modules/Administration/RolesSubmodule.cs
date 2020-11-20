@@ -75,7 +75,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -105,7 +105,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -143,7 +143,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -168,7 +168,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -200,7 +200,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -232,7 +232,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -268,7 +268,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;
@@ -312,7 +312,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                if (((DiscordMember)Context.User).CheckRoleHierarchy(role) <= 0)
+                if (((DiscordMember) Context.User).CheckRoleHierarchy(role) <= 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationRoleAbove);
                     return;

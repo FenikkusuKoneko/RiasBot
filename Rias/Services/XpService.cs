@@ -367,15 +367,15 @@ namespace Rias.Services
 
             settings.TextGravity = Gravity.Center;
             using var globalLevelTextImage = new MagickImage($"caption:{GetText(guild.Id, Localization.XpLvl, xpInfo.GlobalLevel).ToUpperInvariant()}", settings);
-            image.Draw(new DrawableComposite(250 - (double)globalLevelTextImage.Width / 2, 120, CompositeOperator.Over, globalLevelTextImage));
+            image.Draw(new DrawableComposite(250 - (double) globalLevelTextImage.Width / 2, 120, CompositeOperator.Over, globalLevelTextImage));
             using var serverLevelTextImage = new MagickImage($"caption:{GetText(guild.Id, Localization.XpLvl, xpInfo.ServerLevel).ToUpperInvariant()}", settings);
-            image.Draw(new DrawableComposite(250 - (double)serverLevelTextImage.Width / 2, 210, CompositeOperator.Over, serverLevelTextImage));
+            image.Draw(new DrawableComposite(250 - (double) serverLevelTextImage.Width / 2, 210, CompositeOperator.Over, serverLevelTextImage));
 
             settings.TextGravity = Gravity.East;
             using var globalRankTextImage = new MagickImage($"caption:#{xpInfo.GlobalRank}", settings);
-            image.Draw(new DrawableComposite(470 - (double)globalRankTextImage.Width, 120, CompositeOperator.Over, globalRankTextImage));
+            image.Draw(new DrawableComposite(470 - (double) globalRankTextImage.Width, 120, CompositeOperator.Over, globalRankTextImage));
             using var serverRankTextImage = new MagickImage($"caption:#{xpInfo.ServerRank}", settings);
-            image.Draw(new DrawableComposite(470 - (double)serverRankTextImage.Width, 210, CompositeOperator.Over, serverRankTextImage));
+            image.Draw(new DrawableComposite(470 - (double) serverRankTextImage.Width, 210, CompositeOperator.Over, serverRankTextImage));
             
             image.Draw(new Drawables()
                 .RoundRectangle(30, 150, 470, 160, 5, 5)
@@ -387,7 +387,7 @@ namespace Rias.Services
             var globalCurrentXp = RiasUtilities.LevelXp(xpInfo.GlobalLevel, xpInfo.GlobalXp, XpThreshold);
             var globalNextLevelXp = (xpInfo.GlobalLevel + 1) * 30;
             
-            var globalXpBarLength = (double)globalCurrentXp / globalNextLevelXp * 440;
+            var globalXpBarLength = (double) globalCurrentXp / globalNextLevelXp * 440;
             image.Draw(new Drawables()
                 .RoundRectangle(30, 150, 30 + globalXpBarLength, 160, 5, 5)
                 .FillColor(xpInfo.Color));
@@ -395,7 +395,7 @@ namespace Rias.Services
             var serverCurrentXp = RiasUtilities.LevelXp(xpInfo.ServerLevel, xpInfo.ServerXp, XpThreshold);
             var serverNextLevelXp = (xpInfo.ServerLevel + 1) * 30;
             
-            var serverXpBarLength = (double)serverCurrentXp / serverNextLevelXp * 440;
+            var serverXpBarLength = (double) serverCurrentXp / serverNextLevelXp * 440;
             image.Draw(new Drawables()
                 .RoundRectangle(30, 240, 30 + serverXpBarLength, 250, 5, 5)
                 .FillColor(xpInfo.Color));
@@ -409,9 +409,9 @@ namespace Rias.Services
             
             settings.TextGravity = Gravity.East;
             using var globalNextLevelXpTextImage = new MagickImage($"caption:{globalNextLevelXp}", settings);
-            image.Draw(new DrawableComposite(470 - (double)globalNextLevelXpTextImage.Width, 170, CompositeOperator.Over, globalNextLevelXpTextImage));
+            image.Draw(new DrawableComposite(470 - (double) globalNextLevelXpTextImage.Width, 170, CompositeOperator.Over, globalNextLevelXpTextImage));
             using var serverNextLevelXpTextImage = new MagickImage($"caption:{serverNextLevelXp}", settings);
-            image.Draw(new DrawableComposite(470 - (double)serverNextLevelXpTextImage.Width, 260, CompositeOperator.Over, serverNextLevelXpTextImage));
+            image.Draw(new DrawableComposite(470 - (double) serverNextLevelXpTextImage.Width, 260, CompositeOperator.Over, serverNextLevelXpTextImage));
         }
         
         private async Task<XpInfo> GetXpInfo(DiscordMember member)

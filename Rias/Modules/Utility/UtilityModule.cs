@@ -270,7 +270,7 @@ namespace Rias.Modules.Utility
             var yuv = ColorYUV.FromMagickColor(magickColor);
             var cmyk = ColorCMYK.FromMagickColor(magickColor);
 
-            var ushortMax = (double)ushort.MaxValue;
+            var ushortMax = (double) ushort.MaxValue;
             var byteMax = byte.MaxValue;
             var colorDetails = new StringBuilder()
                 .Append($"**Hex:** {hexColor}").AppendLine()

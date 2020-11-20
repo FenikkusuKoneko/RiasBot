@@ -31,7 +31,7 @@ namespace Rias.Modules.Profile
         [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.User)]
         public async Task ProfileAsync([Remainder] DiscordMember? member = null)
         {
-            member ??= (DiscordMember)Context.User;
+            member ??= (DiscordMember) Context.User;
             await Context.Channel.TriggerTypingAsync();
 
             var serverAttachFilesPerm = Context.Guild!.CurrentMember.GetPermissions().HasPermission(Permissions.AttachFiles);

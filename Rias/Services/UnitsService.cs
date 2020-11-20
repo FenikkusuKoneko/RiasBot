@@ -129,11 +129,11 @@ namespace Rias.Services
         {
             var expr = new Expression(unit1.FuncToBase);
             expr.EvaluateParameter += (name, args) => ExpressionEvaluateParameter(name, args, value);
-            var baseResult = (double)expr.Evaluate();
+            var baseResult = (double) expr.Evaluate();
             
             expr = new Expression(unit2.FuncFromBase);
             expr.EvaluateParameter += (name, args) => ExpressionEvaluateParameter(name, args, baseResult);
-            return (double)expr.Evaluate();
+            return (double) expr.Evaluate();
         }
 
         public IEnumerable<UnitsCategory> GetAllUnits()

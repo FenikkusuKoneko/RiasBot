@@ -194,13 +194,13 @@ namespace Rias
         
         private object? CooldownBucketKeyGenerator(object bucketType, CommandContext context)
         {
-            var riasContext = (RiasCommandContext)context;
+            var riasContext = (RiasCommandContext) context;
             
             // owner doesn't have cooldown
             if (_credentials.MasterId != 0 && riasContext.User.Id == _credentials.MasterId)
                 return null;
             
-            return (BucketType)bucketType switch
+            return (BucketType) bucketType switch
             {
                 BucketType.Guild => riasContext.Guild!.Id.ToString(),
                 BucketType.User => riasContext.User.Id.ToString(),
