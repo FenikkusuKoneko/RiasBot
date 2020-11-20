@@ -334,7 +334,7 @@ namespace Rias.Services
             var roleOverwrites = channel.PermissionOverwrites.FirstOrDefault(x => x.Type == OverwriteType.Role && x.Id == role.Id);
             if (roleOverwrites is null)
             {
-                await channel.AddOverwriteAsync(role, deny: Permissions.SendMessages | Permissions.AddReactions | Permissions.Speak);
+                await channel.AddOverwriteAsync(role, deny: Permissions.SendMessages | Permissions.Speak);
                 return;
             }
 
