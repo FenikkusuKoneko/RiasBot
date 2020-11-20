@@ -346,9 +346,6 @@ namespace Rias.Services
             if (!permissions.HasPermission(Permissions.Speak))
                 permissions |= Permissions.Speak;
 
-            if (!permissions.HasPermission(Permissions.AddReactions))
-                permissions |= Permissions.AddReactions;
-            
             if (permissions > roleOverwrites.Denied)
                 await channel.AddOverwriteAsync(role, deny: permissions);
         }
