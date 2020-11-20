@@ -308,8 +308,9 @@ namespace Rias.Services
             foreach (var unit in currencyUnits.Units)
             {
                 var unitAbbreviation = unit.Name.Abbreviations.ElementAt(0);
-                
-                if (string.Equals(unitAbbreviation, "eur", StringComparison.OrdinalIgnoreCase))
+
+                if (string.Equals(unitAbbreviation, "eur", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(unitAbbreviation, "hrt", StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 if (!exchangeRates.TryGetValue(unitAbbreviation, out var rateValue))
