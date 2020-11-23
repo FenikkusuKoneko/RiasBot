@@ -77,6 +77,7 @@ namespace Rias.Modules.Utility
 
         [Command("setlanguage")]
         [Context(ContextType.Guild)]
+        [MemberPermission(Permissions.Administrator)]
         public async Task SetLanguageAsync(string language)
         {
             var (locale, lang) = Localization.Locales.FirstOrDefault(x =>
