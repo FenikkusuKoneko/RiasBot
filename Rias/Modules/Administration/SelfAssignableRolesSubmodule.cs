@@ -54,7 +54,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationYouAre, role.Name);
             }
 
-            [Command("iamnot")]
+            [Command("iamnot", "iamn")]
             [Context(ContextType.Guild)]
             [BotPermission(Permissions.ManageRoles)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Member)]
@@ -82,7 +82,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationYouAreNot, role.Name);
             }
 
-            [Command("addselfassignablerole")]
+            [Command("addselfassignablerole", "asar")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
@@ -125,7 +125,7 @@ namespace Rias.Modules.Administration
                 }
             }
 
-            [Command("removeselfassignablerole")]
+            [Command("removeselfassignablerole", "rsar")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
@@ -150,7 +150,7 @@ namespace Rias.Modules.Administration
                 }
             }
 
-            [Command("listselfassignableroles")]
+            [Command("listselfassignableroles", "lsar")]
             [Context(ContextType.Guild)]
             [BotPermission(Permissions.ManageRoles)]
             [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]

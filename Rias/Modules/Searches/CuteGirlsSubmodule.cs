@@ -24,7 +24,7 @@ namespace Rias.Modules.Searches
                 _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             }
 
-            [Command("neko")]
+            [Command("neko", "catgirl")]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task NekoAsync()
             {
@@ -42,7 +42,7 @@ namespace Rias.Modules.Searches
                 await ReplyAsync(embed);
             }
 
-            [Command("kitsune")]
+            [Command("kitsune", "foxgirl")]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task KitsuneAsync()
             {

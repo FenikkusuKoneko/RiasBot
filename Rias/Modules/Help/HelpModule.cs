@@ -13,21 +13,24 @@ using Qmmands;
 using Rias.Attributes;
 using Rias.Commons;
 using Rias.Implementation;
+using Rias.Services;
 
 namespace Rias.Modules.Help
 {
     [Name("Help")]
     public class HelpModule : RiasModule
     {
+        private readonly CommandHandlerService _commandHandlerService;
         private readonly CommandService _commandService;
         
         public HelpModule(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
+            _commandHandlerService = serviceProvider.GetRequiredService<CommandHandlerService>();
             _commandService = serviceProvider.GetRequiredService<CommandService>();
         }
         
-        [Command("help")]
+        [Command("help", "h")]
         public async Task HelpAsync()
         {
             var embed = new DiscordEmbedBuilder()
@@ -63,7 +66,7 @@ namespace Rias.Modules.Help
             await ReplyAsync(embed);
         }
         
-        [Command("help")]
+        [Command("help", "h")]
         public async Task HelpAsync(string alias1, string? alias2 = null)
         {
             var module = GetModuleByAlias(alias1);
@@ -81,10 +84,18 @@ namespace Rias.Modules.Help
 
             var moduleAlias = module != null ? $"{module.Aliases[0]} " : string.Empty;
             var title = string.Join(" / ", command.Aliases.Select(a => $"{Context.Prefix}{moduleAlias}{a}"));
+            
             if (string.IsNullOrEmpty(title))
-            {
                 title = $"{Context.Prefix}{moduleAlias}";
-            }
+
+            if (command.Checks.Any(c => c is OwnerOnlyAttribute))
+                title += $" [{GetText(Localization.HelpOwnerOnly).ToLowerInvariant()}]";
+
+            var commandInfoKey = command.Aliases.Count != 0
+                ? $"{command.Module.Name.Replace(" ", "_").ToLower()}_{command.Aliases[0]}"
+                : command.Name;
+            
+            var description = _commandHandlerService.GetCommandInfo(Context.Guild?.Id, commandInfoKey);
 
             var embed = new DiscordEmbedBuilder
             {
@@ -94,7 +105,7 @@ namespace Rias.Modules.Help
                     Name = GetText(Localization.HelpModule, moduleName)
                 },
                 Title = title,
-                Description = Formatter.BlockCode(command.Description.Replace("[prefix]", Context.Prefix).Replace("[currency]", Credentials.Currency))
+                Description = description.Replace("[prefix]", Context.Prefix).Replace("[currency]", Credentials.Currency)
             };
 
             var permissions = new StringBuilder();
@@ -134,7 +145,20 @@ namespace Rias.Modules.Help
             if (permissions.Length != 0)
                 embed.AddField(GetText(Localization.HelpRequiresPermissions), permissions.ToString());
             
-            embed.AddField(GetText(Localization.CommonExamples), Formatter.InlineCode(string.Format(command.Remarks, Context.Prefix)), true);
+            var commandExamples = _commandHandlerService.GetCommandInfo(Context.Guild?.Id, $"{commandInfoKey}_examples").Split('\n');
+            var usages = new StringBuilder();
+            var examples = new StringBuilder();
+
+            foreach (var commandExample in commandExamples)
+            {
+                if (commandExample[0] == '[' && commandExample[^1] == ']')
+                    usages.AppendLine(commandExample[1..^1]);
+                else
+                    examples.AppendLine(commandExample);
+            }
+            
+            embed.AddField(GetText(Localization.CommonExamples), Formatter.InlineCode(string.Format(examples.ToString(), Context.Prefix)), true);
+            embed.AddField(GetText(Localization.CommonUsages), Formatter.InlineCode(string.Format(usages.ToString(), Context.Prefix)), true);
             
             var commandCooldown = command.Cooldowns.FirstOrDefault();
             if (commandCooldown != null)
@@ -150,7 +174,7 @@ namespace Rias.Modules.Help
             await ReplyAsync(embed);
         }
         
-        [Command("modules")]
+        [Command("modules", "mdls")]
         public async Task ModulesAsync()
         {
             var embed = new DiscordEmbedBuilder
@@ -199,7 +223,7 @@ namespace Rias.Modules.Help
             await ReplyAsync(embed);
         }
 
-        [Command("commands")]
+        [Command("commands", "cmds")]
         public async Task CommandsAsync([Remainder] string name)
         {
             var module = _commandService.GetAllModules().FirstOrDefault(m => m.Name.StartsWith(name, StringComparison.InvariantCultureIgnoreCase));
@@ -242,7 +266,7 @@ namespace Rias.Modules.Help
             await ReplyAsync(embed);
         }
 
-        [Command("allcommands")]
+        [Command("allcommands", "allcmds")]
         [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task AllCommandsAsync()
         {

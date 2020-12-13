@@ -20,7 +20,7 @@ namespace Rias.Modules.Administration
             {
             }
 
-            [Command("createtextchannel")]
+            [Command("createtextchannel", "ctch")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
@@ -37,7 +37,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationTextChannelCreated, name);
             }
 
-            [Command("deletetextchannel")]
+            [Command("deletetextchannel", "dtch")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
@@ -55,7 +55,7 @@ namespace Rias.Modules.Administration
                     await ReplyConfirmationAsync(Localization.AdministrationTextChannelDeleted, channel.Name);
             }
 
-            [Command("renametextchannel")]
+            [Command("renametextchannel", "rntch")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
@@ -94,7 +94,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationTextChannelRenamed, oldName, newName);
             }
 
-            [Command("channeltopic")]
+            [Command("channeltopic", "ct")]
             [Context(ContextType.Guild)]
             public async Task ChannelTopicAsync()
             {
@@ -114,7 +114,7 @@ namespace Rias.Modules.Administration
                 await ReplyAsync(embed);
             }
 
-            [Command("setchanneltopic")]
+            [Command("setchanneltopic", "sct")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
@@ -145,7 +145,7 @@ namespace Rias.Modules.Administration
                 }
             }
 
-            [Command("setnsfwchannel")]
+            [Command("setnsfwchannel", "snsfwch")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]

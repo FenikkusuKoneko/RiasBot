@@ -56,7 +56,7 @@ namespace Rias.Modules.Xp
             await Context.Channel.SendFileAsync($"{member.Id}_xp.png", xpImage);
         }
 
-        [Command("globalxpleaderboard")]
+        [Command("globalxpleaderboard", "gxplb")]
         [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
         public async Task GlobalXpLeaderboardAsync(int page = 1)
         {
@@ -91,7 +91,7 @@ namespace Rias.Modules.Xp
             await ReplyAsync(embed);
         }
 
-        [Command("xpleaderboard")]
+        [Command("xpleaderboard", "sxplb", "xplb")]
         [Context(ContextType.Guild)]
         [CheckDownloadedMembers]
         [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
@@ -139,7 +139,7 @@ namespace Rias.Modules.Xp
             await ReplyAsync(embed);
         }
 
-        [Command("xpnotification")]
+        [Command("xpnotification", "xpnotify", "xpn")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         [BotPermission(Permissions.ManageWebhooks)]
@@ -188,7 +188,7 @@ namespace Rias.Modules.Xp
             }
         }
 
-        [Command("xpmessage")]
+        [Command("xpmessage", "xpm")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         public async Task XpMessageAsync([Remainder] string? message = null)
@@ -251,7 +251,7 @@ namespace Rias.Modules.Xp
             }
         }
 
-        [Command("xpmessagereward")]
+        [Command("xpmessagereward", "xpmr")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         public async Task XpMessageRewardAsync([Remainder] string? message = null)
@@ -318,7 +318,7 @@ namespace Rias.Modules.Xp
             }
         }
 
-        [Command("leveluprolereward")]
+        [Command("leveluprolereward", "lurr")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.ManageRoles)]
         [BotPermission(Permissions.ManageRoles)]
@@ -366,7 +366,7 @@ namespace Rias.Modules.Xp
             await ReplyConfirmationAsync(Localization.XpLevelUpRoleRewardSet, role.Name, level);
         }
 
-        [Command("leveluprolerewardlist")]
+        [Command("leveluprolerewardlist", "lurrl", "lurrs")]
         [Context(ContextType.Guild)]
         [BotPermission(Permissions.ManageRoles)]
         public async Task LevelUpRoleRewardListAsync()
@@ -389,7 +389,7 @@ namespace Rias.Modules.Xp
             });
         }
 
-        [Command("resetserverxp")]
+        [Command("resetserverxp", "rsxp")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         public async Task ResetGuildXpAsync()

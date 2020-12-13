@@ -151,7 +151,7 @@ namespace Rias.Modules.Administration
                 await channel.SendMessageAsync(embed);
             }
 
-            [Command("warnings")]
+            [Command("warnings", "warninglist", "warnlist")]
             [Context(ContextType.Guild)]
             [CheckDownloadedMembers]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
@@ -182,7 +182,7 @@ namespace Rias.Modules.Administration
                 });
             }
 
-            [Command("warnings")]
+            [Command("warnings", "warninglist", "warnlist")]
             [Context(ContextType.Guild)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task WarningsAsync([Remainder] DiscordMember member)
@@ -211,7 +211,7 @@ namespace Rias.Modules.Administration
                 });
             }
 
-            [Command("clearwarning")]
+            [Command("clearwarning", "clearwarn")]
             [Context(ContextType.Guild)]
             [Priority(1)]
             public async Task ClearWarningAsync(DiscordMember member, int warningIndex)
@@ -258,7 +258,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationWarningCleared, member.FullName());
             }
 
-            [Command("clearwarning")]
+            [Command("clearwarning", "clearwarn")]
             [Context(ContextType.Guild)]
             [Priority(0)]
             public async Task ClearWarningAsync(DiscordMember member, string all)
@@ -307,7 +307,7 @@ namespace Rias.Modules.Administration
                 }
             }
 
-            [Command("warningpunishment")]
+            [Command("warningpunishment", "warnpunishment")]
             [Context(ContextType.Guild)]
             public async Task WarningPunishmentAsync()
             {
@@ -328,7 +328,7 @@ namespace Rias.Modules.Administration
                 await ReplyAsync(embed);
             }
 
-            [Command("setwarningpunishment")]
+            [Command("setwarningpunishment", "setwarnpunishment")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.Administrator)]
             public async Task SetWarningPunishmentAsync(int number, string? punishment = null)

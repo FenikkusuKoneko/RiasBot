@@ -48,7 +48,7 @@ namespace Rias.Modules.Nsfw
         public Task GelbooruAsync([Remainder] string? tags = null)
             => PostHentaiAsync(NsfwService.NsfwImageApiProvider.Gelbooru, tags);
 
-        [Command("hentaiplus")]
+        [Command("hentaiplus", "hentai+")]
         [Context(ContextType.Guild)]
         [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Channel)]
         public async Task HentaiPlusAsync([Remainder] string? tags = null)

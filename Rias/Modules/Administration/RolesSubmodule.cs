@@ -50,7 +50,7 @@ namespace Rias.Modules.Administration
                 });
             }
 
-            [Command("createrole")]
+            [Command("createrole", "cr")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
@@ -61,7 +61,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationRoleCreated, name);
             }
 
-            [Command("deleterole")]
+            [Command("deleterole", "dr")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
@@ -91,7 +91,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationRoleDeleted, role.Name);
             }
 
-            [Command("rolecolor")]
+            [Command("rolecolour", "rolecolor", "rc")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
@@ -115,7 +115,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationRoleColorChanged, role.Name);
             }
 
-            [Command("renamerole")]
+            [Command("renamerole", "rnr")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
@@ -154,7 +154,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationRoleRenamed, oldName, newName);
             }
 
-            [Command("hoistrole")]
+            [Command("hoistrole", "hr")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
@@ -186,7 +186,7 @@ namespace Rias.Modules.Administration
                 }
             }
 
-            [Command("mentionrole")]
+            [Command("mentionrole", "mr")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
@@ -218,7 +218,7 @@ namespace Rias.Modules.Administration
                 }
             }
 
-            [Command("addrole")]
+            [Command("addrole", "ar", "setrole", "sr")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
@@ -254,7 +254,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationRoleAdded, role.Name, member.FullName());
             }
 
-            [Command("removerole")]
+            [Command("removerole", "rr")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageRoles)]
             [BotPermission(Permissions.ManageRoles)]
@@ -290,7 +290,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationRoleRemoved, role.Name, member.FullName());
             }
 
-            [Command("autoassignablerole")]
+            [Command("autoassignablerole", "aar")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.Administrator)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]

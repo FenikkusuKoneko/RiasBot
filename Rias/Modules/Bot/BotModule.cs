@@ -27,7 +27,7 @@ namespace Rias.Modules.Bot
             _unitsService = serviceProvider.GetRequiredService<UnitsService>();
         }
         
-        [Command("leaveguild")]
+        [Command("leaveguild", "leaveserver")]
         [OwnerOnly]
         public async Task LeaveGuildAsync(string name)
         {
@@ -61,7 +61,7 @@ namespace Rias.Modules.Bot
             Environment.Exit(0);
         }
 
-        [Command("update")]
+        [Command("update", "restart")]
         [OwnerOnly]
         public async Task UpdateAsync()
         {
@@ -69,7 +69,7 @@ namespace Rias.Modules.Bot
             Environment.Exit(69);
         }
 
-        [Command("reload")]
+        [Command("reload", "refresh")]
         [OwnerOnly]
         public async Task ReloadAsync(string subcommand)
         {
@@ -325,7 +325,7 @@ namespace Rias.Modules.Bot
             await ReplyAsync(embed);
         }
 
-        [Command("evaluate")]
+        [Command("evaluate", "eval")]
         [OwnerOnly]
         public async Task EvaluateAsync([Remainder] string code)
         {

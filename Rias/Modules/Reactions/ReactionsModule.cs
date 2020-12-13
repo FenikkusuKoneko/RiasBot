@@ -20,7 +20,7 @@ namespace Rias.Modules.Reactions
         {
         }
         
-        [Command("pat")]
+        [Command("pat", "pet")]
         [Context(ContextType.Guild)]
         [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         [Priority(1)]
@@ -468,7 +468,7 @@ namespace Rias.Modules.Reactions
                     embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention) new UserMention(x)));
         }
 
-        [Command("cry")]
+        [Command("cry", "crying")]
         [Context(ContextType.Guild)]
         [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         public async Task CryAsync()
@@ -606,7 +606,7 @@ namespace Rias.Modules.Reactions
                     embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention) new UserMention(x)));
         }
 
-        [Command("dance")]
+        [Command("dance", "dancing")]
         [Context(ContextType.Guild)]
         [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         [Priority(1)]
@@ -795,7 +795,7 @@ namespace Rias.Modules.Reactions
                     embed: embed, mentions: Context.Message.MentionedUsers.Select(x => (IMention) new UserMention(x)));
         }
         
-        [Command("goodmorning")]
+        [Command("goodmorning", "morning")]
         [Context(ContextType.Guild)]
         [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         public async Task GoodMorningAsync()
@@ -819,7 +819,7 @@ namespace Rias.Modules.Reactions
             await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsGoodMorning, Context.User.Mention), embed: embed);
         }
 
-        [Command("sleepy")]
+        [Command("sleepy", "sleep", "goodnight")]
         [Context(ContextType.Guild)]
         [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         public async Task SleepyAsync()
@@ -843,7 +843,7 @@ namespace Rias.Modules.Reactions
             await Context.Channel.SendMessageAsync(GetText(Localization.ReactionsSleepy, Context.User.Mention), embed: embed);
         }
         
-        [Command("baka")]
+        [Command("baka", "idiot")]
         [Context(ContextType.Guild)]
         [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         public async Task BakaAsync([Remainder] DiscordMember member)

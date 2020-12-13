@@ -17,7 +17,7 @@ namespace Rias.Modules.Commands
         {
         }
         
-        [Command("deletecommandmessage")]
+        [Command("deletecommandmessage", "delcmdmsg")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         public async Task DeleteCommandMessageAsync()

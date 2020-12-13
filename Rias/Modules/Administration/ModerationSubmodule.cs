@@ -22,7 +22,7 @@ namespace Rias.Modules.Administration
             {
             }
             
-            [Command("kick")]
+            [Command("kick", "k")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.KickMembers)]
             [BotPermission(Permissions.KickMembers)]
@@ -53,7 +53,7 @@ namespace Rias.Modules.Administration
                 await member.RemoveAsync(reason);
             }
             
-            [Command("ban")]
+            [Command("ban", "b")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.BanMembers)]
             [BotPermission(Permissions.BanMembers)]
@@ -84,7 +84,7 @@ namespace Rias.Modules.Administration
                 await member.BanAsync(reason: reason);
             }
             
-            [Command("softban")]
+            [Command("softban", "sb")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.KickMembers)]
             [BotPermission(Permissions.KickMembers | Permissions.BanMembers)]
@@ -116,7 +116,7 @@ namespace Rias.Modules.Administration
                 await member.UnbanAsync();
             }
             
-            [Command("pruneban")]
+            [Command("pruneban", "pb")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.BanMembers)]
             [BotPermission(Permissions.BanMembers)]
@@ -147,7 +147,7 @@ namespace Rias.Modules.Administration
                 await member.BanAsync(7, reason);
             }
             
-            [Command("prune")]
+            [Command("prune", "purge")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageMessages)]
             [BotPermission(Permissions.ManageMessages)]
@@ -172,7 +172,7 @@ namespace Rias.Modules.Administration
                     await ReplyErrorAsync(Localization.AdministrationPruneLimit);
             }
 
-            [Command("prune")]
+            [Command("prune", "purge")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageMessages)]
             [BotPermission(Permissions.ManageMessages)]
@@ -181,7 +181,7 @@ namespace Rias.Modules.Administration
             public async Task PruneAsync(int amount, DiscordMember member)
                 => await PruneUserMessagesAsync(member, amount);
 
-            [Command("prune")]
+            [Command("prune", "purge")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageMessages)]
             [BotPermission(Permissions.ManageMessages)]

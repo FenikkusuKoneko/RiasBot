@@ -23,7 +23,7 @@ namespace Rias.Modules.Gambling
             {
             }
 
-            [Command("currency")]
+            [Command("currency", "$", "hearts")]
             [Context(ContextType.Guild)]
             public async Task CurrencyAsync([Remainder] DiscordMember? member = null)
             {
@@ -80,7 +80,7 @@ namespace Rias.Modules.Gambling
                 await ReplyConfirmationAsync(Localization.GamblingUserTook, amount, Credentials.Currency, user.FullName());
             }
 
-            [Command("leaderboard")]
+            [Command("leaderboard", "lb")]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task LeaderboardAsync(int page = 1)
             {
@@ -110,7 +110,7 @@ namespace Rias.Modules.Gambling
                 await ReplyAsync(embed);
             }
 
-            [Command("daily")]
+            [Command("daily", "dailies")]
             [Context(ContextType.Guild)]
             public async Task DailyAsync()
             {

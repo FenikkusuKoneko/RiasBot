@@ -26,7 +26,7 @@ namespace Rias.Modules.Administration
                 _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             }
 
-            [Command("setnickname")]
+            [Command("setnickname", "setnick")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageNicknames)]
             [BotPermission(Permissions.ManageNicknames)]
@@ -59,7 +59,7 @@ namespace Rias.Modules.Administration
                     await ReplyConfirmationAsync(Localization.AdministrationNicknameChanged, user.FullName(), nickname);
             }
 
-            [Command("setmynickname")]
+            [Command("setmynickname", "setmynick")]
             [Context(ContextType.Guild)]
             [BotPermission(Permissions.ManageNicknames)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
@@ -92,7 +92,7 @@ namespace Rias.Modules.Administration
                     await ReplyConfirmationAsync(Localization.AdministrationYourNicknameChanged, member.FullName(), nickname);
             }
 
-            [Command("setservername")]
+            [Command("setservername", "ssn")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageGuild)]
             [BotPermission(Permissions.ManageGuild)]
@@ -109,7 +109,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationServerNameChanged, name);
             }
 
-            [Command("setservericon")]
+            [Command("setservericon", "ssi")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageGuild)]
             [BotPermission(Permissions.ManageGuild)]

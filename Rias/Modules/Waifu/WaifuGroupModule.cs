@@ -17,6 +17,7 @@ namespace Rias.Modules.Waifu
     public partial class WaifuModule
     {
         [Name("Waifu")]
+        [Group("waifu")]
         public class WaifuGroupModule : RiasModule
         {
             private const int WaifuStartingPrice = 1000;
@@ -167,7 +168,7 @@ namespace Rias.Modules.Waifu
                 await ReplyConfirmationAsync(Localization.WaifuDivorced, waifu.Name!);
             }
 
-            [Command("special")]
+            [Command("special", "beloved")]
             [Context(ContextType.Guild)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task SpecialWaifuAsync([Remainder] string name)
@@ -224,7 +225,7 @@ namespace Rias.Modules.Waifu
                 await ReplyConfirmationAsync(Localization.WaifuSpecial, waifu.Name!);
             }
 
-            [Command("image")]
+            [Command("image", "avatar")]
             [Context(ContextType.Guild)]
             [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
             public async Task WaifuImageAsync(string url, [Remainder] string name)

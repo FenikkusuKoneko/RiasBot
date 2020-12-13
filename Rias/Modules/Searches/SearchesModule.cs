@@ -24,7 +24,7 @@ namespace Rias.Modules.Searches
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
 
-        [Command("wikipedia")]
+        [Command("wikipedia", "wiki")]
         [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task WikipediaAsync([Remainder] string title)
         {
@@ -53,7 +53,7 @@ namespace Rias.Modules.Searches
                 await Context.Channel.SendMessageAsync(page.Value<string>("fullurl"));
         }
 
-        [Command("urbandictionary")]
+        [Command("urbandictionary", "ud")]
         [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task UrbanDictionary([Remainder] string term)
         {

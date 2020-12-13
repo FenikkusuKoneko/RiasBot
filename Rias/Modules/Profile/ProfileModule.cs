@@ -16,6 +16,7 @@ using Rias.Services;
 namespace Rias.Modules.Profile
 {
     [Name("Profile")]
+    [Group("profile")]
     public class ProfileModule : RiasModule<ProfileService>
     {
         private readonly HttpClient _httpClient;
@@ -52,7 +53,7 @@ namespace Rias.Modules.Profile
             await Context.Channel.SendFileAsync($"{member.Id}_profile.png", profileImage);
         }
 
-        [Command("background")]
+        [Command("background", "bg", "cover", "image")]
         [Context(ContextType.Guild)]
         [Cooldown(1, 30, CooldownMeasure.Seconds, BucketType.User)]
         public async Task BackgroundAsync(string url)
@@ -146,7 +147,7 @@ namespace Rias.Modules.Profile
             await ReplyConfirmationAsync(Localization.ProfileBackgroundDimSet, dim);
         }
 
-        [Command("biography")]
+        [Command("biography", "bio")]
         [Context(ContextType.Guild)]
         public async Task BiographyAsync([Remainder] string bio)
         {
@@ -163,7 +164,7 @@ namespace Rias.Modules.Profile
             await ReplyConfirmationAsync(Localization.ProfileBiographySet);
         }
 
-        [Command("color")]
+        [Command("colour", "color")]
         [Context(ContextType.Guild)]
         public async Task ColorAsync([Remainder] DiscordColor color)
         {

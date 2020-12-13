@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -6,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using ConcurrentCollections;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -15,6 +15,7 @@ using Humanizer;
 using Humanizer.Localisation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Qmmands;
 using Rias.Attributes;
 using Rias.Commons;
@@ -36,7 +37,9 @@ namespace Rias.Services
         private readonly XpService _xpService;
         
         private readonly ConcurrentHashSet<string> _cooldowns = new();
-        private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "data/commands.xml");
+
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _commandsInfo = new();
+        private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "assets/commands");
 
         private List<Type> _typeParsers = new();
 
@@ -50,128 +53,66 @@ namespace Rias.Services
             RiasBot.Client.MessageCreated += MessageCreatedAsync;
             
             var sw = Stopwatch.StartNew();
-            LoadCommands();
-            sw.Stop();
-            Log.Information($"Commands loaded: {sw.ElapsedMilliseconds} ms");
             
-            LoadTypeParsers();
-        }
-
-        public void ReloadCommands()
-            => LoadCommands(true);
-
-        private void LoadCommands(bool reload = false)
-        {
-            var commandsXml = XElement.Load(_commandsPath);
-            var modulesInfo = LoadXmlModules(commandsXml.Elements("module")).ToList();
-            
-            if (modulesInfo is null)
-            {
-                throw new KeyNotFoundException("The modules node array couldn't be loaded");
-            }
-            
-            if (reload)
-                _commandService.RemoveAllModules();
-
             var assembly = Assembly.GetAssembly(typeof(RiasBot));
-            _commandService.AddModules(assembly, null, module => SetUpModule(module, modulesInfo));
+            _commandService.AddModules(assembly);
             
 #if !DEBUG
-            var testModule = _commandService.GetAllModules().FirstOrDefault(x => string.Equals(x.Name, "Test"));
+            var testModule = _commandService.GetAllModules().FirstOrDefault(x => string.Equals(x.Name, "Test", StringComparison.OrdinalIgnoreCase));
             if (testModule is not null)
                 _commandService.RemoveModule(testModule);
 #endif
+            
+            LoadCommands();
+            LoadTypeParsers();
+            sw.Stop();
+
+
+            Log.Information($"Commands loaded: {sw.ElapsedMilliseconds} ms");
+        }
+
+        public void ReloadCommands()
+        {
+            _commandsInfo.Clear();
+            LoadCommands();
+        }
+
+        private void LoadCommands()
+        {
+            foreach (var commandsInfo in Directory.GetFiles(_commandsPath))
+            {
+                var fileName = Path.GetFileNameWithoutExtension(commandsInfo);
+                _commandsInfo.TryAdd(fileName, JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText(commandsInfo)));
+            }
+        }
+
+        public string GetCommandInfo(ulong? guildId, string key, params object[] args)
+        {
+            var locale = guildId.HasValue ? Localization.GetGuildLocale(guildId.Value) : Localization.DefaultLocale;
+            if (TryGetCommandInfoString(locale, key, out var @string) && !string.IsNullOrEmpty(@string))
+                return args.Length == 0 ? @string : string.Format(@string, args);
+
+            if (!string.Equals(locale, Localization.DefaultLocale)
+                && TryGetCommandInfoString(Localization.DefaultLocale, key, out @string)
+                && !string.IsNullOrEmpty(@string))
+                return args.Length == 0 ? @string : string.Format(@string, args);
+
+            throw new InvalidOperationException($"The command info for the command \"{key}\" couldn't be found.");
         }
         
-#pragma warning disable 8604
-        private IEnumerable<ModuleInfo> LoadXmlModules(IEnumerable<XElement> modulesElement)
-            => modulesElement.Select(moduleElement =>
-                new ModuleInfo
-                {
-
-                    Name = moduleElement.Element("name")!.Value,
-                    Aliases = moduleElement.Element("aliases")?.Value,
-                    Commands = LoadXmlCommands(moduleElement).ToList(),
-                    Submodules = moduleElement.Element("submodules") is not null
-                        ? LoadXmlModules(moduleElement.Element("submodules")!.Elements("submodule")).ToList()
-                        : null
-                });
-
-        private IEnumerable<CommandInfo> LoadXmlCommands(XElement moduleElement)
-            => moduleElement.Element("commands")!
-                .Elements("command")
-                .Select(commandElement =>
-                    new CommandInfo
-                    {
-                        Aliases = commandElement.Element("aliases")?.Value,
-                        Description = commandElement.Element("description")!.Value,
-                        Remarks = commandElement.Element("remarks")!.Elements("remark")!.Select(x => x.Value).ToList()
-                    });
-#pragma warning restore 8604
-
-        private void SetUpModule(ModuleBuilder module, IReadOnlyList<ModuleInfo> modulesInfo)
+        private bool TryGetCommandInfoString(string locale, string key, out string? value)
         {
-            if (string.IsNullOrEmpty(module.Name))
-                return;
-            
-            var moduleInfo = modulesInfo.FirstOrDefault(x => string.Equals(x.Name, module.Name, StringComparison.InvariantCultureIgnoreCase));
-            if (moduleInfo is null)
-                return;
-
-            if (!string.IsNullOrEmpty(moduleInfo.Aliases))
+            if (_commandsInfo.TryGetValue(locale, out var localeDictionary))
             {
-                foreach (var moduleAlias in moduleInfo.Aliases.Split(" "))
+                if (localeDictionary.TryGetValue(key, out var @string))
                 {
-                    module.AddAlias(moduleAlias);
+                    value = @string;
+                    return true;
                 }
             }
-            
-            if (moduleInfo.Commands is null || moduleInfo.Commands.Count == 0)
-                return;
-            
-            SetUpCommands(module, moduleInfo.Commands);
 
-            if (moduleInfo.Submodules is null)
-                return;
-            
-            foreach (var submodule in module.Submodules)
-            {
-                SetUpModule(submodule, moduleInfo.Submodules);
-            }
-        }
-
-        private void SetUpCommands(ModuleBuilder module, IReadOnlyList<CommandInfo> commandsInfo)
-        {
-            foreach (var command in module.Commands)
-            {
-                Func<CommandInfo, bool> predicate;
-                if (command.Aliases.Count != 0)
-                {
-                    predicate = x => !string.IsNullOrEmpty(x.Aliases) && x.Aliases.Split(" ")
-                                         .Any(y => string.Equals(y, command.Aliases.First(), StringComparison.InvariantCultureIgnoreCase));
-                }
-                else
-                {
-                    predicate = x => string.IsNullOrEmpty(x.Aliases);
-                }
-
-                var commandInfo = commandsInfo.FirstOrDefault(predicate);
-                if (commandInfo is null) continue;
-
-                if (!string.IsNullOrEmpty(commandInfo.Aliases))
-                {
-                    foreach (var commandAlias in commandInfo.Aliases.Split(" "))
-                    {
-                        if (command.Aliases.Contains(commandAlias))
-                            continue;
-                        
-                        command.AddAlias(commandAlias);
-                    }
-                }
-
-                command.Description = commandInfo.Description;
-                command.Remarks = string.Join("\n", commandInfo.Remarks!);
-            }
+            value = null;
+            return false;
         }
 
         private void LoadTypeParsers()

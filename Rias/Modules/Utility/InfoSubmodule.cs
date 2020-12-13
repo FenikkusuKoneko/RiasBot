@@ -98,7 +98,7 @@ namespace Rias.Modules.Utility
                 await ReplyAsync(embed);
             }
 
-            [Command("userinfo")]
+            [Command("memberinfo", "minfo", "userinfo", "uinfo")]
             [Context(ContextType.Guild)]
             public async Task UserInfoAsync([Remainder] DiscordMember? member = null)
             {
@@ -123,7 +123,7 @@ namespace Rias.Modules.Utility
                 await ReplyAsync(embed);
             }
 
-            [Command("serverinfo")]
+            [Command("serverinfo", "sinfo")]
             [Context(ContextType.Guild)]
             public async Task ServerInfo()
             {
@@ -173,7 +173,7 @@ namespace Rias.Modules.Utility
                 await ReplyAsync(embed);
             }
 
-            [Command("avatar")]
+            [Command("avatar", "av")]
             [Context(ContextType.Guild)]
             public async Task AvatarAsync([Remainder] DiscordMember? member = null)
             {
@@ -194,7 +194,7 @@ namespace Rias.Modules.Utility
                 await ReplyAsync(embed);
             }
 
-            [Command("servericon")]
+            [Command("servericon", "sic")]
             [Context(ContextType.Guild)]
             public async Task ServerIconAsync()
             {

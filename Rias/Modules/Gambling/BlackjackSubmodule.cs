@@ -13,6 +13,7 @@ namespace Rias.Modules.Gambling
     public partial class GamblingModule
     {
         [Name("Blackjack")]
+        [Group("blackjack", "bj")]
         public class BlackjackSubmodule : RiasModule<BlackjackService>
         {
             private readonly GamblingService _gamblingService;

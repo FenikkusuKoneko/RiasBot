@@ -29,7 +29,8 @@ namespace Rias.Modules.Games
         [Context(ContextType.Guild)]
         public async Task RpsAsync(string value)
         {
-            if (!Enum.TryParse<Rps>(value, true, out var userRps)) return;
+            if (!Enum.TryParse<Rps>(value, true, out var userRps))
+                return;
 
             var random = new Random();
             var botRps = (Rps) random.Next(1, 4);
@@ -54,7 +55,7 @@ namespace Rias.Modules.Games
             }
         }
 
-        [Command("8ball")]
+        [Command("8ball", "8b")]
         [Context(ContextType.Guild)]
         public async Task EightBallAsync([Remainder] string message)
         {

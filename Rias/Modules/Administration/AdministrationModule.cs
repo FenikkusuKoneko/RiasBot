@@ -25,7 +25,7 @@ namespace Rias.Modules.Administration
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
         
-        [Command("setgreet")]
+        [Command("setgreet", "greet")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         [BotPermission(Permissions.ManageWebhooks)]
@@ -70,7 +70,7 @@ namespace Rias.Modules.Administration
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetEnabled)}\n\n{greetMessage}");
         }
         
-        [Command("greetmessage")]
+        [Command("greetmessage", "greetmsg")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         public async Task GreetMessageAsync([Remainder] string message)
@@ -99,7 +99,7 @@ namespace Rias.Modules.Administration
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetMessageSet)}\n\n{greetMessage}");
         }
         
-        [Command("setbye")]
+        [Command("setbye", "bye")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         [BotPermission(Permissions.ManageWebhooks)]
@@ -144,7 +144,7 @@ namespace Rias.Modules.Administration
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeEnabled)}\n\n{byeMessage}");
         }
         
-        [Command("byemessage")]
+        [Command("byemessage", "byemsg")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         public async Task ByeMessageAsync([Remainder] string message)
@@ -173,7 +173,7 @@ namespace Rias.Modules.Administration
                 await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeMessageSet)}\n\n{byeMessage}");
         }
         
-        [Command("setmodlog")]
+        [Command("setmodlog", "modlog")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         public async Task SetModLogAsync()

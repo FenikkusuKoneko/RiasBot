@@ -20,7 +20,7 @@ namespace Rias.Modules.Administration
             {
             }
             
-            [Command("createcategory")]
+            [Command("createcategory", "ccat")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
@@ -37,7 +37,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationCategoryChannelCreated, name);
             }
             
-            [Command("deletecategory")]
+            [Command("deletecategory", "dcat")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
@@ -54,7 +54,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationCategoryChannelDeleted, category.Name);
             }
 
-            [Command("renamecategory")]
+            [Command("renamecategory", "rncat")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
@@ -93,7 +93,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationCategoryChannelRenamed, oldName, newName);
             }
             
-            [Command("addtextchanneltocategory")]
+            [Command("addtextchanneltocategory", "atchtocat")]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
@@ -139,7 +139,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationTextChannelAddedToCategory, channel.Name, category.Name);
             }
             
-            [Command("addvoicechanneltocategory")]
+            [Command("addvoicechanneltocategory", "avchtocat")]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]

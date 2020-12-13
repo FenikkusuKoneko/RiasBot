@@ -214,7 +214,7 @@ namespace Rias.Modules.Searches
                 await ReplyAsync(embed);
             }
 
-            [Command("animelist")]
+            [Command("animelist", "anilist")]
             [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
             public async Task AnimeListAsync([Remainder] string title)
             {

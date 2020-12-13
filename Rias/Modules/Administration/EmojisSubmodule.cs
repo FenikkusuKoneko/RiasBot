@@ -27,7 +27,7 @@ namespace Rias.Modules.Administration
                 _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             }
             
-            [Command("addemoji")]
+            [Command("addemoji", "addemote")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageEmojis)]
             [BotPermission(Permissions.ManageEmojis)]
@@ -103,7 +103,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationEmojiCreated, name);
             }
             
-            [Command("deleteemoji")]
+            [Command("deleteemoji", "delemoji", "deleteemote", "delemote")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageEmojis)]
             [BotPermission(Permissions.ManageEmojis)]
@@ -129,7 +129,7 @@ namespace Rias.Modules.Administration
                 }
             }
             
-            [Command("renameemoji")]
+            [Command("renameemoji", "rnemoji", "renameemote", "rnemote")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageEmojis)]
             [BotPermission(Permissions.ManageEmojis)]

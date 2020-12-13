@@ -20,7 +20,7 @@ namespace Rias.Modules.Administration
             {
             }
 
-            [Command("createvoicechannel")]
+            [Command("createvoicechannel", "cvch")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
@@ -37,7 +37,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationVoiceChannelCreated, name);
             }
 
-            [Command("deletevoicechannel")]
+            [Command("deletevoicechannel", "dvch")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]
@@ -54,7 +54,7 @@ namespace Rias.Modules.Administration
                 await ReplyConfirmationAsync(Localization.AdministrationVoiceChannelDeleted, channel.Name);
             }
 
-            [Command("renamevoicechannel")]
+            [Command("renamevoicechannel", "rnvch")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.ManageChannels)]
             [BotPermission(Permissions.ManageChannels)]

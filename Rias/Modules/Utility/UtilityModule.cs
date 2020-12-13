@@ -75,7 +75,7 @@ namespace Rias.Modules.Utility
             await ReplyAsync(embed);
         }
 
-        [Command("setlanguage")]
+        [Command("setlanguage", "setlang")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
         public async Task SetLanguageAsync(string language)
@@ -115,14 +115,14 @@ namespace Rias.Modules.Utility
                 await ReplyConfirmationAsync(Localization.UtilityInviteInfo, Credentials.Invite);
         }
         
-        [Command("patreon")]
+        [Command("patreon", "support", "donate")]
         public async Task DonateAsync()
         {
             if (!string.IsNullOrEmpty(Credentials.Patreon))
                 await ReplyConfirmationAsync(Localization.UtilityPatreonInfo, Credentials.Patreon, Credentials.Currency);
         }
         
-        [Command("patrons")]
+        [Command("patrons", "supporters")]
         public async Task PatronsAsync()
         {
             var patrons = await DbContext.GetOrderedListAsync<PatreonEntity, int>(
@@ -247,7 +247,7 @@ namespace Rias.Modules.Utility
             await ReplyConfirmationAsync(Localization.UtilityChose, choices[choice].Trim());
         }
 
-        [Command("color")]
+        [Command("color", "colour")]
         [Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.User)]
         public async Task ColorAsync([Remainder] DiscordColor color)
         {
@@ -293,7 +293,7 @@ namespace Rias.Modules.Utility
             await Context.Channel.SendFileAsync(fileName, image, embed: embed);
         }
         
-        [Command("calculator")]
+        [Command("calculator", "calc")]
         public async Task CalculatorAsync([Remainder] string expression)
         {
             var expr = new Expression(expression, EvaluateOptions.IgnoreCase);
@@ -318,12 +318,12 @@ namespace Rias.Modules.Utility
             await ReplyAsync(embed);
         }
 
-        [Command("converter")]
+        [Command("converter", "convert")]
         [Priority(3)]
         public async Task ConverterAsync(double value, string unit1, string unit2)
             => await ConverterAsync(unit1, unit2, value);
 
-        [Command("converter")]
+        [Command("converter", "convert")]
         [Priority(2)]
         public async Task ConverterAsync(string unitOneName, string unitTwoName, double value)
         {
@@ -360,12 +360,12 @@ namespace Rias.Modules.Utility
             await ReplyAsync(embed);
         }
 
-        [Command("converter")]
+        [Command("converter", "convert")]
         [Priority(1)]
         public async Task ConverterAsync(string category, double value, string unit1, string unit2)
             => await ConverterAsync(category, unit1, unit2, value);
         
-        [Command("converter")]
+        [Command("converter", "convert")]
         [Priority(0)]
         public async Task ConverterAsync(string category, string unitOneName, string unitTwoName, double value)
         {
@@ -409,7 +409,7 @@ namespace Rias.Modules.Utility
             await ReplyAsync(embed);
         }
         
-        [Command("converterlist")]
+        [Command("converterlist", "convertlist")]
         public async Task ConverterList(string? category = null)
         {
             if (category is null)

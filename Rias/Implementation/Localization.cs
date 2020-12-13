@@ -12,7 +12,7 @@ namespace Rias.Implementation
 {
     public partial class Localization
     {
-        private const string DefaultLocale = "en";
+        public const string DefaultLocale = "en";
 
         private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _locales = new();
 
@@ -77,11 +77,10 @@ namespace Rias.Implementation
         {
             var locale = guildId.HasValue ? GetGuildLocale(guildId.Value) : DefaultLocale;
             if (TryGetLocaleString(locale, key, out var @string) && !string.IsNullOrEmpty(@string))
-                return string.Format(@string!, args);
+                return string.Format(@string, args);
 
-            if (!string.Equals(locale, DefaultLocale)
-                && TryGetLocaleString(DefaultLocale, key, out @string))
-                return string.Format(@string!, args);
+            if (!string.Equals(locale, DefaultLocale) && TryGetLocaleString(DefaultLocale, key, out @string) && !string.IsNullOrEmpty(@string))
+                return string.Format(@string, args);
 
             throw new InvalidOperationException($"The translation for the key \"{key}\" couldn't be found.");
         }

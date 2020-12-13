@@ -50,7 +50,7 @@ namespace Rias.Modules.Bot
                 await ReplyConfirmationAsync(Localization.BotUserDeleted, user.FullName());
             }
 
-            [Command("database")]
+            [Command("database", "db")]
             [OwnerOnly]
             public async Task DatabaseAsync([Remainder] DiscordUser user)
             {
