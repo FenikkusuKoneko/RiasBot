@@ -57,7 +57,7 @@ namespace Rias.Services
             foreach (var patron in patrons)
             {
                 var reward = patron.AmountCents * 5;
-                var userDb = await db.GetOrAddAsync(x => x.UserId == patron.UserId, () => new UsersEntity { UserId = patron.UserId });
+                var userDb = await db.GetOrAddAsync(x => x.UserId == patron.UserId, () => new UserEntity { UserId = patron.UserId });
                 userDb.Currency += reward;
 
                 patron.Checked = true;
@@ -107,7 +107,7 @@ namespace Rias.Services
                 }
 
                 var reward = patreonDb.AmountCents * 5;
-                var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity { UserId = userId });
+                var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UserEntity { UserId = userId });
                 userDb.Currency += reward;
 
                 patreonDb.Checked = true;

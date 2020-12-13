@@ -257,7 +257,7 @@ namespace Rias.Services
             }
             else
             {
-                var muteUserGuild = new GuildUsersEntity
+                var muteUserGuild = new GuildUserEntity
                 {
                     GuildId = guild.Id,
                     UserId = member.Id,
@@ -281,7 +281,7 @@ namespace Rias.Services
             }
             else
             {
-                var newMuteTimerDb = new MuteTimersEntity
+                var newMuteTimerDb = new MuteTimerEntity
                 {
                     GuildId = guild.Id,
                     UserId = member.Id,

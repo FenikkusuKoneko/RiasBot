@@ -37,7 +37,7 @@ namespace Rias.Services
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity { UserId = userId });
+            var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UserEntity { UserId = userId });
             userDb.Currency += currency;
             await db.SaveChangesAsync();
             return userDb.Currency;

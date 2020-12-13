@@ -58,7 +58,7 @@ namespace Rias.Modules.Profile
         [Cooldown(1, 30, CooldownMeasure.Seconds, BucketType.User)]
         public async Task BackgroundAsync(string url)
         {
-            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity { UserId = Context.User.Id });
+            var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UserEntity { UserId = Context.User.Id });
             if (userDb.Currency < 1000)
             {
                 await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Configuration.Currency);

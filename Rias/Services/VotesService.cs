@@ -37,7 +37,7 @@ namespace Rias.Services
             var votes = await db.Votes.Where(x => !x.Checked).ToListAsync();
             foreach (var vote in votes)
             {
-                var userDb = await db.GetOrAddAsync(x => x.UserId == vote.UserId, () => new UsersEntity { UserId = vote.UserId });
+                var userDb = await db.GetOrAddAsync(x => x.UserId == vote.UserId, () => new UserEntity { UserId = vote.UserId });
                 if (userDb.IsBlacklisted)
                 {
                     db.Remove(vote);
@@ -95,7 +95,7 @@ namespace Rias.Services
                 }
 
                 var reward = voteDb.IsWeekend ? 50 : 25;
-                var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UsersEntity { UserId = userId });
+                var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UserEntity { UserId = userId });
                 userDb.Currency += reward;
 
                 voteDb.Checked = true;

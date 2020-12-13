@@ -22,7 +22,7 @@ namespace Rias.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.0-preview.8.20407.4");
 
-            modelBuilder.Entity("Rias.Database.Entities.CharactersEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.CharacterEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,7 +63,7 @@ namespace Rias.Migrations
                     b.ToTable("characters");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.CustomCharactersEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.CustomCharacterEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -104,7 +104,7 @@ namespace Rias.Migrations
                     b.ToTable("custom_characters");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.CustomWaifusEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.CustomWaifuEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -142,7 +142,7 @@ namespace Rias.Migrations
                     b.ToTable("custom_waifus");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.GuildUsersEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.GuildUserEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -184,7 +184,7 @@ namespace Rias.Migrations
                     b.ToTable("guild_users");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.GuildXpRolesEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.GuildXpRoleEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -218,7 +218,7 @@ namespace Rias.Migrations
                     b.ToTable("guild_xp_roles");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.GuildsEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.GuildEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -316,7 +316,7 @@ namespace Rias.Migrations
                     b.ToTable("guilds");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.MuteTimersEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.MuteTimerEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -462,7 +462,7 @@ namespace Rias.Migrations
                     b.ToTable("profile");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.SelfAssignableRolesEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.SelfAssignableRoleEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -492,7 +492,7 @@ namespace Rias.Migrations
                     b.ToTable("self_assignable_roles");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.UsersEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.UserEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -542,7 +542,7 @@ namespace Rias.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.VotesEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.VoteEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -580,7 +580,7 @@ namespace Rias.Migrations
                     b.ToTable("votes");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.WaifusEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.WaifuEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -632,7 +632,7 @@ namespace Rias.Migrations
                     b.ToTable("waifus");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.WarningsEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.WarningEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -666,15 +666,15 @@ namespace Rias.Migrations
                     b.ToTable("warnings");
                 });
 
-            modelBuilder.Entity("Rias.Database.Entities.WaifusEntity", b =>
+            modelBuilder.Entity("Rias.Database.Entities.WaifuEntity", b =>
                 {
-                    b.HasOne("Rias.Database.Entities.CharactersEntity", "Character")
+                    b.HasOne("Rias.Database.Entities.CharacterEntity", "Character")
                         .WithMany()
                         .HasForeignKey("CharacterId")
                         .HasConstraintName("fk_waifus_characters_character_id")
                         .HasPrincipalKey("CharacterId");
 
-                    b.HasOne("Rias.Database.Entities.CustomCharactersEntity", "CustomCharacter")
+                    b.HasOne("Rias.Database.Entities.CustomCharacterEntity", "CustomCharacter")
                         .WithMany()
                         .HasForeignKey("CustomCharacterId")
                         .HasConstraintName("fk_waifus_custom_characters_custom_character_id")

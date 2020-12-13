@@ -2,7 +2,7 @@
 
 namespace Rias.Database.Entities
 {
-    public class UsersEntity : DbEntity
+    public class UserEntity : DbEntity
     {
         public ulong UserId { get; set; }
         

@@ -231,7 +231,7 @@ namespace Rias.Modules.Administration
                     embed.AddField(GetText(Localization.CommonReason), reason, true);
 
                 var channel = Context.Channel;
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
                 var modLogChannel = Context.Guild!.GetChannel(guildDb.ModLogChannelId);
                 if (modLogChannel != null)
                 {

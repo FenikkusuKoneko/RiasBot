@@ -1,11 +1,9 @@
 ﻿namespace Rias.Database.Entities
 {
-    public class GuildXpRolesEntity : DbEntity
+    public class SelfAssignableRoleEntity : DbEntity
     {
         public ulong GuildId { get; set; }
         
         public ulong RoleId { get; set; }
-        
-        public int Level { get; set; }
     }
 }

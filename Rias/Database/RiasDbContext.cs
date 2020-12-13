@@ -32,33 +32,33 @@ namespace Rias.Database
         }
         
 #nullable disable
-        public DbSet<CharactersEntity> Characters { get; set; }
+        public DbSet<CharacterEntity> Characters { get; set; }
         
-        public DbSet<CustomCharactersEntity> CustomCharacters { get; set; }
+        public DbSet<CustomCharacterEntity> CustomCharacters { get; set; }
         
-        public DbSet<CustomWaifusEntity> CustomWaifus { get; set; }
+        public DbSet<CustomWaifuEntity> CustomWaifus { get; set; }
         
-        public DbSet<GuildsEntity> Guilds { get; set; }
+        public DbSet<GuildEntity> Guilds { get; set; }
         
-        public DbSet<GuildUsersEntity> GuildUsers { get; set; }
+        public DbSet<GuildUserEntity> GuildUsers { get; set; }
         
-        public DbSet<GuildXpRolesEntity> GuildXpRoles { get; set; }
+        public DbSet<GuildXpRoleEntity> GuildXpRoles { get; set; }
         
-        public DbSet<MuteTimersEntity> MuteTimers { get; set; }
+        public DbSet<MuteTimerEntity> MuteTimers { get; set; }
         
         public DbSet<ProfileEntity> Profile { get; set; }
         
-        public DbSet<SelfAssignableRolesEntity> SelfAssignableRoles { get; set; }
+        public DbSet<SelfAssignableRoleEntity> SelfAssignableRoles { get; set; }
         
-        public DbSet<UsersEntity> Users { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
         
-        public DbSet<WaifusEntity> Waifus { get; set; }
+        public DbSet<WaifuEntity> Waifus { get; set; }
         
-        public DbSet<WarningsEntity> Warnings { get; set; }
+        public DbSet<WarningEntity> Warnings { get; set; }
         
         public DbSet<PatreonEntity> Patreon { get; set; }
         
-        public DbSet<VotesEntity> Votes { get; set; }
+        public DbSet<VoteEntity> Votes { get; set; }
 #nullable enable
         
         public async Task<TEntity> GetOrAddAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, Func<TEntity> entityValue)
@@ -126,29 +126,29 @@ namespace Rias.Database
             modelBuilder.HasPostgresEnum<LastChargeStatus>();
             modelBuilder.HasPostgresEnum<PatronStatus>();
             
-            modelBuilder.Entity<CharactersEntity>()
+            modelBuilder.Entity<CharacterEntity>()
                 .HasIndex(x => x.CharacterId)
                 .IsUnique();
             
-            modelBuilder.Entity<CustomCharactersEntity>()
+            modelBuilder.Entity<CustomCharacterEntity>()
                 .HasIndex(x => x.CharacterId)
                 .IsUnique();
             
-            modelBuilder.Entity<CustomWaifusEntity>();
+            modelBuilder.Entity<CustomWaifuEntity>();
             
-            modelBuilder.Entity<GuildsEntity>()
+            modelBuilder.Entity<GuildEntity>()
                 .HasIndex(x => x.GuildId)
                 .IsUnique();
             
-            modelBuilder.Entity<GuildUsersEntity>()
+            modelBuilder.Entity<GuildUserEntity>()
                 .HasIndex(x => new { x.GuildId, x.UserId })
                 .IsUnique();
             
-            modelBuilder.Entity<GuildXpRolesEntity>()
+            modelBuilder.Entity<GuildXpRoleEntity>()
                 .HasIndex(x => new { x.GuildId, x.RoleId })
                 .IsUnique();
             
-            modelBuilder.Entity<MuteTimersEntity>()
+            modelBuilder.Entity<MuteTimerEntity>()
                 .HasIndex(x => new { x.GuildId, x.UserId })
                 .IsUnique();
             
@@ -156,15 +156,15 @@ namespace Rias.Database
                 .HasIndex(x => x.UserId)
                 .IsUnique();
             
-            modelBuilder.Entity<SelfAssignableRolesEntity>()
+            modelBuilder.Entity<SelfAssignableRoleEntity>()
                 .HasIndex(x => new { x.GuildId, x.RoleId })
                 .IsUnique();
             
-            modelBuilder.Entity<UsersEntity>()
+            modelBuilder.Entity<UserEntity>()
                 .HasIndex(x => x.UserId)
                 .IsUnique();
 
-            var waifuEntity = modelBuilder.Entity<WaifusEntity>();
+            var waifuEntity = modelBuilder.Entity<WaifuEntity>();
 
             waifuEntity.HasOne(x => x.Character)
                 .WithMany()
@@ -176,7 +176,7 @@ namespace Rias.Database
                 .HasForeignKey(x => x.CustomCharacterId)
                 .HasPrincipalKey(x => x!.CharacterId);
 
-            modelBuilder.Entity<WarningsEntity>();
+            modelBuilder.Entity<WarningEntity>();
         }
     }
 }

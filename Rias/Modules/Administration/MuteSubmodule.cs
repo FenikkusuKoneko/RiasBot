@@ -156,7 +156,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
                 guildDb.MuteRoleId = role.Id;
                 await DbContext.SaveChangesAsync();
                 
@@ -173,7 +173,7 @@ namespace Rias.Modules.Administration
             public async Task SetMuteAsync([Remainder] string name)
             {
                 var role = await Context.Guild!.CreateRoleAsync(name);
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
                 guildDb.MuteRoleId = role.Id;
                 await DbContext.SaveChangesAsync();
                 

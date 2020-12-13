@@ -110,7 +110,7 @@ namespace Rias.Modules.Administration
                 var sarDb = await DbContext.SelfAssignableRoles.FirstOrDefaultAsync(x => x.GuildId == Context.Guild!.Id && x.RoleId == role.Id);
                 if (sarDb is null)
                 {
-                    await DbContext.AddAsync(new SelfAssignableRolesEntity
+                    await DbContext.AddAsync(new SelfAssignableRoleEntity
                     {
                         GuildId = Context.Guild.Id,
                         RoleId = role.Id
@@ -174,7 +174,7 @@ namespace Rias.Modules.Administration
             private async Task<List<DiscordRole>> UpdateSelfAssignableRolesAsync()
             {
                 var roles = new List<DiscordRole>();
-                var sarList = await DbContext.GetListAsync<SelfAssignableRolesEntity>(x => x.GuildId == Context.Guild!.Id);
+                var sarList = await DbContext.GetListAsync<SelfAssignableRoleEntity>(x => x.GuildId == Context.Guild!.Id);
                 
                 foreach (var sar in sarList)
                 {

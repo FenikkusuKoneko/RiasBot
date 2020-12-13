@@ -296,10 +296,10 @@ namespace Rias.Modules.Administration
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AutoAssignableRoleAsync([Remainder] DiscordRole? role = null)
             {
-                GuildsEntity guildDb;
+                GuildEntity guildDb;
                 if (role is null)
                 {
-                    guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+                    guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
                     guildDb.AutoAssignableRoleId = 0;
                     await DbContext.SaveChangesAsync();
                     await ReplyConfirmationAsync(Localization.AdministrationAarDisabled);
@@ -324,7 +324,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+                guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
                 guildDb.AutoAssignableRoleId = role.Id;
                 
                 await DbContext.SaveChangesAsync();

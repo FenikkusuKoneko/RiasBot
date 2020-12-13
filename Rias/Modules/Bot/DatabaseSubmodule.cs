@@ -38,7 +38,7 @@ namespace Rias.Modules.Bot
                 if (userDb != null)
                     DbContext.Remove(userDb);
                 
-                var waifusDbList = await DbContext.GetListAsync<WaifusEntity>(x => x.UserId == user.Id);
+                var waifusDbList = await DbContext.GetListAsync<WaifuEntity>(x => x.UserId == user.Id);
                 if (waifusDbList.Count != 0)
                     DbContext.RemoveRange(waifusDbList);
                 
@@ -96,7 +96,7 @@ namespace Rias.Modules.Bot
                     return;
                 }
 
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id });
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UserEntity { UserId = user.Id });
                 userDb.IsBlacklisted = true;
                 
                 await DbContext.SaveChangesAsync();
@@ -107,7 +107,7 @@ namespace Rias.Modules.Bot
             [OwnerOnly]
             public async Task RemoveBlacklistAsync([Remainder] DiscordUser user)
             {
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id });
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UserEntity { UserId = user.Id });
                 userDb.IsBlacklisted = false;
                 
                 await DbContext.SaveChangesAsync();
@@ -126,7 +126,7 @@ namespace Rias.Modules.Bot
                     return;
                 }
                 
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id });
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UserEntity { UserId = user.Id });
                 userDb.IsBanned = true;
                 
                 await DbContext.SaveChangesAsync();
@@ -137,7 +137,7 @@ namespace Rias.Modules.Bot
             [OwnerOnly]
             public async Task RemoveBotBanAsync([Remainder] DiscordUser user)
             {
-                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id });
+                var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UserEntity { UserId = user.Id });
                 userDb.IsBanned = false;
                 
                 await DbContext.SaveChangesAsync();

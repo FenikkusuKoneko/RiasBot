@@ -64,7 +64,7 @@ namespace Rias.Modules.Xp
             if (page < 0)
                 page = 0;
 
-            var xpLeaderboard = await DbContext.GetOrderedListAsync<UsersEntity, int>(x => x.Xp, true, (page * 15)..((page + 1) * 15));
+            var xpLeaderboard = await DbContext.GetOrderedListAsync<UserEntity, int>(x => x.Xp, true, (page * 15)..((page + 1) * 15));
             if (xpLeaderboard.Count == 0)
             {
                 await ReplyErrorAsync(Localization.XpLeaderboardEmpty);
@@ -101,7 +101,7 @@ namespace Rias.Modules.Xp
             if (page < 0)
                 page = 0;
             
-            var xpLeaderboard = (await DbContext.GetOrderedListAsync<GuildUsersEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Xp, true))
+            var xpLeaderboard = (await DbContext.GetOrderedListAsync<GuildUserEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Xp, true))
                 .Where(x => Context.Guild!.Members.ContainsKey(x.UserId))
                 .Skip(page * 15)
                 .Take(15)
@@ -146,7 +146,7 @@ namespace Rias.Modules.Xp
         [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task XpNotificationAsync([TextChannel, Remainder] DiscordChannel? channel = null)
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
             
             if (channel is null)
             {
@@ -193,7 +193,7 @@ namespace Rias.Modules.Xp
         [MemberPermission(Permissions.Administrator)]
         public async Task XpMessageAsync([Remainder] string? message = null)
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
             if (string.IsNullOrEmpty(message))
             {
                 guildDb.XpLevelUpMessage = null;
@@ -256,7 +256,7 @@ namespace Rias.Modules.Xp
         [MemberPermission(Permissions.Administrator)]
         public async Task XpMessageRewardAsync([Remainder] string? message = null)
         {
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
             if (string.IsNullOrEmpty(message))
             {
                 guildDb.XpLevelUpRoleRewardMessage = null;
@@ -271,7 +271,7 @@ namespace Rias.Modules.Xp
                 return;
             }
 
-            var xpRoles = await DbContext.GetOrderedListAsync<GuildXpRolesEntity, int>(x => x.GuildId == Context.Guild!.Id, x => x.Level);
+            var xpRoles = await DbContext.GetOrderedListAsync<GuildXpRoleEntity, int>(x => x.GuildId == Context.Guild!.Id, x => x.Level);
 
             var level = xpRoles.Count != 0 ? xpRoles[0].Level : 0;
             var role = xpRoles.Count != 0 ? Context.Guild!.GetRole(xpRoles[0].RoleId) : null;
@@ -358,7 +358,7 @@ namespace Rias.Modules.Xp
 
             var xpRoleDb = await DbContext.GetOrAddAsync(
                 x => x.GuildId == Context.Guild!.Id && (x.Level == level || x.RoleId == role.Id),
-                () => new GuildXpRolesEntity { GuildId = Context.Guild!.Id });
+                () => new GuildXpRoleEntity { GuildId = Context.Guild!.Id });
             xpRoleDb.Level = level;
             xpRoleDb.RoleId = role.Id;
             
@@ -371,7 +371,7 @@ namespace Rias.Modules.Xp
         [BotPermission(Permissions.ManageRoles)]
         public async Task LevelUpRoleRewardListAsync()
         {
-            var levelRoles = await DbContext.GetOrderedListAsync<GuildXpRolesEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Level);
+            var levelRoles = await DbContext.GetOrderedListAsync<GuildXpRoleEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Level);
             DbContext.RemoveRange(levelRoles.Where(x => Context.Guild!.GetRole(x.RoleId) is null));
             await DbContext.SaveChangesAsync();
             
@@ -403,7 +403,7 @@ namespace Rias.Modules.Xp
                 return;
             }
             
-            DbContext.RemoveRange(await DbContext.GetListAsync<GuildUsersEntity>(x => x.GuildId == Context.Guild!.Id));
+            DbContext.RemoveRange(await DbContext.GetListAsync<GuildUserEntity>(x => x.GuildId == Context.Guild!.Id));
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.XpGuildXpReset);
         }

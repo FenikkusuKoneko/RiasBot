@@ -58,7 +58,7 @@ namespace Rias.Services
                 characterDb = await db.Characters.FirstOrDefaultAsync(x => x.CharacterId == aniListCharacter.Id);
                 if (characterDb is null)
                 {
-                    var newCharacterDb = new CharactersEntity
+                    var newCharacterDb = new CharacterEntity
                     {
                         CharacterId = aniListCharacter.Id,
                         Name = $"{aniListCharacter.Name.First} {aniListCharacter.Name.Last}".Trim(),
@@ -73,7 +73,7 @@ namespace Rias.Services
                 }
             }
 
-            if (characterDb is CustomCharactersEntity)
+            if (characterDb is CustomCharacterEntity)
                 return characterDb;
 
             if (!await CheckCharacterImageAsync(characterDb.ImageUrl!))

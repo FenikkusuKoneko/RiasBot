@@ -52,7 +52,7 @@ namespace Rias.Modules.Administration
             [Context(ContextType.Guild)]
             public async Task WarnAsync(DiscordMember member, [Remainder] string? reason = null)
             {
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
 
                 var userRequiredPermissions = CheckRequiredPermissions((DiscordMember) Context.User, guildDb);
                 if (userRequiredPermissions != PermissionRequired.NoPermission)
@@ -89,7 +89,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                var userWarnings = await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == Context.Guild!.Id && x.UserId == member.Id);
+                var userWarnings = await DbContext.GetListAsync<WarningEntity>(x => x.GuildId == Context.Guild!.Id && x.UserId == member.Id);
                 var warnsCount = userWarnings.Count;
 
                 var applyPunishment = false;
@@ -114,7 +114,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                await DbContext.AddAsync(new WarningsEntity
+                await DbContext.AddAsync(new WarningEntity
                 {
                     GuildId = member.Guild.Id,
                     UserId = member.Id,
@@ -157,7 +157,7 @@ namespace Rias.Modules.Administration
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task WarningsAsync()
             {
-                var warnings = (await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == Context.Guild!.Id))
+                var warnings = (await DbContext.GetListAsync<WarningEntity>(x => x.GuildId == Context.Guild!.Id))
                     .GroupBy(x => x.UserId)
                     .Where(x => Context.Guild!.Members.ContainsKey(x.First().UserId))
                     .Select(x => Context.Guild!.Members[x.First().UserId])
@@ -187,7 +187,7 @@ namespace Rias.Modules.Administration
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task WarningsAsync([Remainder] DiscordMember member)
             {
-                var warningsDb = await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
+                var warningsDb = await DbContext.GetListAsync<WarningEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
                 var moderators = (await Task.WhenAll(warningsDb.Select(async x => await RiasBot.GetMemberAsync(Context.Guild!, x.ModeratorId)))).ToList();
                 
                 var warnings = warningsDb.Select((x, i) => new
@@ -233,7 +233,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                var warnings = await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
+                var warnings = await DbContext.GetListAsync<WarningEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
                 if (warnings.Count == 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberNoWarnings, member.FullName());
@@ -280,7 +280,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                var warnings = await DbContext.GetListAsync<WarningsEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
+                var warnings = await DbContext.GetListAsync<WarningEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
                 if (warnings.Count == 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberNoWarnings, member.FullName());
@@ -311,7 +311,7 @@ namespace Rias.Modules.Administration
             [Context(ContextType.Guild)]
             public async Task WarningPunishmentAsync()
             {
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
                 if (guildDb.PunishmentWarningsRequired == 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationNoWarningPunishment);
@@ -342,10 +342,10 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                GuildsEntity guildDb;
+                GuildEntity guildDb;
                 if (number == 0)
                 {
-                    guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+                    guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
                     guildDb.PunishmentWarningsRequired = 0;
                     guildDb.WarningPunishment = null;
 
@@ -365,7 +365,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+                guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
                 guildDb.PunishmentWarningsRequired = number;
                 guildDb.WarningPunishment = punishment;
 
@@ -380,7 +380,7 @@ namespace Rias.Modules.Administration
                 await ReplyAsync(embed);
             }
             
-            private PermissionRequired CheckRequiredPermissions(DiscordMember member, GuildsEntity? guildDb)
+            private PermissionRequired CheckRequiredPermissions(DiscordMember member, GuildEntity? guildDb)
             {
                 var permissions = member.GetPermissions();
                 if (member.Id == member.Guild.Owner.Id || permissions.HasPermission(Permissions.Administrator))
@@ -423,7 +423,7 @@ namespace Rias.Modules.Administration
                 return default;
             }
             
-            private async Task SendMissingPermissionsAsync(string memberType, PermissionRequired permissions, GuildsEntity guildDb)
+            private async Task SendMissingPermissionsAsync(string memberType, PermissionRequired permissions, GuildEntity guildDb)
             {
                 switch (permissions)
                 {
@@ -453,7 +453,7 @@ namespace Rias.Modules.Administration
                 await ReplyErrorAsync(Localization.AdministrationWarningMemberTypeNoPermissionsPunishment(memberType), punishmentHumanized, permHumanized);
             }
             
-            private async Task ApplyWarnPunishmentAsync(DiscordMember member, PunishmentMethod punishment, GuildsEntity guildDb)
+            private async Task ApplyWarnPunishmentAsync(DiscordMember member, PunishmentMethod punishment, GuildEntity guildDb)
             {
                 switch (punishment)
                 {
@@ -480,7 +480,7 @@ namespace Rias.Modules.Administration
                 }
             }
             
-            private async Task SendMessageAsync(DiscordMember member, GuildsEntity guildDb, string moderationType, string fromWhere, string? reason)
+            private async Task SendMessageAsync(DiscordMember member, GuildEntity guildDb, string moderationType, string fromWhere, string? reason)
             {
                 var embed = new DiscordEmbedBuilder
                     {

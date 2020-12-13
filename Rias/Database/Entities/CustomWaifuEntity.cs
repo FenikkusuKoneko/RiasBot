@@ -1,6 +1,6 @@
 ﻿namespace Rias.Database.Entities
 {
-    public class CustomWaifusEntity : DbEntity, IWaifusEntity
+    public class CustomWaifuEntity : DbEntity, IWaifuEntity
     {
         public ulong UserId { get; set; }
         

@@ -172,7 +172,7 @@ namespace Rias.Modules.Searches
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
             public async Task CharacterAsync([Remainder] string name)
             {
-                CustomCharactersEntity? character;
+                CustomCharacterEntity? character;
                 if (name.StartsWith("w", StringComparison.OrdinalIgnoreCase) && int.TryParse(name[1..], out var id))
                 {
                     character = await DbContext.CustomCharacters.FirstOrDefaultAsync(x => x.CharacterId == id);
@@ -280,7 +280,7 @@ namespace Rias.Modules.Searches
                     Title = GetText(Localization.SearchesCharacterList, name, Context.Prefix),
                     Description = string.Join("\n", items.Select(c =>
                     {
-                        if (c is CustomCharactersEntity customCharacter)
+                        if (c is CustomCharacterEntity customCharacter)
                             return $"• {customCharacter.Name} (w{customCharacter.CharacterId})";
 
                         var character = (CharacterContent) c;

@@ -50,7 +50,7 @@ namespace Rias.Modules.Utility
                 return;
             }
             
-            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildsEntity { GuildId = Context.Guild!.Id });
+            var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
             guildDb.Prefix = prefix;
 
             await DbContext.SaveChangesAsync();
@@ -93,14 +93,14 @@ namespace Rias.Modules.Utility
             {
                 Localization.RemoveGuildLocale(Context.Guild!.Id);
                 
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity { GuildId = Context.Guild.Id });
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildEntity { GuildId = Context.Guild.Id });
                 guildDb.Locale = null;
             }
             else
             {
                 Localization.SetGuildLocale(Context.Guild!.Id, locale.ToLowerInvariant());
                 
-                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildsEntity { GuildId = Context.Guild.Id });
+                var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild.Id, () => new GuildEntity { GuildId = Context.Guild.Id });
                 guildDb.Locale = locale.ToLower();
             }
             
@@ -152,7 +152,7 @@ namespace Rias.Modules.Utility
         public async Task VoteAsync()
         {
             var timeNow = DateTime.UtcNow;
-            var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == Context.User.Id, x => x.DateAdded, true);
+            var userVotesDb = await DbContext.GetOrderedListAsync<VoteEntity, DateTime>(x => x.UserId == Context.User.Id, x => x.DateAdded, true);
             if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
             {
                 await ReplyConfirmationAsync(Localization.UtilityVoteInfo, $"{Configuration.DiscordBotList}/vote", Configuration.Currency);
@@ -188,7 +188,7 @@ namespace Rias.Modules.Utility
             }
             
             var dateAdded = DateTime.UtcNow - timeSpan;
-            var votesGroup = (await DbContext.GetListAsync<VotesEntity>(x => x.DateAdded >= dateAdded))
+            var votesGroup = (await DbContext.GetListAsync<VoteEntity>(x => x.DateAdded >= dateAdded))
                 .GroupBy(x => x.UserId)
                 .ToList();
 

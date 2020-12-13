@@ -2,7 +2,7 @@
 
 namespace Rias.Database.Entities
 {
-    public class MuteTimersEntity : DbEntity
+    public class MuteTimerEntity : DbEntity
     {
         public ulong GuildId { get; set; }
         

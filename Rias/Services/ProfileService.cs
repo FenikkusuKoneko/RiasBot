@@ -419,7 +419,7 @@ namespace Rias.Services
             }
         }
         
-        private async Task AddWaifu(MagickImage image, IWaifusEntity waifu, Point position, MagickGeometry waifuSize, MagickReadSettings settings)
+        private async Task AddWaifu(MagickImage image, IWaifuEntity waifu, Point position, MagickGeometry waifuSize, MagickReadSettings settings)
         {
             await using var waifuStream = await GetWaifuStreamAsync(waifu, waifu.IsSpecial);
             if (waifuStream != null)
@@ -449,12 +449,12 @@ namespace Rias.Services
             image.Draw(new DrawableComposite(position.X - waifuNameImage.Width / 2, 690, CompositeOperator.Over, waifuNameImage));
         }
         
-        private async Task<Stream?> GetWaifuStreamAsync(IWaifusEntity waifu, bool useCustomImage = false)
+        private async Task<Stream?> GetWaifuStreamAsync(IWaifuEntity waifu, bool useCustomImage = false)
         {
             try
             {
                 var imageUrl = waifu.ImageUrl;
-                if (useCustomImage && waifu is WaifusEntity waifus && !string.IsNullOrEmpty(waifus.CustomImageUrl))
+                if (useCustomImage && waifu is WaifuEntity waifus && !string.IsNullOrEmpty(waifus.CustomImageUrl))
                     imageUrl = waifus.CustomImageUrl;
 
                 var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
@@ -476,7 +476,7 @@ namespace Rias.Services
             {
             }
 
-            if (!(waifu is WaifusEntity waifuDb))
+            if (!(waifu is WaifuEntity waifuDb))
                 return null;
 
             if (useCustomImage)
@@ -515,7 +515,7 @@ namespace Rias.Services
                 .Include(x => x.Character)
                 .Include(x => x.CustomCharacter)
                 .Where(x => x.UserId == member.Id)
-                .ToList<IWaifusEntity>();
+                .ToList<IWaifuEntity>();
             
             waifus.AddRange(db.CustomWaifus.Where(x => x.UserId == member.Id));
 
@@ -574,9 +574,9 @@ namespace Rias.Services
             
             public IList<string>? Badges { get; set; }
             
-            public IList<IWaifusEntity>? Waifus { get; set; }
+            public IList<IWaifuEntity>? Waifus { get; set; }
             
-            public IWaifusEntity? SpecialWaifu { get; set; }
+            public IWaifuEntity? SpecialWaifu { get; set; }
             
             public int PatreonTier { get; set; }
         }

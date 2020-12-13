@@ -1,10 +1,10 @@
 ﻿namespace Rias.Database.Entities
 {
-    public class WaifusEntity : DbEntity, IWaifusEntity
+    public class WaifuEntity : DbEntity, IWaifuEntity
     {
-        public CharactersEntity? Character { get; set; }
+        public CharacterEntity? Character { get; set; }
         
-        public CustomCharactersEntity? CustomCharacter { get; set; }
+        public CustomCharacterEntity? CustomCharacter { get; set; }
 
         public ulong UserId { get; set; }
         

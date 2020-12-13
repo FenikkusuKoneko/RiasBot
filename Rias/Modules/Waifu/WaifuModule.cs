@@ -26,13 +26,13 @@ namespace Rias.Modules.Waifu
         {
             member ??= (DiscordMember) Context.User;
 
-            var allWaifus = (await DbContext.GetListAsync<WaifusEntity, CharactersEntity, CustomCharactersEntity>(
+            var allWaifus = (await DbContext.GetListAsync<WaifuEntity, CharacterEntity, CustomCharacterEntity>(
                     x => x.UserId == member.Id,
                     x => x.Character!,
                     x => x.CustomCharacter!))
-                .ToList<IWaifusEntity>();
+                .ToList<IWaifuEntity>();
             
-            allWaifus.AddRange(await DbContext.GetListAsync<CustomWaifusEntity>(x => x.UserId == member.Id));
+            allWaifus.AddRange(await DbContext.GetListAsync<CustomWaifuEntity>(x => x.UserId == member.Id));
             
             if (allWaifus.Count == 0)
             {
@@ -60,7 +60,7 @@ namespace Rias.Modules.Waifu
                 .Concat(allWaifus.Where(x => x.Position == 0))
                 .ToList();
 
-            var specialWaifuImage = specialWaifu is WaifusEntity waifuEntity && !string.IsNullOrEmpty(waifuEntity.CustomImageUrl)
+            var specialWaifuImage = specialWaifu is WaifuEntity waifuEntity && !string.IsNullOrEmpty(waifuEntity.CustomImageUrl)
                 ? waifuEntity.CustomImageUrl
                 : specialWaifu?.ImageUrl;
 
@@ -89,9 +89,9 @@ namespace Rias.Modules.Waifu
             }.WithThumbnail(specialWaifuImage));
         }
 
-        private string StringifyWaifu(IWaifusEntity waifu)
+        private string StringifyWaifu(IWaifuEntity waifu)
         {
-            if (!(waifu is WaifusEntity normalWaifu))
+            if (!(waifu is WaifuEntity normalWaifu))
                 return $"[{waifu.Name}]({waifu.ImageUrl})\n" +
                        $"{GetText(Localization.WaifuPosition)}: {waifu.Position}";
                 

@@ -79,7 +79,7 @@ namespace Rias.Services
             
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = await db.GetOrAddAsync(x => x.UserId == user.Id, () => new UsersEntity { UserId = user.Id, Xp = -5 });
+            var userDb = await db.GetOrAddAsync(x => x.UserId == user.Id, () => new UserEntity { UserId = user.Id, Xp = -5 });
             
             if (check && userDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
                 return;
@@ -110,7 +110,7 @@ namespace Rias.Services
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildXpDb = await db.GetOrAddAsync(
                 x => x.GuildId == member.Guild.Id && x.UserId == member.Id,
-                () => new GuildUsersEntity { GuildId = member.Guild.Id, UserId = member.Id });
+                () => new GuildUserEntity { GuildId = member.Guild.Id, UserId = member.Id });
             
             if (check && guildXpDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
                 return;
@@ -161,7 +161,7 @@ namespace Rias.Services
             return imageStream;
         }
 
-        private async Task SendXpNotificationAsync(DiscordMember member, DiscordChannel channel, DiscordRole? role, GuildsEntity guildDb, int level)
+        private async Task SendXpNotificationAsync(DiscordMember member, DiscordChannel channel, DiscordRole? role, GuildEntity guildDb, int level)
         {
             var guild = member.Guild;
             var currentMember = guild.CurrentMember;
@@ -421,7 +421,7 @@ namespace Rias.Services
             var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == member.Id);
             var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == member.Id);
 
-            var serverXpList = (await db.GetOrderedListAsync<GuildUsersEntity, int>(x => x.GuildId == member.Guild.Id, y => y.Xp, true))
+            var serverXpList = (await db.GetOrderedListAsync<GuildUserEntity, int>(x => x.GuildId == member.Guild.Id, y => y.Xp, true))
                 .Where(x => member.Guild.Members.ContainsKey(x.UserId))
                 .ToList();
             
