@@ -98,10 +98,10 @@ namespace Rias.Services
 
         public async Task<bool> CheckColorAsync(DiscordUser user, DiscordColor color, int? tier = null)
         {
-            if (Credentials.PatreonConfig is null)
+            if (Configuration.PatreonConfig is null)
                 return true;
             
-            if (user.Id == Credentials.MasterId)
+            if (user.Id == Configuration.MasterId)
                 return true;
 
             if (_colors.Any(x => x.Value == color.Value))
@@ -308,16 +308,16 @@ namespace Rias.Services
                 FontPointsize = 15
             };
 
-            if (profileInfo.PatreonTier == 0 && user.Id != Credentials.MasterId)
+            if (profileInfo.PatreonTier == 0 && user.Id != Configuration.MasterId)
                 return;
 
-            var xBadge = user.Id == Credentials.MasterId ? "Master" : "Supporter";
+            var xBadge = user.Id == Configuration.MasterId ? "Master" : "Supporter";
 
             if (profileInfo.Badges is null)
             {
                 profileInfo.Badges = new List<string> { xBadge };
             }
-            else if (user.Id != Credentials.MasterId)
+            else if (user.Id != Configuration.MasterId)
             {
                 if (profileInfo.PatreonTier < PatreonService.ProfileThirdBadgeTier && profileInfo.Badges.Count > 2)
                     profileInfo.Badges.RemoveAt(2);
@@ -509,7 +509,7 @@ namespace Rias.Services
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == member.Id);
             var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == member.Id);
-            var patreonDb = Credentials.PatreonConfig != null ? await db.Patreon.FirstOrDefaultAsync(x => x.UserId == member.Id) : null;
+            var patreonDb = Configuration.PatreonConfig != null ? await db.Patreon.FirstOrDefaultAsync(x => x.UserId == member.Id) : null;
 
             var waifus = db.Waifus
                 .Include(x => x.Character)

@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rias.Attributes;
-using Rias.Configuration;
 using Rias.Database;
 using Rias.Database.Entities;
 using Rias.Models;
@@ -33,10 +32,9 @@ namespace Rias.Services
         public PatreonService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            var credentials = serviceProvider.GetRequiredService<Credentials>();
-            if (credentials.PatreonConfig != null)
+            if (Configuration.PatreonConfig != null)
             {
-                _webSocket = new WebSocketClient(credentials.PatreonConfig);
+                _webSocket = new WebSocketClient(Configuration.PatreonConfig);
                 RunTaskAsync(ConnectWebSocket());
                 _webSocket.DataReceived += PledgeReceivedAsync;
                 _webSocket.Closed += WebSocketClosed;
@@ -44,7 +42,7 @@ namespace Rias.Services
                 RunTaskAsync(CheckPatronsAsync);
                 
                 _httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(1) };
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(credentials.PatreonConfig.Authorization!);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Configuration.PatreonConfig.Authorization!);
                 _sendPatronsTimer = new Timer(_ => RunTaskAsync(SendPatronsAsync), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             }
         }

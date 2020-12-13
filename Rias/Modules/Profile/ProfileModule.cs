@@ -61,7 +61,7 @@ namespace Rias.Modules.Profile
             var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity { UserId = Context.User.Id });
             if (userDb.Currency < 1000)
             {
-                await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Credentials.Currency);
+                await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Configuration.Currency);
                 return;
             }
             
@@ -170,7 +170,7 @@ namespace Rias.Modules.Profile
         {
             if (!await Service.CheckColorAsync(Context.User, color))
             {
-                await ReplyErrorAsync(Localization.ProfileInvalidColor, PatreonService.ProfileColorTier, Credentials.Patreon);
+                await ReplyErrorAsync(Localization.ProfileInvalidColor, PatreonService.ProfileColorTier, Configuration.Patreon);
                 return;
             }
             
@@ -189,19 +189,19 @@ namespace Rias.Modules.Profile
             if (index < 0)
                 index = 0;
 
-            if (Credentials.PatreonConfig != null && Context.User.Id != Credentials.MasterId)
+            if (Configuration.PatreonConfig != null && Context.User.Id != Configuration.MasterId)
             {
                 var patreonTier = (await DbContext.Patreon.FirstOrDefaultAsync(x => x.UserId == Context.User.Id))?.Tier ?? 0;
                 switch (index)
                 {
                     case 0 when patreonTier < PatreonService.ProfileFirstBadgeTier:
-                        await ReplyErrorAsync(Localization.ProfileFirstBadgeNoPatreon, PatreonService.ProfileFirstBadgeTier, Credentials.Patreon);
+                        await ReplyErrorAsync(Localization.ProfileFirstBadgeNoPatreon, PatreonService.ProfileFirstBadgeTier, Configuration.Patreon);
                         return;
                     case 1 when patreonTier < PatreonService.ProfileSecondBadgeTier:
-                        await ReplyErrorAsync(Localization.ProfileSecondBadgeNoPatreon, PatreonService.ProfileSecondBadgeTier, Credentials.Patreon);
+                        await ReplyErrorAsync(Localization.ProfileSecondBadgeNoPatreon, PatreonService.ProfileSecondBadgeTier, Configuration.Patreon);
                         return;
                     case 2 when patreonTier < PatreonService.ProfileThirdBadgeTier:
-                        await ReplyErrorAsync(Localization.ProfileThirdBadgeNoPatreon, PatreonService.ProfileThirdBadgeTier, Credentials.Patreon);
+                        await ReplyErrorAsync(Localization.ProfileThirdBadgeNoPatreon, PatreonService.ProfileThirdBadgeTier, Configuration.Patreon);
                         return;
                 }
             }
@@ -212,7 +212,7 @@ namespace Rias.Modules.Profile
                 return;
             }
 
-            if (string.Equals(text, "master", StringComparison.InvariantCultureIgnoreCase) && Context.User.Id != Credentials.MasterId)
+            if (string.Equals(text, "master", StringComparison.InvariantCultureIgnoreCase) && Context.User.Id != Configuration.MasterId)
             {
                 await ReplyErrorAsync(Localization.ProfileBadgeNotAvailable);
                 return;

@@ -420,10 +420,10 @@ namespace Rias.Services
                 reactionsService.AddWeebUserAgent($"{RiasBot.CurrentUser!.Username}/{RiasBot.Version}");
 #endif
                 
-                if (!string.IsNullOrEmpty(Credentials.DiscordBotListToken))
+                if (!string.IsNullOrEmpty(Configuration.DiscordBotListToken))
                     _dblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStatsAsync), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
                 
-                if (!string.IsNullOrEmpty(Credentials.DiscordBotsToken))
+                if (!string.IsNullOrEmpty(Configuration.DiscordBotsToken))
                     _dbTimer = new Timer(_ => RunTaskAsync(PostDiscordBotsStatsAsync), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
             }
         }
@@ -515,7 +515,7 @@ namespace Rias.Services
                     RequestUri = new Uri($"https://top.gg/api/bots/{RiasBot.CurrentUser.Id}/stats"),
                     Content = content
                 };
-                request.Headers.Add("Authorization", Credentials.DiscordBotListToken);
+                request.Headers.Add("Authorization", Configuration.DiscordBotListToken);
                 
                 await _discordBotsHttpClient.SendAsync(request);
             }
@@ -544,7 +544,7 @@ namespace Rias.Services
                     RequestUri = new Uri($"https://discord.bots.gg/api/v1/bots/{RiasBot.CurrentUser.Id}/stats"),
                     Content = content
                 };
-                request.Headers.Add("Authorization", Credentials.DiscordBotsToken);
+                request.Headers.Add("Authorization", Configuration.DiscordBotsToken);
                 
                 await _discordBotsHttpClient.SendAsync(request);
             }

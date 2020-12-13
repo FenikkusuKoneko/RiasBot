@@ -4,9 +4,9 @@ using DSharpPlus.Entities;
 using Microsoft.Extensions.Configuration;
 using Rias.Implementation;
 
-namespace Rias.Configuration
+namespace Rias.Configurations
 {
-    public class Credentials
+    public class Configuration
     {
         public string Prefix { get; private set; } = null!;
         public string Token { get; private set; } = null!;
@@ -36,7 +36,7 @@ namespace Rias.Configuration
         
         private string _credsPath = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
 
-        public Credentials()
+        public Configuration()
         {
             LoadCredentials();
         }

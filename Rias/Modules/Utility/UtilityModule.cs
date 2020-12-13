@@ -68,7 +68,7 @@ namespace Rias.Modules.Utility
                 Description = string.Join("\n", Localization.Locales.Select(x => $"{x.Language} ({x.Locale})")),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = GetText(Localization.UtilityLanguagesFooter, Credentials.Prefix)
+                    Text = GetText(Localization.UtilityLanguagesFooter, Configuration.Prefix)
                 }
             };
 
@@ -111,15 +111,15 @@ namespace Rias.Modules.Utility
         [Command("invite")]
         public async Task InviteAsync()
         {
-            if (!string.IsNullOrEmpty(Credentials.Invite))
-                await ReplyConfirmationAsync(Localization.UtilityInviteInfo, Credentials.Invite);
+            if (!string.IsNullOrEmpty(Configuration.Invite))
+                await ReplyConfirmationAsync(Localization.UtilityInviteInfo, Configuration.Invite);
         }
         
         [Command("patreon", "support", "donate")]
         public async Task DonateAsync()
         {
-            if (!string.IsNullOrEmpty(Credentials.Patreon))
-                await ReplyConfirmationAsync(Localization.UtilityPatreonInfo, Credentials.Patreon, Credentials.Currency);
+            if (!string.IsNullOrEmpty(Configuration.Patreon))
+                await ReplyConfirmationAsync(Localization.UtilityPatreonInfo, Configuration.Patreon, Configuration.Currency);
         }
         
         [Command("patrons", "supporters")]
@@ -132,7 +132,7 @@ namespace Rias.Modules.Utility
             
             if (patrons.Count == 0)
             {
-                await ReplyErrorAsync(Localization.UtilityNoPatrons, Credentials.Patreon, Credentials.Currency);
+                await ReplyErrorAsync(Localization.UtilityNoPatrons, Configuration.Patreon, Configuration.Currency);
                 return;
             }
 
@@ -155,12 +155,12 @@ namespace Rias.Modules.Utility
             var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == Context.User.Id, x => x.DateAdded, true);
             if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
             {
-                await ReplyConfirmationAsync(Localization.UtilityVoteInfo, $"{Credentials.DiscordBotList}/vote", Credentials.Currency);
+                await ReplyConfirmationAsync(Localization.UtilityVoteInfo, $"{Configuration.DiscordBotList}/vote", Configuration.Currency);
             }
             else
             {
                 var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
-                await ReplyConfirmationAsync(Localization.UtilityVotedInfo, $"{Credentials.DiscordBotList}/vote", nextVoteHumanized);
+                await ReplyConfirmationAsync(Localization.UtilityVotedInfo, $"{Configuration.DiscordBotList}/vote", nextVoteHumanized);
             }
         }
         

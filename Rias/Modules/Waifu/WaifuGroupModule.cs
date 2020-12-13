@@ -85,7 +85,7 @@ namespace Rias.Modules.Waifu
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity { UserId = Context.User.Id });
                 if (!claimCanceled && userDb.Currency < waifuPrice)
                 {
-                    embed.WithDescription(GetText(Localization.WaifuClaimCurrencyNotEnough, Credentials.Currency));
+                    embed.WithDescription(GetText(Localization.WaifuClaimCurrencyNotEnough, Configuration.Currency));
                     claimCanceled = true;
                 }
 
@@ -125,7 +125,7 @@ namespace Rias.Modules.Waifu
                 await DbContext.AddAsync(waifuDb);
                 await DbContext.SaveChangesAsync();
 
-                embed.WithDescription(GetText(Localization.WaifuWaifuClaimed, character.Name!, waifuPrice, Credentials.Currency));
+                embed.WithDescription(GetText(Localization.WaifuWaifuClaimed, character.Name!, waifuPrice, Configuration.Currency));
                 embed.ClearFields();
 
                 await ReplyAsync(embed);
@@ -189,7 +189,7 @@ namespace Rias.Modules.Waifu
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity { UserId = Context.User.Id });
                 if (userDb.Currency < SpecialWaifuPrice)
                 {
-                    await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Credentials.Currency);
+                    await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Configuration.Currency);
                     return;
                 }
             
@@ -350,7 +350,7 @@ namespace Rias.Modules.Waifu
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == Context.User.Id, () => new UsersEntity { UserId = Context.User.Id });
                 if (userDb.Currency < WaifuCreationPrice)
                 {
-                    await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Credentials.Currency);
+                    await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Configuration.Currency);
                     return;
                 }
             

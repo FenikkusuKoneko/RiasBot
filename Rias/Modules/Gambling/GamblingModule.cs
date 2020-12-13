@@ -25,20 +25,20 @@ namespace Rias.Modules.Gambling
         {
             if (bet < GamblingService.MinimumBet)
             {
-                await ReplyErrorAsync(Localization.GamblingBetLessThan, GamblingService.MinimumBet, Credentials.Currency);
+                await ReplyErrorAsync(Localization.GamblingBetLessThan, GamblingService.MinimumBet, Configuration.Currency);
                 return;
             }
 
             if (bet > GamblingService.MaximumBet)
             {
-                await ReplyErrorAsync(Localization.GamblingBetMoreThan, GamblingService.MaximumBet, Credentials.Currency);
+                await ReplyErrorAsync(Localization.GamblingBetMoreThan, GamblingService.MaximumBet, Configuration.Currency);
                 return;
             }
 
             var currency = await Service.GetUserCurrencyAsync(Context.User.Id);
             if (currency < bet)
             {
-                await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Credentials.Currency);
+                await ReplyErrorAsync(Localization.GamblingCurrencyNotEnough, Configuration.Currency);
                 return;
             }
 
@@ -51,8 +51,8 @@ namespace Rias.Modules.Gambling
             currency = await Service.AddUserCurrencyAsync(Context.User.Id, win);
 
             var winString = win >= 0
-                ? GetText(Localization.GamblingYouWon, win, Credentials.Currency, currency)
-                : GetText(Localization.GamblingYouLost, Math.Abs(win), Credentials.Currency, currency);
+                ? GetText(Localization.GamblingYouWon, win, Configuration.Currency, currency)
+                : GetText(Localization.GamblingYouLost, Math.Abs(win), Configuration.Currency, currency);
             
             var embed = new DiscordEmbedBuilder
             {

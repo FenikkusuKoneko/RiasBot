@@ -1,4 +1,4 @@
-﻿namespace Rias.Configuration
+﻿namespace Rias.Configurations
 {
     public class PatreonConfiguration : IWebSocketConfiguration
     {

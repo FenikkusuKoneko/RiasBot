@@ -126,7 +126,7 @@ namespace Rias.Services
             if (role is null)
             {
                 if (!context.SentByTimer)
-                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationMuteRoleNotFound, guildDb?.Prefix ?? Credentials.Prefix);
+                    await ReplyErrorAsync(context.SourceChannel!, context.Guild.Id, Localization.AdministrationMuteRoleNotFound, guildDb?.Prefix ?? Configuration.Prefix);
                 await RemoveMuteAsync(context);
                 return;
             }

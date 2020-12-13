@@ -97,7 +97,7 @@ namespace Rias.Modules.Waifu
                 
             return $"[{normalWaifu.Name}]({normalWaifu.Character?.Url ?? normalWaifu.ImageUrl})\n" +
                    $"{GetText(Localization.CommonId)}: {(normalWaifu.CharacterId != null ? normalWaifu.CharacterId.ToString() : $"w{normalWaifu.CustomCharacterId}")}" +
-                   $" | {GetText(Localization.UtilityPrice)}: {normalWaifu.Price} {Credentials.Currency}" +
+                   $" | {GetText(Localization.UtilityPrice)}: {normalWaifu.Price} {Configuration.Currency}" +
                    $" | {GetText(Localization.WaifuPosition)}: {normalWaifu.Position}";
         }
     }

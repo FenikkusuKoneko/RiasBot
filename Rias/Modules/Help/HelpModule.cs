@@ -42,25 +42,25 @@ namespace Rias.Modules.Help
             var links = new StringBuilder();
             const string delimiter = " • ";
 
-            if (!string.IsNullOrEmpty(Credentials.OwnerServerInvite))
+            if (!string.IsNullOrEmpty(Configuration.OwnerServerInvite))
             {
-                var ownerServer = RiasBot.GetGuild(Credentials.OwnerServerId);
+                var ownerServer = RiasBot.GetGuild(Configuration.OwnerServerId);
                 links.Append(delimiter)
-                    .Append(GetText(Localization.HelpSupportServer, ownerServer!.Name, Credentials.OwnerServerInvite))
+                    .Append(GetText(Localization.HelpSupportServer, ownerServer!.Name, Configuration.OwnerServerInvite))
                     .AppendLine();
             }
 
             if (links.Length > 0) links.Append(delimiter);
-            if (!string.IsNullOrEmpty(Credentials.Invite))
-                links.Append(GetText(Localization.HelpInviteMe, Credentials.Invite)).AppendLine();
+            if (!string.IsNullOrEmpty(Configuration.Invite))
+                links.Append(GetText(Localization.HelpInviteMe, Configuration.Invite)).AppendLine();
 
             if (links.Length > 0) links.Append(delimiter);
-            if (!string.IsNullOrEmpty(Credentials.Website))
-                links.Append(GetText(Localization.HelpWebsite, Credentials.Website)).AppendLine();
+            if (!string.IsNullOrEmpty(Configuration.Website))
+                links.Append(GetText(Localization.HelpWebsite, Configuration.Website)).AppendLine();
 
             if (links.Length > 0) links.Append(delimiter);
-            if (!string.IsNullOrEmpty(Credentials.Patreon))
-                links.Append(GetText(Localization.HelpDonate, Credentials.Patreon)).AppendLine();
+            if (!string.IsNullOrEmpty(Configuration.Patreon))
+                links.Append(GetText(Localization.HelpDonate, Configuration.Patreon)).AppendLine();
 
             embed.AddField(GetText(Localization.HelpLinks), links.ToString());
             await ReplyAsync(embed);
@@ -105,7 +105,7 @@ namespace Rias.Modules.Help
                     Name = GetText(Localization.HelpModule, moduleName)
                 },
                 Title = title,
-                Description = description.Replace("[prefix]", Context.Prefix).Replace("[currency]", Credentials.Currency)
+                Description = description.Replace("[prefix]", Context.Prefix).Replace("[currency]", Configuration.Currency)
             };
 
             var permissions = new StringBuilder();
@@ -183,7 +183,7 @@ namespace Rias.Modules.Help
                 Title = GetText(Localization.HelpModulesListTitle)
             }.WithFooter(GetText(Localization.HelpModulesListFooter, Context.Prefix));
 
-            var isOwner = Context.User.Id == Credentials.MasterId;
+            var isOwner = Context.User.Id == Configuration.MasterId;
 
             Func<Module, bool> modulesOwnerPredicate;
             if (isOwner)
@@ -233,7 +233,7 @@ namespace Rias.Modules.Help
                 return;
             }
 
-            var isOwner = Context.User.Id == Credentials.MasterId;
+            var isOwner = Context.User.Id == Configuration.MasterId;
 
             var modulesCommands = GetModuleCommands(module, isOwner);
             if (modulesCommands.Count == 0)
@@ -286,7 +286,7 @@ namespace Rias.Modules.Help
                 .OrderBy(m => m.Name)
                 .ToArray();
             
-            var isOwner = Context.User.Id == Credentials.MasterId;
+            var isOwner = Context.User.Id == Configuration.MasterId;
             
             foreach (var module in modules)
             {

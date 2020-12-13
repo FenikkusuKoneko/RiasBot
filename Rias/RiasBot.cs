@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
 using Rias.Commons;
-using Rias.Configuration;
+using Rias.Configurations;
 using Rias.Database;
 using Rias.Implementation;
 using Rias.Services;
@@ -33,7 +33,7 @@ namespace Rias
         public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new();
         public readonly ConcurrentDictionary<ulong, DiscordMember> Members = new();
 
-        private readonly Credentials _credentials;
+        private readonly Configuration _configuration;
         private readonly IServiceProvider _serviceProvider;
         
         public RiasBot()
@@ -44,12 +44,12 @@ namespace Rias
             Log.Information($"Initializing RiasBot version {Version}");
 #endif
             
-            _credentials = new Credentials();
+            _configuration = new Configuration();
             VerifyCredentials();
             
             Client = new DiscordShardedClient(new DiscordConfiguration
             {
-                Token = _credentials.Token,
+                Token = _configuration.Token,
                 Intents = DiscordIntents.AllUnprivileged | DiscordIntents.GuildMembers,
                 MessageCacheSize = 0,
                 LoggerFactory = new SerilogLoggerFactory(Log.Logger)
@@ -80,7 +80,7 @@ namespace Rias
 
             _serviceProvider = services
                 .AddSingleton(this)
-                .AddSingleton(_credentials)
+                .AddSingleton(_configuration)
                 .AddSingleton(commandService)
                 .AddSingleton(redis)
                 .AddSingleton<Localization>()
@@ -164,30 +164,30 @@ namespace Rias
 
         private void VerifyCredentials()
         {
-            if (string.IsNullOrEmpty(_credentials.Token))
+            if (string.IsNullOrEmpty(_configuration.Token))
                 throw new NullReferenceException("You must set the token in credentials.json!");
 
-            if (string.IsNullOrEmpty(_credentials.Prefix))
+            if (string.IsNullOrEmpty(_configuration.Prefix))
                 throw new NullReferenceException("You must set the default prefix in credentials.json!");
         }
         
         private string? GetDatabaseConnection()
         {
-            if (_credentials.DatabaseConfig is null)
+            if (_configuration.DatabaseConfig is null)
             {
                 return null;
             }
 
             var connectionString = new StringBuilder();
-            connectionString.Append("Host=").Append(_credentials.DatabaseConfig.Host).Append(';');
+            connectionString.Append("Host=").Append(_configuration.DatabaseConfig.Host).Append(';');
 
-            if (_credentials.DatabaseConfig.Port > 0)
-                connectionString.Append("Port=").Append(_credentials.DatabaseConfig.Port).Append(';');
+            if (_configuration.DatabaseConfig.Port > 0)
+                connectionString.Append("Port=").Append(_configuration.DatabaseConfig.Port).Append(';');
 
-            connectionString.Append("Username=").Append(_credentials.DatabaseConfig.Username).Append(';')
-                .Append("Password=").Append(_credentials.DatabaseConfig.Password).Append(';')
-                .Append("Database=").Append(_credentials.DatabaseConfig.Database).Append(';')
-                .Append("ApplicationName=").Append(_credentials.DatabaseConfig.ApplicationName);
+            connectionString.Append("Username=").Append(_configuration.DatabaseConfig.Username).Append(';')
+                .Append("Password=").Append(_configuration.DatabaseConfig.Password).Append(';')
+                .Append("Database=").Append(_configuration.DatabaseConfig.Database).Append(';')
+                .Append("ApplicationName=").Append(_configuration.DatabaseConfig.ApplicationName);
 
             return connectionString.ToString();
         }
@@ -197,7 +197,7 @@ namespace Rias
             var riasContext = (RiasCommandContext) context;
             
             // owner doesn't have cooldown
-            if (_credentials.MasterId != 0 && riasContext.User.Id == _credentials.MasterId)
+            if (_configuration.MasterId != 0 && riasContext.User.Id == _configuration.MasterId)
                 return null;
             
             return (BucketType) bucketType switch

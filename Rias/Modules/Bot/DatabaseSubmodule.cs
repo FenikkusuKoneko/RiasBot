@@ -73,7 +73,7 @@ namespace Rias.Modules.Bot
                     .WithColor(RiasUtilities.ConfirmColor)
                     .WithAuthor(user.FullName(), user.GetAvatarUrl(ImageFormat.Auto))
                     .AddField(GetText(Localization.CommonId), user.Id.ToString(), true)
-                    .AddField(currency, $"{userDb.Currency} {Credentials.Currency}", true)
+                    .AddField(currency, $"{userDb.Currency} {Configuration.Currency}", true)
                     .AddField(GetText(Localization.XpGlobalLevel), RiasUtilities.XpToLevel(userDb.Xp, 30).ToString(), true)
                     .AddField(GetText(Localization.XpGlobalXp), userDb.Xp.ToString(), true)
                     .AddField(GetText(Localization.BotIsBlacklisted), userDb.IsBlacklisted.ToString(), true)

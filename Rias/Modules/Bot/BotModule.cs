@@ -79,7 +79,7 @@ namespace Rias.Modules.Bot
                 case "configuration":
                 case "creds":
                 case "credentials":
-                    Credentials.LoadCredentials();
+                    Configuration.LoadCredentials();
                     await ReplyConfirmationAsync(Localization.BotCredentialsReloaded);
                     break;
                 case "commands":

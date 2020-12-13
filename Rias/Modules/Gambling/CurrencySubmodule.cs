@@ -33,27 +33,27 @@ namespace Rias.Modules.Gambling
                 {
                     var userVotesDb = await DbContext.GetOrderedListAsync<VotesEntity, DateTime>(x => x.UserId == member.Id, x => x.DateAdded, true);
 
-                    if (string.IsNullOrEmpty(Credentials.DiscordBotList))
+                    if (string.IsNullOrEmpty(Configuration.DiscordBotList))
                     {
-                        await ReplyConfirmationAsync(Localization.GamblingCurrencyYou, userDb.Currency, Credentials.Currency);
+                        await ReplyConfirmationAsync(Localization.GamblingCurrencyYou, userDb.Currency, Configuration.Currency);
                     }
                     else
                     {
                         var timeNow = DateTime.UtcNow;
                         if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
                         {
-                            await ReplyConfirmationAsync(Localization.GamblingCurrencyYouVote, userDb.Currency, Credentials.Currency, $"{Credentials.DiscordBotList}/vote", Credentials.Patreon);
+                            await ReplyConfirmationAsync(Localization.GamblingCurrencyYouVote, userDb.Currency, Configuration.Currency, $"{Configuration.DiscordBotList}/vote", Configuration.Patreon);
                         }
                         else
                         {
                             var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
-                            await ReplyConfirmationAsync(Localization.GamblingCurrencyYouVoted, userDb.Currency, Credentials.Currency, $"{Credentials.DiscordBotList}/vote", nextVoteHumanized, Credentials.Patreon);
+                            await ReplyConfirmationAsync(Localization.GamblingCurrencyYouVoted, userDb.Currency, Configuration.Currency, $"{Configuration.DiscordBotList}/vote", nextVoteHumanized, Configuration.Patreon);
                         }
                     }
                 }
                 else
                 {
-                    await ReplyConfirmationAsync(Localization.GamblingCurrencyMember, member.FullName(), userDb.Currency, Credentials.Currency);
+                    await ReplyConfirmationAsync(Localization.GamblingCurrencyMember, member.FullName(), userDb.Currency, Configuration.Currency);
                 }
             }
 
@@ -65,7 +65,7 @@ namespace Rias.Modules.Gambling
                 var currency = userDb.Currency += amount;
 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.GamblingUserRewarded, amount, Credentials.Currency, user.FullName(), currency);
+                await ReplyConfirmationAsync(Localization.GamblingUserRewarded, amount, Configuration.Currency, user.FullName(), currency);
             }
 
             [Command("take")]
@@ -77,7 +77,7 @@ namespace Rias.Modules.Gambling
                 userDb.Currency -= amount;
 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.GamblingUserTook, amount, Credentials.Currency, user.FullName());
+                await ReplyConfirmationAsync(Localization.GamblingUserTook, amount, Configuration.Currency, user.FullName());
             }
 
             [Command("leaderboard", "lb")]
@@ -97,14 +97,14 @@ namespace Rias.Modules.Gambling
                 var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
-                    Title = GetText(Localization.GamblingCurrencyLeaderboard, Credentials.Currency)
+                    Title = GetText(Localization.GamblingCurrencyLeaderboard, Configuration.Currency)
                 };
 
                 var index = 0;
                 foreach (var userCurrency in usersCurrency)
                 {
                     var user = await RiasBot.GetUserAsync(userCurrency.UserId);
-                    embed.AddField($"#{++index + page * 15} {user?.FullName()}", $"{userCurrency.Currency} {Credentials.Currency}", true);
+                    embed.AddField($"#{++index + page * 15} {user?.FullName()}", $"{userCurrency.Currency} {Configuration.Currency}", true);
                 }
 
                 await ReplyAsync(embed);
@@ -122,7 +122,7 @@ namespace Rias.Modules.Gambling
                 if (nextDaily > timeNow)
                 {
                     var timeLeftHumanized = (nextDaily - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), minUnit: TimeUnit.Second);
-                    if (string.IsNullOrEmpty(Credentials.DiscordBotList))
+                    if (string.IsNullOrEmpty(Configuration.DiscordBotList))
                     {
                         await ReplyErrorAsync(Localization.GamblingDailyWait, timeLeftHumanized);
                     }
@@ -130,12 +130,12 @@ namespace Rias.Modules.Gambling
                     {
                         if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
                         {
-                            await ReplyErrorAsync(Localization.GamblingDailyWaitVote, timeLeftHumanized, $"{Credentials.DiscordBotList}/vote", Credentials.Currency, Credentials.Patreon);
+                            await ReplyErrorAsync(Localization.GamblingDailyWaitVote, timeLeftHumanized, $"{Configuration.DiscordBotList}/vote", Configuration.Currency, Configuration.Patreon);
                         }
                         else
                         {
                             var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
-                            await ReplyErrorAsync(Localization.GamblingDailyWaitVoted, timeLeftHumanized, $"{Credentials.DiscordBotList}/vote", nextVoteHumanized, Credentials.Patreon);
+                            await ReplyErrorAsync(Localization.GamblingDailyWaitVoted, timeLeftHumanized, $"{Configuration.DiscordBotList}/vote", nextVoteHumanized, Configuration.Patreon);
                         }
                     }
                     
@@ -146,20 +146,20 @@ namespace Rias.Modules.Gambling
                 userDb.DailyTaken = timeNow;
 
                 await DbContext.SaveChangesAsync();
-                if (string.IsNullOrEmpty(Credentials.DiscordBotList))
+                if (string.IsNullOrEmpty(Configuration.DiscordBotList))
                 {
-                    await ReplyConfirmationAsync(Localization.GamblingDailyReceived, 100, Credentials.Currency, userDb.Currency);
+                    await ReplyConfirmationAsync(Localization.GamblingDailyReceived, 100, Configuration.Currency, userDb.Currency);
                 }
                 else
                 {
                     if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
                     {
-                        await ReplyConfirmationAsync(Localization.GamblingDailyReceivedVote, 100, Credentials.Currency, userDb.Currency, $"{Credentials.DiscordBotList}/vote", Credentials.Patreon);
+                        await ReplyConfirmationAsync(Localization.GamblingDailyReceivedVote, 100, Configuration.Currency, userDb.Currency, $"{Configuration.DiscordBotList}/vote", Configuration.Patreon);
                     }
                     else
                     {
                         var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
-                        await ReplyConfirmationAsync(Localization.GamblingDailyReceivedVoted, 100, Credentials.Currency, userDb.Currency, $"{Credentials.DiscordBotList}/vote", nextVoteHumanized, Credentials.Patreon);
+                        await ReplyConfirmationAsync(Localization.GamblingDailyReceivedVoted, 100, Configuration.Currency, userDb.Currency, $"{Configuration.DiscordBotList}/vote", nextVoteHumanized, Configuration.Patreon);
                     }
                 }
             }

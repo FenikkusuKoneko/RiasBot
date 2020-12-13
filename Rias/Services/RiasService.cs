@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
-using Rias.Configuration;
+using Rias.Configurations;
 using Rias.Extensions;
 using Rias.Implementation;
 using Serilog;
@@ -12,13 +12,13 @@ namespace Rias.Services
     public class RiasService
     {
         public readonly RiasBot RiasBot;
-        public readonly Credentials Credentials;
+        public readonly Configuration Configuration;
         public readonly Localization Localization;
 
         public RiasService(IServiceProvider serviceProvider)
         {
             RiasBot = serviceProvider.GetRequiredService<RiasBot>();
-            Credentials = serviceProvider.GetRequiredService<Credentials>();
+            Configuration = serviceProvider.GetRequiredService<Configuration>();
             Localization = serviceProvider.GetRequiredService<Localization>();
         }
 

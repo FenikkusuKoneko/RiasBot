@@ -180,7 +180,7 @@ namespace Rias.Services
                     return;
             }
 
-            if (await CheckUserBan(args.Author) && args.Author.Id != Credentials.MasterId)
+            if (await CheckUserBan(args.Author) && args.Author.Id != Configuration.MasterId)
                 return;
             
             var context = new RiasCommandContext(RiasBot, args.Message, prefix);
@@ -319,13 +319,13 @@ namespace Rias.Services
         private async Task<string> GetGuildPrefixAsync(DiscordGuild? guild)
         {
             if (guild is null)
-                return Credentials.Prefix;
+                return Configuration.Prefix;
 
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var prefix = (await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id))?.Prefix;
             
-            return !string.IsNullOrEmpty(prefix) ? prefix : Credentials.Prefix;
+            return !string.IsNullOrEmpty(prefix) ? prefix : Configuration.Prefix;
         }
         
         private async Task<bool> CheckGuildCommandMessageDeletion(DiscordGuild guild)

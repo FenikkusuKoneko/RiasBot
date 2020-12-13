@@ -80,7 +80,7 @@ namespace Rias.Services.Commons
             _embed = new DiscordEmbedBuilder
                 {
                     Color = _embedColor,
-                    Title = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitleCurrency, _bet, _service.Credentials.Currency, _userCurrency),
+                    Title = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitleCurrency, _bet, _service.Configuration.Currency, _userCurrency),
                     Description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackCards, _deck.Count)
                 }.AddField($"{_member.Guild.CurrentMember.FullName()} ({_houseHand.Score})", _houseHand.ShowCards(true))
                 .AddField($"{_member.FullName()} ({_playerHand.Score})", _playerHand.ShowCards());
@@ -156,7 +156,7 @@ namespace Rias.Services.Commons
 
             _userCurrency = await _service.RemoveUserCurrencyAsync(_member.Id, _bet);
             _bet *= 2;
-            _embed.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitleCurrency, _bet, _service.Credentials.Currency, _userCurrency));
+            _embed.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitleCurrency, _bet, _service.Configuration.Currency, _userCurrency));
             
             _playerSecondHand = new BlackjackHand();
             _playerSecondHand.Cards.Add(_playerHand.Cards[1]);
@@ -226,14 +226,14 @@ namespace Rias.Services.Commons
                         if (_playerSecondHand is null)
                         {
                             _embedColor = RiasUtilities.Green;
-                            description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackBlackjack, winning, _service.Credentials.Currency, _userCurrency + winning);
+                            description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackBlackjack, winning, _service.Configuration.Currency, _userCurrency + winning);
                         }
                         break;
                     case WinningState.Push:
                         if (_playerSecondHand is null)
                         {
                             _embedColor = DiscordColor.Yellow;
-                            description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackPush, _userCurrency + winning, _service.Credentials.Currency);
+                            description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackPush, _userCurrency + winning, _service.Configuration.Currency);
                         }
                         break;
                     case WinningState.Lose:
@@ -266,17 +266,17 @@ namespace Rias.Services.Commons
                     if (winning > 0)
                     {
                         _embedColor = RiasUtilities.Green;
-                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouWon, winning, _service.Credentials.Currency, _userCurrency);
+                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouWon, winning, _service.Configuration.Currency, _userCurrency);
                     }
                     else if (winning < 0)
                     {
                         _embedColor = RiasUtilities.Red;
-                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouLost, Math.Abs(winning), _service.Credentials.Currency, _userCurrency);
+                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouLost, Math.Abs(winning), _service.Configuration.Currency, _userCurrency);
                     }
                     else if (_playerSecondHand != null)
                     {
                         _embedColor = RiasUtilities.Yellow;
-                        description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTie, _userCurrency, _service.Credentials.Currency);
+                        description = _service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTie, _userCurrency, _service.Configuration.Currency);
                     }
                 }
             }
@@ -303,7 +303,7 @@ namespace Rias.Services.Commons
 
             if (gameEnded)
             {
-                _embed.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitle, _bet, _service.Credentials.Currency));
+                _embed.WithTitle(_service.GetText(_member.Guild.Id, Localization.GamblingBlackjackTitle, _bet, _service.Configuration.Currency));
                 _embed.WithDescription(description);
                 StopGame();
 

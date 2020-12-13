@@ -63,7 +63,7 @@ namespace Rias.Modules.Utility
                     }.WithThumbnail(RiasBot.CurrentUser.GetAvatarUrl(ImageFormat.Auto))
                     .AddField(GetText(Localization.UtilityAuthor), RiasBot.Author, true)
                     .AddField(GetText(Localization.UtilityBotId), RiasBot.CurrentUser.Id.ToString(), true)
-                    .AddField(GetText(Localization.UtilityMasterId), Credentials.MasterId.ToString(), true)
+                    .AddField(GetText(Localization.UtilityMasterId), Configuration.MasterId.ToString(), true)
                     .AddField(GetText(Localization.UtilityShard), $"{RiasBot.GetShardId(Context.Guild) + 1}/{RiasBot.Client.ShardClients.Count}", true)
                     .AddField(GetText(Localization.UtilityInServer), Context.Guild?.Name ?? "-", true)
                     .AddField(GetText(Localization.UtilityUptime), uptime, true)
@@ -73,25 +73,25 @@ namespace Rias.Modules.Utility
                 var links = new StringBuilder();
                 const string delimiter = " • ";
 
-                if (!string.IsNullOrEmpty(Credentials.OwnerServerInvite))
+                if (!string.IsNullOrEmpty(Configuration.OwnerServerInvite))
                 {
-                    var ownerServer = RiasBot.GetGuild(Credentials.OwnerServerId);
+                    var ownerServer = RiasBot.GetGuild(Configuration.OwnerServerId);
                     links.Append(delimiter)
-                        .Append(GetText(Localization.HelpSupportServer, ownerServer!.Name, Credentials.OwnerServerInvite))
+                        .Append(GetText(Localization.HelpSupportServer, ownerServer!.Name, Configuration.OwnerServerInvite))
                         .AppendLine();
                 }
 
                 if (links.Length > 0) links.Append(delimiter);
-                if (!string.IsNullOrEmpty(Credentials.Invite))
-                    links.Append(GetText(Localization.HelpInviteMe, Credentials.Invite)).AppendLine();
+                if (!string.IsNullOrEmpty(Configuration.Invite))
+                    links.Append(GetText(Localization.HelpInviteMe, Configuration.Invite)).AppendLine();
 
                 if (links.Length > 0) links.Append(delimiter);
-                if (!string.IsNullOrEmpty(Credentials.Website))
-                    links.Append(GetText(Localization.HelpWebsite, Credentials.Website)).AppendLine();
+                if (!string.IsNullOrEmpty(Configuration.Website))
+                    links.Append(GetText(Localization.HelpWebsite, Configuration.Website)).AppendLine();
 
                 if (links.Length > 0) links.Append(delimiter);
-                if (!string.IsNullOrEmpty(Credentials.Patreon))
-                    links.Append(GetText(Localization.HelpDonate, Credentials.Patreon)).AppendLine();
+                if (!string.IsNullOrEmpty(Configuration.Patreon))
+                    links.Append(GetText(Localization.HelpDonate, Configuration.Patreon)).AppendLine();
 
                 embed.AddField(GetText(Localization.HelpLinks), links.ToString());
 

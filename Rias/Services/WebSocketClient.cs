@@ -3,7 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Rias.Configuration;
+using Rias.Configurations;
 using Serilog;
 
 namespace Rias.Services

@@ -8,7 +8,7 @@ using DSharpPlus.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Commons;
-using Rias.Configuration;
+using Rias.Configurations;
 using Rias.Database;
 using Rias.Extensions;
 using Rias.Implementation;
@@ -20,7 +20,7 @@ namespace Rias.Modules
     public abstract class RiasModule : ModuleBase<RiasCommandContext>, IAsyncDisposable
     {
         public readonly RiasBot RiasBot;
-        public readonly Credentials Credentials;
+        public readonly Configuration Configuration;
         public readonly Localization Localization;
         public readonly RiasDbContext DbContext;
         
@@ -29,7 +29,7 @@ namespace Rias.Modules
         public RiasModule(IServiceProvider serviceProvider)
         {
             RiasBot = serviceProvider.GetRequiredService<RiasBot>();
-            Credentials = serviceProvider.GetRequiredService<Credentials>();
+            Configuration = serviceProvider.GetRequiredService<Configuration>();
             Localization = serviceProvider.GetRequiredService<Localization>();
 
             _scope = serviceProvider.CreateScope();

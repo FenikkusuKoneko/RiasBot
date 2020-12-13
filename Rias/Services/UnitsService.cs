@@ -290,7 +290,7 @@ namespace Rias.Services
             var exchangeRatesDataRedis = _redisDb.StringGetWithExpiry("converter:currency");
             var exchangeRatesData = !exchangeRatesDataRedis.Value.IsNullOrEmpty
                 ? exchangeRatesDataRedis.Value.ToString()
-                : await _httpClient.GetStringAsync($"{ExchangeRatesApi}{Credentials.FixerAccessKey}");
+                : await _httpClient.GetStringAsync($"{ExchangeRatesApi}{Configuration.FixerAccessKey}");
             
             if (exchangeRatesDataRedis.Expiry is null)
                 await _redisDb.StringSetAsync("converter:currency", exchangeRatesData, TimeSpan.FromHours(1));
