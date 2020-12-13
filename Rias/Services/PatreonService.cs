@@ -32,9 +32,9 @@ namespace Rias.Services
         public PatreonService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            if (Configuration.PatreonConfig != null)
+            if (Configuration.PatreonConfiguration != null)
             {
-                _webSocket = new WebSocketClient(Configuration.PatreonConfig);
+                _webSocket = new WebSocketClient(Configuration.PatreonConfiguration);
                 RunTaskAsync(ConnectWebSocket());
                 _webSocket.DataReceived += PledgeReceivedAsync;
                 _webSocket.Closed += WebSocketClosed;
@@ -42,7 +42,7 @@ namespace Rias.Services
                 RunTaskAsync(CheckPatronsAsync);
                 
                 _httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(1) };
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Configuration.PatreonConfig.Authorization!);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Configuration.PatreonConfiguration.Authorization!);
                 _sendPatronsTimer = new Timer(_ => RunTaskAsync(SendPatronsAsync), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             }
         }

@@ -98,7 +98,7 @@ namespace Rias.Services
 
         public async Task<bool> CheckColorAsync(DiscordUser user, DiscordColor color, int? tier = null)
         {
-            if (Configuration.PatreonConfig is null)
+            if (Configuration.PatreonConfiguration is null)
                 return true;
             
             if (user.Id == Configuration.MasterId)
@@ -509,7 +509,7 @@ namespace Rias.Services
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == member.Id);
             var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == member.Id);
-            var patreonDb = Configuration.PatreonConfig != null ? await db.Patreon.FirstOrDefaultAsync(x => x.UserId == member.Id) : null;
+            var patreonDb = Configuration.PatreonConfiguration != null ? await db.Patreon.FirstOrDefaultAsync(x => x.UserId == member.Id) : null;
 
             var waifus = db.Waifus
                 .Include(x => x.Character)

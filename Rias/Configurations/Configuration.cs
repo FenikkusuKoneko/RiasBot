@@ -30,11 +30,11 @@ namespace Rias.Configurations
         public string? DiscordBotsToken { get; private set; }
         public string? WeebServicesToken { get; private set; }
 
-        public DatabaseConfiguration? DatabaseConfig { get; private set; }
-        public VotesConfiguration? VotesConfig { get; private set; }
-        public PatreonConfiguration? PatreonConfig { get; private set; }
+        public DatabaseConfiguration? DatabaseConfiguration { get; private set; }
+        public VotesConfiguration? VotesConfiguration { get; private set; }
+        public PatreonConfiguration? PatreonConfiguration { get; private set; }
         
-        private string _credsPath = Path.Combine(Environment.CurrentDirectory, "data/credentials.json");
+        private readonly string _configurationPath = Path.Combine(Environment.CurrentDirectory, "data/configuration.json");
 
         public Configuration()
         {
@@ -43,7 +43,7 @@ namespace Rias.Configurations
 
         public void LoadCredentials()
         {
-            var config = new ConfigurationBuilder().AddJsonFile(_credsPath).Build();
+            var config = new ConfigurationBuilder().AddJsonFile(_configurationPath).Build();
 
             Prefix = config.GetValue<string>(nameof(Prefix));
             Token = config.GetValue<string>(nameof(Token));
@@ -73,35 +73,35 @@ namespace Rias.Configurations
             DiscordBotsToken = config.GetValue<string>(nameof(DiscordBotsToken));
             WeebServicesToken = config.GetValue<string>(nameof(WeebServicesToken));
 
-            var databaseConfig = config.GetSection(nameof(DatabaseConfig));
-            DatabaseConfig = !databaseConfig.Exists() ? null : new DatabaseConfiguration
+            var databaseConfiguration = config.GetSection(nameof(DatabaseConfiguration));
+            DatabaseConfiguration = !databaseConfiguration.Exists() ? null : new DatabaseConfiguration
             {
-                Host = databaseConfig.GetValue<string>(nameof(DatabaseConfig.Host)),
-                Port = databaseConfig.GetValue<ushort>(nameof(DatabaseConfig.Port)),
-                Database = databaseConfig.GetValue<string>(nameof(DatabaseConfig.Database)),
-                Username = databaseConfig.GetValue<string>(nameof(DatabaseConfig.Username)),
-                Password = databaseConfig.GetValue<string>(nameof(DatabaseConfig.Password)),
-                ApplicationName = databaseConfig.GetValue<string>(nameof(DatabaseConfig.ApplicationName))
+                Host = databaseConfiguration.GetValue<string>(nameof(DatabaseConfiguration.Host)),
+                Port = databaseConfiguration.GetValue<ushort>(nameof(DatabaseConfiguration.Port)),
+                Database = databaseConfiguration.GetValue<string>(nameof(DatabaseConfiguration.Database)),
+                Username = databaseConfiguration.GetValue<string>(nameof(DatabaseConfiguration.Username)),
+                Password = databaseConfiguration.GetValue<string>(nameof(DatabaseConfiguration.Password)),
+                ApplicationName = databaseConfiguration.GetValue<string>(nameof(DatabaseConfiguration.ApplicationName))
             };
 
-            var votesConfig = config.GetSection(nameof(VotesConfig));
-            VotesConfig = !votesConfig.Exists() ? null : new VotesConfiguration
+            var votesConfiguration = config.GetSection(nameof(VotesConfiguration));
+            VotesConfiguration = !votesConfiguration.Exists() ? null : new VotesConfiguration
             {
-                WebSocketHost = votesConfig.GetValue<string>(nameof(VotesConfig.WebSocketHost)),
-                WebSocketPort = votesConfig.GetValue<ushort>(nameof(VotesConfig.WebSocketPort)),
-                IsSecureConnection = votesConfig.GetValue<bool>(nameof(VotesConfig.IsSecureConnection)),
-                UrlParameters = votesConfig.GetValue<string>(nameof(VotesConfig.UrlParameters)),
-                Authorization = votesConfig.GetValue<string>(nameof(VotesConfig.Authorization))
+                WebSocketHost = votesConfiguration.GetValue<string>(nameof(VotesConfiguration.WebSocketHost)),
+                WebSocketPort = votesConfiguration.GetValue<ushort>(nameof(VotesConfiguration.WebSocketPort)),
+                IsSecureConnection = votesConfiguration.GetValue<bool>(nameof(VotesConfiguration.IsSecureConnection)),
+                UrlParameters = votesConfiguration.GetValue<string>(nameof(VotesConfiguration.UrlParameters)),
+                Authorization = votesConfiguration.GetValue<string>(nameof(VotesConfiguration.Authorization))
             };
             
-            var patreonConfig = config.GetSection(nameof(PatreonConfig));
-            PatreonConfig = !patreonConfig.Exists() ? null : new PatreonConfiguration
+            var patreonConfiguration = config.GetSection(nameof(PatreonConfiguration));
+            PatreonConfiguration = !patreonConfiguration.Exists() ? null : new PatreonConfiguration
             {
-                WebSocketHost = patreonConfig.GetValue<string>(nameof(PatreonConfig.WebSocketHost)),
-                WebSocketPort = patreonConfig.GetValue<ushort>(nameof(PatreonConfig.WebSocketPort)),
-                IsSecureConnection = patreonConfig.GetValue<bool>(nameof(PatreonConfig.IsSecureConnection)),
-                UrlParameters = patreonConfig.GetValue<string>(nameof(PatreonConfig.UrlParameters)),
-                Authorization = patreonConfig.GetValue<string>(nameof(PatreonConfig.Authorization))
+                WebSocketHost = patreonConfiguration.GetValue<string>(nameof(PatreonConfiguration.WebSocketHost)),
+                WebSocketPort = patreonConfiguration.GetValue<ushort>(nameof(PatreonConfiguration.WebSocketPort)),
+                IsSecureConnection = patreonConfiguration.GetValue<bool>(nameof(PatreonConfiguration.IsSecureConnection)),
+                UrlParameters = patreonConfiguration.GetValue<string>(nameof(PatreonConfiguration.UrlParameters)),
+                Authorization = patreonConfiguration.GetValue<string>(nameof(PatreonConfiguration.Authorization))
             };
         }
     }

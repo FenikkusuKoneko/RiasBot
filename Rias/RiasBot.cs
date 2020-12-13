@@ -173,21 +173,21 @@ namespace Rias
         
         private string? GetDatabaseConnection()
         {
-            if (_configuration.DatabaseConfig is null)
+            if (_configuration.DatabaseConfiguration is null)
             {
                 return null;
             }
 
             var connectionString = new StringBuilder();
-            connectionString.Append("Host=").Append(_configuration.DatabaseConfig.Host).Append(';');
+            connectionString.Append("Host=").Append(_configuration.DatabaseConfiguration.Host).Append(';');
 
-            if (_configuration.DatabaseConfig.Port > 0)
-                connectionString.Append("Port=").Append(_configuration.DatabaseConfig.Port).Append(';');
+            if (_configuration.DatabaseConfiguration.Port > 0)
+                connectionString.Append("Port=").Append(_configuration.DatabaseConfiguration.Port).Append(';');
 
-            connectionString.Append("Username=").Append(_configuration.DatabaseConfig.Username).Append(';')
-                .Append("Password=").Append(_configuration.DatabaseConfig.Password).Append(';')
-                .Append("Database=").Append(_configuration.DatabaseConfig.Database).Append(';')
-                .Append("ApplicationName=").Append(_configuration.DatabaseConfig.ApplicationName);
+            connectionString.Append("Username=").Append(_configuration.DatabaseConfiguration.Username).Append(';')
+                .Append("Password=").Append(_configuration.DatabaseConfiguration.Password).Append(';')
+                .Append("Database=").Append(_configuration.DatabaseConfiguration.Database).Append(';')
+                .Append("ApplicationName=").Append(_configuration.DatabaseConfiguration.ApplicationName);
 
             return connectionString.ToString();
         }

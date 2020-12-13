@@ -439,7 +439,7 @@ bin/
 obj/
 
 # Things you should not get but create yourself :^)
-Rias/data/credentials.json
+Rias/data/configuration.json
 Rias/logs/
 
 # Ignore these

@@ -189,7 +189,7 @@ namespace Rias.Modules.Profile
             if (index < 0)
                 index = 0;
 
-            if (Configuration.PatreonConfig != null && Context.User.Id != Configuration.MasterId)
+            if (Configuration.PatreonConfiguration != null && Context.User.Id != Configuration.MasterId)
             {
                 var patreonTier = (await DbContext.Patreon.FirstOrDefaultAsync(x => x.UserId == Context.User.Id))?.Tier ?? 0;
                 switch (index)

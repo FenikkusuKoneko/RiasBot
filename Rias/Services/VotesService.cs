@@ -20,9 +20,9 @@ namespace Rias.Services
         public VotesService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            if (Configuration.VotesConfig == null) return;
+            if (Configuration.VotesConfiguration == null) return;
             
-            _webSocket = new WebSocketClient(Configuration.VotesConfig);
+            _webSocket = new WebSocketClient(Configuration.VotesConfiguration);
             RunTaskAsync(ConnectWebSocket());
             _webSocket.DataReceived += VoteReceivedAsync;
             _webSocket.Closed += WebSocketClosed;
