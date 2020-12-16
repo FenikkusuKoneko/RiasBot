@@ -504,7 +504,7 @@ namespace Rias.Modules.Reactions
                 ImageUrl = await Service.GetImageAsync("grope"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} rias.gg"
                 }
             };
 
@@ -533,7 +533,7 @@ namespace Rias.Modules.Reactions
                 ImageUrl = await Service.GetImageAsync("grope"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} rias.gg"
                 }
             };
 
@@ -812,7 +812,7 @@ namespace Rias.Modules.Reactions
                 ImageUrl = await Service.GetImageAsync("good_morning"),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
+                    Text = $"{GetText(Localization.ReactionsPoweredBy)} rias.gg"
                 }
             };
             

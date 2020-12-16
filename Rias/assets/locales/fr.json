@@ -275,7 +275,7 @@
   "games_eight_ball_answer_19": "Oui - définitivement.",
   "games_eight_ball_answer_20": "Vous pouvez vous y fier.",
   "help_title": "{0} Bot v{1} page d'aide",
-  "help_info": "Je suis basé sur des modules et des sous-modules. Chaque module a des sous-modules et chaque sous-module a des commandes.\n\nTapez `{0}modules` pour obtenir une liste avec tous les modules et sous-modules.\n\nTapez `{0}commands <Nom du module>` ou `{0}commandes <Nom du sous-module>` pour obtenir une liste avec toutes les commandes du module ou du sous-module.\nExemple : `{0}commands Administration`, `{0}commandes Serveur`\n\nTapez `{0}allcommands` pour obtenir une liste avec toutes les commandes.\nConsultez https://riasbot.me/commands pour voir toutes les commandes avec leur description et leurs exemples.",
+  "help_info": "Je suis basé sur des modules et des sous-modules. Chaque module a des sous-modules et chaque sous-module a des commandes.\n\nTapez `{0}modules` pour obtenir une liste avec tous les modules et sous-modules.\n\nTapez `{0}commands <Nom du module>` ou `{0}commandes <Nom du sous-module>` pour obtenir une liste avec toutes les commandes du module ou du sous-module.\nExemple : `{0}commands Administration`, `{0}commandes Serveur`\n\nTapez `{0}allcommands` pour obtenir une liste avec toutes les commandes.\nConsultez https://rias.gg/commands pour voir toutes les commandes avec leur description et leurs exemples.",
   "help_links": "Liens",
   "help_support_server": "[**Rejoignez à {0}** - Une belle et accueillante communauté]({1})",
   "help_invite_me": "[**Invitez-moi** - Je voudrais être sur votre serveur]({0})",

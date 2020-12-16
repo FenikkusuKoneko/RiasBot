@@ -280,7 +280,7 @@
   "games_eight_ball_answer_20": "You may rely on it.",
   
   "help_title": "{0} Bot v{1} help page",
-  "help_info": "I'm based on modules and submodules. Each module has submodules and each submodule has commands.\n\nType `{0}modules` to get a list with all modules and submodules.\n\nType `{0}commands <moduleName>` or `{0}commands <submoduleName>` to get a list with all commands from the module or submodule.\nExample: `{0}commands Administration`, `{0}commands Server`\n\nType `{0}allcommands` to get a list with all commands.\nCheck https://riasbot.me/commands to see all commands with their description and examples.",
+  "help_info": "I'm based on modules and submodules. Each module has submodules and each submodule has commands.\n\nType `{0}modules` to get a list with all modules and submodules.\n\nType `{0}commands <moduleName>` or `{0}commands <submoduleName>` to get a list with all commands from the module or submodule.\nExample: `{0}commands Administration`, `{0}commands Server`\n\nType `{0}allcommands` to get a list with all commands.\nCheck https://rias.gg/commands to see all commands with their description and examples.",
   "help_links": "Links",
   "help_support_server": "[**Join to {0}** - Beautiful and cool community]({1})",
   "help_invite_me": "[**Invite me** - I would like to be in your server]({0})",

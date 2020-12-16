@@ -156,7 +156,7 @@ namespace Rias.Services
             {
                 var data = JsonConvert.SerializeObject(patrons, Formatting.Indented);
 #if RIAS_GLOBAL
-                await _httpClient!.PostAsync("https://riasbot.me/api/patreon", new StringContent(data));
+                await _httpClient!.PostAsync("https://rias.gg/api/patreon", new StringContent(data));
 #elif DEBUG
                 await _httpClient!.PostAsync("https://localhost/api/patreon", new StringContent(data));
 #endif

@@ -36,7 +36,7 @@ namespace Rias.Services
 
         public async Task<string?> GetImageAsync(string type)
         {
-            using var response = await _httpClient.GetAsync($"https://riasbot.me/api/images?type={type}");
+            using var response = await _httpClient.GetAsync($"https://rias.gg/api/images?type={type}");
             if (!response.IsSuccessStatusCode)
                 return null;
 

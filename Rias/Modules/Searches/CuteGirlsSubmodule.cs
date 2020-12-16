@@ -35,7 +35,7 @@ namespace Rias.Modules.Searches
                     ImageUrl = await GetImageAsync("neko"),
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
+                        Text = $"{GetText(Localization.ReactionsPoweredBy)} rias.gg"
                     }
                 };
 
@@ -53,7 +53,7 @@ namespace Rias.Modules.Searches
                     ImageUrl = await GetImageAsync("kitsune"),
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"{GetText(Localization.ReactionsPoweredBy)} riasbot.me"
+                        Text = $"{GetText(Localization.ReactionsPoweredBy)} rias.gg"
                     }
                 };
 
@@ -62,7 +62,7 @@ namespace Rias.Modules.Searches
             
             private async Task<string?> GetImageAsync(string type)
             {
-                using var response = await _httpClient.GetAsync($"https://riasbot.me/api/images?type={type}");
+                using var response = await _httpClient.GetAsync($"https://rias.gg/api/images?type={type}");
                 if (!response.IsSuccessStatusCode)
                     return null;
 
