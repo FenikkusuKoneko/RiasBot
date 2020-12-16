@@ -487,6 +487,7 @@
   "utility_convert_list_footer": "To see all the units from a category type {0}convertlist <category>",
   "utility_color_no_attach_files_permission": "Oh no! I cannot send the color image because I don't have the **attach files** permission in this server.\nPlease ask an administrator or a moderator to enable this permission for me in the server.",
   "utility_color_no_attach_files_channel_permission": "Oh no! I cannot send the color image because I don't have the **attach files** permission in this channel.\nI see that I have this permission in the server so please use this command in another channel where I am not restricted or ask an administrator or moderator to give me this permission in this channel.",
+  "utility_date_time_ago": "{0} ago",
   
   "waifu_has_waifu": "You already have this waifu. The claim has been canceled.",
   "waifu_claim_currency_not_enough": "Unfortunately you don't have enough {0} to claim this waifu. The claim has been canceled.",

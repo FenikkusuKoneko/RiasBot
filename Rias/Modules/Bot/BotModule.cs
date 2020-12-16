@@ -1,8 +1,11 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using Humanizer;
+using Humanizer.Localisation;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
@@ -314,11 +317,16 @@ namespace Rias.Modules.Bot
             
             var mutualGuilds = user is DiscordMember member ? member.GetMutualGuilds(RiasBot).Count() : 0;
             
+            var locale = Localization.GetGuildLocale(Context.Guild!.Id);
+            var creationTimestampDateTime = user.CreationTimestamp.UtcDateTime;
+            var creationTimestamp = $"{creationTimestampDateTime:yyyy-MM-dd HH:mm:ss}\n" +
+                                    $"`{GetText(Localization.UtilityDateTimeAgo, (DateTime.UtcNow - creationTimestampDateTime).Humanize(6, new CultureInfo(locale), TimeUnit.Year, TimeUnit.Second))}`";
+            
             var embed = new DiscordEmbedBuilder()
                 .WithColor(RiasUtilities.ConfirmColor)
                 .AddField(GetText(Localization.CommonUser), user.FullName(), true)
                 .AddField(GetText(Localization.CommonId), user.Id.ToString(), true)
-                .AddField(GetText(Localization.UtilityJoinedDiscord), user.CreationTimestamp.UtcDateTime.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                .AddField(GetText(Localization.UtilityJoinedDiscord), creationTimestamp, true)
                 .AddField(GetText(Localization.BotMutualGuilds), mutualGuilds.ToString(), true)
                 .WithImageUrl(user.GetAvatarUrl(ImageFormat.Auto));
 

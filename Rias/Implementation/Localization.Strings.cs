@@ -459,6 +459,7 @@ namespace Rias.Implementation
         public const string UtilityConvertListFooter = "utility_convert_list_footer";
         public const string UtilityColorNoAttachFilesPermission = "utility_color_no_attach_files_permission";
         public const string UtilityColorNoAttachFilesChannelPermission = "utility_color_no_attach_files_channel_permission";
+        public const string UtilityDateTimeAgo = "utility_date_time_ago";
         
         public const string WaifuHasWaifu = "waifu_has_waifu";
         public const string WaifuClaimCurrencyNotEnough = "waifu_claim_currency_not_enough";

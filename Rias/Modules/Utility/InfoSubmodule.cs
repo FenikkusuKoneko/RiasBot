@@ -110,14 +110,23 @@ namespace Rias.Modules.Utility
                 foreach (var mention in userRoles.Select(x => x.Mention).TakeWhile(y => sbRoles.Length + y.Length <= 1024))
                     sbRoles.Append(mention).Append(' ');
 
+                var locale = Localization.GetGuildLocale(Context.Guild!.Id);
+                var joinedAtDateTime = member.JoinedAt.UtcDateTime;
+                var joinedAt = $"{joinedAtDateTime:yyyy-MM-dd HH:mm:ss}\n" +
+                               $"`{GetText(Localization.UtilityDateTimeAgo, (DateTime.UtcNow - joinedAtDateTime).Humanize(6, new CultureInfo(locale), TimeUnit.Year, TimeUnit.Second))}`";
+                
+                var creationTimestampDateTime = member.CreationTimestamp.UtcDateTime;
+                var creationTimestamp = $"{creationTimestampDateTime:yyyy-MM-dd HH:mm:ss}\n" +
+                                        $"`{GetText(Localization.UtilityDateTimeAgo, (DateTime.UtcNow - creationTimestampDateTime).Humanize(6, new CultureInfo(locale), TimeUnit.Year, TimeUnit.Second))}`";
+
                 var embed = new DiscordEmbedBuilder()
                     .WithColor(RiasUtilities.ConfirmColor)
                     .WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto))
                     .AddField(GetText(Localization.UtilityUsername), member.FullName(), true)
                     .AddField(GetText(Localization.UtilityNickname), member.Nickname ?? "-", true)
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
-                    .AddField(GetText(Localization.UtilityJoinedServer), member.JoinedAt.UtcDateTime.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
-                    .AddField(GetText(Localization.UtilityJoinedDiscord), member.CreationTimestamp.UtcDateTime.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                    .AddField(GetText(Localization.UtilityJoinedServer), joinedAt, true)
+                    .AddField(GetText(Localization.UtilityJoinedDiscord), creationTimestamp, true)
                     .AddField($"{GetText(Localization.UtilityRoles)} ({userRoles.Count})", userRoles.Count != 0 ? sbRoles.ToString() : "-");
 
                 await ReplyAsync(embed);
@@ -127,16 +136,21 @@ namespace Rias.Modules.Utility
             [Context(ContextType.Guild)]
             public async Task ServerInfo()
             {
+                var locale = Localization.GetGuildLocale(Context.Guild!.Id);
+                var creationTimestampDateTime = Context.Guild!.CreationTimestamp.UtcDateTime;
+                var creationTimestamp = $"{creationTimestampDateTime:yyyy-MM-dd HH:mm:ss}\n" +
+                                        $"`{GetText(Localization.UtilityDateTimeAgo, (DateTime.UtcNow - creationTimestampDateTime).Humanize(6, new CultureInfo(locale), TimeUnit.Year, TimeUnit.Second))}`";
+                
                 var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ConfirmColor,
-                        Title = Context.Guild!.Name
+                        Title = Context.Guild.Name
                     }.WithThumbnail(Context.Guild.GetIconUrl())
                     .AddField(GetText(Localization.CommonId), Context.Guild.Id.ToString(), true)
                     .AddField(GetText(Localization.UtilityOwner), Context.Guild.Owner.FullName(), true)
                     .AddField(GetText(Localization.CommonMembers), Context.Guild.MemberCount.ToString(), true)
                     .AddField(GetText(Localization.UtilityBots), Context.Guild.Members.Count(x => x.Value.IsBot).ToString(), true)
-                    .AddField(GetText(Localization.UtilityCreatedAt), Context.Guild.CreationTimestamp.UtcDateTime.ToString("yyyy-MM-dd hh:mm:ss tt"), true)
+                    .AddField(GetText(Localization.UtilityCreatedAt), creationTimestamp, true)
                     .AddField(GetText(Localization.UtilityTextChannels), Context.Guild.Channels.Count(x => x.Value.Type == ChannelType.Text).ToString(), true)
                     .AddField(GetText(Localization.UtilityVoiceChannels), Context.Guild.Channels.Count(x => x.Value.Type == ChannelType.Voice).ToString(), true)
                     .AddField(GetText(Localization.UtilitySystemChannel), Context.Guild.SystemChannel?.Mention ?? "-", true)
