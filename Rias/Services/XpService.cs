@@ -44,18 +44,20 @@ namespace Rias.Services
         
         public static string ReplacePlaceholders(DiscordMember member, DiscordRole? role, int level, string message)
         {
+            var username = member.FullName().Replace("\\", "\\\\").Replace("\"", "\\\"");
+            var guildName = member.Guild.Name.Replace("\\", "\\\\").Replace("\"", "\\\"");
             var sb = new StringBuilder(message)
                 .Replace("%mention%", member.Mention)
-                .Replace("%member%", member.Username)
-                .Replace("%user%", member.Username)
-                .Replace("%guild%", member.Guild.Name)
-                .Replace("%server%", member.Guild.Name)
+                .Replace("%member%", username)
+                .Replace("%user%", username)
+                .Replace("%guild%", guildName)
+                .Replace("%server%", guildName)
                 .Replace("%level%", level.ToString())
                 .Replace("%avatar%", member.GetAvatarUrl(ImageFormat.Auto));
 
             if (role != null)
             {
-                sb.Replace("%role%", role.Name)
+                sb.Replace("%role%", role.Name.Replace("\\", "\\\\").Replace("\"", "\\\""))
                     .Replace("%role_mention%", role.Mention);
             }
 

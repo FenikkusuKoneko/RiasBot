@@ -61,17 +61,19 @@ namespace Rias.Services
         
         public static string ReplacePlaceholders(DiscordUser user, string message)
         {
+            var username = user.FullName().Replace("\\", "\\\\").Replace("\"", "\\\"");
             var sb = new StringBuilder(message)
-                .Replace("%member%", user.FullName())
-                .Replace("%user%", user.FullName())
+                .Replace("%member%", username)
+                .Replace("%user%", username)
                 .Replace("%user_id%", user.Id.ToString())
                 .Replace("%avatar%", user.GetAvatarUrl(ImageFormat.Auto));
 
             if (user is DiscordMember member)
             {
+                var guildName = member.Guild.Name.Replace("\\", "\\\\").Replace("\"", "\\\"");
                 sb.Replace("%mention%", member.Mention)
-                    .Replace("%guild%", member.Guild.Name)
-                    .Replace("%server%", member.Guild.Name);
+                    .Replace("%guild%", guildName)
+                    .Replace("%server%", guildName);
             }
 
             return sb.ToString();
