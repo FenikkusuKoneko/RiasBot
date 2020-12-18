@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -19,6 +20,7 @@ namespace Rias.Modules.Administration
         [Name("Emojis")]
         public class EmojisSubmodule : RiasModule
         {
+            private const string EmojiCdn = "https://cdn.discordapp.com/emojis/{0}?v=1"; 
             private readonly HttpClient _httpClient;
             
             public EmojisSubmodule(IServiceProvider serviceProvider)
@@ -32,43 +34,68 @@ namespace Rias.Modules.Administration
             [MemberPermission(Permissions.ManageEmojis)]
             [BotPermission(Permissions.ManageEmojis)]
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
-            public async Task AddEmojiAsync(string url, [Remainder] string name)
+            public async Task AddEmojiAsync(string emoji, [Remainder] string name)
             {
-                if (!Uri.TryCreate(url, UriKind.Absolute, out var emojiUri))
-                {
-                    await ReplyErrorAsync(Localization.UtilityUrlNotValid);
-                    return;
-                }
-
-                if (emojiUri.Scheme != Uri.UriSchemeHttps)
-                {
-                    await ReplyErrorAsync(Localization.UtilityUrlNotHttps);
-                    return;
-                }
-
-                using var result = await _httpClient.GetAsync(emojiUri);
-                if (!result.IsSuccessStatusCode)
-                {
-                    await ReplyErrorAsync(Localization.UtilityImageOrUrlNotGood);
-                    return;
-                }
-
-                await using var stream = await result.Content.ReadAsStreamAsync();
                 await using var emojiStream = new MemoryStream();
-                await stream.CopyToAsync(emojiStream);
-                emojiStream.Position = 0;
-
                 bool? isAnimated = null;
-                if (RiasUtilities.IsPng(emojiStream) || RiasUtilities.IsJpg(emojiStream))
-                    isAnimated = false;
-
-                if (!isAnimated.HasValue && RiasUtilities.IsGif(emojiStream))
+                
+                if (RiasUtilities.TryParseEmoji(emoji, out var emojiId))
+                {
+                    var emojiUrl = string.Format(EmojiCdn, $"{emojiId}.gif");
+                    var result = await _httpClient.GetAsync(emojiUrl);
                     isAnimated = true;
+                    
+                    if (result.StatusCode == HttpStatusCode.UnsupportedMediaType)
+                    {
+                        emojiUrl = string.Format(EmojiCdn, $"{emojiId}.png");
+                        result = await _httpClient.GetAsync(emojiUrl);
+                        isAnimated = false;
+
+                        if (!result.IsSuccessStatusCode)
+                            return;
+                    }
+                    
+                    await using var stream = await result.Content.ReadAsStreamAsync();
+                    await stream.CopyToAsync(emojiStream);
+                    emojiStream.Position = 0;
+                }
 
                 if (!isAnimated.HasValue)
                 {
-                    await ReplyErrorAsync(Localization.UtilityUrlNotPngJpgGif);
-                    return;
+                    if (!Uri.TryCreate(emoji, UriKind.Absolute, out var emojiUri))
+                    {
+                        await ReplyErrorAsync(Localization.UtilityUrlNotValid);
+                        return;
+                    }
+
+                    if (emojiUri.Scheme != Uri.UriSchemeHttps)
+                    {
+                        await ReplyErrorAsync(Localization.UtilityUrlNotHttps);
+                        return;
+                    }
+
+                    using var result = await _httpClient.GetAsync(emojiUri);
+                    if (!result.IsSuccessStatusCode)
+                    {
+                        await ReplyErrorAsync(Localization.UtilityImageOrUrlNotGood);
+                        return;
+                    }
+                    
+                    await using var stream = await result.Content.ReadAsStreamAsync();
+                    await stream.CopyToAsync(emojiStream);
+                    emojiStream.Position = 0;
+                    
+                    if (RiasUtilities.IsPng(emojiStream) || RiasUtilities.IsJpg(emojiStream))
+                        isAnimated = false;
+
+                    if (!isAnimated.HasValue && RiasUtilities.IsGif(emojiStream))
+                        isAnimated = true;
+
+                    if (!isAnimated.HasValue)
+                    {
+                        await ReplyErrorAsync(Localization.UtilityUrlNotPngJpgGif);
+                        return;
+                    }
                 }
 
                 var emojis = Context.Guild!.Emojis.Values;
