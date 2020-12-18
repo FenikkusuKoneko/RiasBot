@@ -207,7 +207,18 @@ namespace Rias.Implementation
                     embed.WithDescription(description);
 
                 if (!string.IsNullOrEmpty(colorString))
-                    embed.WithColor(HexToInt(colorString) ?? 0xFFFFFF);
+                {
+                    if (string.Equals(colorString, "random", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var random = new Random();
+                        var color = new DiscordColor((byte) random.Next(255), (byte) random.Next(255), (byte) random.Next(255));
+                        embed.WithColor(color);
+                    }
+                    else
+                    {
+                        embed.WithColor(HexToInt(colorString) ?? 0xFFFFFF);
+                    }
+                }
 
                 if (!string.IsNullOrEmpty(thumbnail))
                     embed.WithThumbnail(thumbnail);
