@@ -49,7 +49,7 @@ namespace Rias.Modules.Reactions
                     member.Mention, ((DiscordMember) Context.User).DisplayName), embed: embed);
         }
 
-        [Command("pat")]
+        [Command("pat", "pet")]
         [Context(ContextType.Guild)]
         [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         [Priority(0)]
