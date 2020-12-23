@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
@@ -30,7 +31,7 @@ namespace Rias.Modules.Administration
         [MemberPermission(Permissions.Administrator)]
         [BotPermission(Permissions.ManageWebhooks)]
         [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
-        public async Task SetGreetAsync()
+        public async Task SetGreetAsync([TextChannel, Remainder] DiscordChannel? channel = null)
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
             if (string.IsNullOrEmpty(guildDb.GreetMessage))
@@ -40,7 +41,11 @@ namespace Rias.Modules.Administration
             }
             
             var webhook = guildDb.GreetWebhookId > 0 ? await Context.Guild!.GetWebhookAsync(guildDb.GreetWebhookId) : null;
-            guildDb.GreetNotification = !guildDb.GreetNotification;
+            if (channel is null)
+                guildDb.GreetNotification = !guildDb.GreetNotification;
+            else
+                guildDb.GreetNotification = true;
+            
             if (!guildDb.GreetNotification)
             {
                 if (webhook != null)
@@ -52,27 +57,51 @@ namespace Rias.Modules.Administration
 
                 return;
             }
-
+            
             var currentMember = Context.CurrentMember!;
             await using var stream = await _httpClient.GetStreamAsync(currentMember.GetAvatarUrl(ImageFormat.Auto));
             await using var webhookAvatar = new MemoryStream();
             await stream.CopyToAsync(webhookAvatar);
             webhookAvatar.Position = 0;
-            
-            webhook = await Context.Channel.CreateWebhookAsync(currentMember.Username, webhookAvatar);
+
+            if (webhook is null)
+            {
+                if (channel is null)
+                    webhook = await Context.Channel.CreateWebhookAsync(currentMember.Username, webhookAvatar);
+                else
+                    webhook = await channel.CreateWebhookAsync(currentMember.Username, webhookAvatar);
+            }
+            else if (channel is not null)
+            {
+                await webhook.ModifyAsync(currentMember.Username, webhookAvatar, channel.Id);
+            }
+
             guildDb.GreetWebhookId = webhook.Id;
             await DbContext.SaveChangesAsync();
 
             var greetMessage = BotService.ReplacePlaceholders(Context.User, guildDb.GreetMessage);
             if (RiasUtilities.TryParseMessage(greetMessage, out var customMessage))
-                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetEnabled)}\n\n{customMessage.Content}", embed: customMessage.Embed);
+            {
+                var content = (channel is null
+                                  ? GetText(Localization.AdministrationGreetEnabled)
+                                  : GetText(Localization.AdministrationGreetEnabledChannel, channel.Mention))
+                              + $"\n{GetText(Localization.AdministrationGreetMessage)}\n\n{customMessage.Content}";
+                await Context.Channel.SendMessageAsync(content, embed: customMessage.Embed);
+            }
             else
-                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetEnabled)}\n\n{greetMessage}");
+            {
+                var content = (channel is null
+                                  ? GetText(Localization.AdministrationGreetEnabled)
+                                  : GetText(Localization.AdministrationGreetEnabledChannel, channel.Mention))
+                              + $"\n{GetText(Localization.AdministrationGreetMessage)}\n\n{greetMessage}";
+                await Context.Channel.SendMessageAsync(content);
+            }
         }
         
         [Command("greetmessage", "greetmsg")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
+        [BotPermission(Permissions.ManageWebhooks)]
         public async Task GreetMessageAsync([Remainder] string message)
         {
             if (message.Length > 1500)
@@ -93,10 +122,31 @@ namespace Rias.Modules.Administration
             guildDb.GreetMessage = message;
             await DbContext.SaveChangesAsync();
             
+            var webhook = guildDb.GreetWebhookId > 0 ? await Context.Guild!.GetWebhookAsync(guildDb.GreetWebhookId) : null;
+            var channel = Context.Guild!.GetChannel(webhook?.ChannelId ?? 0);
+
             if (greetMessageParsed)
-                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetMessageSet)}\n\n{customMessage.Content}", embed: customMessage.Embed);
+            {
+                var content = $"{GetText(Localization.AdministrationGreetMessageSet)}\n"
+                              + (channel is null
+                                  ? GetText(Localization.AdministrationGreetDisabled)
+                                  : channel.Id == Context.Channel.Id
+                                      ? GetText(Localization.AdministrationGreetEnabled)
+                                      : GetText(Localization.AdministrationGreetEnabledChannel, channel.Mention))
+                              + $"\n{GetText(Localization.AdministrationGreetMessage)}\n\n{customMessage.Content}";
+                await Context.Channel.SendMessageAsync(content, embed: customMessage.Embed);
+            }
             else
-                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationGreetMessageSet)}\n\n{greetMessage}");
+            {
+                var content = $"{GetText(Localization.AdministrationGreetMessageSet)}\n"
+                              + (channel is null
+                                  ? GetText(Localization.AdministrationGreetDisabled)
+                                  : channel.Id == Context.Channel.Id
+                                      ? GetText(Localization.AdministrationGreetEnabled)
+                                      : GetText(Localization.AdministrationGreetEnabledChannel, channel.Mention))
+                              + $"\n{GetText(Localization.AdministrationGreetMessage)}\n\n{greetMessage}";
+                await Context.Channel.SendMessageAsync(content);
+            }
         }
         
         [Command("setbye", "bye")]
@@ -104,7 +154,7 @@ namespace Rias.Modules.Administration
         [MemberPermission(Permissions.Administrator)]
         [BotPermission(Permissions.ManageWebhooks)]
         [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.Guild)]
-        public async Task SetByeAsync()
+        public async Task SetByeAsync([TextChannel, Remainder] DiscordChannel? channel = null)
         {
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
             if (string.IsNullOrEmpty(guildDb.ByeMessage))
@@ -114,7 +164,11 @@ namespace Rias.Modules.Administration
             }
             
             var webhook = guildDb.ByeWebhookId > 0 ? await Context.Guild!.GetWebhookAsync(guildDb.ByeWebhookId) : null;
-            guildDb.ByeNotification = !guildDb.ByeNotification;
+            if (channel is null)
+                guildDb.ByeNotification = !guildDb.ByeNotification;
+            else
+                guildDb.ByeNotification = false;
+            
             if (!guildDb.ByeNotification)
             {
                 if (webhook != null)
@@ -132,16 +186,39 @@ namespace Rias.Modules.Administration
             await using var webhookAvatar = new MemoryStream();
             await stream.CopyToAsync(webhookAvatar);
             webhookAvatar.Position = 0;
+
+            if (webhook is null)
+            {
+                if (channel is null)
+                    webhook = await Context.Channel.CreateWebhookAsync(currentMember.Username, webhookAvatar);
+                else
+                    webhook = await channel.CreateWebhookAsync(currentMember.Username, webhookAvatar);
+            }
+            else if (channel is not null)
+            {
+                await webhook.ModifyAsync(currentMember.Username, webhookAvatar, channel.Id);
+            }
             
-            webhook = await Context.Channel.CreateWebhookAsync(currentMember.Username, webhookAvatar);
             guildDb.ByeWebhookId = webhook.Id;
             await DbContext.SaveChangesAsync();
             
             var byeMessage = BotService.ReplacePlaceholders(Context.User, guildDb.ByeMessage);
             if (RiasUtilities.TryParseMessage(byeMessage, out var customMessage))
-                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeEnabled)}\n\n{customMessage.Content}", embed: customMessage.Embed);
+            {
+                var content = (channel is null
+                                  ? GetText(Localization.AdministrationByeEnabled)
+                                  : GetText(Localization.AdministrationByeEnabledChannel, channel.Mention))
+                              + $"\n{GetText(Localization.AdministrationByeMessage)}\n\n{customMessage.Content}";
+                await Context.Channel.SendMessageAsync(content, embed: customMessage.Embed);
+            }
             else
-                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeEnabled)}\n\n{byeMessage}");
+            {
+                var content = (channel is null
+                                  ? GetText(Localization.AdministrationByeEnabled)
+                                  : GetText(Localization.AdministrationByeEnabledChannel, channel.Mention))
+                              + $"\n{GetText(Localization.AdministrationByeMessage)}\n\n{byeMessage}";
+                await Context.Channel.SendMessageAsync(content);
+            }
         }
         
         [Command("byemessage", "byemsg")]
@@ -167,35 +244,72 @@ namespace Rias.Modules.Administration
             guildDb.ByeMessage = message;
             await DbContext.SaveChangesAsync();
             
+            var webhook = guildDb.ByeWebhookId > 0 ? await Context.Guild!.GetWebhookAsync(guildDb.ByeWebhookId) : null;
+            var channel = Context.Guild!.GetChannel(webhook?.ChannelId ?? 0);
+
             if (byeMessageParsed)
-                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeMessageSet)}\n\n{customMessage.Content}", embed: customMessage.Embed);
+            {
+                var content = $"{GetText(Localization.AdministrationByeMessageSet)}\n"
+                              + (channel is null
+                                  ? GetText(Localization.AdministrationByeDisabled)
+                                  : channel.Id == Context.Channel.Id
+                                      ? GetText(Localization.AdministrationByeEnabled)
+                                      : GetText(Localization.AdministrationByeEnabledChannel, channel.Mention))
+                              + $"\n{GetText(Localization.AdministrationByeMessage)}\n\n{customMessage.Content}";
+                await Context.Channel.SendMessageAsync(content, embed: customMessage.Embed);
+            }
             else
-                await Context.Channel.SendMessageAsync($"{GetText(Localization.AdministrationByeMessageSet)}\n\n{byeMessage}");
+            {
+                var content = $"{GetText(Localization.AdministrationByeMessageSet)}\n"
+                              + (channel is null
+                                  ? GetText(Localization.AdministrationByeDisabled)
+                                  : channel.Id == Context.Channel.Id
+                                      ? GetText(Localization.AdministrationByeEnabled)
+                                      : GetText(Localization.AdministrationByeEnabledChannel, channel.Mention))
+                              + $"\n{GetText(Localization.AdministrationByeMessage)}\n\n{byeMessage}";
+                await Context.Channel.SendMessageAsync(content);
+            }
         }
         
         [Command("setmodlog", "modlog")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
-        public async Task SetModLogAsync()
+        public async Task SetModLogAsync([TextChannel, Remainder] DiscordChannel? channel = null)
         {
             var modLogSet = false;
             var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
-            if (guildDb.ModLogChannelId != Context.Channel.Id)
+
+            if (channel is not null)
             {
-                guildDb.ModLogChannelId = Context.Channel.Id;
+                guildDb.ModLogChannelId = channel.Id;
                 modLogSet = true;
             }
             else
             {
-                guildDb.ModLogChannelId = 0;
+                if (guildDb.ModLogChannelId == 0)
+                {
+                    guildDb.ModLogChannelId = Context.Channel.Id;
+                    modLogSet = true;
+                }
+                else
+                {
+                    guildDb.ModLogChannelId = 0;
+                }
             }
 
             await DbContext.SaveChangesAsync();
-            
+
             if (modLogSet)
-                await ReplyConfirmationAsync(Localization.AdministrationModLogEnabled);
+            {
+                if (channel is null)
+                    await ReplyConfirmationAsync(Localization.AdministrationModLogEnabled);
+                else
+                    await ReplyConfirmationAsync(Localization.AdministrationModLogEnabledChannel, channel.Mention);
+            }
             else
+            {
                 await ReplyConfirmationAsync(Localization.AdministrationModLogDisabled);
+            }
         }
     }
 }

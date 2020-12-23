@@ -12,8 +12,8 @@
 
     <ItemGroup>
         <PackageReference Include="CoreCLR-NCalc" Version="2.2.92" />
-        <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00766" />
-        <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00766" />
+        <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00769" />
+        <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00769" />
         <PackageReference Include="EFCore.NamingConventions" Version="5.0.0" />
         <PackageReference Include="Humanizer" Version="2.8.26" />
         <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.22.2.2" />

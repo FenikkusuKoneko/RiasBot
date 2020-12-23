@@ -3,16 +3,21 @@ namespace Rias.Implementation
     public partial class Localization
     {
         public const string AdministrationGreetEnabled = "administration_greet_enabled";
+        public const string AdministrationGreetEnabledChannel = "administration_greet_enabled_channel";
         public const string AdministrationGreetDisabled = "administration_greet_disabled";
         public const string AdministrationGreetMessageNotSet = "administration_greet_message_not_set";
         public const string AdministrationGreetMessageLengthLimit = "administration_greet_message_length_limit";
         public const string AdministrationGreetMessageSet = "administration_greet_message_set";
+        public const string AdministrationGreetMessage = "administration_greet_message";
         public const string AdministrationByeEnabled = "administration_bye_enabled";
+        public const string AdministrationByeEnabledChannel = "administration_bye_enabled_channel";
         public const string AdministrationByeDisabled = "administration_bye_disabled";
         public const string AdministrationByeMessageNotSet = "administration_bye_message_not_set";
         public const string AdministrationByeMessageLengthLimit = "administration_bye_message_length_limit";
         public const string AdministrationByeMessageSet = "administration_bye_message_set";
+        public const string AdministrationByeMessage = "administration_bye_message";
         public const string AdministrationModLogEnabled = "administration_mod_log_enabled";
+        public const string AdministrationModLogEnabledChannel = "administration_mod_log_enabled_channel";
         public const string AdministrationModLogDisabled = "administration_mod_log_disabled";
         public const string AdministrationCategoryChannelCreated = "administration_category_channel_created";
         public const string AdministrationCategoryChannelDeleted = "administration_category_channel_deleted";
