@@ -298,7 +298,7 @@ namespace Rias.Services
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             
             var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id);
-            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
+            var userGuildDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.MemberId == member.Id);
             
             if (userGuildDb is null)
                 return;
@@ -445,7 +445,7 @@ namespace Rias.Services
             if (guildDb is null)
                 return;
 
-            var userGuildDb = await db.GuildUsers.FirstOrDefaultAsync(x => x.GuildId == args.Guild.Id && x.UserId == args.Member.Id);
+            var userGuildDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == args.Guild.Id && x.MemberId == args.Member.Id);
             if (userGuildDb is null)
                 return;
 

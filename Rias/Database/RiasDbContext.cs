@@ -40,7 +40,7 @@ namespace Rias.Database
         
         public DbSet<GuildEntity> Guilds { get; set; }
         
-        public DbSet<GuildUserEntity> GuildUsers { get; set; }
+        public DbSet<MembersEntity> Members { get; set; }
         
         public DbSet<GuildXpRoleEntity> GuildXpRoles { get; set; }
         
@@ -140,8 +140,8 @@ namespace Rias.Database
                 .HasIndex(x => x.GuildId)
                 .IsUnique();
             
-            modelBuilder.Entity<GuildUserEntity>()
-                .HasIndex(x => new { x.GuildId, x.UserId })
+            modelBuilder.Entity<MembersEntity>()
+                .HasIndex(x => new { x.GuildId, UserId = x.MemberId })
                 .IsUnique();
             
             modelBuilder.Entity<GuildXpRoleEntity>()

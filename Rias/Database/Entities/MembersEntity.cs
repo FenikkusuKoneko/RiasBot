@@ -2,11 +2,11 @@
 
 namespace Rias.Database.Entities
 {
-    public class GuildUserEntity : DbEntity
+    public class MembersEntity : DbEntity
     {
         public ulong GuildId { get; set; }
 
-        public ulong UserId { get; set; }
+        public ulong MemberId { get; set; }
 
         public int Xp { get; set; }
 

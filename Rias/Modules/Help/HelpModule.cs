@@ -114,14 +114,14 @@ namespace Rias.Modules.Help
             {
                 switch (attribute)
                 {
-                    case MemberPermissionAttribute userPermissionAttribute:
-                        var userPermissions = userPermissionAttribute.Permissions
+                    case MemberPermissionAttribute memberPermissionAttribute:
+                        var memberPermissions = memberPermissionAttribute.Permissions
                             .GetValueOrDefault()
                             .ToString()
                             .Split(",", StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
                             .ToArray();
-                        permissions.Append(GetText(Localization.HelpRequiresMemberPermissions, string.Join(", ", userPermissions)));
+                        permissions.Append(GetText(Localization.HelpRequiresMemberPermissions, string.Join(", ", memberPermissions)));
                         break;
                     case BotPermissionAttribute botPermissionAttribute:
                         var botPermissions = botPermissionAttribute.Permissions

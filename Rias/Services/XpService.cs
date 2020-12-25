@@ -111,8 +111,8 @@ namespace Rias.Services
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildXpDb = await db.GetOrAddAsync(
-                x => x.GuildId == member.Guild.Id && x.UserId == member.Id,
-                () => new GuildUserEntity { GuildId = member.Guild.Id, UserId = member.Id });
+                x => x.GuildId == member.Guild.Id && x.MemberId == member.Id,
+                () => new MembersEntity { GuildId = member.Guild.Id, MemberId = member.Id });
             
             if (check && guildXpDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
                 return;
@@ -423,11 +423,11 @@ namespace Rias.Services
             var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == member.Id);
             var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == member.Id);
 
-            var serverXpList = (await db.GetOrderedListAsync<GuildUserEntity, int>(x => x.GuildId == member.Guild.Id, y => y.Xp, true))
-                .Where(x => member.Guild.Members.ContainsKey(x.UserId))
+            var serverXpList = (await db.GetOrderedListAsync<MembersEntity, int>(x => x.GuildId == member.Guild.Id, y => y.Xp, true))
+                .Where(x => member.Guild.Members.ContainsKey(x.MemberId))
                 .ToList();
             
-            var userServerXp = serverXpList.FirstOrDefault(x => x.UserId == member.Id);
+            var userServerXp = serverXpList.FirstOrDefault(x => x.MemberId == member.Id);
             var serverRank = "?";
             if (userServerXp != null && RiasBot.ChunkedGuilds.Contains(member.Guild.Id))
                 serverRank = (serverXpList.IndexOf(userServerXp) + 1).ToString();

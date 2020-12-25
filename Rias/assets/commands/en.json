@@ -34,7 +34,7 @@
   "moderation_pruneban": "Bans a member with the option to remove his messages from last 7 days. Different from \"softban\" where the member is unbanned. If you provide a reason message I will DM the member with the reason.",
   "moderation_pruneban_examples": "[{0}pruneban MEMBER [REASON]]\n{0}pruneban @Member\n{0}pruneban 327927038360944640\n{0}pruneban @Member DO NOT SPAM HERE!\n{0}pruneban 327927038360944640 DO NOT SPAM HERE!",
   "moderation_prune": "[prefix]prune x - removes last x number of messages from the channel (up to 100, including yours).\n[prefix]prune @Member - removes all Member's messages in the last 100 messages.",
-  "moderation_prune_examples": "[{0}prune AMOUNT [MEMBER]\n{0}prune MEMBER [AMOUNT]]\n{0}prune x\n {0}prune @Member\n{0}prune @Member x\n{0}prune x @Member",
+  "moderation_prune_examples": "[{0}prune AMOUNT [MEMBER]]\n[{0}prune MEMBER [AMOUNT]]\n{0}prune x\n{0}prune @Member\n{0}prune @Member x\n{0}prune x @Member",
   "mute_mute": "Mutes a member from text and voice channels. You can provide a timeout or mute permanently and you can provide a reason.",
   "mute_mute_examples": "[{0}mute MEMBER [TIMEOUT] [REASON]]\n{0}mute @Member\n{0}mute @Member Stop talking off topic\n{0}mute @Member 1h\n{0}mute @Member 1d2h See you tomorrow",
   "mute_unmute": "Un-mutes a member from text and voice channels. You can provide a reason.",

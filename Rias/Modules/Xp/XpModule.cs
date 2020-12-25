@@ -101,8 +101,8 @@ namespace Rias.Modules.Xp
             if (page < 0)
                 page = 0;
             
-            var xpLeaderboard = (await DbContext.GetOrderedListAsync<GuildUserEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Xp, true))
-                .Where(x => Context.Guild!.Members.ContainsKey(x.UserId))
+            var xpLeaderboard = (await DbContext.GetOrderedListAsync<MembersEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Xp, true))
+                .Where(x => Context.Guild!.Members.ContainsKey(x.MemberId))
                 .Skip(page * 15)
                 .Take(15)
                 .ToList();
@@ -125,7 +125,7 @@ namespace Rias.Modules.Xp
             {
                 try
                 {
-                    var member = await Context.Guild!.GetMemberAsync(userDb.UserId);
+                    var member = await Context.Guild!.GetMemberAsync(userDb.MemberId);
                     description.Append($"{++index}. **{member.FullName()}**: " +
                                        $"`{GetText(Localization.XpLevelX, RiasUtilities.XpToLevel(userDb.Xp, XpService.XpThreshold))} " +
                                        $"({userDb.Xp} {GetText(Localization.XpXp).ToLowerInvariant()})`\n");
@@ -403,7 +403,7 @@ namespace Rias.Modules.Xp
                 return;
             }
             
-            DbContext.RemoveRange(await DbContext.GetListAsync<GuildUserEntity>(x => x.GuildId == Context.Guild!.Id));
+            DbContext.RemoveRange(await DbContext.GetListAsync<MembersEntity>(x => x.GuildId == Context.Guild!.Id));
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.XpGuildXpReset);
         }
