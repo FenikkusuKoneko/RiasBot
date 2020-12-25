@@ -38,10 +38,10 @@ namespace Rias.Services
             foreach (var vote in votes)
             {
                 var userDb = await db.GetOrAddAsync(x => x.UserId == vote.UserId, () => new UserEntity { UserId = vote.UserId });
-                if (userDb.IsBlacklisted)
+                if (userDb.IsBanned)
                 {
                     db.Remove(vote);
-                    Log.Information($"Vote discord user with ID {vote.UserId} is blacklisted, it was removed from the votes database table");
+                    Log.Information($"Vote discord user with ID {vote.UserId} is banned, it was removed from the votes database table");
                     continue;
                 }
 

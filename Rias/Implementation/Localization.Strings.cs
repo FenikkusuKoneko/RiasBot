@@ -206,12 +206,7 @@ namespace Rias.Implementation
         public const string BotDeleteCanceled = "bot_delete_canceled";
         public const string BotUserDeleted = "bot_user_deleted";
         public const string BotUserNotInDatabase = "bot_user_not_in_database";
-        public const string BotIsBlacklisted = "bot_is_blacklisted";
         public const string BotIsBanned = "bot_is_banned";
-        public const string BotBlacklistDialog = "bot_blacklist_dialog";
-        public const string BotBlacklistCanceled = "bot_blacklist_canceled";
-        public const string BotUserBlacklisted = "bot_user_blacklisted";
-        public const string BotUserBlacklistRemoved = "bot_user_blacklist_removed";
         public const string BotBotBanDialog = "bot_bot_ban_dialog";
         public const string BotBotBanCanceled = "bot_bot_ban_canceled";
         public const string BotUserBotBanned = "bot_user_bot_banned";
