@@ -208,8 +208,8 @@ namespace Rias.Modules.Administration
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.AdministrationMemberWarnings, member.FullName()),
                     Description = string.Join("\n", items.Select(x => $"{++index}. {x.Reason ?? "-"}\n" +
-                                                                      $"{GetText(Localization.AdministrationModerator)}: {x.Moderator}\n" +
-                                                                      $"{GetText(Localization.CommonDate)}: `{x.DateAdded:yyyy-MM-dd HH:mm:ss}`"))
+                                                                      $"├─{GetText(Localization.AdministrationModerator)}: {x.Moderator}\n" +
+                                                                      $"└─{GetText(Localization.CommonDate)}: `{x.DateAdded:yyyy-MM-dd HH:mm:ss}`"))
                 });
             }
 

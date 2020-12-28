@@ -30,7 +30,7 @@ namespace Rias.Modules.Administration
                 var roles = (member is null ? Context.Guild!.Roles.Select(x => x.Value) : member.Roles)
                     .Where(x => x.Id != Context.Guild!.EveryoneRole.Id)
                     .OrderByDescending(x => x.Position)
-                    .Select(x => $"{x.Mention} | {x.Id}")
+                    .Select(x => $"{x.Mention} • `{x.Id}`")
                     .ToList();
 
                 if (roles.Count == 0)
