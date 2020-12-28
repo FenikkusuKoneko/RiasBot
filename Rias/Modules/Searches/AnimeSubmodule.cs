@@ -89,7 +89,7 @@ namespace Rias.Modules.Searches
                     .AddField(GetText(Localization.SearchesGenres), genres, true)
                     .AddField(GetText(Localization.SearchesIsAdult), anime.IsAdult.ToString(), true)
                     .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(anime.Description)
-                        ? $"{anime.Description.Truncate(900)} [{GetText(Localization.More).ToLowerInvariant()}]({anime.SiteUrl})"
+                        ? $"{anime.Description.Truncate(900)} [{GetText(Localization.CommonMore).ToLowerInvariant()}]({anime.SiteUrl})"
                         : "-")
                     .WithImageUrl(anime.CoverImage.Large);
 
@@ -161,7 +161,7 @@ namespace Rias.Modules.Searches
                     .AddField(GetText(Localization.SearchesSynonyms), synonyms, true)
                     .AddField(GetText(Localization.SearchesIsAdult), manga.IsAdult.ToString(), true)
                     .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(manga.Description)
-                        ? $"{manga.Description.Truncate(900)} [{GetText(Localization.More.ToLowerInvariant())}]({manga.SiteUrl})"
+                        ? $"{manga.Description.Truncate(900)} [{GetText(Localization.CommonMore.ToLowerInvariant())}]({manga.SiteUrl})"
                         : "-")
                     .WithImageUrl(manga.CoverImage.Large);
 
@@ -321,7 +321,7 @@ namespace Rias.Modules.Searches
                     {
                         if (mangaSb.Length + manga.Length > 900)
                         {
-                            mangaSb.Append($"[{GetText(Localization.More).ToLowerInvariant()}]({character.SiteUrl})");
+                            mangaSb.Append($"[{GetText(Localization.CommonMore).ToLowerInvariant()}]({character.SiteUrl})");
                             break;
                         }
                         
@@ -341,7 +341,7 @@ namespace Rias.Modules.Searches
                     {
                         if (animeSb.Length + anime.Length > 900)
                         {
-                            animeSb.Append($"[{GetText(Localization.More).ToLowerInvariant()}]({character.SiteUrl})");
+                            animeSb.Append($"[{GetText(Localization.CommonMore).ToLowerInvariant()}]({character.SiteUrl})");
                             break;
                         }
                         
@@ -368,7 +368,7 @@ namespace Rias.Modules.Searches
                     .AddField(GetText(Localization.SearchesFromAnime), animeSb.ToString(), true)
                     .AddField(GetText(Localization.SearchesSource), "AniList", true)
                     .AddField(GetText(Localization.SearchesDescription), !string.IsNullOrEmpty(character.Description)
-                        ? $"{character.Description.Truncate(900)} [{GetText(Localization.More).ToLowerInvariant()}]({character.SiteUrl})"
+                        ? $"{character.Description.Truncate(900)} [{GetText(Localization.CommonMore).ToLowerInvariant()}]({character.SiteUrl})"
                         : "-")
                     .WithImageUrl(character.Image.Large);
 

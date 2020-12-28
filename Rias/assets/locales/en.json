@@ -584,6 +584,7 @@
   "common_server": "Server",
   "common_menu_page": "Page {0} / {1}",
   "common_more": "More",
+  "common_date": "Date",
   
   "attribute_owner_only": "This command can be ran only by my owner.",
   "attribute_member_guild_permissions": "You must have the {0} server permission(s).",

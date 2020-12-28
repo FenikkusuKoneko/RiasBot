@@ -554,7 +554,8 @@ namespace Rias.Implementation
         public const string CommonGlobal = "common_global";
         public const string CommonServer = "common_server";
         public const string CommonMenuPage = "common_menu_page";
-        public const string More = "common_more";
+        public const string CommonMore = "common_more";
+        public const string CommonDate = "common_date";
         
         public const string AttributeOwnerOnly = "attribute_owner_only";
         public const string AttributeMemberGuildPermissions = "attribute_member_guild_permissions";

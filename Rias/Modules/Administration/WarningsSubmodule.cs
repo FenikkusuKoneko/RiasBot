@@ -174,7 +174,7 @@ namespace Rias.Modules.Administration
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.AdministrationWarnedMembers),
-                    Description = string.Join("\n", items.Select(x => $"{++index}. {x.FullName()} | {x.Id}")),
+                    Description = string.Join("\n", items.Select(x => $"{++index}. {x.FullName()} • `{x.Id}`")),
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
                         Text = GetText(Localization.AdministrationWarningListFooter, Context.Prefix)
@@ -192,7 +192,8 @@ namespace Rias.Modules.Administration
                 
                 var warnings = warningsDb.Select((x, i) => new
                 {
-                    Moderator = moderators[i]?.FullName() ?? x.ModeratorId.ToString(),
+                    x.DateAdded,
+                    Moderator = moderators[i]?.Mention ?? x.ModeratorId.ToString(),
                     x.Reason
                 }).ToList();
 
@@ -206,8 +207,9 @@ namespace Rias.Modules.Administration
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.AdministrationMemberWarnings, member.FullName()),
-                    Description = string.Join("\n", items.Select(x => $"{++index}. {GetText(Localization.CommonReason)}: {x.Reason ?? "-"}\n" +
-                                                                      $"{GetText(Localization.AdministrationModerator)}: {x.Moderator}\n"))
+                    Description = string.Join("\n", items.Select(x => $"{++index}. {x.Reason ?? "-"}\n" +
+                                                                      $"{GetText(Localization.AdministrationModerator)}: {x.Moderator}\n" +
+                                                                      $"{GetText(Localization.CommonDate)}: `{x.DateAdded:yyyy-MM-dd HH:mm:ss}`"))
                 });
             }
 
