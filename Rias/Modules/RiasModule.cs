@@ -64,9 +64,7 @@ namespace Rias.Modules
         /// If the key doesn't start with "#", the prefix of the translation is the lower module name of this class.
         /// </summary>
         public Task<DiscordMessage> ReplyConfirmationAsync(string key, params object[] args)
-        {
-            return Context.Channel.SendConfirmationMessageAsync(Localization.GetText(Context.Guild?.Id, key, args));
-        }
+            => Context.Channel.SendConfirmationMessageAsync(Localization.GetText(Context.Guild?.Id, key, args));
 
         /// <summary>
         /// Send an error message with or without arguments. The form is an embed with the error color.<br/>
@@ -74,9 +72,7 @@ namespace Rias.Modules
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
         public Task<DiscordMessage> ReplyErrorAsync(string key, params object[] args)
-        {
-            return Context.Channel.SendErrorMessageAsync(Localization.GetText(Context.Guild?.Id, key, args));
-        }
+            => Context.Channel.SendErrorMessageAsync(Localization.GetText(Context.Guild?.Id, key, args));
 
         public async Task<DiscordMessage> ReplyAsync(DiscordEmbedBuilder embed)
             => await Context.Channel.SendMessageAsync(embed);
@@ -107,9 +103,7 @@ namespace Rias.Modules
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
         public string GetText(string key, params object[] args)
-        {
-            return Localization.GetText(Context.Guild?.Id, key, args);
-        }
+            => Localization.GetText(Context.Guild?.Id, key, args);
         
         /// <summary>
         /// Run a task in an async way.

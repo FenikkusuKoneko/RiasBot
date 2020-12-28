@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using ConcurrentCollections;
 using DSharpPlus;
@@ -222,70 +223,47 @@ namespace Rias.Services
         private Task SendFailedResultsAsync(RiasCommandContext context, IEnumerable<FailedResult> failedResults)
         {
             var guildId = context.Guild?.Id;
-            var embed = new DiscordEmbedBuilder
-            {
-                Color = RiasUtilities.ErrorColor,
-                Title = GetText(guildId, Localization.ServiceCommandNotExecuted)
-            };
-
-            var reasons = new List<string>();
-            var checksHashSet = new HashSet<Type>();
-
-            var parsedPrimitiveType = false;
-            var areTooManyArguments = false;
-            var areTooLessArguments = false;
+            var reasons = new HashSet<string>();
+            var argumentsFailed = false;
             
             foreach (var failedResult in failedResults)
             {
                 switch (failedResult)
                 {
                     case ChecksFailedResult checksFailedResult:
-                        foreach (var (check, result) in checksFailedResult.FailedChecks)
-                        {
-                            if (checksHashSet.Contains(check.GetType()))
-                                continue;
-                            
+                        foreach (var (_, result) in checksFailedResult.FailedChecks)
                             reasons.Add(result.Reason);
-                            checksHashSet.Add(check.GetType());
-                        }
+                        
                         break;
                     case TypeParseFailedResult typeParseFailedResult:
-                        if (_typeParsers.Any(x => x.BaseType!.GetGenericArguments()[0] == typeParseFailedResult.Parameter.Type))
-                        {
-                            reasons.Add(typeParseFailedResult.Reason);
-                        }
-                        else if (!parsedPrimitiveType)
-                        {
-                            reasons.Add(GetText(guildId, Localization.TypeParserPrimitiveType, context.Prefix, typeParseFailedResult.Parameter.Command.Name));
-                            parsedPrimitiveType = true;
-                        }
-                        
-                        break;
-                    case ArgumentParseFailedResult argumentParseFailedResult:
-                        var arguments = CountArguments(context.RawArguments);
-                        var parameters = argumentParseFailedResult.Command.Parameters;
+                        reasons.Add(_typeParsers.Any(x => x.BaseType!.GetGenericArguments()[0] == typeParseFailedResult.Parameter.Type)
+                            ? typeParseFailedResult.Reason
+                            : GetText(guildId, Localization.TypeParserPrimitiveType, context.Prefix, typeParseFailedResult.Parameter.Command.Name));
 
-                        if (!areTooLessArguments && arguments < parameters.Count)
-                        {
-                            reasons.Add(GetText(guildId, Localization.ServiceCommandLessArguments, context.Prefix, argumentParseFailedResult.Command.Name));
-                            areTooLessArguments = true;
-                        }
-                        
-                        if (!areTooManyArguments && arguments > parameters.Count)
-                        {
-                            reasons.Add(GetText(guildId, Localization.ServiceCommandManyArguments, context.Prefix, argumentParseFailedResult.Command.Name));
-                            areTooManyArguments = true;
-                        }
-                        
+                        break;
+                    case ArgumentParseFailedResult:
+                        argumentsFailed = true;
                         break;
                 }
             }
 
             if (reasons.Count == 0)
-                return Task.CompletedTask;
+            {
+                return argumentsFailed
+                    ? context.Channel.SendMessageAsync(GenerateHelpEmbedAsync(context.Guild, context.Command, context.Prefix))
+                    : Task.CompletedTask;
+            }
 
-            embed.WithDescription($"**{GetText(guildId, reasons.Count == 1 ? Localization.CommonReason : Localization.CommonReasons)}**:\n" +
-                                  string.Join("\n", reasons.Select(x => $"• {x}")));
+            if (argumentsFailed)
+                reasons.Add(GetText(context.Guild?.Id, Localization.HelpBadArguments));
+            
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ErrorColor,
+                Title = GetText(guildId, Localization.ServiceCommandNotExecuted),
+                Description = GetText(context.Guild?.Id, Localization.HelpCommandInformation, context.Prefix, context.Command.Name)
+            }.AddField(GetText(context.Guild?.Id, reasons.Count == 1 ? Localization.CommonReason : Localization.CommonReasons), string.Join("\n", reasons.Select(x => $"• {x}")));
+
             return context.Channel.SendMessageAsync(embed: embed);
         }
         
@@ -328,6 +306,104 @@ namespace Rias.Services
             return !string.IsNullOrEmpty(prefix) ? prefix : Configuration.Prefix;
         }
         
+        public DiscordEmbedBuilder GenerateHelpEmbedAsync(DiscordGuild? guild, Command command, string prefix)
+        {
+            var moduleName = command.Module.Name;
+            if (command.Module.Parent != null && !string.Equals(command.Module.Name, command.Module.Parent.Name, StringComparison.OrdinalIgnoreCase))
+                moduleName = $"{command.Module.Parent.Name} -> {moduleName}";
+
+            var moduleAlias = command.Module.Aliases.Count != 0 ? $"{command.Module.Aliases[0]} " : string.Empty;
+            var title = string.Join(" / ", command.Aliases.Select(a => $"{prefix}{moduleAlias}{a}"));
+            
+            if (string.IsNullOrEmpty(title))
+                title = $"{prefix}{moduleAlias}";
+
+            if (command.Checks.Any(c => c is OwnerOnlyAttribute))
+                title += $" [{GetText(guild?.Id, Localization.HelpOwnerOnly).ToLowerInvariant()}]";
+
+            var commandInfoKey = command.Aliases.Count != 0
+                ? $"{command.Module.Name.Replace(" ", "_").ToLower()}_{command.Aliases[0]}"
+                : command.Name;
+            
+            var description = GetCommandInfo(guild?.Id, commandInfoKey);
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                Author = new DiscordEmbedBuilder.EmbedAuthor
+                {
+                    Name = GetText(guild?.Id, Localization.HelpModule, moduleName)
+                },
+                Title = title,
+                Description = description.Replace("[prefix]", prefix).Replace("[currency]", Configuration.Currency)
+            };
+
+            var permissions = new StringBuilder();
+
+            foreach (var attribute in command.Checks)
+            {
+                switch (attribute)
+                {
+                    case MemberPermissionAttribute memberPermissionAttribute:
+                        var memberPermissions = memberPermissionAttribute.Permissions
+                            .GetValueOrDefault()
+                            .ToString()
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
+                            .ToArray();
+                        permissions.Append(GetText(guild?.Id, Localization.HelpRequiresMemberPermissions, string.Join(", ", memberPermissions)));
+                        break;
+                    case BotPermissionAttribute botPermissionAttribute:
+                        var botPermissions = botPermissionAttribute.Permissions
+                            .GetValueOrDefault()
+                            .ToString()
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
+                            .ToArray();
+                        
+                        if (permissions.Length > 0)
+                            permissions.AppendLine();
+                        
+                        permissions.Append(GetText(guild?.Id, Localization.HelpRequiresBotPermissions,  RiasBot.Client.CurrentUser.Username, string.Join(", ", botPermissions)));
+                        break;
+                    case OwnerOnlyAttribute:
+                        title = $"{title} **({GetText(guild?.Id, Localization.HelpOwnerOnly)})**";
+                        break;
+                }
+            }
+
+            if (permissions.Length != 0)
+                embed.AddField(GetText(guild?.Id, Localization.HelpRequiresPermissions), permissions.ToString());
+            
+            var commandExamples = GetCommandInfo(guild?.Id, $"{commandInfoKey}_examples").Split('\n');
+            var usages = new StringBuilder();
+            var examples = new StringBuilder();
+
+            foreach (var commandExample in commandExamples)
+            {
+                if (commandExample[0] == '[' && commandExample[^1] == ']')
+                    usages.AppendLine(commandExample[1..^1]);
+                else
+                    examples.AppendLine(commandExample);
+            }
+            
+            embed.AddField(GetText(guild?.Id, Localization.CommonExamples), Formatter.InlineCode(string.Format(examples.ToString(), prefix)), true);
+            embed.AddField(GetText(guild?.Id, Localization.CommonUsages), Formatter.InlineCode(string.Format(usages.ToString(), prefix)), true);
+            
+            var commandCooldown = command.Cooldowns.FirstOrDefault();
+            if (commandCooldown != null)
+            {
+                var locale = Localization.GetGuildLocale(guild?.Id);
+                embed.AddField(GetText(guild?.Id, Localization.CommonCooldown),
+                    $"{GetText(guild?.Id, Localization.CommonAmount)}: **{commandCooldown.Amount}**\n" +
+                    $"{GetText(guild?.Id, Localization.CommonPeriod)}: **{commandCooldown.Per.Humanize(culture: new CultureInfo(locale))}**\n" +
+                    $"{GetText(guild?.Id, Localization.CommonPer)}: **{GetText(guild?.Id, Localization.CommonCooldownBucketType(commandCooldown.BucketType.Humanize(LetterCasing.LowerCase).Underscore()))}**");
+            }
+            
+            embed.WithCurrentTimestamp();
+            return embed;
+        }
+        
         private async Task<bool> CheckGuildCommandMessageDeletion(DiscordGuild guild)
         {
             using var scope = RiasBot.CreateScope();
@@ -344,41 +420,5 @@ namespace Rias.Services
         
         private string GenerateCooldownKey(string name, ulong id, ulong? secondId = null)
             => secondId.HasValue ? $"{name}_{id}_{secondId}" : $"{name}_{id}";
-        
-        private int CountArguments(string arguments)
-        {
-            if (string.IsNullOrWhiteSpace(arguments))
-                return 0;
-
-            var count = 0;
-            var quoteOpened = false;
-
-            for (var i = 0; i < arguments.Length; i++)
-            {
-                var character = arguments[i];
-                
-                if (character == '"' && !quoteOpened)
-                    quoteOpened = true;
-
-                if (char.IsWhiteSpace(character))
-                {
-                    if (quoteOpened && i > 0 && arguments[i - 1] == '"')
-                        quoteOpened = false;
-
-                    if (quoteOpened)
-                        continue;
-
-                    if (i > 0 && char.IsWhiteSpace(arguments[i - 1]))
-                        continue;
-
-                    count++;    
-                }
-            }
-
-            if (!char.IsWhiteSpace(arguments[^1]))
-                count++;
-
-            return count;
-        }
     }
 }

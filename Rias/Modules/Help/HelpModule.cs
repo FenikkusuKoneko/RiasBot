@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
-using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
@@ -78,99 +76,7 @@ namespace Rias.Modules.Help
                 return;
             }
             
-            var moduleName = command.Module.Name;
-            if (command.Module.Parent != null && !string.Equals(command.Module.Name, command.Module.Parent.Name, StringComparison.OrdinalIgnoreCase))
-                moduleName = $"{command.Module.Parent.Name} -> {moduleName}";
-
-            var moduleAlias = module != null ? $"{module.Aliases[0]} " : string.Empty;
-            var title = string.Join(" / ", command.Aliases.Select(a => $"{Context.Prefix}{moduleAlias}{a}"));
-            
-            if (string.IsNullOrEmpty(title))
-                title = $"{Context.Prefix}{moduleAlias}";
-
-            if (command.Checks.Any(c => c is OwnerOnlyAttribute))
-                title += $" [{GetText(Localization.HelpOwnerOnly).ToLowerInvariant()}]";
-
-            var commandInfoKey = command.Aliases.Count != 0
-                ? $"{command.Module.Name.Replace(" ", "_").ToLower()}_{command.Aliases[0]}"
-                : command.Name;
-            
-            var description = _commandHandlerService.GetCommandInfo(Context.Guild?.Id, commandInfoKey);
-
-            var embed = new DiscordEmbedBuilder
-            {
-                Color = RiasUtilities.ConfirmColor,
-                Author = new DiscordEmbedBuilder.EmbedAuthor
-                {
-                    Name = GetText(Localization.HelpModule, moduleName)
-                },
-                Title = title,
-                Description = description.Replace("[prefix]", Context.Prefix).Replace("[currency]", Configuration.Currency)
-            };
-
-            var permissions = new StringBuilder();
-
-            foreach (var attribute in command.Checks)
-            {
-                switch (attribute)
-                {
-                    case MemberPermissionAttribute memberPermissionAttribute:
-                        var memberPermissions = memberPermissionAttribute.Permissions
-                            .GetValueOrDefault()
-                            .ToString()
-                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
-                            .ToArray();
-                        permissions.Append(GetText(Localization.HelpRequiresMemberPermissions, string.Join(", ", memberPermissions)));
-                        break;
-                    case BotPermissionAttribute botPermissionAttribute:
-                        var botPermissions = botPermissionAttribute.Permissions
-                            .GetValueOrDefault()
-                            .ToString()
-                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
-                            .ToArray();
-                        
-                        if (permissions.Length > 0)
-                            permissions.AppendLine();
-                        
-                        permissions.Append(GetText(Localization.HelpRequiresBotPermissions,  RiasBot.Client.CurrentUser.Username, string.Join(", ", botPermissions)));
-                        break;
-                    case OwnerOnlyAttribute:
-                        title = $"{title} **({GetText(Localization.HelpOwnerOnly)})**";
-                        break;
-                }
-            }
-
-            if (permissions.Length != 0)
-                embed.AddField(GetText(Localization.HelpRequiresPermissions), permissions.ToString());
-            
-            var commandExamples = _commandHandlerService.GetCommandInfo(Context.Guild?.Id, $"{commandInfoKey}_examples").Split('\n');
-            var usages = new StringBuilder();
-            var examples = new StringBuilder();
-
-            foreach (var commandExample in commandExamples)
-            {
-                if (commandExample[0] == '[' && commandExample[^1] == ']')
-                    usages.AppendLine(commandExample[1..^1]);
-                else
-                    examples.AppendLine(commandExample);
-            }
-            
-            embed.AddField(GetText(Localization.CommonExamples), Formatter.InlineCode(string.Format(examples.ToString(), Context.Prefix)), true);
-            embed.AddField(GetText(Localization.CommonUsages), Formatter.InlineCode(string.Format(usages.ToString(), Context.Prefix)), true);
-            
-            var commandCooldown = command.Cooldowns.FirstOrDefault();
-            if (commandCooldown != null)
-            {
-                var locale = Localization.GetGuildLocale(Context.Guild!.Id);
-                embed.AddField(GetText(Localization.CommonCooldown),
-                    $"{GetText(Localization.CommonAmount)}: **{commandCooldown.Amount}**\n" +
-                    $"{GetText(Localization.CommonPeriod)}: **{commandCooldown.Per.Humanize(culture: new CultureInfo(locale))}**\n" +
-                    $"{GetText(Localization.CommonPer)}: **{GetText(Localization.CommonCooldownBucketType(commandCooldown.BucketType.Humanize(LetterCasing.LowerCase).Underscore()))}**");
-            }
-            
-            embed.WithCurrentTimestamp();
+            var embed = _commandHandlerService.GenerateHelpEmbedAsync(Context.Guild!, command, Context.Prefix);
             await ReplyAsync(embed);
         }
         

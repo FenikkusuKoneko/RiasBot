@@ -28,9 +28,7 @@ namespace Rias.Services
         /// If the key doesn't start with "#", the prefix of the translation is the lower module name of this class.
         /// </summary>
         public Task<DiscordMessage> ReplyConfirmationAsync(DiscordChannel channel, ulong guildId, string key, params object[] args)
-        {
-            return channel.SendConfirmationMessageAsync(Localization.GetText(guildId, key, args));
-        }
+            => channel.SendConfirmationMessageAsync(Localization.GetText(guildId, key, args));
 
         /// <summary>
         /// Send an error message with arguments. The form is an embed with the error color.<br/>
@@ -38,9 +36,7 @@ namespace Rias.Services
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
         public Task<DiscordMessage> ReplyErrorAsync(DiscordChannel channel, ulong guildId, string key, params object[] args)
-        {
-            return channel.SendErrorMessageAsync(Localization.GetText(guildId, key, args));
-        }
+            => channel.SendErrorMessageAsync(Localization.GetText(guildId, key, args));
 
         /// <summary>
         /// Get a translation text with or without arguments.<br/>
@@ -48,9 +44,7 @@ namespace Rias.Services
         /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
         public string GetText(ulong? guildId, string key, params object[] args)
-        {
-            return Localization.GetText(guildId, key, args);
-        }
+            => Localization.GetText(guildId, key, args);
 
         /// <summary>
         /// Run a task in an async way.

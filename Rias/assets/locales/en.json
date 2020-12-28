@@ -297,9 +297,11 @@
   "help_module_not_found": "I couldn't find the module or submodule. Type `{0}modules` to see all modules and submodules.",
   "help_all_commands_for_module": "All commands for module {0}",
   "help_all_commands_for_submodule": "All commands for submodule {0}",
+  "help_command_information": "Type `{0}help {1}` to get more information.",
   "help_command_info": "For a specific command info type {0}h <command>",
   "help_all_commands": "All commands",
   "help_commands_not_sent": "I couldn't send you the list with all commands via DM. Please verify if you disabled receiving DMs from this server.",
+  "help_bad_arguments": "The arguments are not good.",
   
   "nsfw_channel_not_nsfw": "The NSFW commands can be executed only in NSFW channels.",
   "nsfw_cache_not_initialized": "The cache did not finish downloading the nsfw images. Please wait a moment.",
@@ -595,7 +597,7 @@
   "attribute_bot_permission_not_guild": "The `BotPermissionAttribute` requires this command to be used in a server channel.",
   "attribute_context": "The command must be used in a {0}.",
 
-  "type_parser_primitive_type": "Check the types of your arguments. Check the examples of the command, type `{0}help {1}`",
+  "type_parser_primitive_type": "Check the types of your arguments.",
   "type_parser_channel_not_guild": "`ChannelTypeParser` cannot be used in a context without a guild!",
   "type_parser_member_not_guild": "`MemberTypeParser` cannot be used in a context without a guild!",
   "type_parser_role_not_guild": "`RoleTypeParser` cannot be used in a context without a guild!",
@@ -604,8 +606,6 @@
   
   "service_command_not_executed": "The command couldn't be executed",
   "service_command_cooldown": "Hey, calm down! Take a breath and try again in **{0}**.",
-  "service_command_less_arguments": "The arguments provided are less than the required arguments of the command. Check the examples of the command, type `{0}help {1}`",
-  "service_command_many_arguments": "The arguments provided are more than the required arguments of the command. Check the examples of the command, type `{0}help {1}`",
   "service_no_embed_links_permission": "Oh no! It seems like I don't have the **embed links** permission in this server.\nAll of my commands use embed messages to send confirmation, error or information messages.\nPlease ask an administrator or moderator to check my permissions and enable this permission for me in the server.",
   "service_no_embed_links_channel_permission": "Oh no! It seems like I don't have the **embed links** permission in this channel.\nAll my commands use embed messages to send confirmation, error or information messages.\nI see that I have this permission in the server so please use my commands in another channel where I am not restricted or ask an administrator or moderator to give me this permission in this channel."
 }

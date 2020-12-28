@@ -272,6 +272,8 @@ namespace Rias.Implementation
         public const string HelpCommandInfo = "help_command_info";
         public const string HelpAllCommands = "help_all_commands";
         public const string HelpCommandsNotSent = "help_commands_not_sent";
+        public const string HelpCommandInformation = "help_command_information";
+        public const string HelpBadArguments = "help_bad_arguments";
         
         public const string NsfwChannelNotNsfw = "nsfw_channel_not_nsfw";
         public const string NsfwCacheNotInitialized = "nsfw_cache_not_initialized";
@@ -575,8 +577,6 @@ namespace Rias.Implementation
         
         public const string ServiceCommandNotExecuted = "service_command_not_executed";
         public const string ServiceCommandCooldown = "service_command_cooldown";
-        public const string ServiceCommandLessArguments = "service_command_less_arguments";
-        public const string ServiceCommandManyArguments = "service_command_many_arguments";
         public const string ServiceNoEmbedLinksPermission = "service_no_embed_links_permission";
         public const string ServiceNoEmbedLinksChannelPermission = "service_no_embed_links_channel_permission";
         
