@@ -45,9 +45,14 @@ namespace Rias.Services
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
 
-            var role = (guild.GetRole(guildDb?.MuteRoleId ?? 0)
-                        ?? guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole, StringComparison.InvariantCultureIgnoreCase) && !x.Value.IsManaged).Value)
-                       ?? await guild.CreateRoleAsync(MuteRole);
+            var role = guild.GetRole(guildDb?.MuteRoleId ?? 0)
+                       ?? guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole, StringComparison.InvariantCultureIgnoreCase) && !x.Value.IsManaged).Value;
+
+            if (role is null)
+            {
+                role = await guild.CreateRoleAsync(MuteRole);
+                await AddMuteRoleToChannelsAsync(role, guild);
+            }
 
             var currentMember = guild.CurrentMember;
             if (currentMember.CheckRoleHierarchy(role) <= 0)
@@ -61,8 +66,7 @@ namespace Rias.Services
                 await ReplyErrorAsync(channel, guild.Id, Localization.AdministrationMemberAlreadyMuted, member.FullName());
                 return;
             }
-
-            await RunTaskAsync(AddMuteRoleToChannelsAsync(role, guild));
+            
             await member.GrantRoleAsync(role);
 
             await RunTaskAsync(AddMuteAsync(channel, moderator, member, timeout));
@@ -334,19 +338,32 @@ namespace Rias.Services
             var roleOverwrites = channel.PermissionOverwrites.FirstOrDefault(x => x.Type == OverwriteType.Role && x.Id == role.Id);
             if (roleOverwrites is null)
             {
-                await channel.AddOverwriteAsync(role, deny: Permissions.SendMessages | Permissions.Speak);
+                await channel.AddOverwriteAsync(role, deny: Permissions.SendMessages | Permissions.Speak | Permissions.AddReactions);
                 return;
             }
 
             var permissions = roleOverwrites.Denied;
+            var addPermissions = false;
 
             if (!permissions.HasPermission(Permissions.SendMessages))
+            {
                 permissions |= Permissions.SendMessages;
-            
-            if (!permissions.HasPermission(Permissions.Speak))
-                permissions |= Permissions.Speak;
+                addPermissions = true;
+            }
 
-            if (permissions > roleOverwrites.Denied)
+            if (!permissions.HasPermission(Permissions.Speak))
+            {
+                permissions |= Permissions.Speak;
+                addPermissions = true;
+            }
+
+            if (!permissions.HasPermission(Permissions.AddReactions))
+            {
+                permissions |= Permissions.AddReactions;
+                addPermissions = true;
+            }
+
+            if (addPermissions)
                 await channel.AddOverwriteAsync(role, deny: permissions);
         }
         
