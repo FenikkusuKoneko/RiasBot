@@ -167,7 +167,7 @@ namespace Rias.Modules.Administration
             if (channel is null)
                 guildDb.ByeNotification = !guildDb.ByeNotification;
             else
-                guildDb.ByeNotification = false;
+                guildDb.ByeNotification = true;
             
             if (!guildDb.ByeNotification)
             {
