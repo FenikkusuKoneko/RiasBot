@@ -146,6 +146,54 @@ namespace Rias.Modules.Administration
                 await SendMessageAsync(member, Localization.AdministrationMemberBanned, Localization.AdministrationBannedFrom, Localization.AdministrationMemberWasBanned, reason);
                 await member.BanAsync(7, reason);
             }
+
+            [Command("unban", "ub")]
+            [Context(ContextType.Guild)]
+            [MemberPermission(Permissions.BanMembers)]
+            [BotPermission(Permissions.BanMembers)]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+            public async Task UnbanAsync(string user, [Remainder] string? reason = null)
+            {
+                var bans = await Context.Guild!.GetBansAsync();
+                DiscordUser? bannedUser = null;
+                
+                if (ulong.TryParse(user, out var userId))
+                {
+                    bannedUser = bans.FirstOrDefault(b => b.User.Id == userId)?.User;
+                }
+                else
+                {
+                    var index = user.LastIndexOf("#", StringComparison.Ordinal);
+                    if (index > 0)
+                    {
+                        var username = user[..index];
+                        var discriminator = user[(index + 1)..];
+                        if (discriminator.Length == 4 && int.TryParse(discriminator, out _))
+                            bannedUser = bans.FirstOrDefault(b => string.Equals(b.User.Discriminator, discriminator)
+                                                                  && string.Equals(b.User.Username, username, StringComparison.OrdinalIgnoreCase))?.User;
+                    }
+                    
+                    bannedUser ??= bans.FirstOrDefault(u => string.Equals(u.User.Username, user, StringComparison.OrdinalIgnoreCase))?.User;
+                }
+                
+                if (bannedUser is null)
+                {
+                    await ReplyErrorAsync(Localization.AdministrationBanNotFound);
+                    return;
+                }
+                
+                await ReplyConfirmationAsync(Localization.AdministrationUnbanConfirmation, bannedUser.FullName());
+                
+                var messageReceived = await NextMessageAsync();
+                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    await ReplyErrorAsync(Localization.AdministrationUnbanCanceled);
+                    return;
+                }
+                
+                await SendMessageAsync(bannedUser, Localization.AdministrationUserUnbanned, "", Localization.AdministrationUserWasUnbanned, reason, false);
+                await Context.Guild!.UnbanMemberAsync(bannedUser, reason);
+            }
             
             [Command("prune", "purge")]
             [Context(ContextType.Guild)]
@@ -215,16 +263,16 @@ namespace Rias.Modules.Administration
                     await ReplyErrorAsync(Localization.AdministrationPruneLimit);
                 }
             }
-            
-            private async Task SendMessageAsync(DiscordMember member, string moderationType, string fromWhere, string confirmation, string? reason)
+
+            private async Task SendMessageAsync(DiscordUser user, string moderationType, string fromWhere, string confirmation, string? reason, bool informUser = true)
             {
                 var embed = new DiscordEmbedBuilder
                     {
                         Color = RiasUtilities.ErrorColor,
                         Title = GetText(moderationType)
-                    }.WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto))
-                    .AddField(GetText(Localization.CommonMember), member.FullName(), true)
-                    .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
+                    }.WithThumbnail(user.GetAvatarUrl(ImageFormat.Auto))
+                    .AddField(GetText(Localization.CommonMember), user.FullName(), true)
+                    .AddField(GetText(Localization.CommonId), user.Id.ToString(), true)
                     .AddField(GetText(Localization.AdministrationModerator), Context.User.FullName(), true);
 
                 if (!string.IsNullOrEmpty(reason))
@@ -238,12 +286,15 @@ namespace Rias.Modules.Administration
                     var preconditions = Context.CurrentMember!.PermissionsIn(modLogChannel);
                     if (preconditions.HasPermission(Permissions.AccessChannels) && preconditions.HasPermission(Permissions.SendMessages))
                     {
-                        await ReplyConfirmationAsync(confirmation, member.FullName(), modLogChannel.Mention);
+                        await ReplyConfirmationAsync(confirmation, user.FullName(), modLogChannel.Mention);
                         channel = modLogChannel;
                     }
                 }
 
                 await channel.SendMessageAsync(embed);
+
+                if (!informUser)
+                    return;
 
                 var reasonEmbed = new DiscordEmbedBuilder
                 {
@@ -256,7 +307,7 @@ namespace Rias.Modules.Administration
 
                 try
                 {
-                    if (!member.IsBot)
+                    if (!user.IsBot && user is DiscordMember member)
                         await member.SendMessageAsync(embed: reasonEmbed);
                 }
                 catch

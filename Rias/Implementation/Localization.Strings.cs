@@ -56,6 +56,11 @@ namespace Rias.Implementation
         public const string AdministrationBannedFrom = "administration_banned_from";
         public const string AdministrationMemberSoftBanned = "administration_member_soft_banned";
         public const string AdministrationMemberWasSoftBanned = "administration_member_was_soft_banned";
+        public const string AdministrationUserUnbanned = "administration_user_unbanned";
+        public const string AdministrationUserWasUnbanned = "administration_user_was_unbanned";
+        public const string AdministrationUnbanConfirmation = "administration_unban_confirmation";
+        public const string AdministrationUnbanCanceled = "administration_unban_canceled";
+        public const string AdministrationBanNotFound = "administration_ban_not_found";
         public const string AdministrationPruneLimit = "administration_prune_limit";
         public const string AdministrationCannotMuteOwner = "administration_cannot_mute_owner";
         public const string AdministrationMuteTimeoutLowest = "administration_mute_timeout_lowest";
