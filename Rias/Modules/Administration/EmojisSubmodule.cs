@@ -190,6 +190,44 @@ namespace Rias.Modules.Administration
                     await ReplyErrorAsync(Localization.AdministrationEmojiNotRenamed);
                 }
             }
+
+            [Command("emoji", "emote")]
+            [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Member)]
+            public async Task EmojiAsync([Remainder] string emoji)
+            {
+                if (!RiasUtilities.TryParseEmoji(emoji, out var emojiId))
+                {
+                    await ReplyErrorAsync(Localization.AdministrationEmojiNotValid);
+                    return;
+                }
+                
+                var emojiUrl = string.Format(EmojiCdn, $"{emojiId}.gif");
+                var result = await _httpClient.GetAsync(emojiUrl);
+                    
+                if (result.StatusCode == HttpStatusCode.UnsupportedMediaType)
+                {
+                    emojiUrl = string.Format(EmojiCdn, $"{emojiId}.png");
+                    result = await _httpClient.GetAsync(emojiUrl);
+
+                    if (!result.IsSuccessStatusCode)
+                    {
+                        await ReplyErrorAsync(Localization.AdministrationEmojiNotValid);
+                        return;
+                    }
+                }
+
+                var embed = new DiscordEmbedBuilder
+                {
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
+                    {
+                        Name = emoji[(emoji.IndexOf(":", StringComparison.Ordinal) + 1)..emoji.LastIndexOf(":", StringComparison.Ordinal)],
+                        Url = emojiUrl
+                    },
+                    ImageUrl = emojiUrl
+                };
+
+                await ReplyAsync(embed);
+            }
             
             private DiscordEmoji? GetEmoji(string value)
             {

@@ -37,6 +37,7 @@
   "administration_emoji_not_found": "I couldn't find the emoji.",
   "administration_emoji_not_deleted": "I couldn't delete the emoji.",
   "administration_emoji_not_renamed": "I couldn't rename the emoji.",
+  "administration_emoji_not_valid": "The emoji is not valid.",
   "administration_cannot_kick_owner": "I cannot kick the owner of the server.",
   "administration_cannot_ban_owner": "I cannot ban the owner of the server.",
   "administration_cannot_softban_owner": "I cannot softban the owner of the server.",

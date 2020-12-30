@@ -40,6 +40,7 @@ namespace Rias.Implementation
         public const string AdministrationEmojiNotFound = "administration_emoji_not_found";
         public const string AdministrationEmojiNotDeleted = "administration_emoji_not_deleted";
         public const string AdministrationEmojiNotRenamed = "administration_emoji_not_renamed";
+        public const string AdministrationEmojiNotValid = "administration_emoji_not_valid";
         public const string AdministrationCannotKickOwner = "administration_cannot_kick_owner";
         public const string AdministrationCannotBanOwner = "administration_cannot_ban_owner";
         public const string AdministrationCannotSoftbanOwner = "administration_cannot_softban_owner";

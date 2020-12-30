@@ -25,6 +25,8 @@
   "emojis_deleteemoji_examples": "[{0}deleteemoji EMOJI]\n{0}deleteemoji diamond_heart\n{0}deleteemoji :diamond_heart:",
   "emojis_renameemoji": "Renames an emoji on this server. Separate the old emoji by the new name with '->'.",
   "emojis_renameemoji_examples": "[{0}renameemoji EMOJI -> NAME]\n{0}renameemoji :heart: -> diamond_heart\n{0}renameemoji heart -> diamond_heart",
+  "emojis_emoji": "Shows the image of an emoji.",
+  "emojis_emoji_examples": "[{0}emoji EMOJI]\n{0}emoji :diamond_heart:",
   "moderation_kick": "Kicks a member. If you provide a reason message I will DM the member with the reason.",
   "moderation_kick_examples": "[{0}kick MEMBER [REASON]]\n{0}kick @Member\n{0}kick 327927038360944640\n{0}kick @Member Your behavior is bad!\n{0}kick 327927038360944640 Your behavior is bad!",
   "moderation_ban": "Bans a member. If you provide a reason message I will DM the member with the reason.",
