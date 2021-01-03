@@ -218,6 +218,7 @@ namespace Rias.Modules.Administration
 
                 var embed = new DiscordEmbedBuilder
                 {
+                    Color = RiasUtilities.ConfirmColor,
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = emoji[(emoji.IndexOf(":", StringComparison.Ordinal) + 1)..emoji.LastIndexOf(":", StringComparison.Ordinal)],
