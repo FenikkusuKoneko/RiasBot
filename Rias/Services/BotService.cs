@@ -65,7 +65,6 @@ namespace Rias.Services
             var sb = new StringBuilder(message)
                 .Replace("%member%", username)
                 .Replace("%user%", username)
-                .Replace("%user_id%", user.Id.ToString())
                 .Replace("%avatar%", user.GetAvatarUrl(ImageFormat.Auto));
 
             if (user is DiscordMember member)
@@ -73,7 +72,8 @@ namespace Rias.Services
                 var guildName = member.Guild.Name.Replace("\\", "\\\\").Replace("\"", "\\\"");
                 sb.Replace("%mention%", member.Mention)
                     .Replace("%guild%", guildName)
-                    .Replace("%server%", guildName);
+                    .Replace("%server%", guildName)
+                    .Replace("%members%", member.Guild.MemberCount.ToString());
             }
 
             return sb.ToString();
