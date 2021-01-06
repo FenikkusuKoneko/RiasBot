@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using Humanizer;
 using Qmmands;
 using Rias.Attributes;
 using Rias.Commons;
@@ -50,7 +51,11 @@ namespace Rias.Modules.Administration
                 }
 
                 await SendMessageAsync(member, Localization.AdministrationMemberKicked, Localization.AdministrationKickedFrom, Localization.AdministrationMemberWasKicked, reason);
-                await member.RemoveAsync(reason);
+                
+                var auditLogsReason = string.IsNullOrEmpty(reason)
+                    ? GetText(Localization.AdministrationKickAuditLogs, Context.User.FullName())
+                    : GetText(Localization.AdministrationKickAuditLogsReason, Context.User.FullName(), reason);
+                await member.RemoveAsync(auditLogsReason.Truncate(512));
             }
             
             [Command("ban", "b")]
@@ -81,7 +86,11 @@ namespace Rias.Modules.Administration
                 }
 
                 await SendMessageAsync(member, Localization.AdministrationMemberBanned, Localization.AdministrationBannedFrom, Localization.AdministrationMemberWasBanned, reason);
-                await member.BanAsync(reason: reason);
+                
+                var auditLogsReason = string.IsNullOrEmpty(reason)
+                    ? GetText(Localization.AdministrationBanAuditLogs, Context.User.FullName())
+                    : GetText(Localization.AdministrationBanAuditLogsReason, Context.User.FullName(), reason);
+                await member.BanAsync(reason: auditLogsReason.Truncate(512));
             }
             
             [Command("softban", "sb")]
@@ -112,7 +121,11 @@ namespace Rias.Modules.Administration
                 }
 
                 await SendMessageAsync(member, Localization.AdministrationMemberSoftBanned, Localization.AdministrationKickedFrom, Localization.AdministrationMemberWasSoftBanned, reason);
-                await member.BanAsync(7, reason);
+                
+                var auditLogsReason = string.IsNullOrEmpty(reason)
+                    ? GetText(Localization.AdministrationBanAuditLogs, Context.User.FullName())
+                    : GetText(Localization.AdministrationBanAuditLogsReason, Context.User.FullName(), reason);
+                await member.BanAsync(7, auditLogsReason.Truncate(512));
                 await member.UnbanAsync();
             }
             
@@ -144,7 +157,11 @@ namespace Rias.Modules.Administration
                 }
 
                 await SendMessageAsync(member, Localization.AdministrationMemberBanned, Localization.AdministrationBannedFrom, Localization.AdministrationMemberWasBanned, reason);
-                await member.BanAsync(7, reason);
+                
+                var auditLogsReason = string.IsNullOrEmpty(reason)
+                    ? GetText(Localization.AdministrationBanAuditLogs, Context.User.FullName())
+                    : GetText(Localization.AdministrationBanAuditLogsReason, Context.User.FullName(), reason);
+                await member.BanAsync(7, auditLogsReason.Truncate(512));
             }
 
             [Command("unban", "ub")]
@@ -192,7 +209,11 @@ namespace Rias.Modules.Administration
                 }
                 
                 await SendMessageAsync(bannedUser, Localization.AdministrationUserUnbanned, "", Localization.AdministrationUserWasUnbanned, reason, false);
-                await Context.Guild!.UnbanMemberAsync(bannedUser, reason);
+                
+                var auditLogsReason = string.IsNullOrEmpty(reason)
+                    ? GetText(Localization.AdministrationUnbanAuditLogs, Context.User.FullName())
+                    : GetText(Localization.AdministrationUnbanAuditLogsReason, Context.User.FullName(), reason);
+                await Context.Guild!.UnbanMemberAsync(bannedUser, auditLogsReason.Truncate(512));
             }
             
             [Command("prune", "purge")]
@@ -276,7 +297,7 @@ namespace Rias.Modules.Administration
                     .AddField(GetText(Localization.AdministrationModerator), Context.User.FullName(), true);
 
                 if (!string.IsNullOrEmpty(reason))
-                    embed.AddField(GetText(Localization.CommonReason), reason, true);
+                    embed.AddField(GetText(Localization.CommonReason), reason.Truncate(1024), true);
 
                 var channel = Context.Channel;
                 var guildDb = await DbContext.GetOrAddAsync(x => x.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
@@ -303,7 +324,7 @@ namespace Rias.Modules.Administration
                 };
 
                 if (!string.IsNullOrEmpty(reason))
-                    reasonEmbed.AddField(GetText(Localization.CommonReason), reason, true);
+                    reasonEmbed.AddField(GetText(Localization.CommonReason), reason.Truncate(1024), true);
 
                 try
                 {
