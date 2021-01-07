@@ -55,9 +55,13 @@ namespace Rias.Implementation
         public const string AdministrationKickAuditLogsReason = "administration_kick_audit_logs_reason";
         public const string AdministrationMemberBanned = "administration_member_banned";
         public const string AdministrationMemberWasBanned = "administration_member_was_banned";
+        public const string AdministrationUserBanned = "administration_user_banned";
         public const string AdministrationBannedFrom = "administration_banned_from";
         public const string AdministrationBanAuditLogs = "administration_ban_audit_logs";
         public const string AdministrationBanAuditLogsReason = "administration_ban_audit_logs_reason";
+        public const string AdministrationUserAlreadyBanned = "administration_user_already_banned";
+        public const string AdministrationUserBanConfirmation = "administration_user_ban_confirmation";
+        public const string AdministrationBanCanceled = "administration_ban_canceled";
         public const string AdministrationMemberSoftBanned = "administration_member_soft_banned";
         public const string AdministrationMemberWasSoftBanned = "administration_member_was_soft_banned";
         public const string AdministrationUserUnbanned = "administration_user_unbanned";

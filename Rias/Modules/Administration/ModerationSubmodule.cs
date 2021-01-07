@@ -93,6 +93,52 @@ namespace Rias.Modules.Administration
                 await member.BanAsync(reason: auditLogsReason.Truncate(512));
             }
             
+            [Command("ban", "b")]
+            [Context(ContextType.Guild)]
+            [MemberPermission(Permissions.BanMembers)]
+            [BotPermission(Permissions.BanMembers)]
+            public async Task BanAsync(ulong userId, [Remainder] string? reason = null)
+            {
+                if (userId == Context.User.Id)
+                    return;
+
+                if (userId == Context.Guild!.Owner.Id)
+                {
+                    await ReplyErrorAsync(Localization.AdministrationCannotBanOwner);
+                    return;
+                }
+
+                var user = await RiasBot.GetUserAsync(userId);
+                if (user is null)
+                {
+                    await ReplyErrorAsync(Localization.AdministrationUserNotFound);
+                    return;
+                }
+                
+                var bans = await Context.Guild!.GetBansAsync();
+                if (bans.Any(b => b.User.Id == userId))
+                {
+                    await ReplyErrorAsync(Localization.AdministrationUserAlreadyBanned, user.FullName());
+                    return;
+                }
+                
+                await ReplyConfirmationAsync(Localization.AdministrationUserBanConfirmation, user.FullName());
+                
+                var messageReceived = await NextMessageAsync();
+                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    await ReplyErrorAsync(Localization.AdministrationBanCanceled);
+                    return;
+                }
+
+                await SendMessageAsync(user, Localization.AdministrationUserBanned, "", Localization.AdministrationMemberWasBanned, reason, false);
+                
+                var auditLogsReason = string.IsNullOrEmpty(reason)
+                    ? GetText(Localization.AdministrationBanAuditLogs, Context.User.FullName())
+                    : GetText(Localization.AdministrationBanAuditLogsReason, Context.User.FullName(), reason);
+                await Context.Guild.BanMemberAsync(userId, reason: auditLogsReason.Truncate(512));
+            }
+            
             [Command("softban", "sb")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.KickMembers)]

@@ -29,7 +29,7 @@
   "emojis_emoji_examples": "[{0}emoji EMOJI]\n{0}emoji :diamond_heart:",
   "moderation_kick": "Kicks a member. If you provide a reason message I will DM the member with the reason.",
   "moderation_kick_examples": "[{0}kick MEMBER [REASON]]\n{0}kick @Member\n{0}kick 327927038360944640\n{0}kick @Member Your behavior is bad!\n{0}kick 327927038360944640 Your behavior is bad!",
-  "moderation_ban": "Bans a member. If you provide a reason message I will DM the member with the reason.",
+  "moderation_ban": "Bans a member. If you provide a reason message I will DM the member with the reason.\nYou can also ban a user that is not in the server by using its ID.",
   "moderation_ban_examples": "[{0}ban MEMBER [REASON]]\n{0}ban @Member\n{0}ban 327927038360944640\n{0}ban @Member You've violated many rules!\n{0}ban 327927038360944640 You've violated many rules!",
   "moderation_softban": "Bans a member with the option to remove his messages from last 7 days, and then unbans it. The result is a kick. If you provide a reason message I will DM the member with the reason.",
   "moderation_softban_examples": "[{0}softban MEMBER [REASON]]\n{0}softban @Member\n{0}softban 327927038360944640\n{0}softban @Member Don't spam here!\n{0}softban 327927038360944640 Don't spam here!",
