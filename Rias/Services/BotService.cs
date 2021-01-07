@@ -23,6 +23,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Rias.Attributes;
 using Rias.Commons;
 using Rias.Database;
+using Rias.Database.Entities;
 using Rias.Extensions;
 using Rias.Implementation;
 using Serilog;
@@ -213,9 +214,38 @@ namespace Rias.Services
 
             RiasBot.Members[args.Member.Id] = args.Member;
             
-            await RunTaskAsync(AddAssignableRoleAsync(member));
             await RunTaskAsync(SendGreetMessageAsync(member));
             await RunTaskAsync(AddMuteRoleAsync(member));
+            await RunTaskAsync(AddAssignableRoleAsync(member));
+            await RunTaskAsync(AddLevelRolesAsync(member));
+        }
+
+        private async Task AddLevelRolesAsync(DiscordMember member)
+        {
+            var currentMember = member.Guild.CurrentMember;
+            if (!currentMember.GetPermissions().HasPermission(Permissions.ManageRoles))
+                return;
+            
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var memberDb = await db.Members.FirstOrDefaultAsync(m => m.GuildId == member.Guild.Id && m.MemberId == member.Id);
+            if (memberDb is null)
+                return;
+            
+            var level = RiasUtilities.XpToLevel(memberDb.Xp, XpService.XpThreshold);
+            var levelRoles = await db.GetListAsync<GuildXpRoleEntity>(lr => lr.GuildId == member.Guild.Id && lr.Level <= level);
+            if (levelRoles.Count == 0)
+                return;
+
+            var roles = levelRoles.Select(lr => member.Guild.GetRole(lr.RoleId)).Where(r => r is not null);
+            foreach (var role in roles)
+            {
+                if (currentMember.CheckRoleHierarchy(role) <= 0)
+                    continue;
+                
+                if (member.Roles.All(x => x.Id != role.Id))
+                    await member.GrantRoleAsync(role);
+            }
         }
         
         private async Task SendGreetMessageAsync(DiscordMember member)
@@ -298,12 +328,12 @@ namespace Rias.Services
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             
             var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id);
-            var userGuildDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.MemberId == member.Id);
+            var memberDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.MemberId == member.Id);
             
-            if (userGuildDb is null)
+            if (memberDb is null)
                 return;
             
-            if (!userGuildDb.IsMuted)
+            if (!memberDb.IsMuted)
                 return;
 
             var role = member.Guild.GetRole(guildDb?.MuteRoleId ?? 0)
@@ -315,7 +345,7 @@ namespace Rias.Services
             }
             else
             {
-                userGuildDb.IsMuted = false;
+                memberDb.IsMuted = false;
                 await db.SaveChangesAsync();
             }
         }
@@ -445,11 +475,11 @@ namespace Rias.Services
             if (guildDb is null)
                 return;
 
-            var userGuildDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == args.Guild.Id && x.MemberId == args.Member.Id);
-            if (userGuildDb is null)
+            var memberDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == args.Guild.Id && x.MemberId == args.Member.Id);
+            if (memberDb is null)
                 return;
 
-            userGuildDb.IsMuted = args.Member.Roles.FirstOrDefault(x => x.Id == guildDb.MuteRoleId) != null;
+            memberDb.IsMuted = args.Member.Roles.FirstOrDefault(x => x.Id == guildDb.MuteRoleId) != null;
             await db.SaveChangesAsync();
         }
 

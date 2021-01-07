@@ -254,10 +254,10 @@ namespace Rias.Services
 
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userGuildDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == guild.Id && x.MemberId == member.Id);
-            if (userGuildDb != null)
+            var memberDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == guild.Id && x.MemberId == member.Id);
+            if (memberDb != null)
             {
-                userGuildDb.IsMuted = true;
+                memberDb.IsMuted = true;
             }
             else
             {
@@ -322,9 +322,9 @@ namespace Rias.Services
 
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userGuildDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == context.GuildId && x.MemberId == context.MemberId);
-            if (userGuildDb != null)
-                userGuildDb.IsMuted = false;
+            var memberDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == context.GuildId && x.MemberId == context.MemberId);
+            if (memberDb != null)
+                memberDb.IsMuted = false;
 
             var muteTimerDb = await db.MuteTimers.FirstOrDefaultAsync(x => x.GuildId == context.GuildId && x.UserId == context.MemberId);
             if (muteTimerDb != null)

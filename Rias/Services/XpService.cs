@@ -110,17 +110,17 @@ namespace Rias.Services
             
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildXpDb = await db.GetOrAddAsync(
+            var memberDb = await db.GetOrAddAsync(
                 x => x.GuildId == member.Guild.Id && x.MemberId == member.Id,
                 () => new MembersEntity { GuildId = member.Guild.Id, MemberId = member.Id });
             
-            if (check && guildXpDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
+            if (check && memberDb.LastMessageDate + TimeSpan.FromMinutes(5) > now)
                 return;
             
-            var currentLevel = RiasUtilities.XpToLevel(guildXpDb.Xp, 30);
-            guildXpDb.Xp += 5;
-            guildXpDb.LastMessageDate = now;
-            var nextLevel = RiasUtilities.XpToLevel(guildXpDb.Xp, 30);
+            var currentLevel = RiasUtilities.XpToLevel(memberDb.Xp, 30);
+            memberDb.Xp += 5;
+            memberDb.LastMessageDate = now;
+            var nextLevel = RiasUtilities.XpToLevel(memberDb.Xp, 30);
 
             await db.SaveChangesAsync();
             _guildUsersXp[(member.Guild.Id, member.Id)] = now;
@@ -423,17 +423,17 @@ namespace Rias.Services
             var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == member.Id);
             var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == member.Id);
 
-            var serverXpList = (await db.GetOrderedListAsync<MembersEntity, int>(x => x.GuildId == member.Guild.Id, y => y.Xp, true))
+            var membersXp = (await db.GetOrderedListAsync<MembersEntity, int>(x => x.GuildId == member.Guild.Id, y => y.Xp, true))
                 .Where(x => member.Guild.Members.ContainsKey(x.MemberId))
                 .ToList();
             
-            var userServerXp = serverXpList.FirstOrDefault(x => x.MemberId == member.Id);
+            var memberXp = membersXp.FirstOrDefault(x => x.MemberId == member.Id);
             var serverRank = "?";
-            if (userServerXp != null && RiasBot.ChunkedGuilds.Contains(member.Guild.Id))
-                serverRank = (serverXpList.IndexOf(userServerXp) + 1).ToString();
+            if (memberXp != null && RiasBot.ChunkedGuilds.Contains(member.Guild.Id))
+                serverRank = (membersXp.IndexOf(memberXp) + 1).ToString();
             
             var globalXp = userDb?.Xp ?? 0;
-            var serverXp = userServerXp?.Xp ?? 0;
+            var serverXp = memberXp?.Xp ?? 0;
             return new XpInfo
             {
                 GlobalXp = globalXp,
