@@ -46,9 +46,11 @@ namespace Rias.Services
                           name.Split(' ')
                               .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
 
+            CharacterContent? aniListCharacter = null;
+
             if (characterDb is null)
             {
-                var aniListCharacter = id > 0
+                aniListCharacter = id > 0
                     ? await GetAniListCharacterById(id)
                     : await GetAniListCharacterByName(name);
                 
@@ -78,7 +80,7 @@ namespace Rias.Services
 
             if (!await CheckCharacterImageAsync(characterDb.ImageUrl!))
             {
-                var aniListCharacter = await GetAniListCharacterById(characterDb.CharacterId);
+                aniListCharacter ??= await GetAniListCharacterById(characterDb.CharacterId);
                 if (aniListCharacter is null)
                     return null;
 
@@ -88,6 +90,21 @@ namespace Rias.Services
                     characterDb.ImageUrl = characterImage;
                     await SetCharacterImageUrlAsync(aniListCharacter.Id, characterImage);
                 }
+            }
+
+            var aniListCharacterDb = (CharacterEntity) characterDb;
+
+            if (aniListCharacterDb.DateAdded.AddMonths(1) <= DateTime.UtcNow)
+            {
+                aniListCharacter ??= await GetAniListCharacterById(characterDb.CharacterId);
+                if (aniListCharacter is null)
+                    return null;
+
+                aniListCharacterDb.DateAdded = DateTime.UtcNow;
+                aniListCharacterDb.Name = $"{aniListCharacter.Name.First} {aniListCharacter.Name.Last}".Trim();
+                aniListCharacterDb.ImageUrl = aniListCharacter.Image.Large;
+
+                await db.SaveChangesAsync();
             }
 
             return characterDb;
