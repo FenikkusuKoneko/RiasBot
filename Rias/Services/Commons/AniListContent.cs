@@ -28,26 +28,33 @@ namespace Rias.Services.Commons
         {
             public string? Large { get; set; }
         }
-        
+
         public struct CharacterName
         {
             public string? First { get; set; }
             
             public string? Last { get; set; }
             
+            public string? Full { get; set; }
+            
             public string? Native { get; set; }
             
             public string[]? Alternative { get; set; }
         }
-
-        public struct CharacterMedia
-        {
-            public AnimeMangaContent[]? Nodes { get; set; }
-        }
-
+        
         public struct CharacterImage
         {
             public string? Large { get; set; }
+        }
+
+        public struct AnimeMedia
+        {
+            public AnimeMangaContent[]? Nodes { get; set; }
+        }
+        
+        public struct CharacterMedia
+        {
+            public CharacterContent[] Nodes { get; set; }
         }
     }
 }

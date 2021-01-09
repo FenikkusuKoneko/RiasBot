@@ -6,7 +6,7 @@ namespace Rias.Services.Commons
         
         public int? Favourites { get; set; }
         
-        public CharacterMedia Media { get; set; }
+        public AnimeMedia Media { get; set; }
         
         public string? Description { get; set; }
         

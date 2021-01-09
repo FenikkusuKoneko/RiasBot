@@ -63,7 +63,7 @@ namespace Rias.Services
                     var newCharacterDb = new CharacterEntity
                     {
                         CharacterId = aniListCharacter.Id,
-                        Name = $"{aniListCharacter.Name.First} {aniListCharacter.Name.Last}".Trim(),
+                        Name = $"{aniListCharacter.Name.Full}".Trim(),
                         Url = aniListCharacter.SiteUrl,
                         ImageUrl = aniListCharacter.Image.Large
                     };
@@ -101,7 +101,7 @@ namespace Rias.Services
                     return null;
 
                 aniListCharacterDb.DateAdded = DateTime.UtcNow;
-                aniListCharacterDb.Name = $"{aniListCharacter.Name.First} {aniListCharacter.Name.Last}".Trim();
+                aniListCharacterDb.Name = $"{aniListCharacter.Name.Full}".Trim();
                 aniListCharacterDb.ImageUrl = aniListCharacter.Image.Large;
 
                 await db.SaveChangesAsync();
@@ -212,6 +212,18 @@ namespace Rias.Services
                 coverImage {
                   large
                 }
+                characters {
+                  nodes {
+                    id
+                    siteUrl
+                    name {
+                      first
+                      last
+                      full
+                      native
+                    }
+                  }
+                }
               }
             }";
         
@@ -262,6 +274,7 @@ namespace Rias.Services
                   name {
                     first
                     last
+                    full
                     native
                     alternative
                   }
@@ -324,6 +337,7 @@ namespace Rias.Services
                   name {
                     first
                     last
+                    full
                     native
                     alternative
                   }

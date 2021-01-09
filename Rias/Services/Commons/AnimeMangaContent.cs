@@ -48,5 +48,7 @@ namespace Rias.Services.Commons
         public string? Description { get; set; }
         
         public CoverImageInfo CoverImage { get; set; }
+        
+        public CharacterMedia Characters { get; set; }
     }
 }

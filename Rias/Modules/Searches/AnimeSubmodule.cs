@@ -289,8 +289,33 @@ namespace Rias.Modules.Searches
                             ? $"{GetText(Localization.SearchesFromAnime)}: {fromAnime}"
                             : $"{GetText(Localization.SearchesFromAnime)}: {GetCharacterSources(character, "manga").FirstOrDefault()}";
                         
-                        return $"• [{character.Name.First} {character.Name.Last}]({character.SiteUrl}) ({character.Id}) | {from}";
+                        return $"• [{character.Name.Full}]({character.SiteUrl}) ({character.Id}) | {from}";
                     }))
+                });
+            }
+            
+            [Command("animecharacters", "anicharacters")]
+            [Cooldown(1, 10, CooldownMeasure.Seconds, BucketType.User)]
+            public async Task AnimeCharactersListAsync([Remainder] string title)
+            {
+                var (type, method) = int.TryParse(title, out _) ? ("Int", "id") : ("String", "search");
+                var query = AnimeService.AnimeQuery.Replace("[type]", type)
+                    .Replace("[var]", method);
+            
+                var anime = await Service.GetAniListInfoAsync<AnimeMangaContent>(query, new { anime = title }, "Media");
+                if (anime is null)
+                {
+                    await ReplyErrorAsync(Localization.SearchesAnimeNotFound);
+                    return;
+                }
+                
+                var characters = anime.Characters.Nodes.OrderBy(c => c.Name.Full).ToList();
+                await SendPaginatedMessageAsync(characters, 10, (items, _) => new DiscordEmbedBuilder
+                {
+                    Color = RiasUtilities.ConfirmColor,
+                    Title = GetText(Localization.SearchesCharacterList, title, Context.Prefix),
+                    Description = string.Join("\n", items.Select(c =>
+                        $"[{c.Name.Full}]({c.SiteUrl}) ({c.Id})"))
                 });
             }
             
@@ -357,7 +382,7 @@ namespace Rias.Modules.Searches
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Url = character.SiteUrl,
-                    Title = $"{character.Name.First} {character.Name.Last}"
+                    Title = $"{character.Name.Full}"
                 }.AddField(GetText(Localization.SearchesFirstName), !string.IsNullOrEmpty(character.Name.First) ? character.Name.First : "-", true)
                     .AddField(GetText(Localization.SearchesLastName), !string.IsNullOrEmpty(character.Name.Last) ? character.Name.Last : "-", true)
                     .AddField(GetText(Localization.SearchesNativeName), !string.IsNullOrEmpty(character.Name.Native) ? character.Name.Native : "-", true)

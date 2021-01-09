@@ -262,6 +262,8 @@
   "anime_mangalist_examples": "[{0}mangalist TITLE]\n{0}mangalist High School DxD",
   "anime_characters": "Shows a list with characters and their IDs from AniList matching the name, paginated. The custom characters are also included.",
   "anime_characters_examples": "[{0}characters NAME]\n{0}characters Rias",
+  "anime_animecharacters": "Shows a list with characters and their IDs from an anime, paginated.",
+  "anime_animecharacters_examples": "[{0}anicharacters TITLE]\n{0}anicharacters High School DxD",
   "cute_girls_neko": "Shows a catgirl image.",
   "cute_girls_neko_examples": "[{0}neko]\n{0}neko",
   "cute_girls_kitsune": "Shows a foxgirl image.",
