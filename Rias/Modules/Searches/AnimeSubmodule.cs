@@ -225,12 +225,12 @@ namespace Rias.Modules.Searches
                     return;
                 }
 
-                await SendPaginatedMessageAsync(animeList, 10, (items, _) => new DiscordEmbedBuilder
+                await SendPaginatedMessageAsync(animeList, 15, (items, _) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.SearchesAnimeList, title, Context.Prefix),
                     Description = string.Join("\n", items.Select(c =>
-                        $"[{(string.IsNullOrEmpty(c.Title.Romaji) ? c.Title.English : c.Title.Romaji)}]({c.SiteUrl}) ({c.Id})"))
+                        $"[{(string.IsNullOrEmpty(c.Title.Romaji) ? c.Title.English : c.Title.Romaji)}]({c.SiteUrl}) • {c.Id}"))
                 });
             }
 
@@ -245,12 +245,12 @@ namespace Rias.Modules.Searches
                     return;
                 }
                 
-                await SendPaginatedMessageAsync(mangaList, 10, (items, _) => new DiscordEmbedBuilder
+                await SendPaginatedMessageAsync(mangaList, 15, (items, _) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.SearchesMangaList, title, Context.Prefix),
                     Description = string.Join("\n", items.Select(c =>
-                        $"[{(string.IsNullOrEmpty(c.Title.Romaji) ? c.Title.English : c.Title.Romaji)}]({c.SiteUrl}) ({c.Id})"))
+                        $"[{(string.IsNullOrEmpty(c.Title.Romaji) ? c.Title.English : c.Title.Romaji)}]({c.SiteUrl}) • {c.Id}"))
                 });
             }
 
@@ -274,7 +274,7 @@ namespace Rias.Modules.Searches
                 if (anilistCharacters != null)
                     characters.AddRange(anilistCharacters);
 
-                await SendPaginatedMessageAsync(characters, 10, (items, _) => new DiscordEmbedBuilder
+                await SendPaginatedMessageAsync(characters, 15, (items, _) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.SearchesCharacterList, name, Context.Prefix),
@@ -289,7 +289,7 @@ namespace Rias.Modules.Searches
                             ? $"{GetText(Localization.SearchesFromAnime)}: {fromAnime}"
                             : $"{GetText(Localization.SearchesFromAnime)}: {GetCharacterSources(character, "manga").FirstOrDefault()}";
                         
-                        return $"• [{character.Name.Full}]({character.SiteUrl}) ({character.Id}) | {from}";
+                        return $"• [{character.Name.Full}]({character.SiteUrl}) • {character.Id} | {from}";
                     }))
                 });
             }
@@ -310,12 +310,12 @@ namespace Rias.Modules.Searches
                 }
                 
                 var characters = anime.Characters.Nodes.OrderBy(c => c.Name.Full).ToList();
-                await SendPaginatedMessageAsync(characters, 10, (items, _) => new DiscordEmbedBuilder
+                await SendPaginatedMessageAsync(characters, 15, (items, _) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.SearchesCharacterList, title, Context.Prefix),
                     Description = string.Join("\n", items.Select(c =>
-                        $"[{c.Name.Full}]({c.SiteUrl}) ({c.Id})"))
+                        $"[{c.Name.Full}]({c.SiteUrl}) • {c.Id}"))
                 });
             }
             
