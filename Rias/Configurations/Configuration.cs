@@ -17,9 +17,7 @@ namespace Rias.Configurations
         public string? Invite { get; private set; }
         public string? OwnerServerInvite { get; private set; }
         public ulong OwnerServerId { get; private set; }
-
         
-        // TODO: If Patreon is null then disable related commands
         public string Patreon { get; private set; } = null!;
         public string? Website { get; private set; }
         public string? DiscordBotList { get; private set; }

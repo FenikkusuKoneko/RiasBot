@@ -2,28 +2,32 @@
 # remove these 2 lines, they are not valid JSON
 
 {
-  "prefix": "",
+  "prefix": "r!",
   "token": "",
-  
-  "confirmColor": "",
 
-  "masterId": "",
+  "confirmColor": "#dc143c",
+
+  "masterId": "327927038360944640",
   "currency": "",
 
   "invite": "",
   "ownerServerInvite": "",
   "ownerServerId": "",
 
+  "patreon": "https://www.patreon.com/riasbot",
   "website": "https://rias.gg",
+  "discordBotList": "https://top.gg/bot/381387277764395008",
 
   "urbanDictionaryApiKey": "",
+  "fixerAccessKey": "",
   "weebServicesToken": "",
 
-  "databaseConfig": {
-    "host": "0.0.0.0",
+  "databaseConfiguration": {
+    "host": "localhost",
     "port": "5432",
-    "database": "postgres",
+    "database": "riasdb",
     "username": "postgres",
-    "password": "youshallnotpass"
+    "password": "youshallnotpass",
+    "applicationName": "Rias - Discord Bot"
   }
 }

@@ -32,19 +32,19 @@ namespace Rias.Services
         public PatreonService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            if (Configuration.PatreonConfiguration != null)
-            {
-                _webSocket = new WebSocketClient(Configuration.PatreonConfiguration);
-                RunTaskAsync(ConnectWebSocket());
-                _webSocket.DataReceived += PledgeReceivedAsync;
-                _webSocket.Closed += WebSocketClosed;
+            if (Configuration.PatreonConfiguration is null)
+                return;
+
+            _webSocket = new WebSocketClient(Configuration.PatreonConfiguration);
+            RunTaskAsync(ConnectWebSocket());
+            _webSocket.DataReceived += PledgeReceivedAsync;
+            _webSocket.Closed += WebSocketClosed;
                 
-                RunTaskAsync(CheckPatronsAsync);
+            RunTaskAsync(CheckPatronsAsync);
                 
-                _httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(1) };
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Configuration.PatreonConfiguration.Authorization!);
-                _sendPatronsTimer = new Timer(_ => RunTaskAsync(SendPatronsAsync), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
-            }
+            _httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(1) };
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Configuration.PatreonConfiguration.Authorization!);
+            _sendPatronsTimer = new Timer(_ => RunTaskAsync(SendPatronsAsync), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
         }
 
         private async Task CheckPatronsAsync()
