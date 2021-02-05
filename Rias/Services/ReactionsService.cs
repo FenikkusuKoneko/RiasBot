@@ -31,7 +31,7 @@ namespace Rias.Services
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return JsonConvert.DeserializeObject<Dictionary<string, object>>(await response.Content.ReadAsStringAsync())["url"].ToString();
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(await response.Content.ReadAsStringAsync())!["url"].ToString();
         }
 
         public async Task<string?> GetImageAsync(string type)
@@ -40,7 +40,7 @@ namespace Rias.Services
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())["url"];
+            return JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())!["url"];
         }
     }
 }

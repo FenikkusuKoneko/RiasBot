@@ -157,7 +157,7 @@ namespace Rias.Services
                 if (!response.IsSuccessStatusCode) return null;
 
                 var result = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<NsfwImageApi>>(result)
+                return JsonConvert.DeserializeObject<List<NsfwImageApi>>(result)!
                     .Where(x => !string.IsNullOrEmpty(x.FileUrl))
                     .ToList();
             }

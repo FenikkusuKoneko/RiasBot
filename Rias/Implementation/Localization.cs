@@ -39,7 +39,7 @@ namespace Rias.Implementation
             foreach (var locale in Directory.GetFiles(_localesPath))
             {
                 var fileName = Path.GetFileNameWithoutExtension(locale);
-                _locales.TryAdd(fileName, JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText(locale)));
+                _locales.TryAdd(fileName, JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText(locale))!);
             }
             
             using var scope = serviceProvider.CreateScope();

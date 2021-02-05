@@ -66,7 +66,7 @@ namespace Rias.Modules.Searches
                 if (!response.IsSuccessStatusCode)
                     return null;
 
-                return JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())["url"];
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync())!["url"];
             }
         }
     }

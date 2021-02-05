@@ -71,7 +71,7 @@ namespace Rias.Services
                 var unitsCategory = JsonConvert.DeserializeObject<UnitsCategory>(File.ReadAllText(unitsFile));
                 
 #if DEBUG || RIAS_GLOBAL
-                if (string.Equals(unitsCategory.Name, "currency", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(unitsCategory!.Name, "currency", StringComparison.OrdinalIgnoreCase))
                 {
                     var currencyUnits = unitsCategory.Units.ToList();
                     currencyUnits.Add(new Unit
@@ -295,7 +295,7 @@ namespace Rias.Services
             if (exchangeRatesDataRedis.Expiry is null)
                 await _redisDb.StringSetAsync("converter:currency", exchangeRatesData, TimeSpan.FromHours(1));
             
-            var exchangeRates = JsonConvert.DeserializeObject<JObject>(exchangeRatesData)["rates"]?
+            var exchangeRates = JsonConvert.DeserializeObject<JObject>(exchangeRatesData)!["rates"]?
                 .ToObject<Dictionary<string, double>>();
 
             if (exchangeRates is null)

@@ -94,7 +94,7 @@ namespace Rias.Services
             try
             {
                 var pledgeData = JsonConvert.DeserializeObject<JToken>(data);
-                var userId = pledgeData.Value<ulong>("discord_id");
+                var userId = pledgeData!.Value<ulong>("discord_id");
                 
                 using var scope = RiasBot.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();

@@ -50,7 +50,7 @@ namespace Rias.Modules.Profile
             }
 
             await using var profileImage = await Service.GenerateProfileImageAsync(member);
-            await Context.Channel.SendFileAsync($"{member.Id}_profile.png", profileImage);
+            await Context.Channel.SendMessageAsync(new DiscordMessageBuilder().WithFile($"{member.Id}_profile.png", profileImage));
         }
 
         [Command("background", "bg", "cover", "image")]
@@ -112,7 +112,9 @@ namespace Rias.Modules.Profile
 
             backgroundStream.Position = 0;
             await using var profilePreview = await Service.GenerateProfileBackgroundAsync(Context.User, backgroundStream);
-            await Context.Channel.SendFileAsync($"{Context.User.Id}_profile_preview.png", profilePreview, GetText(Localization.ProfileBackgroundPreview));
+            await Context.Channel.SendMessageAsync(new DiscordMessageBuilder()
+                .WithContent(GetText(Localization.ProfileBackgroundPreview))
+                .WithFile($"{Context.User.Id}_profile_preview.png", profilePreview));
             
             var messageReceived = await NextMessageAsync();
             if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))

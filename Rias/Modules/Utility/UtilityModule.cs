@@ -288,9 +288,9 @@ namespace Rias.Modules.Utility
             
             using var magickImage = new MagickImage(MagickColor.FromRgb(color.R, color.G, color.B), 300, 300);
             var image = new MemoryStream();
-            magickImage.Write(image, MagickFormat.Png);
+            await magickImage.WriteAsync(image, MagickFormat.Png);
             image.Position = 0;
-            await Context.Channel.SendFileAsync(fileName, image, embed: embed);
+            await Context.Channel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithFile(fileName, image));
         }
         
         [Command("calculator", "calc")]

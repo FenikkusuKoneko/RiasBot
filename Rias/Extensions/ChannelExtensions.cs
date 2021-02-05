@@ -7,9 +7,6 @@ namespace Rias.Extensions
 {
     public static class ChannelExtensions
     {
-        public static async Task<DiscordMessage> SendMessageAsync(this DiscordChannel channel, DiscordEmbedBuilder embed)
-            => await channel.SendMessageAsync(embed: embed);
-
         public static async Task<DiscordMessage> SendConfirmationMessageAsync(this DiscordChannel channel, string message, string? title = null)
             => await SendMessageAsync(channel, message, title, RiasUtilities.ConfirmColor);
 

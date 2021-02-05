@@ -158,7 +158,7 @@ namespace Rias.Services
             AddInfo(image, xpInfo, member.Guild);
 
             var imageStream = new MemoryStream();
-            image.Write(imageStream, MagickFormat.Png);
+            await image.WriteAsync(imageStream, MagickFormat.Png);
             imageStream.Position = 0;
             return imageStream;
         }

@@ -64,7 +64,7 @@ namespace Rias.Services
                 await AddWaifusAsync(image, profileInfo);
             
             var imageStream = new MemoryStream();
-            image.Write(imageStream, MagickFormat.Png);
+            await image.WriteAsync(imageStream, MagickFormat.Png);
             imageStream.Position = 0;
             return imageStream;
         }
@@ -91,7 +91,7 @@ namespace Rias.Services
             await AddAvatarAndUsernameAsync(image, user);
             
             var imageStream = new MemoryStream();
-            image.Write(imageStream, MagickFormat.Png);
+            await image.WriteAsync(imageStream, MagickFormat.Png);
             imageStream.Position = 0;
             return imageStream;
         }

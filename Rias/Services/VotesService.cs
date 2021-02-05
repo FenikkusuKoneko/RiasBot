@@ -83,7 +83,7 @@ namespace Rias.Services
             try
             {
                 var voteData = JsonConvert.DeserializeObject<JToken>(data);
-                var userId = voteData.Value<ulong>("user");
+                var userId = voteData!.Value<ulong>("user");
                 
                 using var scope = RiasBot.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();

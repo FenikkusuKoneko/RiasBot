@@ -167,11 +167,11 @@ namespace Rias.Implementation
         public static bool TryParseMessage(string json, out CustomMessage message)
         {
             message = new CustomMessage();
-            JsonEmbed jsonEmbed;
+            JsonEmbed? jsonEmbed;
 
             try
             {
-                jsonEmbed = JsonConvert.DeserializeObject<JsonEmbed>(json);
+                jsonEmbed = JsonConvert.DeserializeObject<JsonEmbed>(json)!;
             }
             catch
             {

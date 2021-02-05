@@ -83,7 +83,7 @@ namespace Rias.Services
             foreach (var commandsInfo in Directory.GetFiles(_commandsPath))
             {
                 var fileName = Path.GetFileNameWithoutExtension(commandsInfo);
-                _commandsInfo.TryAdd(fileName, JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText(commandsInfo)));
+                _commandsInfo.TryAdd(fileName, JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText(commandsInfo))!);
             }
         }
 
