@@ -183,7 +183,7 @@ namespace Rias.Modules.Utility
             var highestTime = now.AddMonths(1) - now;
             if (timeSpan > highestTime)
             {
-                await ReplyErrorAsync(Localization.UtilityTimeHighest, highestTime.Humanize(1, new CultureInfo(locale), maxUnit: TimeUnit.Month));
+                await ReplyErrorAsync(Localization.UtilityTimeHighest, highestTime.Humanize(1, new CultureInfo(locale), TimeUnit.Month));
                 return;
             }
             

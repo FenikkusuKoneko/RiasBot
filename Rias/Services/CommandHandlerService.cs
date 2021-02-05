@@ -264,7 +264,7 @@ namespace Rias.Services
                 Description = GetText(context.Guild?.Id, Localization.HelpCommandInformation, context.Prefix, context.Command.Name)
             }.AddField(GetText(context.Guild?.Id, reasons.Count == 1 ? Localization.CommonReason : Localization.CommonReasons), string.Join("\n", reasons.Select(x => $"• {x}")));
 
-            return context.Channel.SendMessageAsync(embed: embed);
+            return context.Channel.SendMessageAsync(embed);
         }
         
         private async Task SendCommandOnCooldownMessageAsync(RiasCommandContext context, CommandOnCooldownResult result)

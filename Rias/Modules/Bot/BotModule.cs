@@ -151,7 +151,7 @@ namespace Rias.Modules.Bot
                 }
 
                 if (messageParsed)
-                    await channel.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
+                    await channel.SendMessageAsync(customMessage.Content, customMessage.Embed);
                 else
                     await channel.SendMessageAsync(message);
                 
@@ -181,7 +181,7 @@ namespace Rias.Modules.Bot
                 try
                 {
                     if (messageParsed)
-                        await member.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
+                        await member.SendMessageAsync(customMessage.Content, customMessage.Embed);
                     else
                         await member.SendMessageAsync(message);
                     

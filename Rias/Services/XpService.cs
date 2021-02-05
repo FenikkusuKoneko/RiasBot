@@ -190,7 +190,7 @@ namespace Rias.Services
                             if (customMessage.Embed is not null && !currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
                                 return;
                             
-                            await channel.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
+                            await channel.SendMessageAsync(customMessage.Content, customMessage.Embed);
                         }
                         else
                         {
@@ -215,7 +215,7 @@ namespace Rias.Services
                             if (customMessage.Embed is not null && !currentMember.PermissionsIn(channel).HasPermission(Permissions.EmbedLinks))
                                 return;
                             
-                            await channel.SendMessageAsync(customMessage.Content, embed: customMessage.Embed);
+                            await channel.SendMessageAsync(customMessage.Content, customMessage.Embed);
                         }
                         else
                         {

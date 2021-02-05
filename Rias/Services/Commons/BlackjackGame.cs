@@ -85,7 +85,7 @@ namespace Rias.Services.Commons
                 }.AddField($"{_member.Guild.CurrentMember.FullName()} ({_houseHand.Score})", _houseHand.ShowCards(true))
                 .AddField($"{_member.FullName()} ({_playerHand.Score})", _playerHand.ShowCards());
 
-            Message = await channel.SendMessageAsync(embed: _embed);
+            Message = await channel.SendMessageAsync(_embed);
 
             await Message!.CreateReactionAsync(_service.CardEmoji);
             await Message!.CreateReactionAsync(_service.HandEmoji);
@@ -103,7 +103,7 @@ namespace Rias.Services.Commons
         public async Task ResumeGameAsync(DiscordMember member, DiscordChannel channel)
         {
             _member = member;
-            Message = await channel.SendMessageAsync(embed: _embed);
+            Message = await channel.SendMessageAsync(_embed);
             await Message!.CreateReactionAsync(_service.CardEmoji);
             await Message!.CreateReactionAsync(_service.HandEmoji);
 

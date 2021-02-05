@@ -86,7 +86,7 @@ namespace Rias.Modules.Administration
                                   ? GetText(Localization.AdministrationGreetEnabled)
                                   : GetText(Localization.AdministrationGreetEnabledChannel, channel.Mention))
                               + $"\n{GetText(Localization.AdministrationGreetMessage)}\n\n{customMessage.Content}";
-                await Context.Channel.SendMessageAsync(content, embed: customMessage.Embed);
+                await Context.Channel.SendMessageAsync(content, customMessage.Embed);
             }
             else
             {
@@ -134,7 +134,7 @@ namespace Rias.Modules.Administration
                                       ? GetText(Localization.AdministrationGreetEnabled)
                                       : GetText(Localization.AdministrationGreetEnabledChannel, channel.Mention))
                               + $"\n{GetText(Localization.AdministrationGreetMessage)}\n\n{customMessage.Content}";
-                await Context.Channel.SendMessageAsync(content, embed: customMessage.Embed);
+                await Context.Channel.SendMessageAsync(content, customMessage.Embed);
             }
             else
             {
@@ -209,7 +209,7 @@ namespace Rias.Modules.Administration
                                   ? GetText(Localization.AdministrationByeEnabled)
                                   : GetText(Localization.AdministrationByeEnabledChannel, channel.Mention))
                               + $"\n{GetText(Localization.AdministrationByeMessage)}\n\n{customMessage.Content}";
-                await Context.Channel.SendMessageAsync(content, embed: customMessage.Embed);
+                await Context.Channel.SendMessageAsync(content, customMessage.Embed);
             }
             else
             {
@@ -256,7 +256,7 @@ namespace Rias.Modules.Administration
                                       ? GetText(Localization.AdministrationByeEnabled)
                                       : GetText(Localization.AdministrationByeEnabledChannel, channel.Mention))
                               + $"\n{GetText(Localization.AdministrationByeMessage)}\n\n{customMessage.Content}";
-                await Context.Channel.SendMessageAsync(content, embed: customMessage.Embed);
+                await Context.Channel.SendMessageAsync(content, customMessage.Embed);
             }
             else
             {

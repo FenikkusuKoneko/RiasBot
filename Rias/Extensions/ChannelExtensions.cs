@@ -28,7 +28,7 @@ namespace Rias.Extensions
                 Description = message
             };
 
-            return await channel.SendMessageAsync(embed: embed);
+            return await channel.SendMessageAsync(embed);
         }
     }
 }

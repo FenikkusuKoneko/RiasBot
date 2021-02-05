@@ -97,7 +97,7 @@ namespace Rias.Modules.Waifu
                 embed.AddField(GetText(Localization.WaifuClaimedBy), $"{waifuUsers.Count} {GetText(Localization.CommonUsers).ToLowerInvariant()}", true)
                     .AddField(GetText(Localization.UtilityPrice), waifuPrice.ToString(), true);
             
-                await Context.Channel.SendMessageAsync($"**{GetText(Localization.WaifuClaimNote, Context.Prefix)}**", embed: embed);
+                await Context.Channel.SendMessageAsync($"**{GetText(Localization.WaifuClaimNote, Context.Prefix)}**", embed);
 
                 if (claimCanceled)
                     return;

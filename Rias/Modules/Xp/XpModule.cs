@@ -242,7 +242,7 @@ namespace Rias.Modules.Xp
             if (xpMessageParsed)
             {
                 reply += $"\n{GetText(Localization.XpNotificationMessage)}\n\n{customMessage.Content}";
-                await Context.Channel.SendMessageAsync(reply, embed: customMessage.Embed);
+                await Context.Channel.SendMessageAsync(reply, customMessage.Embed);
             }
             else
             {
@@ -309,7 +309,7 @@ namespace Rias.Modules.Xp
             if (xpMessageRewardParsed)
             {
                 reply += $"\n{GetText(Localization.XpNotificationMessage)}\n\n{customMessage.Content}";
-                await Context.Channel.SendMessageAsync(reply, embed: customMessage.Embed);
+                await Context.Channel.SendMessageAsync(reply, customMessage.Embed);
             }
             else
             {

@@ -288,7 +288,7 @@ namespace Rias.Modules.Help
         {
             try
             {
-                await ((DiscordMember) Context.User).SendMessageAsync(embed: embed);
+                await ((DiscordMember) Context.User).SendMessageAsync(embed);
             }
             catch
             {

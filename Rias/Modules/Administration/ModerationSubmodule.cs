@@ -375,7 +375,7 @@ namespace Rias.Modules.Administration
                 try
                 {
                     if (!user.IsBot && user is DiscordMember member)
-                        await member.SendMessageAsync(embed: reasonEmbed);
+                        await member.SendMessageAsync(reasonEmbed);
                 }
                 catch
                 {
