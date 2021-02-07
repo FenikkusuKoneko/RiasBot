@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Rias.Database.Entities
+﻿namespace Rias.Database.Entities
 {
     public class GuildEntity : DbEntity
     {
