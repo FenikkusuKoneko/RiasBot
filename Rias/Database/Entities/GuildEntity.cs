@@ -1,4 +1,6 @@
-﻿namespace Rias.Database.Entities
+﻿using System.Collections.Generic;
+
+namespace Rias.Database.Entities
 {
     public class GuildEntity : DbEntity
     {
@@ -39,5 +41,7 @@
         public bool DeleteCommandMessage { get; set; }
         
         public string? Locale { get; set; }
+        
+        public ulong[]? XpIgnoredChannels { get; set; }
     }
 }

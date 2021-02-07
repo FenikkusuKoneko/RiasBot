@@ -343,5 +343,9 @@
   "xp_leveluprolerewardlist": "Shows the with level up role reward list.",
   "xp_leveluprolerewardlist_examples": "[{0}lurrl]\n{0}lurrl",
   "xp_resetserverxp": "Resets this server xp leaderboard.",
-  "xp_resetserverxp_examples": "[{0}resetserverxp]\n{0}rsxp"
+  "xp_resetserverxp_examples": "[{0}resetserverxp]\n{0}rsxp",
+  "xp_xpignore": "Add or remove a channel from the xp exclusion list. The members who write in the excluded channels will not receive any xp. Provide no channel to add or remove the current channel.\nYou can also add a category and all the text channels from that category will be added or removed from the list. If no channel from a category is present in the list then all channels from that category will be added, otherwise the excluded channels will be removed.",
+  "xp_xpignore_examples": "[{0}xpignore [TEXT_CHANNEL]]\n[{0}xpignore [CATEGORY_CHANNEL]]\n{0}xpignore #bot-spam\n{0}xpignore FUN",
+  "xp_xpignorelist": "Shows all the channels in the xp exclusion list, paginated.",
+  "xp_xpignorelist_examples": "[{0}xpil]\n{0}xpil"
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -406,6 +407,124 @@ namespace Rias.Modules.Xp
             DbContext.RemoveRange(await DbContext.GetListAsync<MembersEntity>(x => x.GuildId == Context.Guild!.Id));
             await DbContext.SaveChangesAsync();
             await ReplyConfirmationAsync(Localization.XpGuildXpReset);
+        }
+
+        [Command("xpignore", "xpi")]
+        [Context(ContextType.Guild)]
+        [MemberPermission(Permissions.Administrator)]
+        [Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.Guild)]
+        public async Task XpIgnoreAsync([Remainder] DiscordChannel? channel = null)
+        {
+            channel ??= Context.Channel;
+
+            if (channel.Type == ChannelType.Voice)
+            {
+                await ReplyErrorAsync(Localization.XpIgnoreVoiceChannelNotAllowed);
+                return;
+            }
+
+            if (channel.IsCategory)
+            {
+                var textChannels = channel.Children.Where(c => c.Type == ChannelType.Text || c.Type == ChannelType.News || c.Type == ChannelType.Store).ToList();
+                if (textChannels.Count == 0)
+                {
+                    await ReplyErrorAsync(Localization.AdministrationNoTextChannelInCategory, channel.Name);
+                    return;
+                }
+                
+                var noChannelIgnored = true;
+                
+                var guildDb = await DbContext.GetOrAddAsync(g => g.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
+                if (guildDb.XpIgnoredChannels is not null)
+                {
+                    var xpIgnoredChannelsSet = new HashSet<ulong>(guildDb.XpIgnoredChannels);
+                    if (textChannels.Any(child => xpIgnoredChannelsSet.Contains(child.Id)))
+                        noChannelIgnored = false;
+                }
+
+                if (noChannelIgnored)
+                {
+                    foreach (var textChannel in textChannels)
+                        await Service.AddChannelToExclusionAsync(textChannel);
+                    
+                    await ReplyConfirmationAsync(Localization.XpChannelsIgnored, channel.Name);
+                }
+                else
+                {
+                    foreach (var textChannel in textChannels)
+                        await Service.RemoveChannelFromExclusionAsync(textChannel);
+                    
+                    await ReplyConfirmationAsync(Localization.XpChannelsNotIgnored, channel.Name);
+                }
+            }
+            else
+            {
+                if (Service.CheckExcludedChannel(channel))
+                {
+                    await Service.RemoveChannelFromExclusionAsync(channel);
+                
+                    if (channel.Id == Context.Channel.Id)
+                        await ReplyConfirmationAsync(Localization.XpCurrentChannelNotIgnored);
+                    else
+                        await ReplyConfirmationAsync(Localization.XpChannelNotIgnored, channel.Name);
+                }
+                else
+                {
+                    await Service.AddChannelToExclusionAsync(channel);
+                
+                    if (channel.Id == Context.Channel.Id)
+                        await ReplyConfirmationAsync(Localization.XpCurrentChannelIgnored);
+                    else
+                        await ReplyConfirmationAsync(Localization.XpChannelIgnored, channel.Name);
+                }
+            }
+        }
+
+        [Command("xpignorelist", "xpilist", "xpil")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+        public async Task XpIgnoreList()
+        {
+            var guildDb = await DbContext.GetOrAddAsync(g => g.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
+            if (guildDb.XpIgnoredChannels is null)
+            {
+                await ReplyConfirmationAsync(Localization.XpNoIgnoredChannels);
+                return;
+            }
+
+            var ignoredChannelsGroup = guildDb.XpIgnoredChannels
+                .Select(xpic => Context.Guild!.GetChannel(xpic))
+                .GroupBy(c => c.Parent)
+                .OrderBy(x => x.Key?.Position);
+
+            var list = new List<string>();
+            foreach (var group in ignoredChannelsGroup)
+            {
+                if (group.Key is not null)
+                    list.Add(Formatter.Bold(group.Key.Name));
+
+                var ignoredChannels = group.OrderBy(c => c.Position).ToList();
+                for (var i = 0; i < ignoredChannels.Count; i++)
+                {
+                    var ignoredChannel = ignoredChannels[i];
+                    
+                    if (ignoredChannels.Count == 1 && ignoredChannel.Parent is null)
+                        list.Add($"\u2500\u2500{ignoredChannel.Name}");
+                    else if (i == 0 && ignoredChannel.Parent is null)
+                        list.Add($"\u250C\u2500{ignoredChannel.Name}");
+                    else if (i == ignoredChannels.Count - 1)
+                        list.Add($"\u2514\u2500{ignoredChannel.Name}");
+                    else
+                        list.Add($"\u251C\u2500{ignoredChannel.Name}");
+                }
+            }
+
+            await SendPaginatedMessageAsync(list, 15, (items, _) => new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                Title = GetText(Localization.XpIgnoredChannels),
+                Description = string.Join('\n', items)
+            });
         }
     }
 }

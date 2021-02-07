@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using ConcurrentCollections;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using ImageMagick;
@@ -16,6 +17,7 @@ using Rias.Database.Entities;
 using Rias.Extensions;
 using Rias.Implementation;
 using Rias.Models;
+using Serilog;
 
 namespace Rias.Services
 {
@@ -28,6 +30,7 @@ namespace Rias.Services
         
         private readonly ConcurrentDictionary<ulong, DateTime> _usersXp = new();
         private readonly ConcurrentDictionary<(ulong, ulong), DateTime> _guildUsersXp = new();
+        private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> _xpIgnoredChannels = new();
 
         private readonly MagickColor _dark = MagickColor.FromRgb(36, 36, 36);
         private readonly MagickColor _darker = MagickColor.FromRgb(32, 32, 32);
@@ -40,6 +43,8 @@ namespace Rias.Services
         {
             _botService = serviceProvider.GetRequiredService<BotService>();
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
+
+            RunTaskAsync(LoadXpIgnoredChannels);
         }
         
         public static string ReplacePlaceholders(DiscordMember member, DiscordRole? role, int level, string message)
@@ -95,6 +100,9 @@ namespace Rias.Services
         
         public async Task AddGuildUserXpAsync(DiscordMember member, DiscordChannel channel)
         {
+            if (CheckExcludedChannel(channel))
+                return;
+            
             var now = DateTime.UtcNow;
             var check = false;
             
@@ -148,6 +156,63 @@ namespace Rias.Services
                 await SendXpNotificationAsync(member, channel, role, guildDb, nextLevel);
         }
 
+        public bool CheckExcludedChannel(DiscordChannel channel)
+            => _xpIgnoredChannels.TryGetValue(channel.GuildId, out var xpIgnoredGuildChannels) && xpIgnoredGuildChannels.Contains(channel.Id);
+
+        public async Task AddChannelToExclusionAsync(DiscordChannel channel)
+        {
+            var channelAdded = true;
+            
+            if (_xpIgnoredChannels.TryGetValue(channel.GuildId, out var xpIgnoredGuildChannels))
+                channelAdded = xpIgnoredGuildChannels.Add(channel.Id);
+            else
+                _xpIgnoredChannels[channel.GuildId] = new ConcurrentHashSet<ulong> { channel.Id };
+
+            if (!channelAdded)
+                return;
+            
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+
+            var guildDb = await db.GetOrAddAsync(g => g.GuildId == channel.GuildId, () => new GuildEntity { GuildId = channel.GuildId });
+            if (guildDb.XpIgnoredChannels is null)
+                guildDb.XpIgnoredChannels = new [] { channel.Id };
+            else if (!guildDb.XpIgnoredChannels.Contains(channel.Id))
+                guildDb.XpIgnoredChannels = guildDb.XpIgnoredChannels.Append(channel.Id).ToArray();
+
+            await db.SaveChangesAsync();
+        }
+        
+        public async Task RemoveChannelFromExclusionAsync(DiscordChannel channel)
+        {
+            var channelRemoved = _xpIgnoredChannels.TryGetValue(channel.GuildId, out var xpIgnoredGuildChannels) && xpIgnoredGuildChannels.TryRemove(channel.Id);
+            if (!channelRemoved)
+                return;
+            
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+
+            var guildDb = await db.GetOrAddAsync(g => g.GuildId == channel.GuildId, () => new GuildEntity { GuildId = channel.GuildId });
+            if (guildDb.XpIgnoredChannels is not null)
+            {
+                var newXpIgnoredChannels = new ulong[guildDb.XpIgnoredChannels.Length - 1];
+                var index = 0;
+                    
+                foreach (var xpIgnoredChannel in guildDb.XpIgnoredChannels)
+                {
+                    if (xpIgnoredChannel != channel.Id)
+                        newXpIgnoredChannels[index++] = xpIgnoredChannel;
+                }
+                
+                guildDb.XpIgnoredChannels = newXpIgnoredChannels;
+            }
+            
+            if (guildDb.XpIgnoredChannels?.Length == 0)
+                guildDb.XpIgnoredChannels = null;
+
+            await db.SaveChangesAsync();
+        }
+
         public async Task<Stream> GenerateXpImageAsync(DiscordMember member)
         {
             var xpInfo = await GetXpInfo(member);
@@ -161,6 +226,25 @@ namespace Rias.Services
             await image.WriteAsync(imageStream, MagickFormat.Png);
             imageStream.Position = 0;
             return imageStream;
+        }
+
+        private async Task LoadXpIgnoredChannels()
+        {
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var guildsDb = await db.Guilds.Where(g => g.XpIgnoredChannels != null).ToListAsync();
+            foreach (var guildDb in guildsDb)
+            {
+                foreach (var xpIgnoredChannel in guildDb.XpIgnoredChannels!)
+                {
+                    if (_xpIgnoredChannels.TryGetValue(guildDb.GuildId, out var xpIgnoredGuildChannels))
+                        xpIgnoredGuildChannels.Add(xpIgnoredChannel);
+                    else
+                        _xpIgnoredChannels[guildDb.GuildId] = new ConcurrentHashSet<ulong> { xpIgnoredChannel };
+                }
+            }
+            
+            Log.Debug("Xp ignored channels loaded.");
         }
 
         private async Task SendXpNotificationAsync(DiscordMember member, DiscordChannel channel, DiscordRole? role, GuildEntity guildDb, int level)
@@ -319,7 +403,7 @@ namespace Rias.Services
             guildDb.XpNotification = false;
             await db.SaveChangesAsync();
         }
-        
+
         private async Task AddAvatarAndUsernameAsync(MagickImage image, DiscordUser user)
         {
             await using var avatarStream = await _httpClient.GetStreamAsync(user.GetAvatarUrl(ImageFormat.Auto));

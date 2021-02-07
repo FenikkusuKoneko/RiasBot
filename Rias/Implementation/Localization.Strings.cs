@@ -26,6 +26,7 @@ namespace Rias.Implementation
         public const string AdministrationCategoryChannelNotFound = "administration_category_channel_not_found";
         public const string AdministrationTextChannelNotFound = "administration_text_channel_not_found";
         public const string AdministrationVoiceChannelNotFound = "administration_voice_channel_not_found";
+        public const string AdministrationChannelNotFound = "administration_channel_not_found";
         public const string AdministrationCategoryChannelNoViewPermission = "administration_category_channel_no_view_permission";
         public const string AdministrationTextChannelNoViewPermission = "administration_text_channel_no_view_permission";
         public const string AdministrationVoiceChannelNoViewPermission = "administration_voice_channel_no_view_permission";
@@ -183,6 +184,7 @@ namespace Rias.Implementation
         public const string AdministrationWarnings = "administration_warnings";
         public const string AdministrationPunishment = "administration_punishment";
         public const string AdministrationNullCustomMessage = "administration_null_custom_message";
+        public const string AdministrationNoTextChannelInCategory = "administration_no_text_channel_in_category";
          
         public const string BotGuildNotFound = "bot_guild_not_found";
         public const string BotLeftGuild = "bot_left_guild";
@@ -547,6 +549,15 @@ namespace Rias.Implementation
         public const string XpGuildLevelUpRoleReward = "xp_guild_level_up_role_reward";
         public const string XpNoAttachFilesPermission = "xp_no_attach_files_permission";
         public const string XpNoAttachFilesChannelPermission = "xp_no_attach_files_channel_permission";
+        public const string XpCurrentChannelIgnored = "xp_current_channel_ignored";
+        public const string XpCurrentChannelNotIgnored = "xp_current_channel_not_ignored";
+        public const string XpChannelIgnored = "xp_channel_ignored";
+        public const string XpChannelNotIgnored = "xp_channel_not_ignored";
+        public const string XpChannelsIgnored = "xp_channels_ignored";
+        public const string XpChannelsNotIgnored = "xp_channels_not_ignored";
+        public const string XpIgnoreVoiceChannelNotAllowed = "xp_ignore_voice_channel_not_allowed";
+        public const string XpIgnoredChannels = "xp_ignored_channels";
+        public const string XpNoIgnoredChannels = "xp_no_ignored_channels";
         
         public const string CommonYes = "common_yes";
         public const string CommonAnd = "common_and";
