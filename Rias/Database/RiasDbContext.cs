@@ -65,7 +65,8 @@ namespace Rias.Database
             where TEntity : class
         {
             var entity = await Set<TEntity>().FirstOrDefaultAsync(predicate);
-            if (entity != null) return entity;
+            if (entity != null)
+                return entity;
 
             var newEntity = entityValue();
             await AddAsync(newEntity);

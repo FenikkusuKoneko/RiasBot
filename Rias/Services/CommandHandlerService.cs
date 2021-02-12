@@ -148,8 +148,10 @@ namespace Rias.Services
         
         private async Task MessageCreatedAsync(DiscordClient client, MessageCreateEventArgs args)
         {
-            if (args.Message.MessageType != MessageType.Default) return;
-            if (args.Message.Author.IsBot) return;
+            if (args.Message.MessageType != MessageType.Default && args.Message.MessageType != MessageType.Reply)
+                return;
+            if (args.Message.Author.IsBot)
+                return;
             
             await RunTaskAsync(ExecuteAsync(client, args));
         }
