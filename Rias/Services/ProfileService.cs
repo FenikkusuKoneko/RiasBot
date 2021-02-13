@@ -492,14 +492,20 @@ namespace Rias.Services
             var characterImage = aniListCharacter.Image.Large;
             if (!string.IsNullOrEmpty(characterImage))
             {
-                await _animeService.SetCharacterImageUrlAsync(aniListCharacter.Id, characterImage);
-                await using var characterStream = await _httpClient.GetStreamAsync(characterImage);
-                var ms = new MemoryStream();
-                await characterStream.CopyToAsync(ms);
-                ms.Position = 0;
-                return ms;
+                try
+                {
+                    await _animeService.SetCharacterImageUrlAsync(aniListCharacter.Id, characterImage);
+                    await using var characterStream = await _httpClient.GetStreamAsync(characterImage);
+                    var ms = new MemoryStream();
+                    await characterStream.CopyToAsync(ms);
+                    ms.Position = 0;
+                    return ms;
+                }
+                catch
+                {
+                }
             }
-                
+            
             return null;
         }
 
