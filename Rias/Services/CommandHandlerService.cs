@@ -171,6 +171,8 @@ namespace Rias.Services
                 if (!channelPermissions.HasPermission(Permissions.SendMessages))
                     return;
             }
+
+            var isMentionPrefix = false;
             
             var prefix = await GetGuildPrefixAsync(args.Guild);
             if (!CommandUtilities.HasPrefix(args.Message.Content, prefix, StringComparison.InvariantCultureIgnoreCase, out var output))
@@ -178,8 +180,12 @@ namespace Rias.Services
                 if (client.CurrentUser is null)
                     return;
 
-                if (!CommandUtilities.HasPrefix(args.Message.Content, client.CurrentUser.Username, StringComparison.InvariantCultureIgnoreCase, out output)
-                    && !args.Message.HasMentionPrefix(client.CurrentUser, out output))
+                if (args.Message.HasMentionPrefix(client.CurrentUser, out output))
+                {
+                    if (string.IsNullOrEmpty(output))
+                        isMentionPrefix = true;
+                }
+                else if (!CommandUtilities.HasPrefix(args.Message.Content, client.CurrentUser.Username, StringComparison.InvariantCultureIgnoreCase, out output))
                     return;
             }
 
@@ -187,6 +193,14 @@ namespace Rias.Services
                 return;
             
             var context = new RiasCommandContext(RiasBot, args.Message, prefix);
+
+            if (isMentionPrefix)
+            {
+                var prefixCommand = _commandService.FindCommands("prefix");
+                await _commandService.ExecuteAsync(prefixCommand[0].Command, string.Empty, context);
+                return;
+            }
+            
             var result = await _commandService.ExecuteAsync(output, context);
             
             if (result.IsSuccessful)
