@@ -310,6 +310,12 @@ namespace Rias.Modules.Searches
                 }
                 
                 var characters = anime.Characters.Nodes.OrderBy(c => c.Name.Full).ToList();
+                if (characters.Count == 0)
+                {
+                    await ReplyErrorAsync(Localization.SearchesCharactersNotFound);
+                    return;
+                }
+                
                 await SendPaginatedMessageAsync(characters, 10, (items, _) => new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
