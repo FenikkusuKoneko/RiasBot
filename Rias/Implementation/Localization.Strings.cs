@@ -199,7 +199,6 @@ namespace Rias.Implementation
         public const string BotUserIsBot = "bot_user_is_bot";
         public const string BotUserMessageNotSent = "bot_user_message_not_sent";
         public const string BotMessageSent = "bot_message_sent";
-        public const string BotChannelMessageIdsBadFormat = "bot_channel_message_ids_bad_format";
         public const string BotMessageNotFound = "bot_message_not_found";
         public const string BotMessageNotUserMessage = "bot_message_not_user_message";
         public const string BotMessageNotSelf = "bot_message_not_self";
@@ -292,6 +291,7 @@ namespace Rias.Implementation
         public const string HelpCommandsNotSent = "help_commands_not_sent";
         public const string HelpCommandInformation = "help_command_information";
         public const string HelpBadArguments = "help_bad_arguments";
+        public const string HelpOwnerOnlyMark = "help_owner_only_mark";
         
         public const string NsfwChannelNotNsfw = "nsfw_channel_not_nsfw";
         public const string NsfwCacheNotInitialized = "nsfw_cache_not_initialized";

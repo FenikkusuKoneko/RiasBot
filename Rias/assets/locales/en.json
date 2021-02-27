@@ -200,7 +200,6 @@
   "bot_user_is_bot": "The user is a bot.",
   "bot_user_message_not_sent": "I couldn't send the message to the user.",
   "bot_message_sent": "Message sent.",
-  "bot_channel_message_ids_bad_format": "The format of the ids is not correct. It must be `<channelId>|<messageId>`.",
   "bot_message_not_found": "I couldn't find the message.",
   "bot_message_not_user_message": "The message doesn't belong to a user.",
   "bot_message_not_self": "The message doesn't belong to me.",
@@ -219,6 +218,7 @@
   "bot_activity_playing": "Playing {0}",
   "bot_activity_listening": "Listening to {0}",
   "bot_activity_watching": "Watching {0}",
+  "bot_activity_competing": "Competing in {0}",
   "bot_activity_streaming": "Streaming {0}",
   "bot_activity_rotation_set": "Activity rotation set: {0} seconds\n{1}",
   "bot_activity_rotation_limit": "The activity rotation period cannot be lower than {0} seconds.",
@@ -320,6 +320,7 @@
   "help_all_commands": "All commands",
   "help_commands_not_sent": "I couldn't send you the list with all commands via DM. Please verify if you disabled receiving DMs from this server.",
   "help_bad_arguments": "The arguments are not good.",
+  "help_owner_only_mark": "The commands marked with `*` are owner-only.",
   
   "nsfw_channel_not_nsfw": "The NSFW commands can be executed only in NSFW channels.",
   "nsfw_cache_not_initialized": "The cache did not finish downloading the nsfw images. Please wait a moment.",
@@ -622,7 +623,7 @@
   "attribute_bot_guild_permissions": "I must have the {0} server permission(s).",
   "attribute_bot_channel_permissions": "I don't have the {0} permission(s) in this channel.",
   "attribute_bot_permission_not_guild": "The `BotPermissionAttribute` requires this command to be used in a server channel.",
-  "attribute_context": "The command must be used in a {0}.",
+  "attribute_context": "The command must be used in a **{0}**.",
 
   "type_parser_primitive_type": "Check the types of your arguments.",
   "type_parser_channel_not_guild": "`ChannelTypeParser` cannot be used in a context without a guild!",

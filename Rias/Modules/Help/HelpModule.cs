@@ -280,7 +280,7 @@ namespace Rias.Modules.Help
                     nextAliases = $" [{nextAliases}]";
 
                 var moduleAlias = x.Module.Aliases.Count != 0 ? $"{x.Module.Aliases[0]} " : null;
-                var isOwnerString = x.Checks.Any(c => c is OwnerOnlyAttribute) ? $" **({GetText(Localization.HelpOwnerOnly).ToLowerInvariant()})**" : null;
+                var isOwnerString = x.Checks.Any(c => c is OwnerOnlyAttribute) ? $" `{GetText(Localization.HelpOwnerOnly).ToLowerInvariant()}`" : null;
                 return $"{prefix}{moduleAlias}{x.Aliases.FirstOrDefault()}{nextAliases}{isOwnerString}";
             }).ToImmutableList();
         

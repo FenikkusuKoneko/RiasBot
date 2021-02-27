@@ -330,17 +330,11 @@ namespace Rias.Services
 
             var moduleAlias = command.Module.Aliases.Count != 0 ? $"{command.Module.Aliases[0]} " : string.Empty;
             var title = string.Join(" / ", command.Aliases.Select(a => $"{prefix}{moduleAlias}{a}"));
-            
-            if (string.IsNullOrEmpty(title))
-                title = $"{prefix}{moduleAlias}";
 
             if (command.Checks.Any(c => c is OwnerOnlyAttribute))
                 title += $" [{GetText(guild?.Id, Localization.HelpOwnerOnly).ToLowerInvariant()}]";
 
-            var commandInfoKey = command.Aliases.Count != 0
-                ? $"{command.Module.Name.Replace(" ", "_").ToLower()}_{command.Aliases[0]}"
-                : command.Name;
-            
+            var commandInfoKey = $"{command.Module.Name.Replace(' ', '_').ToLower()}_{command.Name.Replace(' ', '_')}";
             var description = GetCommandInfo(guild?.Id, commandInfoKey);
 
             var embed = new DiscordEmbedBuilder

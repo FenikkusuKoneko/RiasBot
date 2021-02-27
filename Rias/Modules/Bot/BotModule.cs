@@ -9,6 +9,7 @@ using Humanizer.Localisation;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
+using Rias.Commons;
 using Rias.Extensions;
 using Rias.Implementation;
 using Rias.Services;
@@ -100,134 +101,46 @@ namespace Rias.Modules.Bot
                     break;
             }
         }
-        
+
         [Command("send")]
-        [OwnerOnly]
-        public async Task SendAsync(string id, [Remainder] string message)
+        [Context(ContextType.Guild)]
+        [MemberPermission(Permissions.Administrator)]
+        public async Task SendAsync([TextChannel] DiscordChannel channel, [Remainder] string message)
         {
-            var messageParsed = RiasUtilities.TryParseMessage(message, out var customMessage);
-            if (messageParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
+            var permissions = channel.Guild.CurrentMember.PermissionsIn(channel);
+            if (!permissions.HasPermission(Permissions.AccessChannels))
             {
-                await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
+                await ReplyErrorAsync(Localization.AdministrationTextChannelNoViewPermission);
+                return;
+            }
+
+            if (!permissions.HasPermission(Permissions.SendMessages))
+            {
+                await ReplyErrorAsync(Localization.BotTextChannelNoSendMessagesPermission);
                 return;
             }
             
-            if (id.StartsWith("c:", StringComparison.InvariantCultureIgnoreCase))
+            switch (RiasUtilities.TryParseMessage(message, out var customMessage))
             {
-                if (!ulong.TryParse(id[2..], out var channelId))
-                {
-                    await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
+                case true when string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null:
+                    await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
                     return;
-                }
-
-                var channel = RiasBot.Client.ShardClients
-                    .SelectMany(x => x.Value.Guilds)
-                    .SelectMany(x => x.Value.Channels)
-                    .FirstOrDefault(x => x.Key == channelId).Value;
-                
-                if (channel is null)
-                {
-                    await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
-                    return;
-                }
-
-                if (channel.Type != ChannelType.Text && channel.Type != ChannelType.News && channel.Type != ChannelType.Store)
-                {
-                    await ReplyErrorAsync(Localization.BotChannelNotTextChannel);
-                    return;
-                }
-
-                var permissions = channel.Guild.CurrentMember.PermissionsIn(channel);
-                if (!permissions.HasPermission(Permissions.AccessChannels))
-                {
-                    await ReplyErrorAsync(Localization.AdministrationTextChannelNoViewPermission);
-                    return;
-                }
-
-                if (!permissions.HasPermission(Permissions.SendMessages))
-                {
-                    await ReplyErrorAsync(Localization.BotTextChannelNoSendMessagesPermission);
-                    return;
-                }
-
-                if (messageParsed)
+                case true:
                     await channel.SendMessageAsync(customMessage.Content, customMessage.Embed);
-                else
+                    break;
+                default:
                     await channel.SendMessageAsync(message);
-                
-                await ReplyConfirmationAsync(Localization.BotMessageSent);
-                return;
+                    break;
             }
 
-            if (id.StartsWith("u:", StringComparison.InvariantCultureIgnoreCase))
-            {
-                DiscordMember member;
-                if (ulong.TryParse(id[2..], out var userId) && RiasBot.Members.TryGetValue(userId, out var m))
-                {
-                    member = m;
-                }
-                else
-                {
-                    await ReplyErrorAsync(Localization.AdministrationUserNotFound);
-                    return;
-                }
-                
-                if (member.IsBot)
-                {
-                    await ReplyErrorAsync(Localization.BotUserIsBot);
-                    return;
-                }
-
-                try
-                {
-                    if (messageParsed)
-                        await member.SendMessageAsync(customMessage.Content, customMessage.Embed);
-                    else
-                        await member.SendMessageAsync(message);
-                    
-                    await ReplyConfirmationAsync(Localization.BotMessageSent);
-                }
-                catch
-                {
-                    await ReplyErrorAsync(Localization.BotUserMessageNotSent);
-                }
-            }
+            await ReplyConfirmationAsync(Localization.BotMessageSent);
         }
 
         [Command("edit")]
-        [OwnerOnly]
-        public async Task EditAsync(string id, [Remainder] string message)
+        [Context(ContextType.Guild)]
+        [MemberPermission(Permissions.Administrator)]
+        public async Task EditAsync([TextChannel] DiscordChannel channel, ulong messageId, [Remainder] string message)
         {
-            var ids = id.Split("|");
-            if (ids.Length != 2)
-            {
-                await ReplyErrorAsync(Localization.BotChannelMessageIdsBadFormat);
-                return;
-            }
-            
-            if (!ulong.TryParse(ids[0], out var channelId))
-            {
-                await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
-                return;
-            }
-
-            var channel = RiasBot.Client.ShardClients
-                .SelectMany(x => x.Value.Guilds)
-                .SelectMany(x => x.Value.Channels)
-                .FirstOrDefault(x => x.Key == channelId).Value;
-            
-            if (channel is null)
-            {
-                await ReplyErrorAsync(Localization.AdministrationTextChannelNotFound);
-                return;
-            }
-
-            if (channel.Type != ChannelType.Text && channel.Type != ChannelType.News && channel.Type != ChannelType.Store)
-            {
-                await ReplyErrorAsync(Localization.BotChannelNotTextChannel);
-                return;
-            }
-            
             var permissions = channel.Guild.CurrentMember.PermissionsIn(channel);
             if (!permissions.HasPermission(Permissions.AccessChannels))
             {
@@ -241,17 +154,7 @@ namespace Rias.Modules.Bot
                 return;
             }
 
-            DiscordMessage discordMessage;
-            if (ulong.TryParse(ids[1], out var messageId))
-            {
-                discordMessage = await channel.GetMessageAsync(messageId);
-            }
-            else
-            {
-                await ReplyErrorAsync(Localization.BotMessageNotFound);
-                return;
-            }
-
+            var discordMessage = await channel.GetMessageAsync(messageId);
             if (discordMessage is null)
             {
                 await ReplyErrorAsync(Localization.BotMessageNotFound);
@@ -270,17 +173,18 @@ namespace Rias.Modules.Bot
                 return;
             }
 
-            var messageParsed = RiasUtilities.TryParseMessage(message, out var customMessage);
-            if (messageParsed && string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null)
+            switch (RiasUtilities.TryParseMessage(message, out var customMessage))
             {
-                await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
-                return;
+                case true when string.IsNullOrEmpty(customMessage.Content) && customMessage.Embed is null:
+                    await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
+                    return;
+                case true:
+                    await discordMessage.ModifyAsync(customMessage.Content, customMessage.Embed?.Build());
+                    break;
+                default:
+                    await discordMessage.ModifyAsync(message, null);
+                    break;
             }
-
-            if (messageParsed)
-                await discordMessage.ModifyAsync(customMessage.Content, customMessage.Embed?.Build());
-            else
-                await discordMessage.ModifyAsync(message);
 
             await ReplyConfirmationAsync(Localization.BotMessageEdited);
         }
