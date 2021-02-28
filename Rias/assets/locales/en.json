@@ -438,7 +438,7 @@
   "utility_url_not_png_jpg_gif": "The url is not a direct link for a png, jpg/jpeg or gif image.",
   "utility_image_or_url_not_good": "The image or the URL is not good.",
   "utility_status": "Status",
-  "utility_prefix_is": "The prefix on this server is **{0}**.",
+  "utility_prefix_is": "My prefix in this server is **{0}**.",
   "utility_prefix_limit": "The prefix length must be lower than {0} characters.",
   "utility_prefix_changed": "The prefix on this server has been changed from **{0}** to **{1}**.",
   "utility_languages": "Available languages",
