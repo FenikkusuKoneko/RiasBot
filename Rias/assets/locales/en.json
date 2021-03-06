@@ -110,7 +110,7 @@
   "administration_role_not_removed": "The role **{0}** cannot be removed manually from members because is automatically managed by Discord.",
   "administration_aar_disabled": "Auto-assignable role disabled.",
   "administration_aar_set": "The role **{0}** will be auto-assigned to the new members.",
-  "administration_aar_not_set": "The role **{0}** cannot be assigned manually to members because is automatically managed by Discord.",
+  "administration_aar_not_set": "The role **{0}** cannot be assigned to members because is automatically managed by Discord.",
   "administration_role_not_self_assignable": "The role **{0}** is not self assignable.",
   "administration_you_are": "You are now **{0}**.",
   "administration_you_already_are": "You already are **{0}**.",
