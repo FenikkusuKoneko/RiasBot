@@ -217,7 +217,7 @@ namespace Rias.Services
         {
             var xpInfo = await GetXpInfo(member);
 
-            using var image = new MagickImage(_dark, 500, 300);
+            using var image = new MagickImage(_dark, 500, 150);
 
             await AddAvatarAndUsernameAsync(image, member);
             AddInfo(image, xpInfo, member.Guild);
@@ -410,16 +410,16 @@ namespace Rias.Services
             using var avatarImage = new MagickImage(avatarStream);
             avatarImage.Resize(new MagickGeometry
             {
-                Width = 70,
-                Height = 70
+                Width = 100,
+                Height = 100
             });
             
-            using var avatarLayer = new MagickImage(MagickColors.Transparent, 70, 70);
+            using var avatarLayer = new MagickImage(MagickColors.Transparent, 100, 100);
             avatarLayer.Draw(new Drawables().RoundRectangle(0, 0, avatarLayer.Width, avatarLayer.Height, 15, 15)
                 .FillColor(MagickColors.White));
             avatarLayer.Composite(avatarImage, CompositeOperator.Atop);
             
-            image.Draw(new DrawableComposite(30, 30, CompositeOperator.Over, avatarLayer));
+            image.Draw(new DrawableComposite(20, 25, CompositeOperator.Over, avatarLayer));
             
             var usernameSettings = new MagickReadSettings
             {
@@ -427,12 +427,12 @@ namespace Rias.Services
                 FillColor = MagickColors.White,
                 Font = _meiryoFontPath,
                 FontWeight = FontWeight.Bold,
-                Width = 300,
-                Height = 50
+                Width = 360,
+                Height = 40
             };
             
             using var usernameImage = new MagickImage($"caption:{user.FullName()}", usernameSettings);
-            image.Draw(new DrawableComposite(120, 45, CompositeOperator.Over, usernameImage));
+            image.Draw(new DrawableComposite(140, 20, CompositeOperator.Over, usernameImage));
         }
         
         private void AddInfo(MagickImage image, XpInfo xpInfo, DiscordGuild guild)
@@ -442,69 +442,43 @@ namespace Rias.Services
                 BackgroundColor = MagickColors.Transparent,
                 FillColor = MagickColors.White,
                 Font = _arialFontPath,
-                FontPointsize = 15,
+                FontPointsize = 12,
                 Width = 100
             };
-
-            using var globalTextImage = new MagickImage($"caption:{GetText(guild.Id, Localization.CommonGlobal).ToUpperInvariant()}", settings);
-            image.Draw(new DrawableComposite(30, 120, CompositeOperator.Over, globalTextImage));
-            using var serverTextImage = new MagickImage($"caption:{GetText(guild.Id, Localization.CommonServer).ToUpperInvariant()}", settings);
-            image.Draw(new DrawableComposite(30, 210, CompositeOperator.Over, serverTextImage));
-
-            settings.TextGravity = Gravity.Center;
-            using var globalLevelTextImage = new MagickImage($"caption:{GetText(guild.Id, Localization.XpLvl, xpInfo.GlobalLevel).ToUpperInvariant()}", settings);
-            image.Draw(new DrawableComposite(250 - (double) globalLevelTextImage.Width / 2, 120, CompositeOperator.Over, globalLevelTextImage));
-            using var serverLevelTextImage = new MagickImage($"caption:{GetText(guild.Id, Localization.XpLvl, xpInfo.ServerLevel).ToUpperInvariant()}", settings);
-            image.Draw(new DrawableComposite(250 - (double) serverLevelTextImage.Width / 2, 210, CompositeOperator.Over, serverLevelTextImage));
+            
+            using var levelTextImage = new MagickImage($"caption:{GetText(guild.Id, Localization.XpLvl, xpInfo.Level).ToUpperInvariant()}", settings);
+            image.Draw(new DrawableComposite(140, 70, CompositeOperator.Over, levelTextImage));
 
             settings.TextGravity = Gravity.East;
-            using var globalRankTextImage = new MagickImage($"caption:#{xpInfo.GlobalRank}", settings);
-            image.Draw(new DrawableComposite(470 - (double) globalRankTextImage.Width, 120, CompositeOperator.Over, globalRankTextImage));
-            using var serverRankTextImage = new MagickImage($"caption:#{xpInfo.ServerRank}", settings);
-            image.Draw(new DrawableComposite(470 - (double) serverRankTextImage.Width, 210, CompositeOperator.Over, serverRankTextImage));
+            using var rankTextImage = new MagickImage($"caption:#{xpInfo.Rank}", settings);
+            image.Draw(new DrawableComposite(470 - (double) rankTextImage.Width, 70, CompositeOperator.Over, rankTextImage));
             
             image.Draw(new Drawables()
-                .RoundRectangle(30, 150, 470, 160, 5, 5)
-                .FillColor(_darker));
-            image.Draw(new Drawables()
-                .RoundRectangle(30, 240, 470, 250, 5, 5)
+                .RoundRectangle(140, 90, 470, 100, 5, 5)
                 .FillColor(_darker));
 
-            var globalCurrentXp = RiasUtilities.LevelXp(xpInfo.GlobalLevel, xpInfo.GlobalXp, XpThreshold);
-            var globalNextLevelXp = (xpInfo.GlobalLevel + 1) * 30;
+            var currentXp = RiasUtilities.LevelXp(xpInfo.Level, xpInfo.Xp, XpThreshold);
+            var nextLevelXp = (xpInfo.Level + 1) * 30;
             
-            var globalXpBarLength = (double) globalCurrentXp / globalNextLevelXp * 440;
+            var serverXpBarLength = (double) currentXp / nextLevelXp * 330;
             image.Draw(new Drawables()
-                .RoundRectangle(30, 150, 30 + globalXpBarLength, 160, 5, 5)
-                .FillColor(xpInfo.Color));
-            
-            var serverCurrentXp = RiasUtilities.LevelXp(xpInfo.ServerLevel, xpInfo.ServerXp, XpThreshold);
-            var serverNextLevelXp = (xpInfo.ServerLevel + 1) * 30;
-            
-            var serverXpBarLength = (double) serverCurrentXp / serverNextLevelXp * 440;
-            image.Draw(new Drawables()
-                .RoundRectangle(30, 240, 30 + serverXpBarLength, 250, 5, 5)
+                .RoundRectangle(140, 90, 130 + serverXpBarLength, 100, 5, 5)
                 .FillColor(xpInfo.Color));
 
             settings.FontPointsize = 12;
             settings.TextGravity = Gravity.West;
-            using var globalCurrentXpTextImage = new MagickImage($"caption:{globalCurrentXp}", settings);
-            image.Draw(new DrawableComposite(30, 170, CompositeOperator.Over, globalCurrentXpTextImage));
-            using var serverCurrentXpTextImage = new MagickImage($"caption:{serverCurrentXp}", settings);
-            image.Draw(new DrawableComposite(30, 260, CompositeOperator.Over, serverCurrentXpTextImage));
+            using var currentXpTextImage = new MagickImage($"caption:{currentXp}", settings);
+            image.Draw(new DrawableComposite(140, 110, CompositeOperator.Over, currentXpTextImage));
             
             settings.TextGravity = Gravity.East;
-            using var globalNextLevelXpTextImage = new MagickImage($"caption:{globalNextLevelXp}", settings);
-            image.Draw(new DrawableComposite(470 - (double) globalNextLevelXpTextImage.Width, 170, CompositeOperator.Over, globalNextLevelXpTextImage));
-            using var serverNextLevelXpTextImage = new MagickImage($"caption:{serverNextLevelXp}", settings);
-            image.Draw(new DrawableComposite(470 - (double) serverNextLevelXpTextImage.Width, 260, CompositeOperator.Over, serverNextLevelXpTextImage));
+            using var nextLevelXpTextImage = new MagickImage($"caption:{nextLevelXp}", settings);
+            image.Draw(new DrawableComposite(470 - (double) nextLevelXpTextImage.Width, 110, CompositeOperator.Over, nextLevelXpTextImage));
         }
         
         private async Task<XpInfo> GetXpInfo(DiscordMember member)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var userDb = await db.Users.FirstOrDefaultAsync(x => x.UserId == member.Id);
             var profileDb = await db.Profile.FirstOrDefaultAsync(x => x.UserId == member.Id);
 
             var membersXp = (await db.GetOrderedListAsync<MembersEntity, int>(x => x.GuildId == member.Guild.Id, y => y.Xp, true))
@@ -512,42 +486,27 @@ namespace Rias.Services
                 .ToList();
             
             var memberXp = membersXp.FirstOrDefault(x => x.MemberId == member.Id);
-            var serverRank = "?";
+            var rank = "?";
             if (memberXp != null && RiasBot.ChunkedGuilds.Contains(member.Guild.Id))
-                serverRank = (membersXp.IndexOf(memberXp) + 1).ToString();
+                rank = (membersXp.IndexOf(memberXp) + 1).ToString();
             
-            var globalXp = userDb?.Xp ?? 0;
-            var serverXp = memberXp?.Xp ?? 0;
+            var xp = memberXp?.Xp ?? 0;
             return new XpInfo
             {
-                GlobalXp = globalXp,
-                GlobalLevel = RiasUtilities.XpToLevel(globalXp, XpThreshold),
-                GlobalRank = userDb != null
-                    ? (await db.Users.Select(x => x.Xp)
-                        .OrderByDescending(y => y)
-                        .ToListAsync())
-                    .IndexOf(userDb.Xp) + 1
-                    : 0,
-                ServerXp = serverXp,
-                ServerLevel = RiasUtilities.XpToLevel(serverXp, XpThreshold),
-                ServerRank = serverRank,
+                Xp = xp,
+                Level = RiasUtilities.XpToLevel(xp, XpThreshold),
+                Rank = rank,
                 Color = profileDb?.Color != null ? new MagickColor($"{profileDb.Color}") : MagickColors.White
             };
         }
         
         private class XpInfo
         {
-            public int GlobalXp { get; set; }
+            public int Xp { get; set; }
             
-            public int GlobalLevel { get; set; }
+            public int Level { get; set; }
             
-            public int GlobalRank { get; set; }
-            
-            public int ServerXp { get; set; }
-            
-            public int ServerLevel { get; set; }
-            
-            public string? ServerRank { get; set; }
+            public string? Rank { get; set; }
             
             public MagickColor? Color { get; set; }
         }

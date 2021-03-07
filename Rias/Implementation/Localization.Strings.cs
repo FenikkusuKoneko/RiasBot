@@ -580,8 +580,6 @@ namespace Rias.Implementation
         public const string CommonPeriod = "common_period";
         public const string CommonPer = "common_per";
         public const string CommonRank = "common_rank";
-        public const string CommonGlobal = "common_global";
-        public const string CommonServer = "common_server";
         public const string CommonMenuPage = "common_menu_page";
         public const string CommonMore = "common_more";
         public const string CommonDate = "common_date";
