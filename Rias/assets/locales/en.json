@@ -322,7 +322,7 @@
   "help_bad_arguments": "The arguments are not good.",
   "help_owner_only_mark": "The commands marked with `*` are owner-only.",
   
-  "nsfw_channel_not_nsfw": "The NSFW commands can be executed only in NSFW channels.",
+  "nsfw_channel_not_nsfw": "This command can be executed only in NSFW channels.",
   "nsfw_cache_not_initialized": "The cache did not finish downloading the nsfw images. Please wait a moment.",
   "nsfw_no_hentai": "I couldn't find any hentai.",
   

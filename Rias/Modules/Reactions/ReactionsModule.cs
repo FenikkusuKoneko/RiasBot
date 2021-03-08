@@ -128,15 +128,31 @@ namespace Rias.Modules.Reactions
         [Context(ContextType.Guild)]
         [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         [Priority(1)]
-        public Task GropeAsync([Remainder] DiscordMember member)
-            => SendReactionAsync("grope", member, Localization.ReactionsGropeYou, Localization.ReactionsGropedBy, false);
+        public async Task GropeAsync([Remainder] DiscordMember member)
+        {
+            if (!Context.Channel.IsNSFW)
+            {
+                await ReplyErrorAsync(Localization.NsfwChannelNotNsfw);
+                return;
+            }
+            
+            await SendReactionAsync("grope", member, Localization.ReactionsGropeYou, Localization.ReactionsGropedBy, false);
+        }
 
         [Command("grope")]
         [Context(ContextType.Guild)]
         [Cooldown(2, 5, CooldownMeasure.Seconds, BucketType.Member)]
         [Priority(0)]
-        public Task GropeAsync([Remainder] string? value = null)
-            => SendReactionAsync("grope", value, Localization.ReactionsGropeYou, Localization.ReactionsGropedBy, false);
+        public async Task GropeAsync([Remainder] string? value = null)
+        {
+            if (!Context.Channel.IsNSFW)
+            {
+                await ReplyErrorAsync(Localization.NsfwChannelNotNsfw);
+                return;
+            }
+            
+            await SendReactionAsync("grope", value, Localization.ReactionsGropeYou, Localization.ReactionsGropedBy, false);
+        }
 
         [Command("blush")]
         [Context(ContextType.Guild)]
