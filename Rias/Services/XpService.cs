@@ -462,7 +462,7 @@ namespace Rias.Services
             
             var serverXpBarLength = (double) currentXp / nextLevelXp * 330;
             image.Draw(new Drawables()
-                .RoundRectangle(140, 90, 130 + serverXpBarLength, 100, 5, 5)
+                .RoundRectangle(140, 90, 140 + serverXpBarLength, 100, 5, 5)
                 .FillColor(xpInfo.Color));
 
             settings.FontPointsize = 12;
