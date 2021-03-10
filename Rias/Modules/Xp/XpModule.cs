@@ -65,18 +65,16 @@ namespace Rias.Modules.Xp
             if (page < 0)
                 page = 0;
 
-            var xpLeaderboard = await DbContext.GetOrderedListAsync<UserEntity, int>(x => x.Xp, true, (page * 15)..((page + 1) * 15));
+            var membersXp = await DbContext.GetOrderedListAsync<UserEntity, int>(x => x.Xp, true);
+            var xpLeaderboard = membersXp.Skip(page * 15)
+                .Take(15)
+                .ToList();
+            
             if (xpLeaderboard.Count == 0)
             {
                 await ReplyErrorAsync(Localization.XpLeaderboardEmpty);
                 return;
             }
-
-            var embed = new DiscordEmbedBuilder
-            {
-                Color = RiasUtilities.ConfirmColor,
-                Title = GetText(Localization.XpLeaderboard)
-            };
 
             var description = new StringBuilder();
             var index = page * 15;
@@ -88,7 +86,18 @@ namespace Rias.Modules.Xp
                                    $"({userDb.Xp} {GetText(Localization.XpXp).ToLowerInvariant()})`\n");
             }
 
-            embed.WithDescription(description.ToString());
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                Title = GetText(Localization.XpLeaderboard),
+                Description = description.ToString(),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    IconUrl = Context.User.GetAvatarUrl(ImageFormat.Auto),
+                    Text = $"{Context.User.FullName()} • #{membersXp.FindIndex(x => x.UserId == Context.User.Id) + 1}"
+                }
+            };
+            
             await ReplyAsync(embed);
         }
 
@@ -101,10 +110,12 @@ namespace Rias.Modules.Xp
             page--;
             if (page < 0)
                 page = 0;
-            
-            var xpLeaderboard = (await DbContext.GetOrderedListAsync<MembersEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Xp, true))
+
+            var membersXp = (await DbContext.GetOrderedListAsync<MembersEntity, int>(x => x.GuildId == Context.Guild!.Id, y => y.Xp, true))
                 .Where(x => Context.Guild!.Members.ContainsKey(x.MemberId))
-                .Skip(page * 15)
+                .ToList();
+            
+            var xpLeaderboard = membersXp.Skip(page * 15)
                 .Take(15)
                 .ToList();
             
@@ -113,12 +124,6 @@ namespace Rias.Modules.Xp
                 await ReplyErrorAsync(Localization.XpGuildLeaderboardEmpty);
                 return;
             }
-
-            var embed = new DiscordEmbedBuilder
-            {
-                Color = RiasUtilities.ConfirmColor,
-                Title = GetText(Localization.XpGuildLeaderboard)
-            };
 
             var description = new StringBuilder();
             var index = page * 15;
@@ -135,8 +140,18 @@ namespace Rias.Modules.Xp
                 {
                 }
             }
-
-            embed.WithDescription(description.ToString());
+            
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                Title = GetText(Localization.XpGuildLeaderboard),
+                Description = description.ToString(),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    IconUrl = Context.User.GetAvatarUrl(ImageFormat.Auto),
+                    Text = $"{Context.User.FullName()} • #{membersXp.FindIndex(x => x.MemberId == Context.User.Id) + 1}"
+                }
+            };
             await ReplyAsync(embed);
         }
 

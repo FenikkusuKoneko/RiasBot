@@ -1,6 +1,8 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using Humanizer;
 using Humanizer.Localisation;
@@ -87,8 +89,12 @@ namespace Rias.Modules.Gambling
                 page--;
                 if (page < 0) page = 0;
                 
-                var usersCurrency = await DbContext.GetOrderedListAsync<UserEntity, int>(x => x.Currency, true, (page * 15)..((page + 1) * 15));
-                if (usersCurrency.Count == 0)
+                var usersCurrency = await DbContext.GetOrderedListAsync<UserEntity, int>(x => x.Currency, true);
+                var currencyLeaderboard = usersCurrency.Skip(page * 15)
+                    .Take(15)
+                    .ToList();
+                
+                if (currencyLeaderboard.Count == 0)
                 {
                     await ReplyErrorAsync(Localization.GamblingLeaderboardNoUsers);
                     return;
@@ -97,11 +103,16 @@ namespace Rias.Modules.Gambling
                 var embed = new DiscordEmbedBuilder
                 {
                     Color = RiasUtilities.ConfirmColor,
-                    Title = GetText(Localization.GamblingCurrencyLeaderboard, Configuration.Currency)
+                    Title = GetText(Localization.GamblingCurrencyLeaderboard, Configuration.Currency),
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        IconUrl = Context.User.GetAvatarUrl(ImageFormat.Auto),
+                        Text = $"{Context.User.FullName()} • #{usersCurrency.FindIndex(x => x.UserId == Context.User.Id) + 1}"
+                    }
                 };
 
                 var index = 0;
-                foreach (var userCurrency in usersCurrency)
+                foreach (var userCurrency in currencyLeaderboard)
                 {
                     var user = await RiasBot.GetUserAsync(userCurrency.UserId);
                     embed.AddField($"#{++index + page * 15} {user?.FullName()}", $"{userCurrency.Currency} {Configuration.Currency}", true);
