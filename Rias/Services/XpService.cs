@@ -484,13 +484,13 @@ namespace Rias.Services
             var membersXp = (await db.GetOrderedListAsync<MembersEntity, int>(x => x.GuildId == member.Guild.Id, y => y.Xp, true))
                 .Where(x => member.Guild.Members.ContainsKey(x.MemberId))
                 .ToList();
-            
-            var memberXp = membersXp.FirstOrDefault(x => x.MemberId == member.Id);
+
             var rank = "?";
-            if (memberXp != null && RiasBot.ChunkedGuilds.Contains(member.Guild.Id))
-                rank = (membersXp.IndexOf(memberXp) + 1).ToString();
+            var memberXpIndex = membersXp.FindIndex(x => x.MemberId == member.Id);
+            if (memberXpIndex != -1)
+                rank = (memberXpIndex + 1).ToString();
             
-            var xp = memberXp?.Xp ?? 0;
+            var xp = memberXpIndex != -1 ? membersXp[memberXpIndex].Xp : 0;
             return new XpInfo
             {
                 Xp = xp,
