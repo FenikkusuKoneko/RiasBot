@@ -562,29 +562,29 @@ namespace Rias.Services
         
         private class ProfileInfo
         {
-            public int Currency { get; set; }
+            public int Currency { get; init; }
             
-            public int Xp { get; set; }
+            public int Xp { get; init; }
             
-            public int Level { get; set; }
+            public int Level { get; init; }
             
-            public int Rank { get; set; }
+            public int Rank { get; init; }
             
-            public string? BackgroundUrl { get; set; }
+            public string? BackgroundUrl { get; init; }
             
-            public int Dim { get; set; }
+            public int Dim { get; init; }
             
-            public string? Biography { get; set; }
+            public string? Biography { get; init; }
             
-            public MagickColor? Color { get; set; }
+            public MagickColor? Color { get; init; }
             
             public IList<string>? Badges { get; set; }
             
-            public IList<IWaifuEntity>? Waifus { get; set; }
+            public IList<IWaifuEntity>? Waifus { get; init; }
             
-            public IWaifuEntity? SpecialWaifu { get; set; }
+            public IWaifuEntity? SpecialWaifu { get; init; }
             
-            public int PatreonTier { get; set; }
+            public int PatreonTier { get; init; }
         }
     }
 }

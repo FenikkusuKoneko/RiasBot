@@ -206,11 +206,11 @@ namespace Rias.Services
 
         public class NsfwImage
         {
-            public string? Url { get; set; }
+            public string? Url { get; init; }
             
-            public IList<string>? Tags { get; set; }
+            public IList<string>? Tags { get; init; }
             
-            public NsfwImageApiProvider? Provider { get; set; }
+            public NsfwImageApiProvider? Provider { get; init; }
         }
         
         private class NsfwImageApi

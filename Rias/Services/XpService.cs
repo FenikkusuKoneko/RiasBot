@@ -502,13 +502,13 @@ namespace Rias.Services
         
         private class XpInfo
         {
-            public int Xp { get; set; }
+            public int Xp { get; init; }
             
-            public int Level { get; set; }
+            public int Level { get; init; }
             
-            public string? Rank { get; set; }
+            public string? Rank { get; init; }
             
-            public MagickColor? Color { get; set; }
+            public MagickColor? Color { get; init; }
         }
     }
 }

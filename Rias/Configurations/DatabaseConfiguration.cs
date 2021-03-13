@@ -2,16 +2,16 @@ namespace Rias.Configurations
 {
     public class DatabaseConfiguration
     {
-        public string? Host { get; set; }
+        public string? Host { get; init; }
         
-        public ushort Port { get; set; }
+        public ushort Port { get; init; }
         
-        public string? Username { get; set; }
+        public string? Username { get; init; }
         
-        public string? Password { get; set; }
+        public string? Password { get; init; }
         
-        public string? Database { get; set; }
+        public string? Database { get; init; }
         
-        public string? ApplicationName { get; set; }
+        public string? ApplicationName { get; init; }
     }
 }

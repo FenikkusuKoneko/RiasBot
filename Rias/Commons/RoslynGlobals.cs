@@ -4,8 +4,8 @@ namespace Rias.Commons
 {
     public class RoslynGlobals
     {
-        public RiasBot? RiasBot { get; set; }
+        public RiasBot? RiasBot { get; init; }
         
-        public RiasCommandContext? Context { get; set; }
+        public RiasCommandContext? Context { get; init; }
     }
 }

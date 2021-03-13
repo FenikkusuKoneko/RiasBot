@@ -2,14 +2,14 @@
 {
     public class PatreonConfiguration : IWebSocketConfiguration
     {
-        public string? WebSocketHost { get; set; }
+        public string? WebSocketHost { get; init; }
         
-        public ushort WebSocketPort { get; set; }
+        public ushort WebSocketPort { get; init; }
         
-        public bool IsSecureConnection { get; set; }
+        public bool IsSecureConnection { get; init; }
         
-        public string? UrlParameters { get; set; }
+        public string? UrlParameters { get; init; }
         
-        public string? Authorization { get; set; }
+        public string? Authorization { get; init; }
     }
 }
