@@ -208,9 +208,6 @@ namespace Rias.Services
         
         private async Task GuildMemberAddedAsync(DiscordClient client, GuildMemberAddEventArgs args)
         {
-            if (args.Guild.Id == 381975648979124225)
-                Log.Debug($"GuildMemberAdded - Member pending: {args.Member.IsPending}");
-            
             if (RiasBot.CurrentUser != null && args.Member.Id == RiasBot.CurrentUser.Id)
                 return;
 
@@ -468,12 +465,6 @@ namespace Rias.Services
 
         private async Task GuildMemberUpdatedAsync(DiscordClient client, GuildMemberUpdateEventArgs args)
         {
-            if (args.Guild.Id == 381975648979124225)
-            {
-                Log.Debug($"GuildMemberUpdated - Member pending: {args.Member.IsPending}");
-                Log.Debug($"GuildMemberUpdated - Member pending before: {args.PendingBefore}, pending after: {args.PendingAfter}");
-            }
-
             RiasBot.Members[args.Member.Id] = args.Member;
 
             if (args.PendingBefore is true && args.PendingAfter is false)
