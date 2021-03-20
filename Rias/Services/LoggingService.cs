@@ -50,7 +50,7 @@ namespace Rias.Services
                             $"\t\t[User] \"{context.User.FullName()}\" ({context.User.Id})\n" +
                             $"\t\t[Channel] \"{context.Channel.Name}\" ({context.Channel.Id})\n" +
                             $"\t\t[Guild] \"{context.Guild?.Name ?? "DM"}\" ({context.Guild?.Id ?? 0})\n" +
-                            $"\t\t[Error Reason] {result.Reason}\n" +
+                            $"\t\t[Error Reason] {result.FailureReason}\n" +
                             $"\t\t[Error Exception] {result.Exception}");
 
             return Task.CompletedTask;

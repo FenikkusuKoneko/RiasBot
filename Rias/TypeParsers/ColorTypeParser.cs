@@ -22,8 +22,8 @@ namespace Rias.TypeParsers
             if (!color.IsEmpty)
                 return TypeParserResult<DiscordColor>.Successful(new DiscordColor(color.R, color.G, color.B));
 
-            var localization = context.ServiceProvider.GetRequiredService<Localization>();
-            return TypeParserResult<DiscordColor>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserInvalidColor));
+            var localization = context.Services.GetRequiredService<Localization>();
+            return TypeParserResult<DiscordColor>.Failed(localization.GetText(context.Guild?.Id, Localization.TypeParserInvalidColor));
         }
     }
 }

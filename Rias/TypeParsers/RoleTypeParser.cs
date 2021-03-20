@@ -12,9 +12,9 @@ namespace Rias.TypeParsers
     {
         public override ValueTask<TypeParserResult<DiscordRole>> ParseAsync(Parameter parameter, string value, RiasCommandContext context)
         {
-            var localization = context.ServiceProvider.GetRequiredService<Localization>();
+            var localization = context.Services.GetRequiredService<Localization>();
             if (context.Guild is null)
-                return TypeParserResult<DiscordRole>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserRoleNotGuild));
+                return TypeParserResult<DiscordRole>.Failed(localization.GetText(context.Guild?.Id, Localization.TypeParserRoleNotGuild));
 
             DiscordRole? role;
             if (RiasUtilities.TryParseRoleMention(value, out var roleId) || ulong.TryParse(value, out roleId))
@@ -23,14 +23,14 @@ namespace Rias.TypeParsers
                 if (role != null)
                     return TypeParserResult<DiscordRole>.Successful(role);
                 
-                return TypeParserResult<DiscordRole>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationRoleNotFound));
+                return TypeParserResult<DiscordRole>.Failed(localization.GetText(context.Guild?.Id, Localization.AdministrationRoleNotFound));
             }
 
             role = context.Guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value;
             if (role != null)
                 return TypeParserResult<DiscordRole>.Successful(role);
 
-            return TypeParserResult<DiscordRole>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationRoleNotFound));
+            return TypeParserResult<DiscordRole>.Failed(localization.GetText(context.Guild?.Id, Localization.AdministrationRoleNotFound));
         }
     }
 }

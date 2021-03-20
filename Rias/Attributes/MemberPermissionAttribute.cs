@@ -27,10 +27,10 @@ namespace Rias.Attributes
             if (!_permissions.HasValue)
                 return CheckResult.Successful;
 
-            var localization = context.ServiceProvider.GetRequiredService<Localization>();
+            var localization = context.Services.GetRequiredService<Localization>();
             
             if (context.User is not DiscordMember member)
-                return CheckResult.Unsuccessful(localization.GetText(null, Localization.AttributeMemberPermissionNotGuild));
+                return CheckResult.Failed(localization.GetText(null, Localization.AttributeMemberPermissionNotGuild));
 
             var guildPermissions = member!.GetPermissions();
             var hasGuildPermissions = guildPermissions.HasPermission(_permissions.Value);
@@ -41,13 +41,13 @@ namespace Rias.Attributes
             if (!hasGuildPermissions && !hasChannelPerm)
             {
                 var guildPermsHumanized = HumanizePermissions(context.Guild!, guildPermissions, localization);
-                return CheckResult.Unsuccessful(localization.GetText(context.Guild!.Id, Localization.AttributeMemberGuildPermissions, guildPermsHumanized));
+                return CheckResult.Failed(localization.GetText(context.Guild!.Id, Localization.AttributeMemberGuildPermissions, guildPermsHumanized));
             }
 
             if (hasGuildPermissions && !hasChannelPerm)
             {
                 var channelPermsHumanized = HumanizePermissions(context.Guild!, channelPermissions, localization);
-                return CheckResult.Unsuccessful(localization.GetText(context.Guild!.Id, Localization.AttributeMemberChannelPermissions, channelPermsHumanized));
+                return CheckResult.Failed(localization.GetText(context.Guild!.Id, Localization.AttributeMemberChannelPermissions, channelPermsHumanized));
             }
 
             return CheckResult.Successful;

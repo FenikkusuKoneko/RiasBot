@@ -31,9 +31,9 @@ namespace Rias.TypeParsers
                     break;
             }
 
-            var localization = context.ServiceProvider.GetRequiredService<Localization>();
+            var localization = context.Services.GetRequiredService<Localization>();
             if (context.Guild is null)
-                return TypeParserResult<DiscordChannel>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserChannelNotGuild));
+                return TypeParserResult<DiscordChannel>.Failed(localization.GetText(context.Guild?.Id, Localization.TypeParserChannelNotGuild));
 
             DiscordChannel? channel;
             if (RiasUtilities.TryParseChannelMention(value, out var channelId) || ulong.TryParse(value, out channelId))
@@ -65,10 +65,10 @@ namespace Rias.TypeParsers
 
             return channelType switch
             {
-                ChannelType.Category => TypeParserResult<DiscordChannel>.Unsuccessful(localization.GetText(context.Guild.Id, Localization.AdministrationCategoryChannelNotFound)),
-                ChannelType.Text => TypeParserResult<DiscordChannel>.Unsuccessful(localization.GetText(context.Guild.Id, Localization.AdministrationTextChannelNotFound)),
-                ChannelType.Voice => TypeParserResult<DiscordChannel>.Unsuccessful(localization.GetText(context.Guild.Id, Localization.AdministrationVoiceChannelNotFound)),
-                ChannelType.Unknown => TypeParserResult<DiscordChannel>.Unsuccessful(localization.GetText(context.Guild.Id, Localization.AdministrationChannelNotFound))
+                ChannelType.Category => TypeParserResult<DiscordChannel>.Failed(localization.GetText(context.Guild.Id, Localization.AdministrationCategoryChannelNotFound)),
+                ChannelType.Text => TypeParserResult<DiscordChannel>.Failed(localization.GetText(context.Guild.Id, Localization.AdministrationTextChannelNotFound)),
+                ChannelType.Voice => TypeParserResult<DiscordChannel>.Failed(localization.GetText(context.Guild.Id, Localization.AdministrationVoiceChannelNotFound)),
+                ChannelType.Unknown => TypeParserResult<DiscordChannel>.Failed(localization.GetText(context.Guild.Id, Localization.AdministrationChannelNotFound))
             };
         }
     }

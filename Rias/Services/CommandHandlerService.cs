@@ -248,12 +248,12 @@ namespace Rias.Services
                 {
                     case ChecksFailedResult checksFailedResult:
                         foreach (var (_, result) in checksFailedResult.FailedChecks)
-                            reasons.Add(result.Reason);
+                            reasons.Add(result.FailureReason);
                         
                         break;
                     case TypeParseFailedResult typeParseFailedResult:
                         reasons.Add(_typeParsers.Any(x => x.BaseType!.GetGenericArguments()[0] == typeParseFailedResult.Parameter.Type)
-                            ? typeParseFailedResult.Reason
+                            ? typeParseFailedResult.FailureReason
                             : GetText(guildId, Localization.TypeParserPrimitiveType, context.Prefix, typeParseFailedResult.Parameter.Command.Name));
 
                         break;

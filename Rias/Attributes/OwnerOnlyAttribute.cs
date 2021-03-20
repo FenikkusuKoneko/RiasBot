@@ -17,7 +17,7 @@ namespace Rias.Attributes
         {
             return context.Client.CurrentApplication.Owners.Any(x => x.Id == context.User.Id)
                 ? CheckResult.Successful
-                : CheckResult.Unsuccessful(context.ServiceProvider.GetRequiredService<Localization>().GetText(context.Guild?.Id, Localization.AttributeOwnerOnly));
+                : CheckResult.Failed(context.Services.GetRequiredService<Localization>().GetText(context.Guild?.Id, Localization.AttributeOwnerOnly));
         }
     }
 }

@@ -16,9 +16,9 @@ namespace Rias.Attributes
         public override async ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {
             if (context.Guild is null)
-                return CheckResult.Unsuccessful("Cannot use `CheckDownloadedMembers` outside of a guild.");
+                return CheckResult.Failed("Cannot use `CheckDownloadedMembers` outside of a guild.");
             
-            var riasBot = context.ServiceProvider.GetRequiredService<RiasBot>();
+            var riasBot = context.Services.GetRequiredService<RiasBot>();
             if (!riasBot.ChunkedGuilds.Contains(context.Guild.Id))
             {
                 riasBot.ChunkedGuilds.Add(context.Guild.Id);

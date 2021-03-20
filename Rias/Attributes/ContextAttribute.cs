@@ -22,7 +22,7 @@ namespace Rias.Attributes
 
         public override ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {
-            var localization = context.ServiceProvider.GetRequiredService<Localization>();
+            var localization = context.Services.GetRequiredService<Localization>();
 
             var isValid = false;
 
@@ -46,7 +46,7 @@ namespace Rias.Attributes
                 .Select(x => localization.GetText(guildId, Localization.CommonContextType(x.ToLower())));
 
             var contextsHumanized = contexts.Humanize(x => $"**{x}**", localization.GetText(guildId, Localization.CommonOr).ToLowerInvariant());
-            return CheckResult.Unsuccessful(localization.GetText(guildId, Localization.AttributeContext, contextsHumanized));
+            return CheckResult.Failed(localization.GetText(guildId, Localization.AttributeContext, contextsHumanized));
         }
     }
 }

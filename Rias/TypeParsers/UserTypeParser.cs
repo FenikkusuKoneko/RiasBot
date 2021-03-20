@@ -14,7 +14,7 @@ namespace Rias.TypeParsers
             if (cachedMemberTypeParser.IsSuccessful)
                 return TypeParserResult<DiscordUser>.Successful(cachedMemberTypeParser.Value);
             
-            var localization = context.ServiceProvider.GetRequiredService<Localization>();
+            var localization = context.Services.GetRequiredService<Localization>();
 
             if (ulong.TryParse(value, out var id))
             {
@@ -25,11 +25,11 @@ namespace Rias.TypeParsers
                 }
                 catch
                 {
-                    return TypeParserResult<DiscordUser>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
+                    return TypeParserResult<DiscordUser>.Failed(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
                 }
             }
             
-            return TypeParserResult<DiscordUser>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
+            return TypeParserResult<DiscordUser>.Failed(localization.GetText(context.Guild?.Id, Localization.AdministrationUserNotFound));
         }
     }
 }

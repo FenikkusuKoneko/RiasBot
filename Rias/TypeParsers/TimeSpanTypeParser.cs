@@ -15,8 +15,8 @@ namespace Rias.TypeParsers
             if (timespan.HasValue)
                 return TypeParserResult<TimeSpan>.Successful(timespan.Value);
 
-            var localization = context.ServiceProvider.GetRequiredService<Localization>();
-            return TypeParserResult<TimeSpan>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserTimeSpanUnsuccessful));
+            var localization = context.Services.GetRequiredService<Localization>();
+            return TypeParserResult<TimeSpan>.Failed(localization.GetText(context.Guild?.Id, Localization.TypeParserTimeSpanUnsuccessful));
         }
     }
 }

@@ -14,14 +14,14 @@ namespace Rias.TypeParsers
     {
         public override async ValueTask<TypeParserResult<DiscordMember>> ParseAsync(Parameter parameter, string value, RiasCommandContext context)
         {
-            var localization = context.ServiceProvider.GetRequiredService<Localization>();
+            var localization = context.Services.GetRequiredService<Localization>();
             if (context.Guild is null)
-                return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.TypeParserMemberNotGuild));
+                return TypeParserResult<DiscordMember>.Failed(localization.GetText(context.Guild?.Id, Localization.TypeParserMemberNotGuild));
 
-            var riasBot = context.ServiceProvider.GetRequiredService<RiasBot>();
+            var riasBot = context.Services.GetRequiredService<RiasBot>();
             if (!riasBot.ChunkedGuilds.Contains(context.Guild.Id))
             {
-                var botService = context.ServiceProvider.GetRequiredService<BotService>();
+                var botService = context.Services.GetRequiredService<BotService>();
                 var tcs = new TaskCompletionSource();
                 botService.GuildsTcs[context.Guild.Id] = tcs;
                 
@@ -45,12 +45,12 @@ namespace Rias.TypeParsers
             DiscordMember? member;
             if (RiasUtilities.TryParseUserMention(value, out var memberId) || ulong.TryParse(value, out memberId))
             {
-                var bot = context.ServiceProvider.GetRequiredService<RiasBot>();
+                var bot = context.Services.GetRequiredService<RiasBot>();
                 member = await bot.GetMemberAsync(context.Guild, memberId);
                 
                 return member is not null
                     ? TypeParserResult<DiscordMember>.Successful(member)
-                    : TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationMemberNotFound));
+                    : TypeParserResult<DiscordMember>.Failed(localization.GetText(context.Guild?.Id, Localization.AdministrationMemberNotFound));
             }
 
             var members = context.Guild.Members;
@@ -77,7 +77,7 @@ namespace Rias.TypeParsers
             if (member != null)
                 return TypeParserResult<DiscordMember>.Successful(member);
             
-            return TypeParserResult<DiscordMember>.Unsuccessful(localization.GetText(context.Guild?.Id, Localization.AdministrationMemberNotFound));
+            return TypeParserResult<DiscordMember>.Failed(localization.GetText(context.Guild?.Id, Localization.AdministrationMemberNotFound));
         }
     }
 }
