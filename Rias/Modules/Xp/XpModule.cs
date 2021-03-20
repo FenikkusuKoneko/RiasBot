@@ -585,7 +585,7 @@ namespace Rias.Modules.Xp
             }
         }
 
-        [Command("setxpignorerole", "xpir")]
+        [Command("xpignorerole", "xpir")]
         [Context(ContextType.Guild)]
         [Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task XpIgnoreRoleAsync()
@@ -613,7 +613,7 @@ namespace Rias.Modules.Xp
         [Command("removexpignorerole", "rxpir")]
         [Context(ContextType.Guild)]
         [MemberPermission(Permissions.Administrator)]
-        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+        [Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.Guild)]
         public async Task XpIgnoreRoleRemoveAsync()
         {
             var guildDb = await DbContext.GetOrAddAsync(g => g.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });

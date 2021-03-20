@@ -355,6 +355,6 @@
   "xp_setxpignorerole_examples": "[r!sxpir ROLE]\nr!sxpir no-xp\nr!sxpir #no-xp\nr!sxpir 562762806579953666",
   "xp_xpignorerole": "Shows the current xp ignored role.",
   "xp_xpignorerole_examples": "[r!xpir]\nr!xpir",
-  "xp_removexpignorerole": "Removes the currently set role from the xp ignore.",
-  "xp_removexpignorerole_examples": "[r!xpirr]\nr!xpir"
+  "xp_removexpignorerole": "Removes the currently set role for the xp ignore.",
+  "xp_removexpignorerole_examples": "[r!rxpir]\nr!rxpir"
 }
