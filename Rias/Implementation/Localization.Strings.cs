@@ -558,7 +558,12 @@ namespace Rias.Implementation
         public const string XpIgnoreVoiceChannelNotAllowed = "xp_ignore_voice_channel_not_allowed";
         public const string XpIgnoredChannels = "xp_ignored_channels";
         public const string XpNoIgnoredChannels = "xp_no_ignored_channels";
-        
+        public const string XpIgnoredRoleSet = "xp_ignored_role_set";
+        public const string XpIgnoredRoleNotSet = "xp_ignored_role_not_set";
+        public const string XpIgnoredRoleRemoved = "xp_ignored_role_removed";
+        public const string XpIgnoredRole = "xp_ignored_role";
+        public const string XpNoIgnoredRoleSet = "xp_no_ignored_role_set";
+
         public const string CommonYes = "common_yes";
         public const string CommonAnd = "common_and";
         public const string CommonOr = "common_or";

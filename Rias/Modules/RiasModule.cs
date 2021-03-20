@@ -60,16 +60,12 @@ namespace Rias.Modules
 
         /// <summary>
         /// Send a confirmation message with or without arguments. The form is an embed with the confirm color.<br/>
-        /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
-        /// If the key doesn't start with "#", the prefix of the translation is the lower module name of this class.
         /// </summary>
         public Task<DiscordMessage> ReplyConfirmationAsync(string key, params object[] args)
             => Context.Channel.SendConfirmationMessageAsync(Localization.GetText(Context.Guild?.Id, key, args));
 
         /// <summary>
         /// Send an error message with or without arguments. The form is an embed with the error color.<br/>
-        /// If the key starts with "#", the first word delimited by "_" is the prefix for the translation.<br/>
-        /// If the key doesn't start with "#", the prefix of the translation is the lower module type of this class.
         /// </summary>
         public Task<DiscordMessage> ReplyErrorAsync(string key, params object[] args)
             => Context.Channel.SendErrorMessageAsync(Localization.GetText(Context.Guild?.Id, key, args));

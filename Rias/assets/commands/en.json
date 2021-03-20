@@ -350,5 +350,11 @@
   "xp_xpignore": "Add or remove a channel from the xp exclusion list. The members who write in the excluded channels will not receive any xp. Provide no channel to add or remove this channel.\nYou can also add a category and all the text channels from that category will be added or removed from the list. If no channel from a category is present in the list then all channels from that category will be added, otherwise the excluded channels will be removed.",
   "xp_xpignore_examples": "[{0}xpignore [TEXT_CHANNEL]]\n[{0}xpignore [CATEGORY_CHANNEL]]\n{0}xpignore #bot-spam\n{0}xpignore FUN",
   "xp_xpignorelist": "Shows all the channels in the xp exclusion list, paginated.",
-  "xp_xpignorelist_examples": "[{0}xpil]\n{0}xpil"
+  "xp_xpignorelist_examples": "[{0}xpil]\n{0}xpil",
+  "xp_setxpignorerole": "Sets a role for the xp ignore. The members with this role will not receive server xp.",
+  "xp_setxpignorerole_examples": "[r!sxpir ROLE]\nr!sxpir no-xp\nr!sxpir #no-xp\nr!sxpir 562762806579953666",
+  "xp_xpignorerole": "Shows the current xp ignored role.",
+  "xp_xpignorerole_examples": "[r!xpir]\nr!xpir",
+  "xp_removexpignorerole": "Removes the currently set role from the xp ignore.",
+  "xp_removexpignorerole_examples": "[r!xpirr]\nr!xpir"
 }

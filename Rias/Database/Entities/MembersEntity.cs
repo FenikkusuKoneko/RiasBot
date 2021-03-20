@@ -13,5 +13,7 @@ namespace Rias.Database.Entities
         public DateTime LastMessageDate { get; set; }
         
         public bool IsMuted { get; set; }
+        
+        public bool IsXpIgnored { get; set; }
     }
 }

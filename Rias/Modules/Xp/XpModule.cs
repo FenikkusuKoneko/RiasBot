@@ -22,12 +22,14 @@ namespace Rias.Modules.Xp
     [Name("Xp")]
     public class XpModule : RiasModule<XpService>
     {
+        private readonly BotService _botService;
         private readonly HttpClient _httpClient;
         
         public XpModule(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
             _httpClient = serviceProvider.GetRequiredService<HttpClient>();
+            _botService = serviceProvider.GetRequiredService<BotService>();
         }
 
         [Command("xp")]
@@ -540,6 +542,94 @@ namespace Rias.Modules.Xp
                 Title = GetText(Localization.XpIgnoredChannels),
                 Description = string.Join('\n', items)
             });
+        }
+
+        [Command("setxpignorerole", "sxpir")]
+        [Context(ContextType.Guild)]
+        [MemberPermission(Permissions.Administrator)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+        public async Task SetXpIgnoreRoleAsync([Remainder] DiscordRole role)
+        {
+            if (role is { IsManaged: true })
+            {
+                await ReplyErrorAsync(Localization.XpIgnoredRoleNotSet, role.Mention);
+                return;
+            }
+            
+            var guildDb = await DbContext.GetOrAddAsync(g => g.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
+            guildDb.XpIgnoredRoleId = role.Id;
+            await DbContext.SaveChangesAsync();
+
+            await ReplyConfirmationAsync(Localization.XpIgnoredRoleSet, role.Mention);
+            
+            if (!RiasBot.ChunkedGuilds.Contains(Context.Guild!.Id))
+            {
+                var tcs = new TaskCompletionSource();
+                _botService.GuildsTcs[Context.Guild.Id] = tcs;
+                
+                RiasBot.ChunkedGuilds.Add(Context.Guild.Id);
+                await Context.Guild.RequestMembersAsync();
+                
+                var delay = Task.Delay(30000);
+
+                await Task.WhenAny(tcs.Task, delay);
+                _botService.GuildsTcs.TryRemove(Context.Guild.Id, out _);
+            }
+
+            foreach (var (_, member) in Context.Guild.Members.Where(m => m.Value.Roles.Any(r => r.Id == role.Id)))
+            {
+                var memberDb = await DbContext.GetOrAddAsync(m => m.GuildId == Context.Guild.Id && m.MemberId == member.Id,
+                    () => new MembersEntity { GuildId = Context.Guild.Id, MemberId = member.Id });
+                memberDb.IsXpIgnored = true;
+                await DbContext.SaveChangesAsync();
+            }
+        }
+
+        [Command("setxpignorerole", "xpir")]
+        [Context(ContextType.Guild)]
+        [Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.Guild)]
+        public async Task XpIgnoreRoleAsync()
+        {
+            var guildDb = await DbContext.GetOrAddAsync(g => g.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
+            if (guildDb.XpIgnoredRoleId != 0)
+            {
+                var ignoredRole = Context.Guild!.GetRole(guildDb.XpIgnoredRoleId);
+                if (ignoredRole is not null)
+                {
+                    await ReplyConfirmationAsync(Localization.XpIgnoredRole, ignoredRole.Mention);
+                    return;
+                }
+                
+                foreach (var memberEntity in await DbContext.GetListAsync<MembersEntity>(m => m.GuildId == Context.Guild!.Id))
+                    memberEntity.IsXpIgnored = false;
+                
+                guildDb.XpIgnoredRoleId = 0;
+                await DbContext.SaveChangesAsync();
+            }
+            
+            await ReplyErrorAsync(Localization.XpNoIgnoredRoleSet);
+        }
+
+        [Command("removexpignorerole", "rxpir")]
+        [Context(ContextType.Guild)]
+        [MemberPermission(Permissions.Administrator)]
+        [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
+        public async Task XpIgnoreRoleRemoveAsync()
+        {
+            var guildDb = await DbContext.GetOrAddAsync(g => g.GuildId == Context.Guild!.Id, () => new GuildEntity { GuildId = Context.Guild!.Id });
+            if (guildDb.XpIgnoredRoleId != 0)
+            {
+                foreach (var memberEntity in await DbContext.GetListAsync<MembersEntity>(m => m.GuildId == Context.Guild!.Id))
+                    memberEntity.IsXpIgnored = false;
+                
+                guildDb.XpIgnoredRoleId = 0;
+                await DbContext.SaveChangesAsync();
+                await ReplyConfirmationAsync(Localization.XpIgnoredRoleRemoved);
+            }
+            else
+            {
+                await ReplyErrorAsync(Localization.XpNoIgnoredRoleSet);
+            }
         }
     }
 }

@@ -102,6 +102,9 @@ namespace Rias.Services
         {
             if (CheckExcludedChannel(channel))
                 return;
+
+            if (await CheckExcludedMemberAsync(member))
+                return;
             
             var now = DateTime.UtcNow;
             var check = false;
@@ -245,6 +248,18 @@ namespace Rias.Services
             }
             
             Log.Debug("Xp ignored channels loaded.");
+        }
+        
+        private async Task<bool> CheckExcludedMemberAsync(DiscordMember member)
+        {
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            var guildDb = await db.GetOrAddAsync(x => x.GuildId == member.Guild.Id, () => new GuildEntity { GuildId = member.Guild.Id });
+            
+            if (guildDb.XpIgnoredRoleId == 0)
+                return false;
+
+            return member.Guild.Roles.TryGetValue(guildDb.XpIgnoredRoleId, out var role) && member.Roles.Any(x => x.Id == role.Id);
         }
 
         private async Task SendXpNotificationAsync(DiscordMember member, DiscordChannel channel, DiscordRole? role, GuildEntity guildDb, int level)

@@ -41,5 +41,7 @@
         public string? Locale { get; set; }
         
         public ulong[]? XpIgnoredChannels { get; set; }
+        
+        public ulong XpIgnoredRoleId { get; set; }
     }
 }

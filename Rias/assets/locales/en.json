@@ -587,6 +587,11 @@
   "xp_ignore_voice_channel_not_allowed": "A voice channel cannot be added in the xp exclusion list.",
   "xp_ignored_channels": "All channels in the xp exclusion list",
   "xp_no_ignored_channels": "No channel is present in the xp exclusion list in this server.",
+  "xp_ignored_role_set": "The members with the **{0}** role will not receive xp from now on.",
+  "xp_ignored_role_not_set": "The role **{0}** cannot be used as a xp ignored role because is automatically managed by Discord.",
+  "xp_ignored_role": "The xp ignored role is {0}.",
+  "xp_ignored_role_removed": "The role was removed from the xp ignore.",
+  "xp_no_ignored_role_set": "No ignored role is set for the xp gaining.",
   
   "common_yes": "Yes",
   "common_and": "And",
