@@ -43,15 +43,22 @@ namespace Rias.Services
 
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == guild.Id);
+            var guildDb = await db.GetOrAddAsync(x => x.GuildId == guild.Id, () => new GuildEntity { GuildId = moderator.Guild.Id });
 
-            var role = guild.GetRole(guildDb?.MuteRoleId ?? 0)
-                       ?? guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole, StringComparison.InvariantCultureIgnoreCase) && !x.Value.IsManaged).Value;
-
+            var role = guild.GetRole(guildDb.MuteRoleId);
             if (role is null)
             {
-                role = await guild.CreateRoleAsync(MuteRole);
-                await AddMuteRoleToChannelsAsync(role, guild);
+                role = guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteRole, StringComparison.InvariantCultureIgnoreCase) && !x.Value.IsManaged).Value;
+                if (role is null)
+                {
+                    role = await guild.CreateRoleAsync(MuteRole);
+                    await AddMuteRoleToChannelsAsync(role, guild);
+                }
+                else
+                {
+                    guildDb.MuteRoleId = role.Id;
+                    await db.SaveChangesAsync();
+                }
             }
 
             var currentMember = guild.CurrentMember;
@@ -92,7 +99,7 @@ namespace Rias.Services
                 embed.AddField(GetText(guild.Id, Localization.AdministrationMutedFor), timeout.Value.Humanize(5, new CultureInfo(locale), TimeUnit.Year), true);
             }
 
-            var modLogChannel = guild.GetChannel(guildDb?.ModLogChannelId ?? 0);
+            var modLogChannel = guild.GetChannel(guildDb.ModLogChannelId);
             if (modLogChannel != null && channel.Id != modLogChannel.Id)
             {
                 var preconditions = currentMember.PermissionsIn(modLogChannel);

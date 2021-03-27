@@ -340,9 +340,7 @@ namespace Rias.Services
             if (!memberDb.IsMuted)
                 return;
 
-            var role = member.Guild.GetRole(guildDb?.MuteRoleId ?? 0)
-                       ?? member.Guild.Roles.FirstOrDefault(x => string.Equals(x.Value.Name, MuteService.MuteRole)).Value;
-            
+            var role = member.Guild.GetRole(guildDb?.MuteRoleId ?? 0);
             if (role != null)
             {
                 await member.GrantRoleAsync(role);
