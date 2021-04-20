@@ -45,7 +45,7 @@ namespace Rias.Services
             LoadUnits();
 
             sw.Stop();
-            Log.Debug($"Units loaded: {sw.ElapsedMilliseconds} ms");
+            Log.Debug("Units loaded: {ElapsedMilliseconds} ms", sw.ElapsedMilliseconds);
 
             RunTaskAsync(UpdateCurrencyUnitsAsync);
         }
@@ -315,7 +315,7 @@ namespace Rias.Services
 
                 if (!exchangeRates.TryGetValue(unitAbbreviation, out var rateValue))
                 {
-                    Log.Warning($"The unit {unitAbbreviation} is not present in the exchange rates dictionary.");
+                    Log.Warning("The unit {Unit} is not present in the exchange rates dictionary", unitAbbreviation);
                     continue;
                 }
                 

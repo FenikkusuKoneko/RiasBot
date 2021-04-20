@@ -30,7 +30,7 @@ namespace Rias
 
         private static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs e)
         {
-            Log.Fatal(e.ExceptionObject.ToString());
+            Log.Fatal("{Exception}", e.ExceptionObject);
             Log.CloseAndFlush();
         }
     }

@@ -559,7 +559,7 @@ namespace Rias.Services
                     if (guild is null)
                         continue;
                     
-                    Log.Debug($"Requesting members for {guild}");
+                    Log.Debug("Requesting members for {Guild}", guild);
                     await guild.RequestMembersAsync();
                     await Task.Delay(1000);
                 }
@@ -593,7 +593,7 @@ namespace Rias.Services
             }
             catch (Exception ex)
             {
-                Log.Warning(ex.ToString());
+                Log.Warning(ex, "Error thrown in PostDiscordBotListStats");
             }
         }
         
@@ -622,7 +622,7 @@ namespace Rias.Services
             }
             catch (Exception ex)
             {
-                Log.Warning(ex.ToString());
+                Log.Warning(ex, "Error thrown in PostDiscordBotsStats");
             }
         }
 

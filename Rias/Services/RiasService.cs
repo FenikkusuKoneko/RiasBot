@@ -65,7 +65,7 @@ namespace Rias.Services
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.ToString());
+                    Log.Error(ex, "Exception thrown in a service");
                 }
             });
 

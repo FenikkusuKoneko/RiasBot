@@ -27,7 +27,7 @@ namespace Rias
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.14.1";
+        public const string Version = "3.14.2";
         public static readonly Stopwatch UpTime = new();
         
         public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new();
@@ -39,9 +39,9 @@ namespace Rias
         public RiasBot()
         {
 #if DEBUG
-            Log.Information($"Initializing development RiasBot version {Version}");
+            Log.Information("Initializing development RiasBot version {Version}", Version);
 #elif RIAS_GLOBAL
-            Log.Information($"Initializing RiasBot version {Version}");
+            Log.Information("Initializing RiasBot version {Version}", Version);
 #endif
             
             _configuration = new Configuration();

@@ -23,7 +23,7 @@ namespace Rias.Attributes
             {
                 riasBot.ChunkedGuilds.Add(context.Guild.Id);
                 await context.Guild.RequestMembersAsync();
-                Log.Debug($"Members requested for {context.Guild.Name} ({context.Guild.Id})");
+                Log.Debug("Members requested for {GuildName} ({GuildId})", context.Guild.Name, context.Guild.Id);
             }
 
             return CheckResult.Successful;

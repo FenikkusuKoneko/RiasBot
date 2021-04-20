@@ -114,7 +114,7 @@ namespace Rias.Modules
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.ToString());
+                    Log.Error(ex, "Exception thrown in a command");
                 }
             });
 
@@ -128,7 +128,7 @@ namespace Rias.Modules
             else
                 _scope.Dispose();
             
-            Log.Debug($"Module: {Context.Command.Module.Name}, Command: {Context.Command.Name}, scope disposed");
+            Log.Debug("Module: {Module}, Command: {Command}, scope disposed", Context.Command.Module.Name, Context.Command.Name);
         }
     }
 

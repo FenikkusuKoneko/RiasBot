@@ -42,7 +42,7 @@ namespace Rias.Services
                 if (userDb.IsBanned)
                 {
                     db.Remove(vote);
-                    Log.Information($"Vote discord user with ID {vote.UserId} is banned, it was removed from the votes database table");
+                    Log.Information("Vote discord user with ID {UserId} is banned, it was removed from the votes database table", vote.UserId);
                     continue;
                 }
 
@@ -50,7 +50,7 @@ namespace Rias.Services
                 userDb.Currency += reward;
                 
                 vote.Checked = true;
-                Log.Information($"Vote discord user with ID {vote.UserId} was rewarded with {reward} hearts");
+                Log.Information("Vote discord user with ID {UserId} was rewarded with {Reward} hearts", vote.UserId, reward);
             }
             
             await db.SaveChangesAsync();
@@ -63,7 +63,7 @@ namespace Rias.Services
                 try
                 {
                     await _webSocket!.ConnectAsync();
-                    Log.Information("Votes WebSocket connected.");
+                    Log.Information("Votes WebSocket connected");
 
                     if (recheckVotes)
                         await RunTaskAsync(CheckVotesAsync);
@@ -91,7 +91,7 @@ namespace Rias.Services
 
                 if (voteDb is null)
                 {
-                    Log.Error($"Couldn't take the vote data from the database for user {userId}");
+                    Log.Error("Couldn't take the vote data from the database for user {UserId}", userId);
                     return;
                 }
 
@@ -102,7 +102,7 @@ namespace Rias.Services
                 voteDb.Checked = true;
                 await db.SaveChangesAsync();
 
-                Log.Information($"Vote discord user with ID {userId} was rewarded with {reward} hearts");
+                Log.Information("Vote discord user with ID {UserId} was rewarded with {Reward} hearts", userId, reward);
             }
             catch (Exception ex)
             {

@@ -24,7 +24,7 @@ namespace Rias.Implementation
             var sw = Stopwatch.StartNew();
             Load(serviceProvider);
             sw.Stop();
-            Log.Information($"Locales loaded: {sw.ElapsedMilliseconds} ms");
+            Log.Information("Locales loaded: {ElapsedMilliseconds} ms", sw.ElapsedMilliseconds);
         }
 
         public void Reload(IServiceProvider serviceProvider)

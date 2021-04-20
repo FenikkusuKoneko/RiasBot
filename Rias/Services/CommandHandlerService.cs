@@ -69,7 +69,7 @@ namespace Rias.Services
             sw.Stop();
 
 
-            Log.Information($"Commands loaded: {sw.ElapsedMilliseconds} ms");
+            Log.Information("Commands loaded: {ElapsedMilliseconds} ms", sw.ElapsedMilliseconds);
         }
 
         public void ReloadCommands()
