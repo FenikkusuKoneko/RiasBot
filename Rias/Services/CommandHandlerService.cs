@@ -37,12 +37,11 @@ namespace Rias.Services
         private readonly BotService _botService;
         private readonly XpService _xpService;
         
-        private readonly ConcurrentHashSet<string> _cooldowns = new();
-
         private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _commandsInfo = new();
-        private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "assets/commands");
+        private readonly ConcurrentHashSet<string> _cooldowns = new();
+        private readonly List<Type> _typeParsers = new();
 
-        private List<Type> _typeParsers = new();
+        private readonly string _commandsPath = Path.Combine(Environment.CurrentDirectory, "assets/commands");
 
         public CommandHandlerService(IServiceProvider serviceProvider)
             : base(serviceProvider)
@@ -67,8 +66,7 @@ namespace Rias.Services
             LoadCommands();
             LoadTypeParsers();
             sw.Stop();
-
-
+            
             Log.Information("Commands loaded: {ElapsedMilliseconds} ms", sw.ElapsedMilliseconds);
         }
 
@@ -76,15 +74,6 @@ namespace Rias.Services
         {
             _commandsInfo.Clear();
             LoadCommands();
-        }
-
-        private void LoadCommands()
-        {
-            foreach (var commandsInfo in Directory.GetFiles(_commandsPath))
-            {
-                var fileName = Path.GetFileNameWithoutExtension(commandsInfo);
-                _commandsInfo.TryAdd(fileName, JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText(commandsInfo))!);
-            }
         }
 
         public string GetCommandInfo(ulong? guildId, string key, params object[] args)
@@ -100,7 +89,16 @@ namespace Rias.Services
 
             throw new InvalidOperationException($"The command info for the command \"{key}\" couldn't be found.");
         }
-        
+
+        private void LoadCommands()
+        {
+            foreach (var commandsInfo in Directory.GetFiles(_commandsPath))
+            {
+                var fileName = Path.GetFileNameWithoutExtension(commandsInfo);
+                _commandsInfo.TryAdd(fileName, JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText(commandsInfo))!);
+            }
+        }
+
         private bool TryGetCommandInfoString(string locale, string key, out string? value)
         {
             if (_commandsInfo.TryGetValue(locale, out var localeDictionary))
@@ -127,11 +125,10 @@ namespace Rias.Services
                 throw new NullReferenceException(parserInterface);
 
             var assembly = typeof(RiasBot).Assembly;
-            _typeParsers = assembly!.GetTypes()
+            _typeParsers.AddRange(assembly!.GetTypes()
                 .Where(x => typeParserInterface.IsAssignableFrom(x)
                             && !x.GetTypeInfo().IsInterface
-                            && !x.GetTypeInfo().IsAbstract)
-                .ToList();
+                            && !x.GetTypeInfo().IsAbstract));
 
             foreach (var typeParser in _typeParsers)
             {
@@ -225,7 +222,7 @@ namespace Rias.Services
                 case OverloadsFailedResult overloadsFailedResult:
                     await RunTaskAsync(SendFailedResultsAsync(context, overloadsFailedResult.FailedOverloads.Values));
                     break;
-                case ChecksFailedResult :
+                case ChecksFailedResult:
                 case TypeParseFailedResult:
                 case ArgumentParseFailedResult:
                     await RunTaskAsync(SendFailedResultsAsync(context, new[] { (FailedResult) result }));

@@ -276,9 +276,9 @@ namespace Rias.Modules.Utility
             var colorDetails = new StringBuilder()
                 .Append($"**Hex:** {hexColor}").AppendLine()
                 .Append($"**Rgb:** {magickColor.R / ushortMax * byteMax} {magickColor.G / ushortMax * byteMax} {magickColor.B / ushortMax * byteMax}").AppendLine()
-                .Append($"**Hsl:** {hsl.Hue:F2}% {hsl.Saturation:F2}% {hsl.Lightness:F2}%").AppendLine()
-                .Append($"**Yuv:** {yuv.Y:F2} {yuv.U:F2} {yuv.V:F2}").AppendLine()
-                .Append($"**Cmyk:** {cmyk.C / ushortMax * byteMax} {cmyk.M / ushortMax * byteMax} {cmyk.Y / ushortMax * byteMax} {cmyk.K / ushortMax * byteMax}");
+                .Append($"**Hsl:** {hsl!.Hue:F2}% {hsl.Saturation:F2}% {hsl.Lightness:F2}%").AppendLine()
+                .Append($"**Yuv:** {yuv!.Y:F2} {yuv.U:F2} {yuv.V:F2}").AppendLine()
+                .Append($"**Cmyk:** {cmyk!.C / ushortMax * byteMax} {cmyk.M / ushortMax * byteMax} {cmyk.Y / ushortMax * byteMax} {cmyk.K / ushortMax * byteMax}");
 
             var fileName = $"{color.Value.ToString()}.png";
             var embed = new DiscordEmbedBuilder()

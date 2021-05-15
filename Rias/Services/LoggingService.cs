@@ -30,7 +30,7 @@ namespace Rias.Services
             Log.Information("{@Message}", new
             {
                 Command = command.Name,
-                Arguments = string.Join(" ", context.RawArguments),
+                Arguments = context.RawArguments,
                 User = $"{context.User.FullName()} ({context.User.Id})",
                 Channel = $"{context.Channel.Name} ({context.Channel.Id})",
                 Guild = $"{context.Guild?.Name ?? "DM"} ({context.Guild?.Id ?? 0})"
@@ -51,7 +51,7 @@ namespace Rias.Services
             Log.Error(result.Exception, "{@Message}", new
             {
                 Command = command.Name,
-                Arguments = string.Join(" ", context.Arguments),
+                Arguments = context.RawArguments,
                 User = $"{context.User.FullName()} ({context.User.Id})",
                 Channel = $"{context.Channel.Name} ({context.Channel.Id})",
                 Guild = $"{context.Guild?.Name ?? "DM"} ({context.Guild?.Id ?? 0})",

@@ -40,11 +40,13 @@ namespace Rias.Database
         
         public DbSet<GuildEntity> Guilds { get; set; }
         
-        public DbSet<MembersEntity> Members { get; set; }
-        
         public DbSet<GuildXpRoleEntity> GuildXpRoles { get; set; }
         
+        public DbSet<MembersEntity> Members { get; set; }
+        
         public DbSet<MuteTimerEntity> MuteTimers { get; set; }
+        
+        public DbSet<PatreonEntity> Patreon { get; set; }
         
         public DbSet<ProfileEntity> Profile { get; set; }
         
@@ -52,13 +54,11 @@ namespace Rias.Database
         
         public DbSet<UserEntity> Users { get; set; }
         
+        public DbSet<VoteEntity> Votes { get; set; }
+        
         public DbSet<WaifuEntity> Waifus { get; set; }
         
         public DbSet<WarningEntity> Warnings { get; set; }
-        
-        public DbSet<PatreonEntity> Patreon { get; set; }
-        
-        public DbSet<VoteEntity> Votes { get; set; }
 #nullable enable
         
         public async Task<TEntity> GetOrAddAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, Func<TEntity> entityValue)
@@ -141,12 +141,12 @@ namespace Rias.Database
                 .HasIndex(x => x.GuildId)
                 .IsUnique();
             
-            modelBuilder.Entity<MembersEntity>()
-                .HasIndex(x => new { x.GuildId, UserId = x.MemberId })
-                .IsUnique();
-            
             modelBuilder.Entity<GuildXpRoleEntity>()
                 .HasIndex(x => new { x.GuildId, x.RoleId })
+                .IsUnique();
+            
+            modelBuilder.Entity<MembersEntity>()
+                .HasIndex(x => new { x.GuildId, UserId = x.MemberId })
                 .IsUnique();
             
             modelBuilder.Entity<MuteTimerEntity>()

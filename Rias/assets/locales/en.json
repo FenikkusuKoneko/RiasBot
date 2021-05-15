@@ -634,6 +634,8 @@
   "type_parser_role_not_guild": "`RoleTypeParser` cannot be used in a context without a guild!",
   "type_parser_time_span_unsuccessful": "The time provided is not valid.\nFormat mo(nths) w(eeks) d(ays) h(ours) m(inutes) s(econds).\nExamples 1mo2d3h4m5s, 1w2d3h4m5s, 1h2m, 1m2s.",
   "type_parser_invalid_color": "The color is not valid. You can use a hex value (#dc143c) or a html color name (red, green, blue, etc.).",
+  "type_parser_voice_channel_not_allowed": "This command doesn't accept a voice channel.",
+  "type_parser_stage_channel_not_allowed": "This command doesn't accept a stage channel.",
   
   "service_command_not_executed": "The command couldn't be executed",
   "service_command_cooldown": "Hey, calm down! Take a breath and try again in **{0}**.",

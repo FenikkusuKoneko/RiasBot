@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -160,16 +161,17 @@ namespace Rias.Services
         }
 
         public bool CheckExcludedChannel(DiscordChannel channel)
-            => _xpIgnoredChannels.TryGetValue(channel.GuildId, out var xpIgnoredGuildChannels) && xpIgnoredGuildChannels.Contains(channel.Id);
+            => _xpIgnoredChannels.TryGetValue(channel.GuildId.GetValueOrDefault(), out var xpIgnoredGuildChannels) && xpIgnoredGuildChannels.Contains(channel.Id);
 
         public async Task AddChannelToExclusionAsync(DiscordChannel channel)
         {
+            var guildId = channel.GuildId.GetValueOrDefault();
             var channelAdded = true;
             
-            if (_xpIgnoredChannels.TryGetValue(channel.GuildId, out var xpIgnoredGuildChannels))
+            if (_xpIgnoredChannels.TryGetValue(guildId, out var xpIgnoredGuildChannels))
                 channelAdded = xpIgnoredGuildChannels.Add(channel.Id);
             else
-                _xpIgnoredChannels[channel.GuildId] = new ConcurrentHashSet<ulong> { channel.Id };
+                _xpIgnoredChannels[guildId] = new ConcurrentHashSet<ulong> { channel.Id };
 
             if (!channelAdded)
                 return;
@@ -177,7 +179,7 @@ namespace Rias.Services
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
 
-            var guildDb = await db.GetOrAddAsync(g => g.GuildId == channel.GuildId, () => new GuildEntity { GuildId = channel.GuildId });
+            var guildDb = await db.GetOrAddAsync(g => g.GuildId == guildId, () => new GuildEntity { GuildId = guildId });
             if (guildDb.XpIgnoredChannels is null)
                 guildDb.XpIgnoredChannels = new [] { channel.Id };
             else if (!guildDb.XpIgnoredChannels.Contains(channel.Id))
@@ -188,14 +190,15 @@ namespace Rias.Services
         
         public async Task RemoveChannelFromExclusionAsync(DiscordChannel channel)
         {
-            var channelRemoved = _xpIgnoredChannels.TryGetValue(channel.GuildId, out var xpIgnoredGuildChannels) && xpIgnoredGuildChannels.TryRemove(channel.Id);
+            var guildId = channel.GuildId.GetValueOrDefault();
+            var channelRemoved = _xpIgnoredChannels.TryGetValue(guildId, out var xpIgnoredGuildChannels) && xpIgnoredGuildChannels.TryRemove(channel.Id);
             if (!channelRemoved)
                 return;
             
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
 
-            var guildDb = await db.GetOrAddAsync(g => g.GuildId == channel.GuildId, () => new GuildEntity { GuildId = channel.GuildId });
+            var guildDb = await db.GetOrAddAsync(g => g.GuildId == channel.GuildId, () => new GuildEntity { GuildId = guildId });
             if (guildDb.XpIgnoredChannels is not null)
             {
                 var newXpIgnoredChannels = new ulong[guildDb.XpIgnoredChannels.Length - 1];
@@ -233,6 +236,8 @@ namespace Rias.Services
 
         private async Task LoadXpIgnoredChannels()
         {
+            var sw = Stopwatch.StartNew();
+            
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
             var guildsDb = await db.Guilds.Where(g => g.XpIgnoredChannels != null).ToListAsync();
@@ -247,7 +252,8 @@ namespace Rias.Services
                 }
             }
             
-            Log.Debug("Xp ignored channels loaded");
+            sw.Stop();
+            Log.Debug("Xp ignored channels loaded: {ElapsedMilliseconds}", sw.ElapsedMilliseconds);
         }
         
         private async Task<bool> CheckExcludedMemberAsync(DiscordMember member)

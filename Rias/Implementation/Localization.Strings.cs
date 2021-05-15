@@ -604,6 +604,7 @@ namespace Rias.Implementation
         public const string TypeParserRoleNotGuild = "type_parser_role_not_guild";
         public const string TypeParserTimeSpanUnsuccessful = "type_parser_time_span_unsuccessful";
         public const string TypeParserInvalidColor = "type_parser_invalid_color";
+        public static string TypeParserChannelNotAllowed(string channelType) => $"type_parser_{channelType}_channel_not_allowed";
         
         public const string ServiceCommandNotExecuted = "service_command_not_executed";
         public const string ServiceCommandCooldown = "service_command_cooldown";

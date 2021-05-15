@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -16,36 +17,53 @@ namespace Rias.TypeParsers
     {
         public override ValueTask<TypeParserResult<DiscordChannel>> ParseAsync(Parameter parameter, string value, RiasCommandContext context)
         {
-            var channelType = ChannelType.Unknown;
-            foreach (var attribute in parameter.Attributes)
-            {
-                channelType = attribute switch
-                {
-                    CategoryChannelAttribute => ChannelType.Category,
-                    TextChannelAttribute => ChannelType.Text,
-                    VoiceChannelAttribute => ChannelType.Voice,
-                    _ => channelType
-                };
-
-                if (channelType != ChannelType.Unknown)
-                    break;
-            }
-
             var localization = context.Services.GetRequiredService<Localization>();
             if (context.Guild is null)
                 return TypeParserResult<DiscordChannel>.Failed(localization.GetText(context.Guild?.Id, Localization.TypeParserChannelNotGuild));
+            
+            var channelType = ChannelType.Unknown;
+            HashSet<ChannelType>? ignoreChannelTypes = null;
+            
+            foreach (var attribute in parameter.Attributes)
+            {
+                switch (attribute)
+                {
+                    case CategoryChannelAttribute:
+                        channelType = ChannelType.Category;
+                        break;
+                    case TextChannelAttribute:
+                        channelType = ChannelType.Text;
+                        break;
+                    case VoiceChannelAttribute:
+                        channelType = ChannelType.Voice;
+                        break;
+                    case IgnoreChannelTypesAttribute ignoreChannelTypeAttribute:
+                        ignoreChannelTypes = ignoreChannelTypeAttribute.ChannelTypes;
+                        break;
+                }
+            }
+
+            if (channelType is not ChannelType.Unknown && ignoreChannelTypes is not null && ignoreChannelTypes.Contains(channelType))
+                throw new ArgumentException("The required channel type and the ignored channel type cannot be the same");
 
             DiscordChannel? channel;
             if (RiasUtilities.TryParseChannelMention(value, out var channelId) || ulong.TryParse(value, out channelId))
             {
                 channel = context.Guild.GetChannel(channelId);
+                if (channel is not null)
+                {
+                    var allowChannel = channelType switch
+                    {
+                        ChannelType.Text => channel.Type == ChannelType.Text || channel.Type == ChannelType.News || channel.Type == ChannelType.Store,
+                        ChannelType.Voice => channel.Type == ChannelType.Voice || channel.Type == ChannelType.Stage,
+                        _ => channel.Type == channelType || channelType is ChannelType.Unknown
+                    };
 
-                var channelTypeBool = channelType == ChannelType.Unknown || channelType == ChannelType.Text
-                    ? channel.Type == ChannelType.Text || channel.Type == ChannelType.News || channel.Type == ChannelType.Store
-                    : channel.Type == channelType;
-                
-                if (channel != null && channelTypeBool)
-                    return TypeParserResult<DiscordChannel>.Successful(channel);
+                    if (allowChannel)
+                        return ignoreChannelTypes is not null && ignoreChannelTypes.Contains(channel.Type)
+                            ? TypeParserResult<DiscordChannel>.Failed(localization.GetText(context.Guild.Id, Localization.TypeParserChannelNotAllowed(channel.Type.ToString().ToLower())))
+                            : TypeParserResult<DiscordChannel>.Successful(channel);
+                }
             }
             else
             {
@@ -54,11 +72,18 @@ namespace Rias.TypeParsers
                     ChannelType.Category => context.Guild.GetCategoryChannel(value),
                     ChannelType.Text => context.Guild.GetTextChannel(value),
                     ChannelType.Voice => context.Guild.GetVoiceChannel(value),
-                    ChannelType.Unknown => context.Guild.Channels
-                        .OrderBy(c => c.Value.Position)
-                        .FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase)).Value
+                    ChannelType.Unknown => ignoreChannelTypes is null
+                        ? context.Guild.Channels
+                            .OrderBy(c => c.Value.Position)
+                            .FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase))
+                            .Value
+                        : context.Guild.Channels
+                            .Where(c => !ignoreChannelTypes.Contains(c.Value.Type))
+                            .OrderBy(c => c.Value.Position)
+                            .FirstOrDefault(x => string.Equals(x.Value.Name, value, StringComparison.OrdinalIgnoreCase))
+                            .Value
                 };
-            
+
                 if (channel != null)
                     return TypeParserResult<DiscordChannel>.Successful(channel);
             }

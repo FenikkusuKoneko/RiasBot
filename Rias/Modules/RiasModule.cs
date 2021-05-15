@@ -73,7 +73,10 @@ namespace Rias.Modules
         public async Task<DiscordMessage> ReplyAsync(DiscordEmbedBuilder embed)
             => await Context.Channel.SendMessageAsync(embed);
 
-        public async Task SendPaginatedMessageAsync<T>(List<T> items, int itemsPerPage, Func<IEnumerable<T>, int, DiscordEmbedBuilder> embedFunc)
+        public Task SendPaginatedMessageAsync<T>(IList<T> items, int itemsPerPage, Func<IEnumerable<T>, int, DiscordEmbedBuilder> embedFunc)
+            => SendPaginatedMessageAsync(items, itemsPerPage, null, embedFunc);
+
+        public async Task SendPaginatedMessageAsync<T>(IList<T> items, int itemsPerPage, string? content, Func<IEnumerable<T>, int, DiscordEmbedBuilder> embedFunc)
         {
             var pageCount = (items.Count - 1) / itemsPerPage + 1;
             
@@ -84,7 +87,7 @@ namespace Rias.Modules
                 if (embed.Footer != null)
                     footerText += $" | {embed.Footer.Text}";
                 embed.WithFooter(footerText);
-                return new Page(embed: embed);
+                return new Page(content, embed);
             });
 
             await Context.Interactivity.SendPaginatedMessageAsync(Context.Channel, Context.User, pages);
