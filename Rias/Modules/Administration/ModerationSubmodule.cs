@@ -92,52 +92,13 @@ namespace Rias.Modules.Administration
                     : GetText(Localization.AdministrationBanAuditLogsReason, Context.User.FullName(), reason);
                 await member.BanAsync(reason: auditLogsReason.Truncate(512));
             }
-            
+
             [Command("ban", "b")]
             [Context(ContextType.Guild)]
             [MemberPermission(Permissions.BanMembers)]
             [BotPermission(Permissions.BanMembers)]
-            public async Task BanAsync(ulong userId, [Remainder] string? reason = null)
-            {
-                if (userId == Context.User.Id)
-                    return;
-
-                if (userId == Context.Guild!.Owner.Id)
-                {
-                    await ReplyErrorAsync(Localization.AdministrationCannotBanOwner);
-                    return;
-                }
-
-                var user = await RiasBot.GetUserAsync(userId);
-                if (user is null)
-                {
-                    await ReplyErrorAsync(Localization.AdministrationUserNotFound);
-                    return;
-                }
-                
-                var bans = await Context.Guild!.GetBansAsync();
-                if (bans.Any(b => b.User.Id == userId))
-                {
-                    await ReplyErrorAsync(Localization.AdministrationUserAlreadyBanned, user.FullName());
-                    return;
-                }
-                
-                await ReplyConfirmationAsync(Localization.AdministrationUserBanConfirmation, user.FullName());
-                
-                var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    await ReplyErrorAsync(Localization.AdministrationBanCanceled);
-                    return;
-                }
-
-                await SendMessageAsync(user, Localization.AdministrationUserBanned, "", Localization.AdministrationMemberWasBanned, reason, false);
-                
-                var auditLogsReason = string.IsNullOrEmpty(reason)
-                    ? GetText(Localization.AdministrationBanAuditLogs, Context.User.FullName())
-                    : GetText(Localization.AdministrationBanAuditLogsReason, Context.User.FullName(), reason);
-                await Context.Guild.BanMemberAsync(userId, reason: auditLogsReason.Truncate(512));
-            }
+            public Task BanAsync(ulong userId, [Remainder] string? reason = null)
+                => InternalBanUserAsync(userId, reason);
             
             [Command("softban", "sb")]
             [Context(ContextType.Guild)]
@@ -209,6 +170,13 @@ namespace Rias.Modules.Administration
                     : GetText(Localization.AdministrationBanAuditLogsReason, Context.User.FullName(), reason);
                 await member.BanAsync(7, auditLogsReason.Truncate(512));
             }
+
+            [Command("pruneban", "pb")]
+            [Context(ContextType.Guild)]
+            [MemberPermission(Permissions.BanMembers)]
+            [BotPermission(Permissions.BanMembers)]
+            public Task PruneBanAsync(ulong userId, [Remainder] string? reason = null)
+                => InternalBanUserAsync(userId, reason, 7);
 
             [Command("unban", "ub")]
             [Context(ContextType.Guild)]
@@ -329,6 +297,48 @@ namespace Rias.Modules.Administration
                 {
                     await ReplyErrorAsync(Localization.AdministrationPruneLimit);
                 }
+            }
+            
+            private async Task InternalBanUserAsync(ulong userId, [Remainder] string? reason = null, int deleteMessageDays = 0)
+            {
+                if (userId == Context.User.Id)
+                    return;
+
+                if (userId == Context.Guild!.Owner.Id)
+                {
+                    await ReplyErrorAsync(Localization.AdministrationCannotBanOwner);
+                    return;
+                }
+
+                var user = await RiasBot.GetUserAsync(userId);
+                if (user is null)
+                {
+                    await ReplyErrorAsync(Localization.AdministrationUserNotFound);
+                    return;
+                }
+                
+                var bans = await Context.Guild!.GetBansAsync();
+                if (bans.Any(b => b.User.Id == userId))
+                {
+                    await ReplyErrorAsync(Localization.AdministrationUserAlreadyBanned, user.FullName());
+                    return;
+                }
+                
+                await ReplyConfirmationAsync(Localization.AdministrationUserBanConfirmation, user.FullName());
+                
+                var messageReceived = await NextMessageAsync();
+                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    await ReplyErrorAsync(Localization.AdministrationBanCanceled);
+                    return;
+                }
+
+                await SendMessageAsync(user, Localization.AdministrationUserBanned, "", Localization.AdministrationMemberWasBanned, reason, false);
+                
+                var auditLogsReason = string.IsNullOrEmpty(reason)
+                    ? GetText(Localization.AdministrationBanAuditLogs, Context.User.FullName())
+                    : GetText(Localization.AdministrationBanAuditLogsReason, Context.User.FullName(), reason);
+                await Context.Guild.BanMemberAsync(userId, deleteMessageDays, auditLogsReason.Truncate(512));
             }
 
             private async Task SendMessageAsync(DiscordUser user, string moderationType, string fromWhere, string confirmation, string? reason, bool informUser = true)
