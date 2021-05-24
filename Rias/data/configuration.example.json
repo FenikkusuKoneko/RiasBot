@@ -1,0 +1,31 @@
+﻿{
+  "prefix": "r!",
+  "token": "your_bot_token_here",
+
+  "confirmColor": "#00ff00",
+  "errorColor": "#ff0000",
+
+  "masterId": "327927038360944640",
+  "currency": "<a:diamond_heart:546102072861392902>",
+
+  "invite": "your_bot_invite_url",
+  "ownerServerInvite": "your_server_invite_url",
+  "ownerServerId": "your_server_id",
+
+  "patreon": "https://www.patreon.com/riasbot",
+  "website": "https://rias.gg",
+  "discordBotList": "https://top.gg/bot/381387277764395008",
+
+  "urbanDictionaryApiKey": "your_urban_dictionary_api_key",
+  "fixerAccessKey": "your_fixer_api_key",
+  "weebServicesToken": "your_weeb_services_token",
+
+  "databaseConfiguration": {
+    "host": "localhost",
+    "port": "5432",
+    "database": "riasdb",
+    "username": "postgres",
+    "password": "youshallnotpass",
+    "applicationName": "Rias - Discord Bot"
+  }
+}
