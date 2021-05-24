@@ -124,7 +124,7 @@ namespace Rias.Services
                     nsfwList.Add(image);
             }
 
-            Log.Debug($"{provider} NSFW images cached");
+            Log.Debug("{Provider} NSFW images cached", provider);
         }
         
         private async Task PopulateCacheTagAsync(NsfwImageApiProvider provider, string tag)
@@ -146,7 +146,7 @@ namespace Rias.Services
 
             await PopulateCacheAsync(nsfwImages, provider);
             
-            Log.Debug($"NSFW tag <{tag}> downloaded");
+            Log.Debug("NSFW tag <{Tag}> downloaded", tag);
         }
         
         private async Task<IList<NsfwImageApi>?> DeserializeJsonHentaiAsync(string url)
@@ -163,7 +163,7 @@ namespace Rias.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex.ToString());
+                Log.Error(ex, "Exception thrown in the NSFW service");
                 return null;
             }
         }
@@ -199,7 +199,7 @@ namespace Rias.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex.ToString());
+                Log.Error(ex, "Exception thrown in the NSFW service");
                 return null;
             }
         }

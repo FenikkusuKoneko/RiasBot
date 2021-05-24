@@ -61,7 +61,7 @@ namespace Rias.Services
                 userDb.Currency += reward;
 
                 patron.Checked = true;
-                Log.Information($"Patreon discord user with ID {patron.UserId} was rewarded with {reward} hearts");
+                Log.Information("Patreon discord user with ID {UserId} was rewarded with {Reward} hearts", patron.UserId, reward);
             }
             
             await db.SaveChangesAsync();
@@ -74,7 +74,7 @@ namespace Rias.Services
                 try
                 {
                     await _webSocket!.ConnectAsync();
-                    Log.Information("Patreon WebSocket connected.");
+                    Log.Information("Patreon WebSocket connected");
                     
                     if (recheckPatrons)
                         await RunTaskAsync(CheckPatronsAsync);
@@ -102,7 +102,7 @@ namespace Rias.Services
 
                 if (patreonDb is null)
                 {
-                    Log.Error($"Couldn't take the patreon data from the database for user {userId}");
+                    Log.Error("Couldn't take the patreon data from the database for user {UserId}", userId);
                     return;
                 }
 
@@ -113,7 +113,7 @@ namespace Rias.Services
                 patreonDb.Checked = true;
                 await db.SaveChangesAsync();
 
-                Log.Information($"Patreon discord user with ID {userId} was rewarded with {reward} hearts");
+                Log.Information("Patreon discord user with ID {UserId} was rewarded with {Reward} hearts", userId, reward);
             }
             catch (Exception ex)
             {
