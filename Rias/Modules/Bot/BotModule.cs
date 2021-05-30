@@ -65,12 +65,20 @@ namespace Rias.Modules.Bot
             Environment.Exit(0);
         }
 
-        [Command("update", "restart")]
+        [Command("update")]
         [OwnerOnly]
         public async Task UpdateAsync()
         {
             await ReplyConfirmationAsync(Localization.BotUpdate);
             Environment.Exit(69);
+        }
+        
+        [Command("restart", "reboot")]
+        [OwnerOnly]
+        public async Task RestartAsync()
+        {
+            await ReplyConfirmationAsync(Localization.BotRestart);
+            Environment.Exit(420);
         }
 
         [Command("reload", "refresh")]

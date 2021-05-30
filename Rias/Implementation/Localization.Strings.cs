@@ -190,6 +190,7 @@ namespace Rias.Implementation
         public const string BotLeftGuild = "bot_left_guild";
         public const string BotShutdown = "bot_shutdown";
         public const string BotUpdate = "bot_update";
+        public const string BotRestart = "bot_restart";
         public const string BotCredentialsReloaded = "bot_credentials_reloaded";
         public const string BotCommandsReloaded = "bot_commands_reloaded";
         public const string BotLocalesReloaded = "bot_locales_reloaded";

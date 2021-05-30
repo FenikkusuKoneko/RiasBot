@@ -189,8 +189,9 @@
   
   "bot_guild_not_found": "I couldn't find the server",
   "bot_left_guild": "Left **{0}**",
-  "bot_shutdown": "Bye bye ;-;",
-  "bot_update": "Yay, a new update!\nDon't worry, I will be back soon and better <3",
+  "bot_shutdown": "Bye bye.",
+  "bot_update": "Yay, a new update!\nDon't worry, I will be back soon and better <3.",
+  "bot_restart": "I'll be right back.",
   "bot_credentials_reloaded": "The credentials are reloaded.",
   "bot_commands_reloaded": "The commands are reloaded.",
   "bot_locales_reloaded": "The locales are reloaded.",
