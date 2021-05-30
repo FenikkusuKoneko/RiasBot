@@ -22,7 +22,7 @@ namespace Rias.Services
     [AutoStart]
     public class UnitsService : RiasService
     {
-        private const string ExchangeRatesApi = "http://data.fixer.io/api/latest?access_key=";
+        private const string ExchangeRatesApi = "https://data.fixer.io/api/latest?access_key=";
         private static readonly string UnitsPath = Path.Combine(Environment.CurrentDirectory, "assets/units");
 
         private readonly HttpClient _httpClient;
@@ -47,7 +47,8 @@ namespace Rias.Services
             sw.Stop();
             Log.Debug("Units loaded: {ElapsedMilliseconds} ms", sw.ElapsedMilliseconds);
 
-            RunTaskAsync(UpdateCurrencyUnitsAsync);
+            if (!string.IsNullOrEmpty(Configuration.FixerAccessKey))
+                RunTaskAsync(UpdateCurrencyUnitsAsync);
         }
 
         public void ReloadUnits()
@@ -56,7 +57,9 @@ namespace Rias.Services
             _updateCurrencyUnitsCts.Dispose();
             _updateCurrencyUnitsCts = new CancellationTokenSource();
             LoadUnits();
-            RunTaskAsync(UpdateCurrencyUnitsAsync);
+            
+            if (!string.IsNullOrEmpty(Configuration.FixerAccessKey))
+                RunTaskAsync(UpdateCurrencyUnitsAsync);
         }
 
         private void LoadUnits()
@@ -293,7 +296,7 @@ namespace Rias.Services
                 : await _httpClient.GetStringAsync($"{ExchangeRatesApi}{Configuration.FixerAccessKey}");
             
             if (exchangeRatesDataRedis.Expiry is null)
-                await _redisDb.StringSetAsync("converter:currency", exchangeRatesData, TimeSpan.FromHours(1));
+                await _redisDb.StringSetAsync("converter:currency", exchangeRatesData, TimeSpan.FromHours(3));
             
             var exchangeRates = JsonConvert.DeserializeObject<JObject>(exchangeRatesData)!["rates"]?
                 .ToObject<Dictionary<string, double>>();
@@ -333,7 +336,7 @@ namespace Rias.Services
 
             Log.Information("Currency units updated");
 
-            var delay = exchangeRatesDataRedis.Expiry ?? TimeSpan.FromHours(1);
+            var delay = exchangeRatesDataRedis.Expiry ?? TimeSpan.FromHours(3);
             await Task.Delay(delay, _updateCurrencyUnitsCts.Token);
             if (_updateCurrencyUnitsCts.IsCancellationRequested)
                 return;
