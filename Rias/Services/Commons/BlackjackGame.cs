@@ -195,8 +195,8 @@ namespace Rias.Services.Commons
                 var winning = _bet;
                 var betPerHand = _playerSecondHand is null ? _bet : _bet / 2;
 
-                if ((_playerHand.HandState != HandState.Bust && _playerSecondHand is null)
-                    || (_playerSecondHand is not null && _playerSecondHand.HandState != HandState.Bust))
+                if (_playerHand.HandState != HandState.Bust
+                    || _playerSecondHand is not null && _playerSecondHand.HandState != HandState.Bust)
                 {
                     _houseHand.Process();
                     while (_houseHand.HandState == HandState.Playing)
@@ -262,16 +262,15 @@ namespace Rias.Services.Commons
 
                 if (string.IsNullOrEmpty(description))
                 {
-                    winning -= _bet;
-                    if (winning > 0)
+                    if (winning > _bet)
                     {
                         _embedColor = RiasUtilities.Green;
                         description = _service.GetText(_member.Guild.Id, Localization.GamblingYouWon, winning, _service.Configuration.Currency, _userCurrency);
                     }
-                    else if (winning < 0)
+                    else if (winning < _bet)
                     {
                         _embedColor = RiasUtilities.Red;
-                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouLost, Math.Abs(winning), _service.Configuration.Currency, _userCurrency);
+                        description = _service.GetText(_member.Guild.Id, Localization.GamblingYouLost, Math.Abs(winning - _bet), _service.Configuration.Currency, _userCurrency);
                     }
                     else if (_playerSecondHand != null)
                     {
@@ -388,8 +387,8 @@ namespace Rias.Services.Commons
                     foreach (var (value, _) in Cards.Where(x => x.Value != 1))
                         score += Math.Min(value, 10);
 
-                    foreach (var (value, _) in Cards.Where(x => x.Value == 1))
-                        score += score + value > 21 ? 1 : 11;
+                    foreach (var (_, _) in Cards.Where(x => x.Value == 1))
+                        score += score + 11 > 21 ? 1 : 11;
                 }
                 else
                 {
