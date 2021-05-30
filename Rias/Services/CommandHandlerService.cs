@@ -161,6 +161,8 @@ namespace Rias.Services
                 RiasBot.Members[member.Id] = member;
                 
                 await RunTaskAsync(_botService.AddAssignableRoleAsync(member));
+                await RunTaskAsync(_botService.AddMuteRoleAsync(member));
+                await RunTaskAsync(_botService.AddXpIgnoredRole(member));
                 await RunTaskAsync(_xpService.AddUserXpAsync(args.Author));
                 await RunTaskAsync(_xpService.AddGuildUserXpAsync(member, args.Channel));
                 

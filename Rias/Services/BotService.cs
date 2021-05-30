@@ -106,6 +106,66 @@ namespace Rias.Services
                 await member.GrantRoleAsync(aar);
         }
         
+        public async Task AddMuteRoleAsync(DiscordMember member)
+        {
+            var currentUser = member.Guild.CurrentMember;
+            if (!currentUser.GetPermissions().HasPermission(Permissions.ManageRoles))
+                return;
+            
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id);
+            var memberDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.MemberId == member.Id);
+            
+            if (memberDb is null)
+                return;
+            
+            if (!memberDb.IsMuted)
+                return;
+
+            var role = member.Guild.GetRole(guildDb?.MuteRoleId ?? 0);
+            if (role != null)
+            {
+                await member.GrantRoleAsync(role);
+            }
+            else
+            {
+                memberDb.IsMuted = false;
+                await db.SaveChangesAsync();
+            }
+        }
+
+        public async Task AddXpIgnoredRole(DiscordMember member)
+        {
+            var currentUser = member.Guild.CurrentMember;
+            if (!currentUser.GetPermissions().HasPermission(Permissions.ManageRoles))
+                return;
+            
+            using var scope = RiasBot.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+            
+            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id);
+            var memberDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.MemberId == member.Id);
+            
+            if (memberDb is null)
+                return;
+            
+            if (!memberDb.IsXpIgnored)
+                return;
+
+            var role = member.Guild.GetRole(guildDb?.XpIgnoredRoleId ?? 0);
+            if (role != null)
+            {
+                await member.GrantRoleAsync(role);
+            }
+            else
+            {
+                memberDb.IsXpIgnored = false;
+                await db.SaveChangesAsync();
+            }
+        }
+        
         public async Task<EvaluationDetails> EvaluateAsync(RiasCommandContext context, string code)
         {
             var globals = new RoslynGlobals
@@ -322,66 +382,6 @@ namespace Rias.Services
             await db.SaveChangesAsync();
         }
 
-        private async Task AddMuteRoleAsync(DiscordMember member)
-        {
-            var currentUser = member.Guild.CurrentMember;
-            if (!currentUser.GetPermissions().HasPermission(Permissions.ManageRoles))
-                return;
-            
-            using var scope = RiasBot.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            
-            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id);
-            var memberDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.MemberId == member.Id);
-            
-            if (memberDb is null)
-                return;
-            
-            if (!memberDb.IsMuted)
-                return;
-
-            var role = member.Guild.GetRole(guildDb?.MuteRoleId ?? 0);
-            if (role != null)
-            {
-                await member.GrantRoleAsync(role);
-            }
-            else
-            {
-                memberDb.IsMuted = false;
-                await db.SaveChangesAsync();
-            }
-        }
-
-        private async Task AddXpIgnoredRole(DiscordMember member)
-        {
-            var currentUser = member.Guild.CurrentMember;
-            if (!currentUser.GetPermissions().HasPermission(Permissions.ManageRoles))
-                return;
-            
-            using var scope = RiasBot.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            
-            var guildDb = await db.Guilds.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id);
-            var memberDb = await db.Members.FirstOrDefaultAsync(x => x.GuildId == member.Guild.Id && x.MemberId == member.Id);
-            
-            if (memberDb is null)
-                return;
-            
-            if (!memberDb.IsXpIgnored)
-                return;
-
-            var role = member.Guild.GetRole(guildDb?.XpIgnoredRoleId ?? 0);
-            if (role != null)
-            {
-                await member.GrantRoleAsync(role);
-            }
-            else
-            {
-                memberDb.IsXpIgnored = false;
-                await db.SaveChangesAsync();
-            }
-        }
-        
         private async Task GuildMemberRemovedAsync(DiscordClient client, GuildMemberRemoveEventArgs args)
         {
             if (RiasBot.CurrentUser != null && args.Member.Id == RiasBot.CurrentUser.Id)
