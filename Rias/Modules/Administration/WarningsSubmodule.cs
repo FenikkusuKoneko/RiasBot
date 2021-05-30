@@ -192,7 +192,7 @@ namespace Rias.Modules.Administration
                 
                 var warnings = warningsDb.Select((x, i) => new
                 {
-                    x.DateAdded,
+                    DateCreated = x.CreatedAt,
                     Moderator = moderators[i]?.Mention ?? x.ModeratorId.ToString(),
                     x.Reason
                 }).ToList();
@@ -209,7 +209,7 @@ namespace Rias.Modules.Administration
                     Title = GetText(Localization.AdministrationMemberWarnings, member.FullName()),
                     Description = string.Join("\n", items.Select(x => $"{++index}. {x.Reason ?? "-"}\n" +
                                                                       $"\u251C\u2500{GetText(Localization.AdministrationModerator)}: {x.Moderator}\n" +
-                                                                      $"\u2514\u2500{GetText(Localization.CommonDate)}: `{x.DateAdded:yyyy-MM-dd HH:mm:ss}`"))
+                                                                      $"\u2514\u2500{GetText(Localization.CommonDate)}: `{x.DateCreated:yyyy-MM-dd HH:mm:ss}`"))
                 });
             }
 

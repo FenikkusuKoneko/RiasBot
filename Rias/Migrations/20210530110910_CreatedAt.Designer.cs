@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Rias.Database;
@@ -10,9 +11,10 @@ using Rias.Models;
 namespace Rias.Migrations
 {
     [DbContext(typeof(RiasDbContext))]
-    partial class RiasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210530110910_CreatedAt")]
+    partial class CreatedAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,10 +47,6 @@ namespace Rias.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text")
                         .HasColumnName("name");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
 
                     b.Property<string>("Url")
                         .HasColumnType("text")
@@ -95,10 +93,6 @@ namespace Rias.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
-
                     b.HasKey("Id")
                         .HasName("pk_custom_characters");
 
@@ -139,10 +133,6 @@ namespace Rias.Migrations
                     b.Property<int>("Position")
                         .HasColumnType("integer")
                         .HasColumnName("position");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
 
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)")
@@ -222,10 +212,6 @@ namespace Rias.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("punishment_warnings_required");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
-
                     b.Property<string>("WarningPunishment")
                         .HasColumnType("text")
                         .HasColumnName("warning_punishment");
@@ -288,10 +274,6 @@ namespace Rias.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("role_id");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
-
                     b.HasKey("Id")
                         .HasName("pk_guild_xp_roles");
 
@@ -334,10 +316,6 @@ namespace Rias.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("member_id");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
-
                     b.Property<int>("Xp")
                         .HasColumnType("integer")
                         .HasColumnName("xp");
@@ -379,10 +357,6 @@ namespace Rias.Migrations
                     b.Property<decimal>("MuteChannelSourceId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("mute_channel_source_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
 
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)")
@@ -446,10 +420,6 @@ namespace Rias.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("tier_amount_cents");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
-
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
@@ -492,10 +462,6 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
-
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
@@ -529,10 +495,6 @@ namespace Rias.Migrations
                     b.Property<decimal>("RoleId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("role_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
 
                     b.HasKey("Id")
                         .HasName("pk_self_assignable_roles");
@@ -571,10 +533,6 @@ namespace Rias.Migrations
                     b.Property<DateTime>("LastMessageDate")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("last_message_date");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
 
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)")
@@ -622,10 +580,6 @@ namespace Rias.Migrations
                         .HasColumnType("text")
                         .HasColumnName("type");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
-
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
@@ -672,10 +626,6 @@ namespace Rias.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("price");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
-
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
@@ -715,10 +665,6 @@ namespace Rias.Migrations
                     b.Property<string>("Reason")
                         .HasColumnType("text")
                         .HasColumnName("reason");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
 
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)")

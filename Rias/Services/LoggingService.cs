@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
-using Rias.Commons;
 using Rias.Extensions;
 using Rias.Implementation;
 using Serilog;

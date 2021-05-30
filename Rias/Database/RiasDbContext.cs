@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -121,6 +122,18 @@ namespace Rias.Database
                 .Include(include1)
                 .Include(include2)
                 .ToListAsync();
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
+        {
+            var entries = ChangeTracker
+                .Entries()
+                .Where(e => e.Entity is DbEntity && e.State is EntityState.Modified);
+
+            foreach (var entityEntry in entries)
+                ((DbEntity) entityEntry.Entity).UpdatedAt = DateTime.UtcNow;
+            
+            return base.SaveChangesAsync(cancellationToken);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

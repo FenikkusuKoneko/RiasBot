@@ -152,14 +152,14 @@ namespace Rias.Modules.Utility
         public async Task VoteAsync()
         {
             var timeNow = DateTime.UtcNow;
-            var userVotesDb = await DbContext.GetOrderedListAsync<VoteEntity, DateTime>(x => x.UserId == Context.User.Id, x => x.DateAdded, true);
-            if (userVotesDb.Count == 0 || userVotesDb[0].DateAdded.AddHours(12) < timeNow)
+            var userVotesDb = await DbContext.GetOrderedListAsync<VoteEntity, DateTime>(x => x.UserId == Context.User.Id, x => x.CreatedAt, true);
+            if (userVotesDb.Count == 0 || userVotesDb[0].CreatedAt.AddHours(12) < timeNow)
             {
                 await ReplyConfirmationAsync(Localization.UtilityVoteInfo, $"{Configuration.DiscordBotList}/vote", Configuration.Currency);
             }
             else
             {
-                var nextVoteHumanized = (userVotesDb[0].DateAdded.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
+                var nextVoteHumanized = (userVotesDb[0].CreatedAt.AddHours(12) - timeNow).Humanize(3, new CultureInfo(Localization.GetGuildLocale(Context.Guild!.Id)), TimeUnit.Hour, TimeUnit.Second);
                 await ReplyConfirmationAsync(Localization.UtilityVotedInfo, $"{Configuration.DiscordBotList}/vote", nextVoteHumanized);
             }
         }
@@ -188,7 +188,7 @@ namespace Rias.Modules.Utility
             }
             
             var dateAdded = DateTime.UtcNow - timeSpan;
-            var votesGroup = (await DbContext.GetListAsync<VoteEntity>(x => x.DateAdded >= dateAdded))
+            var votesGroup = (await DbContext.GetListAsync<VoteEntity>(x => x.CreatedAt >= dateAdded))
                 .GroupBy(x => x.UserId)
                 .ToList();
 
