@@ -36,28 +36,6 @@ namespace Rias.Modules
             DbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
         }
 
-        protected override async ValueTask BeforeExecutedAsync()
-        {
-            if (Context.Guild is null)
-                return;
-
-            var channelPermissions = Context.Guild!.CurrentMember.PermissionsIn(Context.Channel);
-            var channelEmbedPerm = channelPermissions.HasPermission(Permissions.EmbedLinks);
-            var serverEmbedPerm = Context.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks);
-            
-            if (!serverEmbedPerm && !channelEmbedPerm)
-            {
-                await Context.Channel.SendMessageAsync(GetText(Localization.ServiceNoEmbedLinksPermission));
-                throw new CommandNoPermissionsException("No embed links permission.");
-            }
-
-            if (serverEmbedPerm && !channelEmbedPerm)
-            {
-                await Context.Channel.SendMessageAsync(GetText(Localization.ServiceNoEmbedLinksChannelPermission));
-                throw new CommandNoPermissionsException("No embed links permission.");
-            }
-        }
-
         /// <summary>
         /// Send a confirmation message with or without arguments. The form is an embed with the confirm color.<br/>
         /// </summary>

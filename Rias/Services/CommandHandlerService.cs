@@ -167,6 +167,21 @@ namespace Rias.Services
                 var channelPermissions = args.Guild.CurrentMember.PermissionsIn(args.Channel);
                 if (!channelPermissions.HasPermission(Permissions.SendMessages))
                     return;
+                
+                var channelEmbedPerm = channelPermissions.HasPermission(Permissions.EmbedLinks);
+                var serverEmbedPerm = args.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks);
+                
+                if (!serverEmbedPerm && !channelEmbedPerm)
+                {
+                    await args.Channel.SendMessageAsync(GetText(args.Guild.Id, Localization.ServiceNoEmbedLinksPermission));
+                    return;
+                }
+
+                if (serverEmbedPerm && !channelEmbedPerm)
+                {
+                    await args.Channel.SendMessageAsync(GetText(args.Guild.Id, Localization.ServiceNoEmbedLinksChannelPermission));
+                    return;
+                }
             }
 
             var isMentionPrefix = false;

@@ -45,9 +45,6 @@ namespace Rias.Services
             var command = context.Command;
             var result = args.Result;
 
-            if (result.Exception is CommandNoPermissionsException)
-                return Task.CompletedTask;
-            
             Log.Error(result.Exception, "{@Message}", new
             {
                 Command = command.Name,
