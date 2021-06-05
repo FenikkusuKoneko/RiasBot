@@ -96,19 +96,20 @@ namespace Rias.Modules.Waifu
 
                 embed.AddField(GetText(Localization.WaifuClaimedBy), $"{waifuUsers.Count} {GetText(Localization.CommonUsers).ToLowerInvariant()}", true)
                     .AddField(GetText(Localization.UtilityPrice), waifuPrice.ToString(), true);
-            
-                await Context.Channel.SendMessageAsync($"**{GetText(Localization.WaifuClaimNote, Context.Prefix)}**", embed);
 
                 if (claimCanceled)
-                    return;
-
-                var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
                 {
-                    await ReplyErrorAsync(Localization.WaifuClaimCanceled);
+                    await Context.Channel.SendMessageAsync($"**{GetText(Localization.WaifuClaimNote, Context.Prefix)}**", embed);
                     return;
                 }
-            
+                
+                var componentInteractionArgs = await SendConfirmationButtonsAsync(new DiscordMessageBuilder()
+                    .WithContent($"**{GetText(Localization.WaifuClaimNote, Context.Prefix)}**")
+                    .WithEmbed(embed));
+
+                if (componentInteractionArgs is null)
+                    return;
+
                 userDb.Currency -= waifuPrice;
                 var waifuDb = new WaifuEntity
                 {
@@ -128,7 +129,7 @@ namespace Rias.Modules.Waifu
                 embed.WithDescription(GetText(Localization.WaifuWaifuClaimed, character.Name!, waifuPrice, Configuration.Currency));
                 embed.ClearFields();
 
-                await ReplyAsync(embed);
+                await ButtonsActionModifyEmbedAsync(componentInteractionArgs.Value.Result.Message, embed);
             }
 
             [Command("divorce")]
@@ -149,15 +150,10 @@ namespace Rias.Modules.Waifu
                     Title = waifu.Name,
                     Description = GetText(Localization.WaifuDivorceConfirmation, waifu.Name!),
                 }.WithThumbnail(waifu.ImageUrl);
-
-                await ReplyAsync(embed);
-            
-                var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    await ReplyErrorAsync(Localization.WaifuDivorceCanceled);
+                
+                var componentInteractionArgs = await SendConfirmationButtonsAsync(new DiscordMessageBuilder().WithEmbed(embed));
+                if (componentInteractionArgs is null)
                     return;
-                }
 
                 if (waifu is CustomWaifuEntity customWaifu)
                     DbContext.Remove(customWaifu);
@@ -165,7 +161,7 @@ namespace Rias.Modules.Waifu
                     DbContext.Remove((WaifuEntity) waifu);
             
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.WaifuDivorced, waifu.Name!);
+                await ButtonsActionModifyDescriptionAsync(componentInteractionArgs.Value.Result.Message, Localization.WaifuDivorced, waifu.Name!);
             }
 
             [Command("special", "beloved")]
@@ -199,16 +195,11 @@ namespace Rias.Modules.Waifu
                     Title = waifu.Name,
                     Description = GetText(Localization.WaifuSpecialConfirmation, waifu.Name!),
                 }.WithThumbnail(waifu.ImageUrl);
-
-                await ReplyAsync(embed);
-
-                var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    await ReplyErrorAsync(Localization.WaifuSpecialCanceled);
+                
+                var componentInteractionArgs = await SendConfirmationButtonsAsync(new DiscordMessageBuilder().WithEmbed(embed));
+                if (componentInteractionArgs is null)
                     return;
-                }
-            
+
                 userDb.Currency -= SpecialWaifuPrice;
                 var currentSpecialWaifu = (IWaifuEntity) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
                                           ?? await DbContext.CustomWaifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial);
@@ -222,7 +213,7 @@ namespace Rias.Modules.Waifu
 
                 waifu.IsSpecial = true;
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.WaifuSpecial, waifu.Name!);
+                await ButtonsActionModifyDescriptionAsync(componentInteractionArgs.Value.Result.Message, Localization.WaifuSpecial, waifu.Name!);
             }
 
             [Command("image", "avatar")]
@@ -390,16 +381,11 @@ namespace Rias.Modules.Waifu
                     Title = name,
                     Description = GetText(Localization.WaifuCreationConfirmation, name),
                 }.WithThumbnail(url);
-
-                await ReplyAsync(embed);
-
-                var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    await ReplyErrorAsync(Localization.WaifuCreationCanceled);
+                
+                var componentInteractionArgs = await SendConfirmationButtonsAsync(new DiscordMessageBuilder().WithEmbed(embed));
+                if (componentInteractionArgs is null)
                     return;
-                }
-            
+
                 userDb.Currency -= WaifuCreationPrice;
                 var currentSpecialWaifu = (IWaifuEntity) await DbContext.Waifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial)
                                           ?? await DbContext.CustomWaifus.FirstOrDefaultAsync(x => x.UserId == Context.User.Id && x.IsSpecial);
@@ -430,7 +416,7 @@ namespace Rias.Modules.Waifu
 
                 await DbContext.SaveChangesAsync();
                 embed.Description = GetText(Localization.WaifuCreated, name);
-                await ReplyAsync(embed);
+                await ButtonsActionModifyEmbedAsync(componentInteractionArgs.Value.Result.Message, embed);
             }
             
             private async Task<IWaifuEntity?> GetWaifuAsync(string name)

@@ -26,13 +26,9 @@ namespace Rias.Modules.Bot
             [OwnerOnly]
             public async Task DeleteAsync([Remainder] DiscordUser user)
             {
-                await ReplyConfirmationAsync(Localization.BotDeleteDialog, user.FullName());
-                var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    await ReplyErrorAsync(Localization.BotDeleteCanceled);
+                var componentInteractionArgs = await SendConfirmationButtonsAsync(Localization.BotDeleteDialog, user.FullName());
+                if (componentInteractionArgs is null)
                     return;
-                }
 
                 var userDb = await DbContext.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
                 if (userDb != null)
@@ -47,7 +43,7 @@ namespace Rias.Modules.Bot
                     DbContext.Remove(profileDb);
                 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.BotUserDeleted, user.FullName());
+                await ButtonsActionModifyDescriptionAsync(componentInteractionArgs.Value.Result.Message, Localization.BotUserDeleted, user.FullName());
             }
 
             [Command("database", "db")]
@@ -87,19 +83,15 @@ namespace Rias.Modules.Bot
             [OwnerOnly]
             public async Task BotBanAsync([Remainder] DiscordUser user)
             {
-                await ReplyConfirmationAsync(Localization.BotBotBanDialog, user.FullName());
-                var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    await ReplyErrorAsync(Localization.BotBotBanCanceled);
+                var componentInteractionArgs = await SendConfirmationButtonsAsync(Localization.BotBotBanDialog, user.FullName());
+                if (componentInteractionArgs is null)
                     return;
-                }
-                
+
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UserEntity { UserId = user.Id });
                 userDb.IsBanned = true;
                 
                 await DbContext.SaveChangesAsync();
-                await ReplyConfirmationAsync(Localization.BotUserBotBanned, user.FullName());
+                await ButtonsActionModifyDescriptionAsync(componentInteractionArgs.Value.Result.Message, Localization.BotUserBotBanned, user.FullName());
             }
 
             [Command("removebotban")]

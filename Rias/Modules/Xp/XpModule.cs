@@ -412,18 +412,13 @@ namespace Rias.Modules.Xp
         [MemberPermission(Permissions.Administrator)]
         public async Task ResetGuildXpAsync()
         {
-            await ReplyConfirmationAsync(Localization.XpResetGuildXpConfirmation);
-            
-            var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
-            {
-                await ReplyErrorAsync(Localization.XpResetGuildXpCanceled);
+            var componentInteractionArgs = await SendConfirmationButtonsAsync(Localization.XpResetGuildXpConfirmation);
+            if (componentInteractionArgs is null)
                 return;
-            }
-            
+
             DbContext.RemoveRange(await DbContext.GetListAsync<MembersEntity>(x => x.GuildId == Context.Guild!.Id));
             await DbContext.SaveChangesAsync();
-            await ReplyConfirmationAsync(Localization.XpGuildXpReset);
+            await ButtonsActionModifyDescriptionAsync(componentInteractionArgs.Value.Result.Message, Localization.XpGuildXpReset);
         }
 
         [Command("xpignore", "xpi")]

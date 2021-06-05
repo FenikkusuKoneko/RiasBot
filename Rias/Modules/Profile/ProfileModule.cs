@@ -112,16 +112,18 @@ namespace Rias.Modules.Profile
 
             backgroundStream.Position = 0;
             await using var profilePreview = await Service.GenerateProfileBackgroundAsync(Context.User, backgroundStream);
-            await Context.Channel.SendMessageAsync(new DiscordMessageBuilder()
-                .WithContent(GetText(Localization.ProfileBackgroundPreview))
+
+            var componentInteractionArgs = await SendConfirmationButtonsAsync(new DiscordMessageBuilder()
+                .WithEmbed(new DiscordEmbedBuilder
+                {
+                    Color = RiasUtilities.Yellow,
+                    Description = GetText(Localization.ProfileBackgroundPreview),
+                    ImageUrl = $"attachment://{Context.User.Id}_profile_preview.png"
+                })
                 .WithFile($"{Context.User.Id}_profile_preview.png", profilePreview));
             
-            var messageReceived = await NextMessageAsync();
-            if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
-            {
-                await ReplyErrorAsync(Localization.ProfileBackgroundCanceled);
+            if (componentInteractionArgs is null)
                 return;
-            }
 
             userDb.Currency -= 1000;
             
@@ -129,7 +131,7 @@ namespace Rias.Modules.Profile
             profileDb.BackgroundUrl = url;
             
             await DbContext.SaveChangesAsync();
-            await ReplyConfirmationAsync(Localization.ProfileBackgroundSet);
+            await ButtonsActionModifyDescriptionAsync(componentInteractionArgs.Value.Result.Message, Localization.ProfileBackgroundSet);
         }
 
         [Command("dim")]

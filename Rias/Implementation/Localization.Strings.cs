@@ -62,7 +62,6 @@ namespace Rias.Implementation
         public const string AdministrationBanAuditLogsReason = "administration_ban_audit_logs_reason";
         public const string AdministrationUserAlreadyBanned = "administration_user_already_banned";
         public const string AdministrationUserBanConfirmation = "administration_user_ban_confirmation";
-        public const string AdministrationBanCanceled = "administration_ban_canceled";
         public const string AdministrationMemberSoftBanned = "administration_member_soft_banned";
         public const string AdministrationMemberWasSoftBanned = "administration_member_was_soft_banned";
         public const string AdministrationUserUnbanned = "administration_user_unbanned";
@@ -70,7 +69,6 @@ namespace Rias.Implementation
         public const string AdministrationUnbanAuditLogs = "administration_unban_audit_logs";
         public const string AdministrationUnbanAuditLogsReason = "administration_unban_audit_logs_reason";
         public const string AdministrationUnbanConfirmation = "administration_unban_confirmation";
-        public const string AdministrationUnbanCanceled = "administration_unban_canceled";
         public const string AdministrationBanNotFound = "administration_ban_not_found";
         public const string AdministrationPruneLimit = "administration_prune_limit";
         public const string AdministrationCannotMuteOwner = "administration_cannot_mute_owner";
@@ -221,12 +219,10 @@ namespace Rias.Implementation
         public const string BotStatusSet = "bot_status_set";
         public static string BotStatus(string status) => $"bot_status_{status}";
         public const string BotDeleteDialog = "bot_delete_dialog";
-        public const string BotDeleteCanceled = "bot_delete_canceled";
         public const string BotUserDeleted = "bot_user_deleted";
         public const string BotUserNotInDatabase = "bot_user_not_in_database";
         public const string BotIsBanned = "bot_is_banned";
         public const string BotBotBanDialog = "bot_bot_ban_dialog";
-        public const string BotBotBanCanceled = "bot_bot_ban_canceled";
         public const string BotUserBotBanned = "bot_user_bot_banned";
         public const string BotUserBotBanRemoved = "bot_user_bot_ban_removed";
         public const string BotDatabase = "bot_database";
@@ -292,7 +288,6 @@ namespace Rias.Implementation
         public const string HelpCommandsNotSent = "help_commands_not_sent";
         public const string HelpCommandInformation = "help_command_information";
         public const string HelpBadArguments = "help_bad_arguments";
-        public const string HelpOwnerOnlyMark = "help_owner_only_mark";
         
         public const string NsfwChannelNotNsfw = "nsfw_channel_not_nsfw";
         public const string NsfwCacheNotInitialized = "nsfw_cache_not_initialized";
@@ -301,7 +296,6 @@ namespace Rias.Implementation
         public const string ProfileDefaultBiography = "profile_default_biography";
         public const string ProfileBackgroundPreview = "profile_background_preview";
         public const string ProfileBackgroundSet = "profile_background_set";
-        public const string ProfileBackgroundCanceled = "profile_background_canceled";
         public const string ProfileBackgroundDimBetween = "profile_background_dim_between";
         public const string ProfileBackgroundDimSet = "profile_background_dim_set";
         public const string ProfileBiographyLimit = "profile_biography_limit";
@@ -487,11 +481,9 @@ namespace Rias.Implementation
         public const string WaifuClaimConfirmation = "waifu_claim_confirmation";
         public const string WaifuClaimedBy = "waifu_claimed_by";
         public const string WaifuClaimNote = "waifu_claim_note";
-        public const string WaifuClaimCanceled = "waifu_claim_canceled";
         public const string WaifuWaifuClaimed = "waifu_waifu_claimed";
         public const string WaifuNotFound = "waifu_not_found";
         public const string WaifuDivorceConfirmation = "waifu_divorce_confirmation";
-        public const string WaifuDivorceCanceled = "waifu_divorce_canceled";
         public const string WaifuDivorced = "waifu_divorced";
         public const string WaifuNoWaifus = "waifu_no_waifus";
         public const string WaifuMemberNoWaifus = "waifu_member_no_waifus";
@@ -501,7 +493,6 @@ namespace Rias.Implementation
         public const string WaifuPosition = "waifu_position";
         public const string WaifuAlreadySpecial = "waifu_already_special";
         public const string WaifuSpecialConfirmation = "waifu_special_confirmation";
-        public const string WaifuSpecialCanceled = "waifu_special_canceled";
         public const string WaifuSpecial = "waifu_special";
         public const string WaifuImageSetError = "waifu_image_set_error";
         public const string WaifuImageSet = "waifu_image_set";
@@ -510,7 +501,6 @@ namespace Rias.Implementation
         public const string WaifuHasPosition = "waifu_has_position";
         public const string WaifuPositionSet = "waifu_position_set";
         public const string WaifuCreationConfirmation = "waifu_creation_confirmation";
-        public const string WaifuCreationCanceled = "waifu_creation_canceled";
         public const string WaifuCreated = "waifu_created";
         public const string WaifuWaifus = "waifu_waifus";
         
@@ -544,7 +534,6 @@ namespace Rias.Implementation
         public const string XpNoLevelUpRoleReward = "xp_no_level_up_role_reward";
         public const string XpLevelUpRoleRewardList = "xp_level_up_role_reward_list";
         public const string XpResetGuildXpConfirmation = "xp_reset_guild_xp_confirmation";
-        public const string XpResetGuildXpCanceled = "xp_reset_guild_xp_canceled";
         public const string XpGuildXpReset = "xp_guild_xp_reset";
         public const string XpGuildLevelUp = "xp_guild_level_up";
         public const string XpGuildLevelUpRoleReward = "xp_guild_level_up_role_reward";
@@ -566,6 +555,7 @@ namespace Rias.Implementation
         public const string XpNoIgnoredRoleSet = "xp_no_ignored_role_set";
 
         public const string CommonYes = "common_yes";
+        public const string CommonNo = "common_no";
         public const string CommonAnd = "common_and";
         public const string CommonOr = "common_or";
         public const string CommonReason = "common_reason";
@@ -589,6 +579,8 @@ namespace Rias.Implementation
         public const string CommonMenuPage = "common_menu_page";
         public const string CommonMore = "common_more";
         public const string CommonDate = "common_date";
+        public const string CommonActionCompleted = "common_action_completed";
+        public const string CommonActionCanceled = "common_action_canceled";
         
         public const string AttributeOwnerOnly = "attribute_owner_only";
         public const string AttributeMemberGuildPermissions = "attribute_member_guild_permissions";

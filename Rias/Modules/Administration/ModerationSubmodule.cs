@@ -213,15 +213,11 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                await ReplyConfirmationAsync(Localization.AdministrationUnbanConfirmation, bannedUser.FullName());
-                
-                var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    await ReplyErrorAsync(Localization.AdministrationUnbanCanceled);
+                var componentInteractionArgs = await SendConfirmationButtonsAsync(Localization.AdministrationUnbanConfirmation, bannedUser.FullName());
+                if (componentInteractionArgs is null)
                     return;
-                }
-                
+
+                await ConfirmButtonsActionAsync(componentInteractionArgs.Value.Result.Message);
                 await SendMessageAsync(bannedUser, Localization.AdministrationUserUnbanned, "", Localization.AdministrationUserWasUnbanned, reason, false);
                 
                 var auditLogsReason = string.IsNullOrEmpty(reason)
@@ -324,15 +320,11 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                await ReplyConfirmationAsync(Localization.AdministrationUserBanConfirmation, user.FullName());
-                
-                var messageReceived = await NextMessageAsync();
-                if (!string.Equals(messageReceived.Result?.Content, GetText(Localization.CommonYes), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    await ReplyErrorAsync(Localization.AdministrationBanCanceled);
+                var componentInteractionArgs = await SendConfirmationButtonsAsync(Localization.AdministrationUserBanConfirmation, user.FullName());
+                if (componentInteractionArgs is null)
                     return;
-                }
 
+                await ConfirmButtonsActionAsync(componentInteractionArgs.Value.Result.Message);
                 await SendMessageAsync(user, Localization.AdministrationUserBanned, "", Localization.AdministrationMemberWasBanned, reason, false);
                 
                 var auditLogsReason = string.IsNullOrEmpty(reason)

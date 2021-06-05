@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Configurations;
@@ -24,6 +26,9 @@ namespace Rias.Modules
         
         private readonly IServiceScope _scope;
         
+        private DiscordMessageBuilder? _messageBuilder;
+        private DiscordMessageBuilder MessageBuilder => _messageBuilder ??= new DiscordMessageBuilder();
+
         public RiasModule(IServiceProvider serviceProvider)
         {
             RiasBot = serviceProvider.GetRequiredService<RiasBot>();
@@ -33,7 +38,7 @@ namespace Rias.Modules
             _scope = serviceProvider.CreateScope();
             DbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
         }
-
+        
         /// <summary>
         /// Send a confirmation message with or without arguments. The form is an embed with the confirm color.<br/>
         /// </summary>
@@ -69,8 +74,66 @@ namespace Rias.Modules
             await Context.Interactivity.SendPaginatedMessageAsync(Context.Channel, Context.User, pages);
         }
 
-        public Task<InteractivityResult<DiscordMessage>> NextMessageAsync()
-            => Context.Interactivity.WaitForMessageAsync(x => x.Author.Id == Context.User.Id);
+        public Task<InteractivityResult<ComponentInteractionCreateEventArgs>?> SendConfirmationButtonsAsync(string key, params object[] args)
+            => SendConfirmationButtonsAsync(MessageBuilder.WithEmbed(new DiscordEmbedBuilder().WithColor(RiasUtilities.Yellow).WithDescription(GetText(key, args))));
+
+        public async Task<InteractivityResult<ComponentInteractionCreateEventArgs>?> SendConfirmationButtonsAsync(DiscordMessageBuilder messageBuilder)
+        {
+            _messageBuilder = messageBuilder;
+            messageBuilder.WithComponents(new DiscordButtonComponent(ButtonStyle.Success, "yes", GetText(Localization.CommonYes)),
+                new DiscordButtonComponent(ButtonStyle.Success, "no", GetText(Localization.CommonNo)));
+            
+            var message = await Context.Channel.SendMessageAsync(messageBuilder);
+            var componentInteractionArgs = await message.WaitForButtonAsync(Context.User);
+            if (componentInteractionArgs.TimedOut || string.Equals(componentInteractionArgs.Result.Id, "no"))
+            {
+                if (messageBuilder.Files.Count > 0)
+                    ((List<DiscordMessageFile>) messageBuilder.Files).Clear();
+                
+                ((List<DiscordActionRowComponent>) messageBuilder.Components).Clear();
+                await messageBuilder.WithEmbed(new DiscordEmbedBuilder(messageBuilder.Embed)
+                        .WithColor(RiasUtilities.Red)
+                        .WithFooter(GetText(Localization.CommonActionCanceled)))
+                    .ModifyAsync(message);
+                
+                return null;
+            }
+
+            return componentInteractionArgs;
+        }
+        
+        public Task ConfirmButtonsActionAsync(DiscordMessage message)
+        {
+            if (MessageBuilder.Files.Count > 0)
+                ((List<DiscordMessageFile>) MessageBuilder.Files).Clear();
+            
+            ((List<DiscordActionRowComponent>) MessageBuilder.Components).Clear();
+            return MessageBuilder.WithEmbed(new DiscordEmbedBuilder(MessageBuilder.Embed)
+                    .WithColor(RiasUtilities.ConfirmColor)
+                    .WithFooter(GetText(Localization.CommonActionCompleted)))
+                .ModifyAsync(message);
+        }
+        
+        public Task ButtonsActionModifyDescriptionAsync(DiscordMessage message, string key, params object[] args)
+        {
+            if (MessageBuilder.Files.Count > 0)
+                ((List<DiscordMessageFile>) MessageBuilder.Files).Clear();
+            
+            ((List<DiscordActionRowComponent>) MessageBuilder.Components).Clear();
+            return MessageBuilder.WithEmbed(new DiscordEmbedBuilder(MessageBuilder.Embed)
+                    .WithColor(RiasUtilities.ConfirmColor)
+                    .WithDescription(GetText(key, args)))
+                .ModifyAsync(message);
+        }
+
+        public Task ButtonsActionModifyEmbedAsync(DiscordMessage message, DiscordEmbed embed)
+        {
+            if (MessageBuilder.Files.Count > 0)
+                
+                ((List<DiscordMessageFile>) MessageBuilder.Files).Clear();
+            ((List<DiscordActionRowComponent>) MessageBuilder.Components).Clear();
+            return MessageBuilder.WithEmbed(embed).ModifyAsync(message);
+        }
 
         /// <summary>
         /// Get a translation text with or without arguments.<br/>
