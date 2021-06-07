@@ -81,7 +81,7 @@ namespace Rias.Modules
         {
             _messageBuilder = messageBuilder;
             messageBuilder.WithComponents(new DiscordButtonComponent(ButtonStyle.Success, "yes", GetText(Localization.CommonYes)),
-                new DiscordButtonComponent(ButtonStyle.Success, "no", GetText(Localization.CommonNo)));
+                new DiscordButtonComponent(ButtonStyle.Danger, "no", GetText(Localization.CommonNo)));
             
             var message = await Context.Channel.SendMessageAsync(messageBuilder);
             var componentInteractionArgs = await message.WaitForButtonAsync(Context.User);
