@@ -3,9 +3,9 @@
   "units": [
     {
       "name": {
-        "singular": "Euro",
-        "plural": "Euro",
-        "abbreviations": [ "EUR", "€" ]
+        "singular": "United States dollar",
+        "plural": "United States dollars",
+        "abbreviations": [ "USD", "$" ]
       },
       "func_to_base": "x",
       "func_from_base": "x"
@@ -159,13 +159,6 @@
     },
     {
       "name": {
-        "singular": "Bitcoin",
-        "plural": "Bitcoins",
-        "abbreviations": [ "BTC" ]
-      }
-    },
-    {
-      "name": {
         "singular": "Bhutanese ngultrum",
         "plural": "Bhutanese ngultrum",
         "abbreviations": [ "BTN" ]
@@ -211,13 +204,6 @@
         "singular": "Swiss franc",
         "plural": "Swiss francs",
         "abbreviations": [ "CHF" ]
-      }
-    },
-    {
-      "name": {
-        "singular": "Unidad de Fomento",
-        "plural": "Unidades de Fomento",
-        "abbreviations": [ "CLF" ]
       }
     },
     {
@@ -327,6 +313,13 @@
     },
     {
       "name": {
+        "singular": "Euro",
+        "plural": "Euro",
+        "abbreviations": [ "EUR", "€" ]
+      }
+    },
+    {
+      "name": {
         "singular": "Fijian dollar",
         "plural": "Fijian dollars",
         "abbreviations": [ "FJD" ]
@@ -337,6 +330,13 @@
         "singular": "Falkland Islands pound",
         "plural": "Falkland Islands pounds",
         "abbreviations": [ "FKP" ]
+      }
+    },
+    {
+      "name": {
+        "singular": "Faroese króna",
+        "plural": "Faroese krónur",
+        "abbreviations": [ "FOK" ]
       }
     },
     {
@@ -488,13 +488,6 @@
     },
     {
       "name": {
-        "singular": "Jersey pound",
-        "plural": "Jersey pounds",
-        "abbreviations": [ "JEP" ]
-      }
-    },
-    {
-      "name": {
         "singular": "Jamaican dollar",
         "plural": "Jamaican dollars",
         "abbreviations": [ "JMD" ]
@@ -537,16 +530,16 @@
     },
     {
       "name": {
-        "singular": "Comorian franc",
-        "plural": "Comorian francs",
-        "abbreviations": [ "KMF" ]
+        "singular": "Kiribati dollar",
+        "plural": "Kiribati dollars",
+        "abbreviations": [ "KID" ]
       }
     },
     {
       "name": {
-        "singular": "North Korean won",
-        "plural": "North Korean won",
-        "abbreviations": [ "KPW" ]
+        "singular": "Comorian franc",
+        "plural": "Comorian francs",
+        "abbreviations": [ "KMF" ]
       }
     },
     {
@@ -614,20 +607,6 @@
     },
     {
       "name": {
-        "singular": "Lithuanian litas",
-        "plural": "Lithuanian litai",
-        "abbreviations": [ "LTL" ]
-      }
-    },
-    {
-      "name": {
-        "singular": "Latvian lats",
-        "plural": "Latvian lati",
-        "abbreviations": [ "LVL" ]
-      }
-    },
-    {
-      "name": {
         "singular": "Libyan dinar",
         "plural": "Libyan dinars",
         "abbreviations": [ "LYD" ]
@@ -686,7 +665,7 @@
       "name": {
         "singular": "Mauritanian ouguiya",
         "plural": "Mauritanian ouguiya",
-        "abbreviations": [ "MRO" ]
+        "abbreviations": [ "MRU" ]
       }
     },
     {
@@ -936,16 +915,16 @@
     },
     {
       "name": {
-        "singular": "São Tomé and Príncipe dobra",
-        "plural": "São Tomé and Príncipe dobras",
-        "abbreviations": [ "STD" ]
+        "singular": "South Sudanese pound",
+        "plural": "South Sudanese pounds",
+        "abbreviations": [ "SSP" ]
       }
     },
     {
       "name": {
-        "singular": "Salvadoran colón",
-        "plural": "Salvadoran colónes",
-        "abbreviations": [ "SVC" ]
+        "singular": "São Tomé and Príncipe dobra",
+        "plural": "São Tomé and Príncipe dobras",
+        "abbreviations": [ "STN" ]
       }
     },
     {
@@ -1013,6 +992,13 @@
     },
     {
       "name": {
+        "singular": "Tuvaluan dollar",
+        "plural": "Tuvaluan dollars",
+        "abbreviations": [ "TVD" ]
+      }
+    },
+    {
+      "name": {
         "singular": "New Taiwan dollar",
         "plural": "New Taiwan dollars",
         "abbreviations": [ "TWD" ]
@@ -1062,9 +1048,9 @@
     },
     {
       "name": {
-        "singular": "Venezuelan bolívar",
-        "plural": "Venezuelan bolívares",
-        "abbreviations": [ "VEF" ]
+        "singular": "Venezuelan bolívar soberano",
+        "plural": "Venezuelan bolívares soberanos",
+        "abbreviations": [ "VES" ]
       }
     },
     {
@@ -1093,20 +1079,6 @@
         "singular": "Central African CFA franc",
         "plural": "Central African CFA francs",
         "abbreviations": [ "XAF" ]
-      }
-    },
-    {
-      "name": {
-        "singular": "Silver",
-        "plural": "Silver",
-        "abbreviations": [ "XAG" ]
-      }
-    },
-    {
-      "name": {
-        "singular": "Gold",
-        "plural": "Gold",
-        "abbreviations": [ "XAU" ]
       }
     },
     {
@@ -1156,13 +1128,6 @@
         "singular": "Zambian kwacha",
         "plural": "Zambian kwacha",
         "abbreviations": [ "ZMW" ]
-      }
-    },
-    {
-      "name": {
-        "singular": "Zimbabwean dollar",
-        "plural": "Zimbabwean dollars",
-        "abbreviations": [ "ZWL" ]
       }
     }
   ]

@@ -253,7 +253,7 @@ namespace Rias.Services
             }
             
             sw.Stop();
-            Log.Debug("Xp ignored channels loaded: {ElapsedMilliseconds}", sw.ElapsedMilliseconds);
+            Log.Debug("Xp ignored channels loaded: {ElapsedMilliseconds} ms", sw.ElapsedMilliseconds);
         }
         
         private async Task<bool> CheckExcludedMemberAsync(DiscordMember member)

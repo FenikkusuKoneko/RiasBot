@@ -22,7 +22,7 @@ namespace Rias.Services
     [AutoStart]
     public class UnitsService : RiasService
     {
-        private const string ExchangeRatesApi = "https://data.fixer.io/api/latest?access_key=";
+        private const string ExchangeRatesApi = "https://v6.exchangerate-api.com/v6/{0}/latest/USD";
         private static readonly string UnitsPath = Path.Combine(Environment.CurrentDirectory, "assets/units");
 
         private readonly HttpClient _httpClient;
@@ -47,7 +47,7 @@ namespace Rias.Services
             sw.Stop();
             Log.Debug("Units loaded: {ElapsedMilliseconds} ms", sw.ElapsedMilliseconds);
 
-            if (!string.IsNullOrEmpty(Configuration.FixerAccessKey))
+            if (!string.IsNullOrEmpty(Configuration.ExchangeRateAccessKey))
                 RunTaskAsync(UpdateCurrencyUnitsAsync);
         }
 
@@ -58,7 +58,7 @@ namespace Rias.Services
             _updateCurrencyUnitsCts = new CancellationTokenSource();
             LoadUnits();
             
-            if (!string.IsNullOrEmpty(Configuration.FixerAccessKey))
+            if (!string.IsNullOrEmpty(Configuration.ExchangeRateAccessKey))
                 RunTaskAsync(UpdateCurrencyUnitsAsync);
         }
 
@@ -293,17 +293,17 @@ namespace Rias.Services
             var exchangeRatesDataRedis = _redisDb.StringGetWithExpiry("converter:currency");
             var exchangeRatesData = !exchangeRatesDataRedis.Value.IsNullOrEmpty
                 ? exchangeRatesDataRedis.Value.ToString()
-                : await _httpClient.GetStringAsync($"{ExchangeRatesApi}{Configuration.FixerAccessKey}");
+                : await _httpClient.GetStringAsync(string.Format(ExchangeRatesApi, Configuration.ExchangeRateAccessKey));
             
             if (exchangeRatesDataRedis.Expiry is null)
-                await _redisDb.StringSetAsync("converter:currency", exchangeRatesData, TimeSpan.FromHours(3));
+                await _redisDb.StringSetAsync("converter:currency", exchangeRatesData, TimeSpan.FromHours(1));
             
-            var exchangeRates = JsonConvert.DeserializeObject<JObject>(exchangeRatesData)!["rates"]?
+            var exchangeRates = JsonConvert.DeserializeObject<JObject>(exchangeRatesData)!["conversion_rates"]?
                 .ToObject<Dictionary<string, double>>();
 
             if (exchangeRates is null)
             {
-                Log.Error("The \"rates\" field is not present in the exchange rates data!");
+                Log.Error("The \"conversion_rates\" field is not present in the exchange rates data!");
                 return;
             }
 
@@ -312,7 +312,7 @@ namespace Rias.Services
             {
                 var unitAbbreviation = unit.Name.Abbreviations.ElementAt(0);
 
-                if (string.Equals(unitAbbreviation, "eur", StringComparison.OrdinalIgnoreCase)
+                if (string.Equals(unitAbbreviation, "usd", StringComparison.OrdinalIgnoreCase)
                     || string.Equals(unitAbbreviation, "hrt", StringComparison.OrdinalIgnoreCase))
                     continue;
 
@@ -328,15 +328,14 @@ namespace Rias.Services
             
 #if DEBUG || RIAS_GLOBAL
             var heartsUnit = currencyUnits.Units.First(x => string.Equals(x.Name.Abbreviations.First(), "HRT"));
-            var usdUnit = currencyUnits.Units.First(x => string.Equals(x.Name.Abbreviations.First(), "USD"));
-            
-            heartsUnit.FuncToBase = $"500 / {usdUnit.FuncToBase}";
-            heartsUnit.FuncFromBase = $"500 * {usdUnit.FuncFromBase}";
+
+            heartsUnit.FuncToBase = "x / 500";
+            heartsUnit.FuncFromBase = "x * 500";
 #endif
 
             Log.Information("Currency units updated");
 
-            var delay = exchangeRatesDataRedis.Expiry ?? TimeSpan.FromHours(3);
+            var delay = exchangeRatesDataRedis.Expiry ?? TimeSpan.FromHours(1);
             await Task.Delay(delay, _updateCurrencyUnitsCts.Token);
             if (_updateCurrencyUnitsCts.IsCancellationRequested)
                 return;

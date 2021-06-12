@@ -17,7 +17,7 @@
   "discordBotList": "https://top.gg/bot/381387277764395008",
 
   "urbanDictionaryApiKey": "your_urban_dictionary_api_key",
-  "fixerAccessKey": "your_fixer_api_key",
+  "exchangeRateAccessKey": "your_exchange_rate_api_key",
   "weebServicesToken": "your_weeb_services_token",
 
   "databaseConfiguration": {
