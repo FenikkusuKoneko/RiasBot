@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Rias.Database;
@@ -10,9 +11,10 @@ using Rias.Models;
 namespace Rias.Migrations
 {
     [DbContext(typeof(RiasDbContext))]
-    partial class RiasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210705130102_PatreonWillPayAmountCents")]
+    partial class PatreonWillPayAmountCents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

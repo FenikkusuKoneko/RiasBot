@@ -13,6 +13,8 @@ namespace Rias.Database.Entities
         
         public int AmountCents { get; set; }
         
+        public int WillPayAmountCents { get; set; }
+        
         public DateTimeOffset? LastChargeDate { get; set; }
         
         public LastChargeStatus? LastChargeStatus { get; set; }

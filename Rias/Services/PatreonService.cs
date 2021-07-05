@@ -106,7 +106,7 @@ namespace Rias.Services
                     return;
                 }
 
-                var reward = patreonDb.AmountCents * 5;
+                var reward = pledgeData.Value<int>("reward") * 5;
                 var userDb = await db.GetOrAddAsync(x => x.UserId == userId, () => new UserEntity { UserId = userId });
                 userDb.Currency += reward;
 
