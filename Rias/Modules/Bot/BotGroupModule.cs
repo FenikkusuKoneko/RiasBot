@@ -178,10 +178,10 @@ namespace Rias.Modules.Bot
                         await ReplyErrorAsync(Localization.AdministrationNullCustomMessage);
                         return;
                     case true:
-                        await discordMessage.ModifyAsync(customMessage.Content, customMessage.Embed?.Build());
+                        await discordMessage.ModifyAsync(customMessage.Content, customMessage.Embed?.Build() ?? (Optional<DiscordEmbed>) default);
                         break;
                     default:
-                        await discordMessage.ModifyAsync(message, null);
+                        await discordMessage.ModifyAsync(message);
                         break;
                 }
 

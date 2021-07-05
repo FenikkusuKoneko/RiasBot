@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
@@ -80,7 +81,7 @@ namespace Rias.Modules
         public async Task<InteractivityResult<ComponentInteractionCreateEventArgs>?> SendConfirmationButtonsAsync(DiscordMessageBuilder messageBuilder)
         {
             _messageBuilder = messageBuilder;
-            messageBuilder.WithComponents(new DiscordButtonComponent(ButtonStyle.Success, "yes", GetText(Localization.CommonYes)),
+            messageBuilder.AddComponents(new DiscordButtonComponent(ButtonStyle.Success, "yes", GetText(Localization.CommonYes)),
                 new DiscordButtonComponent(ButtonStyle.Danger, "no", GetText(Localization.CommonNo)));
             
             var message = await Context.Channel.SendMessageAsync(messageBuilder);
