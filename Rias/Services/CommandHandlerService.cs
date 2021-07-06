@@ -370,7 +370,6 @@ namespace Rias.Services
                 {
                     case MemberPermissionAttribute memberPermissionAttribute:
                         var memberPermissions = memberPermissionAttribute.Permissions
-                            .GetValueOrDefault()
                             .ToString()
                             .Split(",", StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
@@ -379,7 +378,6 @@ namespace Rias.Services
                         break;
                     case BotPermissionAttribute botPermissionAttribute:
                         var botPermissions = botPermissionAttribute.Permissions
-                            .GetValueOrDefault()
                             .ToString()
                             .Split(",", StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))

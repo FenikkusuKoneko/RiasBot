@@ -13,20 +13,15 @@ namespace Rias.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class BotPermissionAttribute : RiasCheckAttribute
     {
-        private readonly Permissions? _permissions;
-        
         public BotPermissionAttribute(Permissions permissions)
         {
-            _permissions = permissions;
+            Permissions = permissions;
         }
         
-        public Permissions? Permissions => _permissions;
+        public Permissions Permissions { get; }
 
         public override ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {
-            if (!_permissions.HasValue)
-                return CheckResult.Successful;
-
             var localization = context.Services.GetRequiredService<Localization>();
 
             var currentMember = context.CurrentMember;
@@ -34,10 +29,10 @@ namespace Rias.Attributes
                 return CheckResult.Failed(localization.GetText(null, Localization.AttributeBotPermissionNotGuild));
 
             var guildPermissions = currentMember.GetPermissions();
-            var hasGuildPermissions = guildPermissions.HasPermission(_permissions.Value);
+            var hasGuildPermissions = guildPermissions.HasPermission(Permissions);
             
             var channelPermissions = currentMember.PermissionsIn(context.Channel);
-            var hasChannelPerm = channelPermissions.HasPermission(_permissions.Value);
+            var hasChannelPerm = channelPermissions.HasPermission(Permissions);
 
             if (!hasGuildPermissions && !hasChannelPerm)
             {
@@ -56,9 +51,8 @@ namespace Rias.Attributes
 
         private string HumanizePermissions(DiscordGuild guild, Permissions permissions, Localization localization)
         {
-            var requiredPerms = _permissions ^ (_permissions & permissions);
+            var requiredPerms = Permissions ^ (Permissions & permissions);
             var requiredPermsList = requiredPerms
-                .GetValueOrDefault()
                 .ToString()
                 .Split(",", StringSplitOptions.RemoveEmptyEntries);
 

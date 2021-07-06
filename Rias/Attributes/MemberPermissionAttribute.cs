@@ -13,30 +13,26 @@ namespace Rias.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class MemberPermissionAttribute : RiasCheckAttribute
     {
-        private readonly Permissions? _permissions;
-
         public MemberPermissionAttribute(Permissions permissions)
         {
-            _permissions = permissions;
+            Permissions = permissions;
         }
 
-        public Permissions? Permissions => _permissions;
+        public Permissions Permissions { get; }
 
         public override ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {
-            if (!_permissions.HasValue)
-                return CheckResult.Successful;
-
             var localization = context.Services.GetRequiredService<Localization>();
             
-            if (context.User is not DiscordMember member)
+            if (context.Guild is null)
                 return CheckResult.Failed(localization.GetText(null, Localization.AttributeMemberPermissionNotGuild));
 
+            var member = (DiscordMember) context.User;
             var guildPermissions = member!.GetPermissions();
-            var hasGuildPermissions = guildPermissions.HasPermission(_permissions.Value);
+            var hasGuildPermissions = guildPermissions.HasPermission(Permissions);
             
             var channelPermissions = member.PermissionsIn(context.Channel);
-            var hasChannelPerm = channelPermissions.HasPermission(_permissions.Value);
+            var hasChannelPerm = channelPermissions.HasPermission(Permissions);
 
             if (!hasGuildPermissions && !hasChannelPerm)
             {
@@ -55,10 +51,9 @@ namespace Rias.Attributes
 
         private string HumanizePermissions(DiscordGuild guild, Permissions permissions, Localization localization)
         {
-            var requiredPerms = _permissions ^ (_permissions & permissions);
+            var requiredPerms = Permissions ^ (Permissions & permissions);
 
             var requiredPermsList = requiredPerms
-                .GetValueOrDefault()
                 .ToString()
                 .Split(",", StringSplitOptions.RemoveEmptyEntries);
             
