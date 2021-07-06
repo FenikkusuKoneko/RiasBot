@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
+using Rias.Commons;
 using Rias.Extensions;
 using Rias.Implementation;
 
@@ -26,7 +28,11 @@ namespace Rias.Attributes
 
             var currentMember = context.CurrentMember;
             if (currentMember is null)
-                return CheckResult.Failed(localization.GetText(null, Localization.AttributeBotPermissionNotGuild));
+            {
+                return context.Command.Checks.Any(x => x is ContextAttribute contextAttribute && contextAttribute.Contexts.HasFlag(ContextType.Guild))
+                    ? CheckResult.Successful
+                    : CheckResult.Failed(localization.GetText(null, Localization.AttributeBotPermissionNotGuild));
+            }
 
             var guildPermissions = currentMember.GetPermissions();
             var hasGuildPermissions = guildPermissions.HasPermission(Permissions);

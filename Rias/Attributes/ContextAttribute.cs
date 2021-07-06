@@ -13,12 +13,12 @@ namespace Rias.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class ContextAttribute : RiasCheckAttribute
     {
-        private readonly ContextType _contexts;
-
         public ContextAttribute(ContextType contexts)
         {
-            _contexts = contexts;
+            Contexts = contexts;
         }
+
+        public ContextType Contexts { get; }
 
         public override ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {
@@ -26,7 +26,7 @@ namespace Rias.Attributes
 
             var isValid = false;
 
-            if ((_contexts & ContextType.Guild) != 0)
+            if (Contexts.HasFlag(ContextType.Guild))
             {
                 isValid = context.Channel.Type == ChannelType.Category
                     || context.Channel.Type == ChannelType.Text
@@ -34,14 +34,14 @@ namespace Rias.Attributes
                     || context.Channel.Type == ChannelType.News;
             }
 
-            if ((_contexts & ContextType.DM) != 0)
+            if (Contexts.HasFlag(ContextType.DM))
                 isValid = isValid || context.Channel.Type == ChannelType.Private;
 
             if (isValid)
                 return CheckResult.Successful;
 
             var guildId = context.Guild?.Id;
-            var contexts = _contexts.ToString()
+            var contexts = Contexts.ToString()
                 .Split(",", StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => localization.GetText(guildId, Localization.CommonContextType(x.ToLower())));
 

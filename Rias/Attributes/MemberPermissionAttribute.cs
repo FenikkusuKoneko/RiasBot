@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
+using Rias.Commons;
 using Rias.Extensions;
 using Rias.Implementation;
 
@@ -23,9 +25,13 @@ namespace Rias.Attributes
         public override ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {
             var localization = context.Services.GetRequiredService<Localization>();
-            
+
             if (context.Guild is null)
-                return CheckResult.Failed(localization.GetText(null, Localization.AttributeMemberPermissionNotGuild));
+            {
+                return context.Command.Checks.Any(x => x is ContextAttribute contextAttribute && contextAttribute.Contexts.HasFlag(ContextType.Guild))
+                    ? CheckResult.Successful
+                    : CheckResult.Failed(localization.GetText(null, Localization.AttributeMemberPermissionNotGuild));
+            }
 
             var member = (DiscordMember) context.User;
             var guildPermissions = member!.GetPermissions();
