@@ -27,7 +27,7 @@ namespace Rias.Modules.Administration
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task CreateCategoryAsync([Remainder] string name)
             {
-                if (name.Length < 1 || name.Length > 100)
+                if (name.Length is < 1 or > 100)
                 {
                     await ReplyErrorAsync(Localization.AdministrationChannelNameLengthLimit, 1, 100);
                     return;
@@ -82,7 +82,7 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                if (newName.Length < 1 || newName.Length > 100)
+                if (newName.Length is < 1 or > 100)
                 {
                     await ReplyErrorAsync(Localization.AdministrationChannelNameLengthLimit, 1, 100);
                     return;

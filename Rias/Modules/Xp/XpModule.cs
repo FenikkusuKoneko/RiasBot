@@ -438,7 +438,7 @@ namespace Rias.Modules.Xp
 
             if (channel.IsCategory)
             {
-                var textChannels = channel.Children.Where(c => c.Type == ChannelType.Text || c.Type == ChannelType.News || c.Type == ChannelType.Store).ToList();
+                var textChannels = channel.Children.Where(c => c.Type is ChannelType.Text or ChannelType.News or ChannelType.Store).ToList();
                 if (textChannels.Count == 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationNoTextChannelInCategory, channel.Name);

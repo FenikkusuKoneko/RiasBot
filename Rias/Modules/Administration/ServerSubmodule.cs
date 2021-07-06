@@ -99,7 +99,7 @@ namespace Rias.Modules.Administration
             [Cooldown(1, 60, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task SetServerNameAsync([Remainder] string name)
             {
-                if (name.Length < 2 || name.Length > 100)
+                if (name.Length is < 2 or > 100)
                 {
                     await ReplyErrorAsync(Localization.AdministrationServerNameLengthLimit);
                     return;

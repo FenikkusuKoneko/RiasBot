@@ -28,10 +28,7 @@ namespace Rias.Attributes
 
             if (Contexts.HasFlag(ContextType.Guild))
             {
-                isValid = context.Channel.Type == ChannelType.Category
-                    || context.Channel.Type == ChannelType.Text
-                    || context.Channel.Type == ChannelType.Voice
-                    || context.Channel.Type == ChannelType.News;
+                isValid = context.Channel.Type is ChannelType.Category or ChannelType.Text or ChannelType.Voice or ChannelType.News;
             }
 
             if (Contexts.HasFlag(ContextType.DM))

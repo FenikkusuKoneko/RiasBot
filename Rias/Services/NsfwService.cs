@@ -66,7 +66,7 @@ namespace Rias.Services
                 .Where(y => !_blacklistTags.Contains(y))
                 .ToList();
 
-            if (tagsList.Count == 0 || tagsList.Count > 3)
+            if (tagsList.Count is 0 or > 3)
                 return null;
 
             foreach (var tag in tagsList.Where(tag => !_downloadedTags.Contains($"{provider.ToString()}_{tag}")))

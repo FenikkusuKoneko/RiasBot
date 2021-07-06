@@ -138,7 +138,7 @@ namespace Rias.Modules.Profile
         [Context(ContextType.Guild)]
         public async Task DimAsync(int dim)
         {
-            if (dim < 0 || dim > 100)
+            if (dim is < 0 or > 100)
             {
                 await ReplyErrorAsync(Localization.ProfileBackgroundDimBetween, 0, 100);
                 return;
