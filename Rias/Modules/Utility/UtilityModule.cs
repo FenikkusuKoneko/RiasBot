@@ -346,8 +346,8 @@ namespace Rias.Modules.Utility
             
             var result = _unitsService.Convert(unitOne!, unitTwo!, value);
 
-            unitOneName = value == 1 ? unitOne!.Name.Singular! : unitOne!.Name.Plural!;
-            unitTwoName = result == 1 ? unitTwo!.Name.Singular! : unitTwo!.Name.Plural!;
+            unitOneName = Math.Abs(value - 1) < 1E-9 ? unitOne!.Name.Singular! : unitOne!.Name.Plural!;
+            unitTwoName = Math.Abs(result - 1) < 1E-9 ? unitTwo!.Name.Singular! : unitTwo!.Name.Plural!;
             
             var embed = new DiscordEmbedBuilder
             {
@@ -395,8 +395,8 @@ namespace Rias.Modules.Utility
             
             var result = _unitsService.Convert(unitOne!, unitTwo!, value);
         
-            unitOneName = value == 1 ? unitOne!.Name.Singular! : unitOne!.Name.Plural!;
-            unitTwoName = result == 1 ? unitTwo!.Name.Singular! : unitTwo!.Name.Plural!;
+            unitOneName = Math.Abs(value - 1) < 1E-9 ? unitOne!.Name.Singular! : unitOne!.Name.Plural!;
+            unitTwoName = Math.Abs(result - 1) < 1E-9 ? unitTwo!.Name.Singular! : unitTwo!.Name.Plural!;
         
             var embed = new DiscordEmbedBuilder
             {

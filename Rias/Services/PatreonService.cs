@@ -163,6 +163,7 @@ namespace Rias.Services
             }
             catch
             {
+                // ignored
             }
         }
     }

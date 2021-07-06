@@ -51,6 +51,7 @@ namespace Rias.Services
             }
             catch
             {
+                // ignored
             }
         }
 
@@ -73,8 +74,9 @@ namespace Rias.Services
                         }
                         catch
                         {
+                            // ignored
                         }
-                        
+
                         Closed?.Invoke();
                         return;
                     }

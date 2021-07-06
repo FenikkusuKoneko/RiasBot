@@ -140,6 +140,7 @@ namespace Rias.Modules.Xp
                 }
                 catch
                 {
+                    // ignored
                 }
             }
             

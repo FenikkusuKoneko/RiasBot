@@ -474,6 +474,7 @@ namespace Rias.Services
             }
             catch
             {
+                // ignored
             }
 
             if (!(waifu is WaifuEntity waifuDb))
@@ -503,6 +504,7 @@ namespace Rias.Services
                 }
                 catch
                 {
+                    // ignored
                 }
             }
             
