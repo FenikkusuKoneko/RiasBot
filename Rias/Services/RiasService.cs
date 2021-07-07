@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,12 +16,18 @@ namespace Rias.Services
         public readonly Configuration Configuration;
         public readonly Localization Localization;
 
+        private readonly IServiceProvider _serviceProvider;
+
         public RiasService(IServiceProvider serviceProvider)
         {
             RiasBot = serviceProvider.GetRequiredService<RiasBot>();
             Configuration = serviceProvider.GetRequiredService<Configuration>();
             Localization = serviceProvider.GetRequiredService<Localization>();
+
+            _serviceProvider = serviceProvider;
         }
+
+        public HttpClient HttpClient => _serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
 
         /// <summary>
         /// Send a confirmation message with arguments. The form is an embed with the confirm color.

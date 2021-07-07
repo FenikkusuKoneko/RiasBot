@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using ConcurrentCollections;
@@ -27,7 +26,6 @@ namespace Rias.Services
         public const int XpThreshold = 30;
         
         private readonly BotService _botService;
-        private readonly HttpClient _httpClient;
         
         private readonly ConcurrentDictionary<ulong, DateTime> _usersXp = new();
         private readonly ConcurrentDictionary<(ulong, ulong), DateTime> _guildUsersXp = new();
@@ -43,7 +41,6 @@ namespace Rias.Services
             : base(serviceProvider)
         {
             _botService = serviceProvider.GetRequiredService<BotService>();
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
 
             RunTaskAsync(LoadXpIgnoredChannels);
         }
@@ -427,7 +424,7 @@ namespace Rias.Services
 
         private async Task AddAvatarAndUsernameAsync(MagickImage image, DiscordUser user)
         {
-            await using var avatarStream = await _httpClient.GetStreamAsync(user.GetAvatarUrl(ImageFormat.Auto));
+            await using var avatarStream = await HttpClient.GetStreamAsync(user.GetAvatarUrl(ImageFormat.Auto));
             using var avatarImage = new MagickImage(avatarStream);
             avatarImage.Resize(new MagickGeometry
             {

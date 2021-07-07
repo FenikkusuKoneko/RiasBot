@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -23,12 +22,10 @@ namespace Rias.Modules.Xp
     public class XpModule : RiasModule<XpService>
     {
         private readonly BotService _botService;
-        private readonly HttpClient _httpClient;
         
         public XpModule(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             _botService = serviceProvider.GetRequiredService<BotService>();
         }
 
@@ -189,7 +186,7 @@ namespace Rias.Modules.Xp
             else
             {
                 var currentMember = Context.CurrentMember!;
-                await using var stream = await _httpClient.GetStreamAsync(currentMember.GetAvatarUrl(ImageFormat.Auto));
+                await using var stream = await HttpClient.GetStreamAsync(currentMember.GetAvatarUrl(ImageFormat.Auto));
                 await using var webhookAvatar = new MemoryStream();
                 await stream.CopyToAsync(webhookAvatar);
                 webhookAvatar.Position = 0;

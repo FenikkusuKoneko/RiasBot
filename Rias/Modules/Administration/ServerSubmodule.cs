@@ -1,10 +1,8 @@
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
 using Rias.Commons;
@@ -18,12 +16,9 @@ namespace Rias.Modules.Administration
         [Name("Server")]
         public class ServerSubmodule : RiasModule
         {
-            private readonly HttpClient _httpClient;
-            
             public ServerSubmodule(IServiceProvider serviceProvider)
                 : base(serviceProvider)
             {
-                _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             }
 
             [Command("setnickname", "setnick")]
@@ -124,7 +119,7 @@ namespace Rias.Modules.Administration
 
                 try
                 {
-                    await using var stream = await _httpClient.GetStreamAsync(url);
+                    await using var stream = await HttpClient.GetStreamAsync(url);
                     await using var iconStream = new MemoryStream();
                     await stream.CopyToAsync(iconStream);
                     iconStream.Position = 0;

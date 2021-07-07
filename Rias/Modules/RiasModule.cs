@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -26,6 +27,7 @@ namespace Rias.Modules
         public readonly RiasDbContext DbContext;
         
         private readonly IServiceScope _scope;
+        private readonly Lazy<HttpClient> _httpClient;
         
         private DiscordMessageBuilder? _messageBuilder;
         private DiscordMessageBuilder MessageBuilder => _messageBuilder ??= new DiscordMessageBuilder();
@@ -35,10 +37,14 @@ namespace Rias.Modules
             RiasBot = serviceProvider.GetRequiredService<RiasBot>();
             Configuration = serviceProvider.GetRequiredService<Configuration>();
             Localization = serviceProvider.GetRequiredService<Localization>();
+            
+            _httpClient = new Lazy<HttpClient>(() => serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient());
 
             _scope = serviceProvider.CreateScope();
             DbContext = _scope.ServiceProvider.GetRequiredService<RiasDbContext>();
         }
+
+        public HttpClient HttpClient => _httpClient.Value;
         
         /// <summary>
         /// Send a confirmation message with or without arguments. The form is an embed with the confirm color.<br/>

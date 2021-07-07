@@ -2,11 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
 using Rias.Commons;
@@ -21,12 +19,10 @@ namespace Rias.Modules.Administration
         public class EmojisSubmodule : RiasModule
         {
             private const string EmojiCdn = "https://cdn.discordapp.com/emojis/{0}?v=1"; 
-            private readonly HttpClient _httpClient;
             
             public EmojisSubmodule(IServiceProvider serviceProvider)
                 : base(serviceProvider)
             {
-                _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             }
             
             [Command("addemoji", "addemote")]
@@ -36,19 +32,20 @@ namespace Rias.Modules.Administration
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task AddEmojiAsync(string emoji, [Remainder] string name)
             {
+                var httpClient = HttpClient;
                 await using var emojiStream = new MemoryStream();
                 bool? isAnimated = null;
                 
                 if (RiasUtilities.TryParseEmoji(emoji, out var emojiId))
                 {
                     var emojiUrl = string.Format(EmojiCdn, $"{emojiId}.gif");
-                    var result = await _httpClient.GetAsync(emojiUrl);
+                    var result = await httpClient.GetAsync(emojiUrl);
                     isAnimated = true;
                     
                     if (result.StatusCode == HttpStatusCode.UnsupportedMediaType)
                     {
                         emojiUrl = string.Format(EmojiCdn, $"{emojiId}.png");
-                        result = await _httpClient.GetAsync(emojiUrl);
+                        result = await httpClient.GetAsync(emojiUrl);
                         isAnimated = false;
 
                         if (!result.IsSuccessStatusCode)
@@ -74,7 +71,7 @@ namespace Rias.Modules.Administration
                         return;
                     }
 
-                    using var result = await _httpClient.GetAsync(emojiUri);
+                    using var result = await httpClient.GetAsync(emojiUri);
                     if (!result.IsSuccessStatusCode)
                     {
                         await ReplyErrorAsync(Localization.UtilityImageOrUrlNotGood);
@@ -200,14 +197,15 @@ namespace Rias.Modules.Administration
                     await ReplyErrorAsync(Localization.AdministrationEmojiNotValid);
                     return;
                 }
-                
+
+                var httpClient = HttpClient;
                 var emojiUrl = string.Format(EmojiCdn, $"{emojiId}.gif");
-                var result = await _httpClient.GetAsync(emojiUrl);
+                var result = await httpClient.GetAsync(emojiUrl);
                     
                 if (result.StatusCode == HttpStatusCode.UnsupportedMediaType)
                 {
                     emojiUrl = string.Format(EmojiCdn, $"{emojiId}.png");
-                    result = await _httpClient.GetAsync(emojiUrl);
+                    result = await httpClient.GetAsync(emojiUrl);
 
                     if (!result.IsSuccessStatusCode)
                     {

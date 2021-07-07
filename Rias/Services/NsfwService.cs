@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rias.Attributes;
 using Serilog;
@@ -23,14 +21,12 @@ namespace Rias.Services
         
         private readonly MemoryCache _cache = new(new MemoryCacheOptions());
         private readonly HashSet<string> _downloadedTags = new();
-        private readonly HttpClient _httpClient;
 
         private readonly ImmutableHashSet<string> _blacklistTags = ImmutableHashSet.Create("loli", "shota", "cub");
         
         public NsfwService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             RunTaskAsync(InitializeAsync);
         }
         
@@ -153,7 +149,7 @@ namespace Rias.Services
         {
             try
             {
-                using var response = await _httpClient.GetAsync(url);
+                using var response = await HttpClient.GetAsync(url);
                 if (!response.IsSuccessStatusCode) return null;
 
                 var result = await response.Content.ReadAsStringAsync();
@@ -172,7 +168,7 @@ namespace Rias.Services
         {
             try
             {
-                using var response = await _httpClient.GetAsync(url);
+                using var response = await HttpClient.GetAsync(url);
                 if (!response.IsSuccessStatusCode) return null;
 
                 await using var stream = await response.Content.ReadAsStreamAsync();

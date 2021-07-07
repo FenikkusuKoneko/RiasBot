@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -27,13 +26,11 @@ namespace Rias.Modules.Waifu
             private const int WaifuPositionLimit = 1000;
             
             private readonly AnimeService _animeService;
-            private readonly HttpClient _httpClient;
         
             public WaifuGroupModule(IServiceProvider serviceProvider)
                 : base(serviceProvider)
             {
                 _animeService = serviceProvider.GetRequiredService<AnimeService>();
-                _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             }
             
             [Command("claim")]
@@ -250,7 +247,7 @@ namespace Rias.Modules.Waifu
                     return;
                 }
 
-                using var result = await _httpClient.GetAsync(imageUri);
+                using var result = await HttpClient.GetAsync(imageUri);
                 if (!result.IsSuccessStatusCode)
                 {
                     await ReplyErrorAsync(Localization.UtilityImageOrUrlNotGood);
@@ -359,7 +356,7 @@ namespace Rias.Modules.Waifu
                     return;
                 }
 
-                using var result = await _httpClient.GetAsync(imageUri);
+                using var result = await HttpClient.GetAsync(imageUri);
                 if (!result.IsSuccessStatusCode)
                 {
                     await ReplyErrorAsync(Localization.UtilityImageOrUrlNotGood);

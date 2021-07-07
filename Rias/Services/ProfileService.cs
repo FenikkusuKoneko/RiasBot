@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -23,7 +22,6 @@ namespace Rias.Services
         private static readonly string DefaultBackgroundPath = Path.Combine(Environment.CurrentDirectory, "assets/images/default_background.png");
 
         private readonly AnimeService _animeService;
-        private readonly HttpClient _httpClient;
         
         private readonly MagickColor _dark = MagickColor.FromRgb(36, 36, 36);
         private readonly MagickColor _darker = MagickColor.FromRgb(32, 32, 32);
@@ -46,7 +44,6 @@ namespace Rias.Services
             : base(serviceProvider)
         {
             _animeService = serviceProvider.GetRequiredService<AnimeService>();
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
         
         public async Task<Stream> GenerateProfileImageAsync(DiscordMember member)
@@ -217,7 +214,7 @@ namespace Rias.Services
             
             try
             {
-                using var response = await _httpClient.GetAsync(profileInfo.BackgroundUrl);
+                using var response = await HttpClient.GetAsync(profileInfo.BackgroundUrl);
                 if (!response.IsSuccessStatusCode)
                 {
                     AddBackground(null, image, profileInfo);
@@ -269,7 +266,7 @@ namespace Rias.Services
         
         private async Task AddAvatarAndUsernameAsync(MagickImage image, DiscordUser user, ProfileInfo? profileInfo = null)
         {
-            await using var avatarStream = await _httpClient.GetStreamAsync(user.GetAvatarUrl(ImageFormat.Auto));
+            await using var avatarStream = await HttpClient.GetStreamAsync(user.GetAvatarUrl(ImageFormat.Auto));
             using var avatarImage = new MagickImage(avatarStream);
             avatarImage.Resize(new MagickGeometry
             {
@@ -451,6 +448,7 @@ namespace Rias.Services
         
         private async Task<Stream?> GetWaifuStreamAsync(IWaifuEntity waifu, bool useCustomImage = false)
         {
+            var httpClient = HttpClient;
             try
             {
                 var imageUrl = waifu.ImageUrl;
@@ -458,7 +456,7 @@ namespace Rias.Services
                     imageUrl = waifus.CustomImageUrl;
 
                 var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-                using var response = await _httpClient.GetAsync(imageUrl, cts.Token);
+                using var response = await httpClient.GetAsync(imageUrl, cts.Token);
                 if (response.IsSuccessStatusCode)
                 {
                     await using var waifuStream = await response.Content.ReadAsStreamAsync();
@@ -496,7 +494,7 @@ namespace Rias.Services
                 try
                 {
                     await _animeService.SetCharacterImageUrlAsync(aniListCharacter.Id, characterImage);
-                    await using var characterStream = await _httpClient.GetStreamAsync(characterImage);
+                    await using var characterStream = await httpClient.GetStreamAsync(characterImage);
                     var ms = new MemoryStream();
                     await characterStream.CopyToAsync(ms);
                     ms.Position = 0;

@@ -56,8 +56,7 @@ namespace Rias.Services
             RiasBot.Client.GuildDownloadCompleted += GuildDownloadCompletedAsync;
             
             RunTaskAsync(RequestMembersAsync);
-            
-            _discordBotsHttpClient = new HttpClient();
+            _discordBotsHttpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
         }
         
         public static string ReplacePlaceholders(DiscordUser user, string message)

@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Humanizer;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Qmmands;
 using Rias.Commons;
@@ -16,12 +15,9 @@ namespace Rias.Modules.Searches
     [Name("Searches")]
     public partial class SearchesModule : RiasModule
     {
-        private readonly HttpClient _httpClient;
-        
         public SearchesModule(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
 
         [Command("wikipedia", "wiki")]
@@ -29,8 +25,8 @@ namespace Rias.Modules.Searches
         public async Task WikipediaAsync([Remainder] string title)
         {
             await Context.Channel.TriggerTypingAsync();
-            using var response = await _httpClient.GetAsync("https://en.wikipedia.org//w/api.php?action=query&format=json&prop=info&redirects=1&formatversion=2&inprop=url&titles=" +
-                                                            Uri.EscapeDataString(title));
+            using var response = await HttpClient.GetAsync("https://en.wikipedia.org//w/api.php?action=query&format=json&prop=info&redirects=1&formatversion=2&inprop=url&titles=" +
+                                                           Uri.EscapeDataString(title));
             if (!response.IsSuccessStatusCode)
             {
                 await ReplyErrorAsync(Localization.SearchesNotFound);
@@ -69,7 +65,7 @@ namespace Rias.Modules.Searches
             request.Headers.Add("x-rapidapi-key", Configuration.UrbanDictionaryApiKey);
             request.Headers.Add("Accept", "application/json");
 
-            using var response = await _httpClient.SendAsync(request);
+            using var response = await HttpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 await ReplyErrorAsync(Localization.SearchesDefinitionNotFound);

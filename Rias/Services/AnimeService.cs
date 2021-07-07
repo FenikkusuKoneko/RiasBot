@@ -17,12 +17,10 @@ namespace Rias.Services
     public class AnimeService : RiasService
     {
         private const string AniListGraphQlUrl = "https://graphql.anilist.co";
-        private readonly HttpClient _httpClient;
         
         public AnimeService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
         
         public async Task<ICharacterEntity?> GetOrAddCharacterAsync(string name)
@@ -120,7 +118,7 @@ namespace Rias.Services
             };
             
             var queryJson = JsonConvert.SerializeObject(graphQlQuery);
-            using var response = await _httpClient.PostAsync(AniListGraphQlUrl, new StringContent(queryJson, Encoding.UTF8, "application/json"));
+            using var response = await HttpClient.PostAsync(AniListGraphQlUrl, new StringContent(queryJson, Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode)
                 return null;
 
@@ -158,7 +156,7 @@ namespace Rias.Services
             try
             {
                 var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-                using var response = await _httpClient.GetAsync(characterUrl, cts.Token);
+                using var response = await HttpClient.GetAsync(characterUrl, cts.Token);
                 return response.IsSuccessStatusCode;
             }
             catch

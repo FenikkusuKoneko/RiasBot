@@ -1,10 +1,8 @@
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
 using Rias.Commons;
@@ -18,12 +16,9 @@ namespace Rias.Modules.Administration
     [Name("Administration")]
     public partial class AdministrationModule : RiasModule
     {
-        private readonly HttpClient _httpClient;
-
         public AdministrationModule(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
         
         [Command("setgreet", "greet")]
@@ -59,7 +54,7 @@ namespace Rias.Modules.Administration
             }
             
             var currentMember = Context.CurrentMember!;
-            await using var stream = await _httpClient.GetStreamAsync(currentMember.GetAvatarUrl(ImageFormat.Auto));
+            await using var stream = await HttpClient.GetStreamAsync(currentMember.GetAvatarUrl(ImageFormat.Auto));
             await using var webhookAvatar = new MemoryStream();
             await stream.CopyToAsync(webhookAvatar);
             webhookAvatar.Position = 0;
@@ -182,7 +177,7 @@ namespace Rias.Modules.Administration
             }
             
             var currentMember = Context.CurrentMember!;
-            await using var stream = await _httpClient.GetStreamAsync(currentMember.GetAvatarUrl(ImageFormat.Auto));
+            await using var stream = await HttpClient.GetStreamAsync(currentMember.GetAvatarUrl(ImageFormat.Auto));
             await using var webhookAvatar = new MemoryStream();
             await stream.CopyToAsync(webhookAvatar);
             webhookAvatar.Position = 0;

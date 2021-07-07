@@ -41,8 +41,9 @@ namespace Rias.Services
             _webSocket.Closed += WebSocketClosed;
                 
             RunTaskAsync(CheckPatronsAsync);
-                
-            _httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(1) };
+
+            _httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
+            _httpClient.Timeout = TimeSpan.FromMinutes(1);
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Configuration.PatreonConfiguration.Authorization!);
             _sendPatronsTimer = new Timer(_ => RunTaskAsync(SendPatronsAsync), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
         }

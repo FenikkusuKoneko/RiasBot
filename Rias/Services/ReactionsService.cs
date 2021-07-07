@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace Rias.Services
@@ -13,7 +14,7 @@ namespace Rias.Services
         public ReactionsService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = new HttpClient();
+            _httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Wolke {Configuration.WeebServicesToken}");
         }
 

@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +24,6 @@ namespace Rias.Services
         private const string ExchangeRatesApi = "https://v6.exchangerate-api.com/v6/{0}/latest/USD";
         private static readonly string UnitsPath = Path.Combine(Environment.CurrentDirectory, "assets/units");
 
-        private readonly HttpClient _httpClient;
         private readonly IDatabase _redisDb;
 
         private ImmutableDictionary<string, UnitsCategory> _units = null!;
@@ -38,7 +36,6 @@ namespace Rias.Services
         public UnitsService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             _redisDb = serviceProvider.GetRequiredService<ConnectionMultiplexer>().GetDatabase();
             var sw = Stopwatch.StartNew();
             
@@ -293,7 +290,7 @@ namespace Rias.Services
             var exchangeRatesDataRedis = _redisDb.StringGetWithExpiry("converter:currency");
             var exchangeRatesData = !exchangeRatesDataRedis.Value.IsNullOrEmpty
                 ? exchangeRatesDataRedis.Value.ToString()
-                : await _httpClient.GetStringAsync(string.Format(ExchangeRatesApi, Configuration.ExchangeRateAccessKey));
+                : await HttpClient.GetStringAsync(string.Format(ExchangeRatesApi, Configuration.ExchangeRateAccessKey));
             
             if (exchangeRatesDataRedis.Expiry is null)
                 await _redisDb.StringSetAsync("converter:currency", exchangeRatesData, TimeSpan.FromHours(1));

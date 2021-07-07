@@ -27,7 +27,7 @@ namespace Rias
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.17.3";
+        public const string Version = "3.17.4";
         public static readonly Stopwatch UpTime = new();
         
         public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new();
@@ -85,6 +85,7 @@ namespace Rias
                 .AddSingleton(redis)
                 .AddSingleton<Localization>()
                 .AddSingleton<HttpClient>()
+                .AddHttpClient()
                 .AddDbContext<RiasDbContext>(x =>
                     x.UseNpgsql(databaseConnection, options => options.EnableRetryOnFailure()).UseSnakeCaseNamingConvention())
                 .BuildServiceProvider();

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Qmmands;
 using Rias.Commons;
@@ -16,12 +14,9 @@ namespace Rias.Modules.Searches
         [Name("Cute Girls")]
         public class CuteGirlsSubmodule : RiasModule
         {
-            private readonly HttpClient _httpClient;
-            
             public CuteGirlsSubmodule(IServiceProvider serviceProvider)
                 : base(serviceProvider)
             {
-                _httpClient = serviceProvider.GetRequiredService<HttpClient>();
             }
 
             [Command("neko", "catgirl")]
@@ -62,7 +57,7 @@ namespace Rias.Modules.Searches
             
             private async Task<string?> GetImageAsync(string type)
             {
-                using var response = await _httpClient.GetAsync($"https://rias.gg/api/images?type={type}");
+                using var response = await HttpClient.GetAsync($"https://rias.gg/api/images?type={type}");
                 if (!response.IsSuccessStatusCode)
                     return null;
 

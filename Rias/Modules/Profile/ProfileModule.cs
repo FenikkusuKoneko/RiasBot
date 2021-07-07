@@ -1,10 +1,8 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Attributes;
 using Rias.Commons;
@@ -19,12 +17,9 @@ namespace Rias.Modules.Profile
     [Group("profile")]
     public class ProfileModule : RiasModule<ProfileService>
     {
-        private readonly HttpClient _httpClient;
-        
         public ProfileModule(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         }
 
         [Command]
@@ -81,7 +76,7 @@ namespace Rias.Modules.Profile
 
             await Context.Channel.TriggerTypingAsync();
             
-            using var result = await _httpClient.GetAsync(backgroundUri);
+            using var result = await HttpClient.GetAsync(backgroundUri);
             if (!result.IsSuccessStatusCode)
             {
                 await ReplyErrorAsync(Localization.UtilityImageOrUrlNotGood);
