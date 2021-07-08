@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
+using Rias.Commons;
 using Rias.Implementation;
 using Serilog;
 
@@ -16,7 +18,11 @@ namespace Rias.Attributes
         public override async ValueTask<CheckResult> CheckAsync(RiasCommandContext context)
         {
             if (context.Guild is null)
-                return CheckResult.Failed("Cannot use `CheckDownloadedMembers` outside of a guild.");
+            {
+                return context.Command.Checks.Any(x => x is ContextAttribute contextAttribute && contextAttribute.Contexts.HasFlag(ContextType.Guild))
+                    ? CheckResult.Successful
+                    : CheckResult.Failed("Cannot use `CheckDownloadedMembers` outside of a guild.");
+            }
             
             var riasBot = context.Services.GetRequiredService<RiasBot>();
             if (!riasBot.ChunkedGuilds.Contains(context.Guild.Id))

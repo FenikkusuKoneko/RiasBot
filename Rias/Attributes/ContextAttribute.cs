@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using DSharpPlus;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -24,15 +23,12 @@ namespace Rias.Attributes
         {
             var localization = context.Services.GetRequiredService<Localization>();
 
-            var isValid = false;
-
-            if (Contexts.HasFlag(ContextType.Guild))
+            var isValid = Contexts switch
             {
-                isValid = context.Channel.Type is ChannelType.Category or ChannelType.Text or ChannelType.Voice or ChannelType.News;
-            }
-
-            if (Contexts.HasFlag(ContextType.DM))
-                isValid = isValid || context.Channel.Type == ChannelType.Private;
+                ContextType.Guild when context.Guild is not null => true,
+                ContextType.DM when context.Guild is null => true,
+                _ => false
+            };
 
             if (isValid)
                 return CheckResult.Successful;
