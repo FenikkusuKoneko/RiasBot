@@ -163,19 +163,22 @@ namespace Rias.Implementation
         public const string AdministrationWarningListFooter = "administration_warning_list_footer";
         public const string AdministrationMemberWarnings = "administration_member_warnings";
         public const string AdministrationMemberNoWarnings = "administration_member_no_warnings";
+        public const string AdministrationWarningNotMemberWarning = "administration_warning_not_member_warning";
         public const string AdministrationClearWarningMemberNoPermissions = "administration_clear_warning_member_no_permissions";
-        public const string AdministrationClearWarningIndexAbove = "administration_clear_warning_index_above";
-        public const string AdministrationClearWarningNotMemberWarning = "administration_clear_warning_not_member_warning";
         public const string AdministrationClearWarningNotModWarnings = "administration_clear_warning_not_mod_warnings";
         public const string AdministrationWarningCleared = "administration_warning_cleared";
         public const string AdministrationWarningsCleared = "administration_warnings_cleared";
         public const string AdministrationAllWarningsCleared = "administration_all_warnings_cleared";
+        public const string AdministrationEditWarningMemberNoPermissions = "administration_edit_warning_member_no_permissions";
+        public const string AdministrationEditWarningTitle = "administration_edit_warning_title";
+        public const string AdministrationWarningNotFound = "administration_warning_not_found";
         public const string AdministrationWarningPunishment = "administration_warning_punishment";
         public const string AdministrationNoWarningPunishment = "administration_no_warning_punishment";
         public const string AdministrationWarningsLimit = "administration_warnings_limit";
         public const string AdministrationWarningPunishmentRemoved = "administration_warning_punishment_removed";
         public const string AdministrationWarningInvalidPunishment = "administration_warning_invalid_punishment";
         public const string AdministrationWarningPunishmentSet = "administration_warning_punishment_set";
+        public const string AdministrationNoReasonProvided = "administration_no_reason_provided";
         public static string AdministrationPermission(string type) => $"administration_{type}_permission";
         public const string AdministrationModerator = "administration_moderator";
         public const string AdministrationWarning = "administration_warning";
@@ -579,6 +582,8 @@ namespace Rias.Implementation
         public const string CommonMenuPage = "common_menu_page";
         public const string CommonMore = "common_more";
         public const string CommonDate = "common_date";
+        public const string CommonFrom = "common_from";
+        public const string CommonTo = "common_to";
         public const string CommonActionCompleted = "common_action_completed";
         public const string CommonActionCanceled = "common_action_canceled";
         

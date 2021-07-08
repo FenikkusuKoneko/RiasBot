@@ -128,9 +128,9 @@ namespace Rias.Modules.Administration
                         Color = RiasUtilities.Yellow,
                         Title = GetText(Localization.AdministrationMemberWarned)
                     }.WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto))
+                    .AddField(GetText(Localization.AdministrationWarningNumber), (warnsCount + 1).ToString(), true)
                     .AddField(GetText(Localization.CommonMember), member.FullName(), true)
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
-                    .AddField(GetText(Localization.AdministrationWarningNumber), (warnsCount + 1).ToString(), true)
                     .AddField(GetText(Localization.AdministrationModerator), Context.User.FullName(), true);
                 
                 if (!string.IsNullOrEmpty(reason))
@@ -207,7 +207,7 @@ namespace Rias.Modules.Administration
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Title = GetText(Localization.AdministrationMemberWarnings, member.FullName()),
-                    Description = string.Join("\n", items.Select(x => $"{++index}. {x.Reason ?? "-"}\n" +
+                    Description = string.Join("\n", items.Select(x => $"**{++index}. {x.Reason ?? "-"}**\n" +
                                                                       $"\u251C\u2500{GetText(Localization.AdministrationModerator)}: {x.Moderator}\n" +
                                                                       $"\u2514\u2500{GetText(Localization.CommonDate)}: `{x.DateCreated:yyyy-MM-dd HH:mm:ss}`"))
                 });
@@ -244,14 +244,14 @@ namespace Rias.Modules.Administration
 
                 if (warningIndex >= warnings.Count)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationClearWarningIndexAbove, member.FullName());
+                    await ReplyErrorAsync(Localization.AdministrationWarningNotFound, member.FullName());
                     return;
                 }
 
                 var warning = warnings[warningIndex];
                 if (Context.User.Id != warning.ModeratorId && !permissions.HasPermission(Permissions.Administrator))
                 {
-                    await ReplyErrorAsync(Localization.AdministrationClearWarningNotMemberWarning, member.FullName());
+                    await ReplyErrorAsync(Localization.AdministrationWarningNotMemberWarning, member.FullName());
                     return;
                 }
 
@@ -307,6 +307,63 @@ namespace Rias.Modules.Administration
                     var warningsString = moderatorWarnings.Count > 1 ? GetText(Localization.AdministrationWarnings) : GetText(Localization.AdministrationWarning);
                     await ReplyConfirmationAsync(Localization.AdministrationWarningsCleared, moderatorWarnings.Count, warningsString.ToLowerInvariant(), member.FullName());
                 }
+            }
+
+            [Command("editwarning", "editwarn")]
+            [Context(ContextType.Guild)]
+            [Cooldown(1, 3, CooldownMeasure.Seconds, BucketType.Member)]
+            public async Task EditWarningAsync(DiscordMember member, int warningId, [Remainder] string? reason = null)
+            {
+                if (--warningId < 0)
+                    return;
+                
+                var permissions = ((DiscordMember) Context.User).GetPermissions();
+                if (!(permissions.HasPermission(Permissions.Administrator)
+                      || permissions.HasPermission(Permissions.MuteMembers)
+                      || permissions.HasPermission(Permissions.KickMembers)
+                      || permissions.HasPermission(Permissions.BanMembers)))
+                {
+                    var permsHumanized = PermissionRequired.MuteKickBan.Humanize()
+                        .Split(" ")
+                        .Select(x => GetText(Localization.AdministrationPermission(x.ToLower())))
+                        .Humanize(GetText(Localization.CommonOr).ToLowerInvariant());
+                    await ReplyErrorAsync(Localization.AdministrationEditWarningMemberNoPermissions, permsHumanized);
+                    return;
+                }
+                
+                var warnings = await DbContext.GetListAsync<WarningEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
+                if (warnings.Count == 0)
+                {
+                    await ReplyErrorAsync(Localization.AdministrationMemberNoWarnings, member.FullName());
+                    return;
+                }
+                
+                if (warningId >= warnings.Count)
+                {
+                    await ReplyErrorAsync(Localization.AdministrationWarningNotFound, member.FullName());
+                    return;
+                }
+                
+                var warning = warnings[warningId];
+                if (Context.User.Id != warning.ModeratorId && !permissions.HasPermission(Permissions.Administrator))
+                {
+                    await ReplyErrorAsync(Localization.AdministrationWarningNotMemberWarning, member.FullName());
+                    return;
+                }
+
+                var oldReason = warning.Reason;
+                warning.Reason = reason;
+                await DbContext.SaveChangesAsync();
+
+                await ReplyAsync(new DiscordEmbedBuilder
+                    {
+                        Color = RiasUtilities.ConfirmColor,
+                        Title = GetText(Localization.AdministrationEditWarningTitle)
+                    }.AddField(GetText(Localization.CommonMember), member.FullName(), true)
+                    .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
+                    .AddField(GetText(Localization.AdministrationModerator), Context.User.FullName(), true)
+                    .AddField(GetText(Localization.CommonFrom), oldReason ?? GetText(Localization.AdministrationNoReasonProvided))
+                    .AddField(GetText(Localization.CommonTo), reason ?? GetText(Localization.AdministrationNoReasonProvided)));
             }
 
             [Command("warningpunishment", "warnpunishment")]
