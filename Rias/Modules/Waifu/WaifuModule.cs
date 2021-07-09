@@ -91,7 +91,7 @@ namespace Rias.Modules.Waifu
 
         private string StringifyWaifu(IWaifuEntity waifu)
         {
-            if (!(waifu is WaifuEntity normalWaifu))
+            if (waifu is not WaifuEntity normalWaifu)
                 return $"[{waifu.Name}]({waifu.ImageUrl})\n" +
                        $"{GetText(Localization.WaifuPosition)}: {waifu.Position}";
                 

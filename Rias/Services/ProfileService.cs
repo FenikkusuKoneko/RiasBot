@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -397,26 +396,26 @@ namespace Rias.Services
             var waifuY = 530;
             
             if (profileInfo.Waifus!.Count != 0)
-                await AddWaifu(image, profileInfo.Waifus![0], new Point(100, waifuY), waifuSize, settings);
+                await AddWaifuAsync(image, profileInfo.Waifus![0], new Point(100, waifuY), waifuSize, settings);
 
             if (profileInfo.SpecialWaifu is null)
             {
                 if (profileInfo.Waifus!.Count > 1)
-                    await AddWaifu(image, profileInfo.Waifus[1], new Point(250, waifuY), waifuSize, settings);
+                    await AddWaifuAsync(image, profileInfo.Waifus[1], new Point(250, waifuY), waifuSize, settings);
                 if (profileInfo.Waifus!.Count > 2)
-                    await AddWaifu(image, profileInfo.Waifus[2], new Point(400, waifuY), waifuSize, settings);
+                    await AddWaifuAsync(image, profileInfo.Waifus[2], new Point(400, waifuY), waifuSize, settings);
             }
             else
             {
                 if (profileInfo.Waifus!.Count > 1)
-                    await AddWaifu(image, profileInfo.Waifus[1], new Point(400, waifuY), waifuSize, settings);
+                    await AddWaifuAsync(image, profileInfo.Waifus[1], new Point(400, waifuY), waifuSize, settings);
                 
                 settings.FillColor = profileInfo.Color;
-                await AddWaifu(image, profileInfo.SpecialWaifu, new Point(250, waifuY), waifuSize, settings);
+                await AddWaifuAsync(image, profileInfo.SpecialWaifu, new Point(250, waifuY), waifuSize, settings);
             }
         }
         
-        private async Task AddWaifu(MagickImage image, IWaifuEntity waifu, Point position, MagickGeometry waifuSize, MagickReadSettings settings)
+        private async Task AddWaifuAsync(MagickImage image, IWaifuEntity waifu, Point position, MagickGeometry waifuSize, MagickReadSettings settings)
         {
             await using var waifuStream = await GetWaifuStreamAsync(waifu, waifu.IsSpecial);
             if (waifuStream != null)
@@ -449,14 +448,14 @@ namespace Rias.Services
         private async Task<Stream?> GetWaifuStreamAsync(IWaifuEntity waifu, bool useCustomImage = false)
         {
             var httpClient = HttpClient;
+            httpClient.Timeout = TimeSpan.FromSeconds(30);
             try
             {
                 var imageUrl = waifu.ImageUrl;
                 if (useCustomImage && waifu is WaifuEntity waifus && !string.IsNullOrEmpty(waifus.CustomImageUrl))
                     imageUrl = waifus.CustomImageUrl;
 
-                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-                using var response = await httpClient.GetAsync(imageUrl, cts.Token);
+                using var response = await httpClient.GetAsync(imageUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     await using var waifuStream = await response.Content.ReadAsStreamAsync();
@@ -475,7 +474,7 @@ namespace Rias.Services
                 // ignored
             }
 
-            if (!(waifu is WaifuEntity waifuDb))
+            if (waifu is not WaifuEntity waifuDb)
                 return null;
 
             if (useCustomImage)
@@ -493,7 +492,7 @@ namespace Rias.Services
             {
                 try
                 {
-                    await _animeService.SetCharacterImageUrlAsync(aniListCharacter.Id, characterImage);
+                    await _animeService.UpdateCharacterAsync(aniListCharacter);
                     await using var characterStream = await httpClient.GetStreamAsync(characterImage);
                     var ms = new MemoryStream();
                     await characterStream.CopyToAsync(ms);

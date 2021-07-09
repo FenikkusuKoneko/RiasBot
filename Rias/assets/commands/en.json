@@ -264,6 +264,8 @@
   "anime_manga_examples": "[{0}manga TITLE]\n{0}manga High School DxD",
   "anime_character": "Shows info about a character from AniList or a custom character from the database (i.e. characters from games that are not on AniList).\nYou can request a normal character using her name or ID, and you can request a custom character using her name or `wID` (put a `w` before the ID).",
   "anime_character_examples": "[{0}character NAME]\n[{0}character ID]\n{0}character Rias Gremory\n{0}character 50389\n{0}character w1",
+  "anime_updatecharacter": "Retrieves the data about a character from Anilist and updates it in the local database.",
+  "anime_updatecharacter_examples": "[{0}updatecharacter NAME]\n[{0}updatecharacter ID]\n{0}updatecharacter Rias Gremory\n{0}updatecharacter 50389",
   "anime_animelist": "Shows a list with anime and their IDs from AniList matching the title, paginated.",
   "anime_animelist_examples": "[{0}animelist TITLE]\n{0}animelist High School DxD",
   "anime_mangalist": "Shows a list with manga and their IDs from AniList matching the title, paginated.",

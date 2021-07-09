@@ -427,6 +427,7 @@
   "searches_anime_list": "Anime list for {0}. Use \\\"{1}anime <id>\\\" to show info about an anime",
   "searches_manga_list": "Manga list for {0}. Use \\\"{1}manga <id>\\\" to show info about a manga",
   "searches_character_list": "Characters for {0}. Use \\\"{1}character <id>\\\" to show info about a character",
+  "searches_character_updated": "**{0}** was updated in the database.",
   "searches_neko": "Neko <3",
   "searches_kitsune": "Kitsune <3",
   

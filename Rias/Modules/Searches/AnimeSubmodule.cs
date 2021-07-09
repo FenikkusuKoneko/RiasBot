@@ -8,6 +8,7 @@ using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Qmmands;
+using Rias.Attributes;
 using Rias.Commons;
 using Rias.Database.Entities;
 using Rias.Implementation;
@@ -179,19 +180,15 @@ namespace Rias.Modules.Searches
                 }
                 else if (int.TryParse(name, out id))
                 {
-                    await AniListCharacterAsync(name);
+                    await SendAniListCharacterAsync(name);
                     return;
                 }
                 else
                 {
-                    character = DbContext.CustomCharacters
-                        .AsEnumerable()
-                        .FirstOrDefault(x => name.Split(' ')
-                            .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
-                    
+                    character = DbContext.CustomCharacters.FirstOrDefault(ch => ch.SearchVector.Matches(name));
                     if (character is null)
                     {
-                        await AniListCharacterAsync(name);
+                        await SendAniListCharacterAsync(name);
                         return;
                     }
                 }
@@ -212,6 +209,26 @@ namespace Rias.Modules.Searches
                     .WithImageUrl(character.ImageUrl);
 
                 await ReplyAsync(embed);
+            }
+
+            [Command("updatecharacter")]
+            [OwnerOnly]
+            public async Task UpdateCharacterAsync([Remainder] string name)
+            {
+                var (type, method) = int.TryParse(name, out _) ? ("Int", "id") : ("String", "search");
+                var query = AnimeService.CharacterQuery.Replace("[type]", type)
+                    .Replace("[var]", method);
+            
+                var character = await Service.GetAniListInfoAsync<CharacterContent>(query, new { character = name }, "Character");
+
+                if (character is null)
+                {
+                    await ReplyErrorAsync(Localization.SearchesCharacterNotFound);
+                    return;
+                }
+                
+                await Service.UpdateCharacterAsync(character);
+                await ReplyConfirmationAsync(Localization.SearchesCharacterUpdated, character.Name.Full!);
             }
 
             [Command("animelist", "anilist")]
@@ -259,9 +276,7 @@ namespace Rias.Modules.Searches
             public async Task CharactersAsync([Remainder] string name)
             {
                 var characters = DbContext.CustomCharacters
-                    .AsEnumerable()
-                    .Where(x => name.Split(' ')
-                        .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)))
+                    .Where(character => character.SearchVector.Matches(name))
                     .ToList<object>();
 
                 var anilistCharacters = await Service.GetAniListInfoAsync<List<CharacterContent>>(AnimeService.CharacterListQuery, new { character = name }, "Page", "characters");
@@ -325,7 +340,7 @@ namespace Rias.Modules.Searches
                 });
             }
             
-            private async Task AniListCharacterAsync(string name)
+            private async Task SendAniListCharacterAsync(string name)
             {
                 var (type, method) = int.TryParse(name, out _) ? ("Int", "id") : ("String", "search");
                 var query = AnimeService.CharacterQuery.Replace("[type]", type)
@@ -388,7 +403,7 @@ namespace Rias.Modules.Searches
                 {
                     Color = RiasUtilities.ConfirmColor,
                     Url = character.SiteUrl,
-                    Title = $"{character.Name.Full}"
+                    Title = character.Name.Full
                 }.AddField(GetText(Localization.SearchesFirstName), !string.IsNullOrEmpty(character.Name.First) ? character.Name.First : "-", true)
                     .AddField(GetText(Localization.SearchesLastName), !string.IsNullOrEmpty(character.Name.Last) ? character.Name.Last : "-", true)
                     .AddField(GetText(Localization.SearchesNativeName), !string.IsNullOrEmpty(character.Name.Native) ? character.Name.Native : "-", true)

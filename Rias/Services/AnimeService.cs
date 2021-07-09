@@ -33,16 +33,8 @@ namespace Rias.Services
 
             var characterDb = int.TryParse(name, out id)
                 ? await db.Characters.FirstOrDefaultAsync(x => x.CharacterId == id)
-                : db.CustomCharacters
-                      .AsEnumerable()
-                      .FirstOrDefault(x =>
-                          name.Split(' ')
-                              .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)))
-                  ?? (ICharacterEntity?) db.Characters
-                      .AsEnumerable()
-                      .FirstOrDefault(x =>
-                          name.Split(' ')
-                              .All(y => x.Name!.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
+                : db.CustomCharacters.FirstOrDefault(character => character.SearchVector.Matches(name))
+                  ?? (ICharacterEntity?) db.Characters.FirstOrDefault(character => character.SearchVector.Matches(name));
 
             CharacterContent? aniListCharacter = null;
 
@@ -63,7 +55,8 @@ namespace Rias.Services
                         CharacterId = aniListCharacter.Id,
                         Name = $"{aniListCharacter.Name.Full}".Trim(),
                         Url = aniListCharacter.SiteUrl,
-                        ImageUrl = aniListCharacter.Image.Large
+                        ImageUrl = aniListCharacter.Image.Large,
+                        Description = aniListCharacter.Description
                     };
                     
                     await db.AddAsync(newCharacterDb);
@@ -86,7 +79,7 @@ namespace Rias.Services
                 if (!string.IsNullOrEmpty(characterImage))
                 {
                     characterDb.ImageUrl = characterImage;
-                    await SetCharacterImageUrlAsync(aniListCharacter.Id, characterImage);
+                    await UpdateCharacterAsync(aniListCharacter);
                 }
             }
 
@@ -98,14 +91,14 @@ namespace Rias.Services
                 if (aniListCharacter is null)
                     return null;
 
-                aniListCharacterDb.UpdatedAt = DateTime.UtcNow;
                 aniListCharacterDb.Name = $"{aniListCharacter.Name.Full}".Trim();
                 aniListCharacterDb.ImageUrl = aniListCharacter.Image.Large;
+                aniListCharacterDb.Description = aniListCharacter.Description;
 
                 await db.SaveChangesAsync();
             }
 
-            return characterDb;
+            return aniListCharacterDb;
         }
         
         public async Task<TType?> GetAniListInfoAsync<TType>(string query, object variables, params string[] tokens)
@@ -127,14 +120,16 @@ namespace Rias.Services
                 .ToObject<TType>();
         }
         
-        public async Task SetCharacterImageUrlAsync(int id, string url)
+        public async Task UpdateCharacterAsync(CharacterContent character)
         {
             using var scope = RiasBot.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-            var character = await db.Characters.FirstOrDefaultAsync(x => x.CharacterId == id);
-            if (character != null)
+            var characterEntity = await db.Characters.FirstOrDefaultAsync(x => x.CharacterId == character.Id);
+            if (characterEntity != null)
             {
-                character.ImageUrl = url;
+                characterEntity.Name = $"{character.Name.Full}".Trim();
+                characterEntity.ImageUrl = character.Image.Large;
+                characterEntity.Description = character.Description;
                 await db.SaveChangesAsync();
             }
         }

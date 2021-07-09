@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -11,9 +12,10 @@ using Rias.Models;
 namespace Rias.Migrations
 {
     [DbContext(typeof(RiasDbContext))]
-    partial class RiasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210708033732_CharacterSearchVector")]
+    partial class CharacterSearchVector
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

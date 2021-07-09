@@ -398,6 +398,7 @@ namespace Rias.Implementation
         public const string SearchesAnimeList = "searches_anime_list";
         public const string SearchesMangaList = "searches_manga_list";
         public const string SearchesCharacterList = "searches_character_list";
+        public const string SearchesCharacterUpdated = "searches_character_updated";
         public const string SearchesNeko = "searches_neko";
         public const string SearchesKitsune = "searches_kitsune";
         

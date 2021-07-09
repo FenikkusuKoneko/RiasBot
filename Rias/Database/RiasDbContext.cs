@@ -5,23 +5,24 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Npgsql;
 using Rias.Database.Entities;
 using Rias.Models;
 
 namespace Rias.Database
 {
-    /*public class RiasContextFactory : IDesignTimeDbContextFactory<RiasDbContext>
+    public class RiasContextFactory : IDesignTimeDbContextFactory<RiasDbContext>
     {
         public RiasDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<RiasDbContext>();
-            optionsBuilder.UseNpgsql("Host=;Port=;Username=;Password=;Database=");
+            optionsBuilder.UseNpgsql(args[0]);
             optionsBuilder.UseSnakeCaseNamingConvention();
             var ctx = new RiasDbContext(optionsBuilder.Options);
             return ctx;
         }
-    }*/
+    }
     
     public class RiasDbContext : DbContext
     {
