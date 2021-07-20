@@ -187,7 +187,8 @@ namespace Rias.Modules.Administration
             [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.Guild)]
             public async Task WarningsAsync([Remainder] DiscordMember member)
             {
-                var warningsDb = await DbContext.GetListAsync<WarningEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
+                var warningsDb = await DbContext.GetOrderedListAsync<WarningEntity, DateTime>(
+                    x => x.GuildId == member.Guild.Id && x.UserId == member.Id, x => x.CreatedAt);
                 var moderators = (await Task.WhenAll(warningsDb.Select(async x => await RiasBot.GetMemberAsync(Context.Guild!, x.ModeratorId)))).ToList();
                 
                 var warnings = warningsDb.Select((x, i) => new
@@ -235,7 +236,8 @@ namespace Rias.Modules.Administration
                     return;
                 }
 
-                var warnings = await DbContext.GetListAsync<WarningEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
+                var warnings = await DbContext.GetOrderedListAsync<WarningEntity, DateTime>(
+                    x => x.GuildId == member.Guild.Id && x.UserId == member.Id, x => x.CreatedAt);
                 if (warnings.Count == 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberNoWarnings, member.FullName());
@@ -331,7 +333,8 @@ namespace Rias.Modules.Administration
                     return;
                 }
                 
-                var warnings = await DbContext.GetListAsync<WarningEntity>(x => x.GuildId == member.Guild.Id && x.UserId == member.Id);
+                var warnings = await DbContext.GetOrderedListAsync<WarningEntity, DateTime>(
+                    x => x.GuildId == member.Guild.Id && x.UserId == member.Id, x => x.CreatedAt);
                 if (warnings.Count == 0)
                 {
                     await ReplyErrorAsync(Localization.AdministrationMemberNoWarnings, member.FullName());

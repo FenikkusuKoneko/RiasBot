@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Rias.Database.Entities;
 using Rias.Models;
@@ -16,8 +18,17 @@ namespace Rias.Database
     {
         public RiasDbContext CreateDbContext(string[] args)
         {
+            var configPath = Path.Combine(Environment.CurrentDirectory, "data/configuration.json");
+            var config = new ConfigurationBuilder().AddJsonFile(configPath).Build();
+            var databaseConfiguration = config.GetSection("databaseConfiguration");
+            
             var optionsBuilder = new DbContextOptionsBuilder<RiasDbContext>();
-            optionsBuilder.UseNpgsql(args[0]);
+            optionsBuilder.UseNpgsql($"Host={databaseConfiguration.GetValue<string>("host")};"
+                                     + $"Port={databaseConfiguration.GetValue<string>("port")};"
+                                     + $"Database={databaseConfiguration.GetValue<string>("database")};"
+                                     + $"Username={databaseConfiguration.GetValue<string>("username")};"
+                                     + $"Password={databaseConfiguration.GetValue<string>("password")};"
+                                     + $"ApplicationName={databaseConfiguration.GetValue<string>("applicationName")}");
             optionsBuilder.UseSnakeCaseNamingConvention();
             var ctx = new RiasDbContext(optionsBuilder.Options);
             return ctx;
@@ -160,7 +171,7 @@ namespace Rias.Database
                 .IsUnique();
             
             modelBuilder.Entity<MembersEntity>()
-                .HasIndex(x => new { x.GuildId, UserId = x.MemberId })
+                .HasIndex(x => new { x.GuildId, x.MemberId })
                 .IsUnique();
             
             modelBuilder.Entity<MuteTimerEntity>()
@@ -178,15 +189,15 @@ namespace Rias.Database
             modelBuilder.Entity<UserEntity>()
                 .HasIndex(x => x.UserId)
                 .IsUnique();
-
-            var waifuEntity = modelBuilder.Entity<WaifuEntity>();
-
-            waifuEntity.HasOne(x => x.Character)
+            
+            modelBuilder.Entity<WaifuEntity>()
+                .HasOne(x => x.Character)
                 .WithMany()
                 .HasForeignKey(x => x.CharacterId)
                 .HasPrincipalKey(x => x!.CharacterId);
 
-            waifuEntity.HasOne(x => x.CustomCharacter)
+            modelBuilder.Entity<WaifuEntity>()
+                .HasOne(x => x.CustomCharacter)
                 .WithMany()
                 .HasForeignKey(x => x.CustomCharacterId)
                 .HasPrincipalKey(x => x!.CharacterId);
