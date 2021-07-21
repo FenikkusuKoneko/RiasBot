@@ -1,4 +1,5 @@
-﻿using NpgsqlTypes;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using NpgsqlTypes;
 
 namespace Rias.Database.Entities
 {
@@ -15,6 +16,7 @@ namespace Rias.Database.Entities
         public string? Description { get; set; }
 
 #nullable disable
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public NpgsqlTsVector SearchVector { get; set; }
 #nullable enable
     }
