@@ -32,6 +32,8 @@ namespace Rias.Modules
         private DiscordMessageBuilder? _messageBuilder;
         private DiscordMessageBuilder MessageBuilder => _messageBuilder ??= new DiscordMessageBuilder();
 
+        private TimeSpan _interactivityTimeout = TimeSpan.FromMinutes(1);
+
         public RiasModule(IServiceProvider serviceProvider)
         {
             RiasBot = serviceProvider.GetRequiredService<RiasBot>();
@@ -78,7 +80,7 @@ namespace Rias.Modules
                 return new Page(content, embed);
             });
 
-            await Context.Interactivity.SendPaginatedMessageAsync(Context.Channel, Context.User, pages);
+            await Context.Interactivity.SendPaginatedMessageAsync(Context.Channel, Context.User, pages, null, timeoutoverride: _interactivityTimeout);
         }
 
         public Task<InteractivityResult<ComponentInteractionCreateEventArgs>?> SendConfirmationButtonsAsync(string key, params object[] args)
@@ -91,7 +93,7 @@ namespace Rias.Modules
                 new DiscordButtonComponent(ButtonStyle.Danger, "no", GetText(Localization.CommonNo)));
             
             var message = await Context.Channel.SendMessageAsync(messageBuilder);
-            var componentInteractionArgs = await message.WaitForButtonAsync(Context.User);
+            var componentInteractionArgs = await message.WaitForButtonAsync(Context.User, timeoutOverride: _interactivityTimeout);
             if (componentInteractionArgs.TimedOut || string.Equals(componentInteractionArgs.Result.Id, "no"))
             {
                 if (messageBuilder.Files.Count > 0)

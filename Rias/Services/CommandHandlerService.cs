@@ -123,9 +123,8 @@ namespace Rias.Services
 
             if (typeParserInterface is null)
                 throw new NullReferenceException(parserInterface);
-
-            var assembly = typeof(RiasBot).Assembly;
-            _typeParsers.AddRange(assembly!.GetTypes()
+            
+            _typeParsers.AddRange(typeof(RiasBot).Assembly.GetTypes()
                 .Where(x => typeParserInterface.IsAssignableFrom(x)
                             && !x.GetTypeInfo().IsInterface
                             && !x.GetTypeInfo().IsAbstract));

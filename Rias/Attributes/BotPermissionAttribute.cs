@@ -62,7 +62,7 @@ namespace Rias.Attributes
                 .ToString()
                 .Split(",", StringSplitOptions.RemoveEmptyEntries);
 
-            return requiredPermsList.Humanize(x => $"**{x.Titleize()}**", localization!.GetText(guild.Id, Localization.CommonAnd).ToLowerInvariant());
+            return requiredPermsList.Humanize(x => $"**{x.Titleize()}**", localization.GetText(guild.Id, Localization.CommonAnd).ToLowerInvariant());
         }
     }
 }

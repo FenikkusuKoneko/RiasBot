@@ -525,8 +525,8 @@ namespace Rias.Services
             public int Level { get; init; }
             
             public string? Rank { get; init; }
-            
-            public MagickColor? Color { get; init; }
+
+            public MagickColor Color { get; init; } = MagickColors.White;
         }
     }
 }

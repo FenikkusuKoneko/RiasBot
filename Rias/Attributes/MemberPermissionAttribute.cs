@@ -34,7 +34,7 @@ namespace Rias.Attributes
             }
 
             var member = (DiscordMember) context.User;
-            var guildPermissions = member!.GetPermissions();
+            var guildPermissions = member.GetPermissions();
             var hasGuildPermissions = guildPermissions.HasPermission(Permissions);
             
             var channelPermissions = member.PermissionsIn(context.Channel);

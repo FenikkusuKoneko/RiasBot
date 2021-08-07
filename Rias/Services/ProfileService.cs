@@ -437,7 +437,7 @@ namespace Rias.Services
                 image.Draw(new Drawables()
                     .RoundRectangle(waifuX - 1, position.Y - 1, waifuX + waifuSize.Width + 1, position.Y + waifuSize.Height + 1, 5, 5)
                     .StrokeWidth(2)
-                    .StrokeColor(settings.FillColor)
+                    .StrokeColor(settings.FillColor ?? MagickColors.White)
                     .FillColor(MagickColors.Transparent));
             }
             
@@ -574,8 +574,8 @@ namespace Rias.Services
             public int Dim { get; init; }
             
             public string? Biography { get; init; }
-            
-            public MagickColor? Color { get; init; }
+
+            public MagickColor Color { get; init; } = MagickColors.White;
             
             public IList<string>? Badges { get; set; }
             
