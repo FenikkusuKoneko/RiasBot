@@ -21,7 +21,7 @@ namespace Rias.Modules.Bot
             }
             
             [Command("activity")]
-            [OwnerOnly]
+            [MasterOnly]
             [Priority(0)]
             public async Task ActivityAsync(string? type = null, [Remainder] string? name = null)
             {
@@ -43,7 +43,7 @@ namespace Rias.Modules.Bot
             }
             
             [Command("activity")]
-            [OwnerOnly]
+            [MasterOnly]
             [Priority(1)]
             public async Task ActivityAsync(int period, [Remainder] string activities)
             {
@@ -63,7 +63,7 @@ namespace Rias.Modules.Bot
             }
             
             [Command("status")]
-            [OwnerOnly]
+            [MasterOnly]
             public async Task SetStatusAsync(string status)
             {
                 if (string.Equals(status, "dnd", StringComparison.InvariantCultureIgnoreCase))

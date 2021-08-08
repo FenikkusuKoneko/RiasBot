@@ -590,7 +590,6 @@ namespace Rias.Implementation
         public const string CommonActionCompleted = "common_action_completed";
         public const string CommonActionCanceled = "common_action_canceled";
         
-        public const string AttributeOwnerOnly = "attribute_owner_only";
         public const string AttributeMemberGuildPermissions = "attribute_member_guild_permissions";
         public const string AttributeMemberChannelPermissions = "attribute_member_channel_permissions";
         public const string AttributeMemberPermissionNotGuild = "attribute_member_permission_not_guild";

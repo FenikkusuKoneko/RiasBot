@@ -95,7 +95,7 @@ namespace Rias.Modules.Help
             if (isOwner)
                 modulesOwnerPredicate = m => m.Parent is null;
             else
-                modulesOwnerPredicate = m => m.Parent is null && m.Commands.All(c => !c.Checks.Any(x => x is OwnerOnlyAttribute));
+                modulesOwnerPredicate = m => m.Parent is null && m.Commands.All(c => !c.Checks.Any(x => x is MasterOnlyAttribute));
 
             var modules = _commandService.GetAllModules()
                 .Where(modulesOwnerPredicate)
@@ -107,7 +107,7 @@ namespace Rias.Modules.Help
                 submodulesGroupOwnerPredicate = m => !string.Equals(m.Parent.Name, m.Name, StringComparison.OrdinalIgnoreCase);
             else
                 submodulesGroupOwnerPredicate = m => !string.Equals(m.Parent.Name, m.Name, StringComparison.OrdinalIgnoreCase)
-                                                     && m.Commands.All(c => !c.Checks.Any(x => x is OwnerOnlyAttribute));
+                                                     && m.Commands.All(c => !c.Checks.Any(x => x is MasterOnlyAttribute));
             
             foreach (var module in modules)
             {
@@ -265,7 +265,7 @@ namespace Rias.Modules.Help
 
             return (isOwner
                 ? commands
-                : commands.Where(x => !x.Checks.Any(c => c is OwnerOnlyAttribute)))
+                : commands.Where(x => !x.Checks.Any(c => c is MasterOnlyAttribute)))
                 .GroupBy(x => x.Name)
                 .Select(x => x.First())
                 .OrderBy(x => x.Name)
@@ -280,8 +280,9 @@ namespace Rias.Modules.Help
                     nextAliases = $" [{nextAliases}]";
 
                 var moduleAlias = x.Module.Aliases.Count != 0 ? $"{x.Module.Aliases[0]} " : null;
-                var isOwnerString = x.Checks.Any(c => c is OwnerOnlyAttribute) ? $" `{GetText(Localization.HelpOwnerOnly).ToLowerInvariant()}`" : null;
-                return $"{prefix}{moduleAlias}{x.Aliases.FirstOrDefault()}{nextAliases}{isOwnerString}";
+                var isMasterOnly = x.Checks.Any(c => c is MasterOnlyAttribute);
+                var commandString = $"{prefix}{moduleAlias}{x.Aliases.FirstOrDefault()}{nextAliases}";
+                return isMasterOnly ? Formatter.Bold(commandString) : commandString;
             }).ToImmutableList();
         
         private async Task<bool> SendAllCommandsMessageAsync(DiscordEmbed embed)

@@ -60,7 +60,7 @@ namespace Rias.Modules.Gambling
             }
 
             [Command("reward")]
-            [OwnerOnly]
+            [MasterOnly]
             public async Task RewardAsync(int amount, [Remainder] DiscordUser user)
             {
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UserEntity { UserId = user.Id });
@@ -71,7 +71,7 @@ namespace Rias.Modules.Gambling
             }
 
             [Command("take")]
-            [OwnerOnly]
+            [MasterOnly]
             public async Task TakeAsync(int amount, [Remainder] DiscordUser user)
             {
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UserEntity { UserId = user.Id });

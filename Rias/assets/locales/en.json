@@ -630,7 +630,6 @@
   "common_action_completed": "This action has been completed.",
   "common_action_canceled": "This action has been canceled.",
   
-  "attribute_owner_only": "This command can be ran only by my owner.",
   "attribute_member_guild_permissions": "You must have the {0} server permission(s).",
   "attribute_member_channel_permissions": "You don't have the {0} permission(s) in this channel.",
   "attribute_member_permission_not_guild": "The `MemberPermissionAttribute` requires this command to be used in a server channel.",

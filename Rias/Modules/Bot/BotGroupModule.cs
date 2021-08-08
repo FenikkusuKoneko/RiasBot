@@ -20,7 +20,7 @@ namespace Rias.Modules.Bot
             }
             
             [Command("send")]
-            [OwnerOnly]
+            [MasterOnly]
             public async Task SendAsync(string id, [Remainder] string message)
             {
                 if (!id.StartsWith("u:", StringComparison.InvariantCultureIgnoreCase))
@@ -120,7 +120,7 @@ namespace Rias.Modules.Bot
             }
 
             [Command("edit")]
-            [OwnerOnly]
+            [MasterOnly]
             public async Task EditAsync(ulong channelId, ulong messageId, [Remainder] string message)
             {
                 var channel = RiasBot.Client.ShardClients

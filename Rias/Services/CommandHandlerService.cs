@@ -238,7 +238,12 @@ namespace Rias.Services
                 case OverloadsFailedResult overloadsFailedResult:
                     await RunTaskAsync(SendFailedResultsAsync(context, overloadsFailedResult.FailedOverloads.Values));
                     break;
-                case ChecksFailedResult:
+                case ChecksFailedResult checksFailedResult:
+                    if (checksFailedResult.FailedChecks.Any(checkResult => checkResult.Check is MasterOnlyAttribute))
+                        return;
+                    
+                    await RunTaskAsync(SendFailedResultsAsync(context, new[] { (FailedResult) result }));
+                    break;
                 case TypeParseFailedResult:
                 case ArgumentParseFailedResult:
                     await RunTaskAsync(SendFailedResultsAsync(context, new[] { (FailedResult) result }));
@@ -344,7 +349,7 @@ namespace Rias.Services
             var moduleAlias = command.Module.Aliases.Count != 0 ? $"{command.Module.Aliases[0]} " : string.Empty;
             var title = string.Join(" / ", command.Aliases.Select(a => $"{prefix}{moduleAlias}{a}"));
 
-            if (command.Checks.Any(c => c is OwnerOnlyAttribute))
+            if (command.Checks.Any(c => c is MasterOnlyAttribute))
                 title += $" [{GetText(guild?.Id, Localization.HelpOwnerOnly).ToLowerInvariant()}]";
 
             var commandInfoKey = $"{command.Module.Name.Replace(' ', '_').ToLower()}_{command.Name.Replace(' ', '_')}";
@@ -387,7 +392,7 @@ namespace Rias.Services
                         
                         permissions.Append(GetText(guild?.Id, Localization.HelpRequiresBotPermissions,  RiasBot.Client.CurrentUser.Username, string.Join(", ", botPermissions)));
                         break;
-                    case OwnerOnlyAttribute:
+                    case MasterOnlyAttribute:
                         title = $"{title} **({GetText(guild?.Id, Localization.HelpOwnerOnly)})**";
                         break;
                 }

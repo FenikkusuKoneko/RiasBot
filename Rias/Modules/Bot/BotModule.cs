@@ -32,7 +32,7 @@ namespace Rias.Modules.Bot
         }
         
         [Command("leaveguild", "leaveserver")]
-        [OwnerOnly]
+        [MasterOnly]
         public async Task LeaveGuildAsync(string name)
         {
             var guild = ulong.TryParse(name, out var guildId)
@@ -58,7 +58,7 @@ namespace Rias.Modules.Bot
         }
 
         [Command("shutdown")]
-        [OwnerOnly]
+        [MasterOnly]
         public async Task ShutdownAsync()
         {
             await ReplyConfirmationAsync(Localization.BotShutdown);
@@ -66,7 +66,7 @@ namespace Rias.Modules.Bot
         }
 
         [Command("update")]
-        [OwnerOnly]
+        [MasterOnly]
         public async Task UpdateAsync()
         {
             await ReplyConfirmationAsync(Localization.BotUpdate);
@@ -74,7 +74,7 @@ namespace Rias.Modules.Bot
         }
         
         [Command("restart", "reboot")]
-        [OwnerOnly]
+        [MasterOnly]
         public async Task RestartAsync()
         {
             await ReplyConfirmationAsync(Localization.BotRestart);
@@ -82,7 +82,7 @@ namespace Rias.Modules.Bot
         }
 
         [Command("reload", "refresh")]
-        [OwnerOnly]
+        [MasterOnly]
         public async Task ReloadAsync(string subcommand)
         {
             switch (subcommand.ToLower())
@@ -198,7 +198,7 @@ namespace Rias.Modules.Bot
         }
 
         [Command("finduser")]
-        [OwnerOnly]
+        [MasterOnly]
         public async Task FindUserAsync([Remainder] string value)
         {
             DiscordUser? user = null;
@@ -246,7 +246,7 @@ namespace Rias.Modules.Bot
         }
 
         [Command("evaluate", "eval")]
-        [OwnerOnly]
+        [MasterOnly]
         public async Task EvaluateAsync([Remainder] string code)
         {
             var embed = new DiscordEmbedBuilder

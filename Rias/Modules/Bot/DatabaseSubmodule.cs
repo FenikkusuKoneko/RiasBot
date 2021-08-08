@@ -23,7 +23,7 @@ namespace Rias.Modules.Bot
             }
 
             [Command("delete")]
-            [OwnerOnly]
+            [MasterOnly]
             public async Task DeleteAsync([Remainder] DiscordUser user)
             {
                 var componentInteractionArgs = await SendConfirmationButtonsAsync(Localization.BotDeleteDialog, user.FullName());
@@ -47,7 +47,7 @@ namespace Rias.Modules.Bot
             }
 
             [Command("database", "db")]
-            [OwnerOnly]
+            [MasterOnly]
             public async Task DatabaseAsync([Remainder] DiscordUser user)
             {
                 var userDb = await DbContext.Users.FirstOrDefaultAsync(x => x.UserId == user.Id);
@@ -80,7 +80,7 @@ namespace Rias.Modules.Bot
             }
 
             [Command("botban")]
-            [OwnerOnly]
+            [MasterOnly]
             public async Task BotBanAsync([Remainder] DiscordUser user)
             {
                 var componentInteractionArgs = await SendConfirmationButtonsAsync(Localization.BotBotBanDialog, user.FullName());
@@ -95,7 +95,7 @@ namespace Rias.Modules.Bot
             }
 
             [Command("removebotban")]
-            [OwnerOnly]
+            [MasterOnly]
             public async Task RemoveBotBanAsync([Remainder] DiscordUser user)
             {
                 var userDb = await DbContext.GetOrAddAsync(x => x.UserId == user.Id, () => new UserEntity { UserId = user.Id });

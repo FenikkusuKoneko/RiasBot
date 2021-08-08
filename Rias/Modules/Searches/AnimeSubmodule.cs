@@ -212,7 +212,7 @@ namespace Rias.Modules.Searches
             }
 
             [Command("updatecharacter")]
-            [OwnerOnly]
+            [MasterOnly]
             public async Task UpdateCharacterAsync([Remainder] string name)
             {
                 var (type, method) = int.TryParse(name, out _) ? ("Int", "id") : ("String", "search");
