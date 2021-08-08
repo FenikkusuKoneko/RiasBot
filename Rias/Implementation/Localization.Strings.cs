@@ -275,6 +275,7 @@ namespace Rias.Implementation
         public const string HelpInviteMe = "help_invite_me";
         public const string HelpWebsite = "help_website";
         public const string HelpDonate = "help_donate";
+        public const string HelpFooter = "help_footer";
         public const string HelpCommandNotFound = "help_command_not_found";
         public const string HelpModule = "help_module";
         public const string HelpOwnerOnly = "help_owner_only";
@@ -446,6 +447,7 @@ namespace Rias.Implementation
         public const string UtilityUptime = "utility_uptime";
         public const string UtilityPresence = "utility_presence";
         public const string UtilityPresenceInfo = "utility_presence_info";
+        public const string UtilityStatsFooter = "utility_stats_footer";
         public const string UtilityTextChannels = "utility_text_channels";
         public const string UtilityVoiceChannels = "utility_voice_channels";
         public const string UtilityUsername = "utility_username";

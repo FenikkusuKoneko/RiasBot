@@ -59,7 +59,7 @@ namespace Rias.Modules.Games
         [Context(ContextType.Guild)]
         public async Task EightBallAsync([Remainder] string message)
         {
-            var number = new Random().Next(20);
+            var number = new Random().Next(30);
             await ReplyConfirmationAsync(Localization.GamesEightBallAnswer(number + 1));
         }
     }

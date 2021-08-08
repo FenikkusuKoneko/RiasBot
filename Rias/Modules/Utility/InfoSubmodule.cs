@@ -58,7 +58,7 @@ namespace Rias.Modules.Utility
                         },
                         Footer = new DiscordEmbedBuilder.EmbedFooter
                         {
-                            Text = "© 2018-2021 Copyright: Koneko#0001"
+                            Text = GetText(Localization.UtilityStatsFooter)
                         }
                     }.WithThumbnail(RiasBot.CurrentUser.GetAvatarUrl(ImageFormat.Auto))
                     .AddField(GetText(Localization.UtilityAuthor), RiasBot.Author, true)

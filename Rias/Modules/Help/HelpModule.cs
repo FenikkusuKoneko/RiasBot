@@ -34,7 +34,7 @@ namespace Rias.Modules.Help
             var embed = new DiscordEmbedBuilder()
                 .WithColor(RiasUtilities.ConfirmColor)
                 .WithAuthor(GetText(Localization.HelpTitle, RiasBot.CurrentUser!.Username, RiasBot.Version), RiasBot.CurrentUser.GetAvatarUrl(ImageFormat.Auto))
-                .WithFooter("© 2018-2021 Copyright: Koneko#0001")
+                .WithFooter(GetText(Localization.HelpFooter))
                 .WithDescription(GetText(Localization.HelpInfo, Context.Prefix));
 
             var links = new StringBuilder();
