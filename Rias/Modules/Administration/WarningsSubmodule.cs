@@ -100,9 +100,9 @@ namespace Rias.Modules.Administration
                     applyPunishment = true;
                 }
                 
-                if (!applyPunishment && warnsCount >= 10)
+                if (!applyPunishment && warnsCount >= 100)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationMemberWarningsLimit, member.DisplayName, 10);
+                    await ReplyErrorAsync(Localization.AdministrationMemberWarningsLimit, member.DisplayName, 100);
                     return;
                 }
 
@@ -398,9 +398,9 @@ namespace Rias.Modules.Administration
                 if (number < 0)
                     return;
 
-                if (number > 10)
+                if (number > 100)
                 {
-                    await ReplyErrorAsync(Localization.AdministrationWarningsLimit, 10);
+                    await ReplyErrorAsync(Localization.AdministrationWarningsLimit, 100);
                     return;
                 }
 
