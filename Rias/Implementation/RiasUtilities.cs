@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
 using Rias.Models;
+using Serilog;
 
 namespace Rias.Implementation
 {
@@ -29,6 +31,24 @@ namespace Rias.Implementation
         private static readonly Regex RoleRegex = new(@"^<@&(\d+?)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
         private static readonly Regex ChannelRegex = new(@"^<#(\d+)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
         private static readonly Regex EmojiRegex = new(@"^<a?:.+:(\d+)>$", RegexOptions.ECMAScript | RegexOptions.Compiled);
+        
+        /// <summary>
+        /// Runs a task asynchronously and outputs the caught errors to the console.
+        /// </summary>
+        public static void RunTask(Func<Task> func)
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await func();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Exception thrown in a command");
+                }
+            });
+        }
 
         /// <summary>
         /// Checks if the user's message has the bot mention.

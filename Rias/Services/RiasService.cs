@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Rias.Configurations;
 using Rias.Extensions;
 using Rias.Implementation;
-using Serilog;
 
 namespace Rias.Services
 {
@@ -46,31 +45,5 @@ namespace Rias.Services
         /// </summary>
         public string GetText(ulong? guildId, string key, params object[] args)
             => Localization.GetText(guildId, key, args);
-
-        /// <summary>
-        /// Run a task in an async way.
-        /// </summary>
-        public Task RunTaskAsync(Task task)
-            => RunTaskAsync(() => task);
-        
-        /// <summary>
-        /// Run a task in an async way.
-        /// </summary>
-        public Task RunTaskAsync(Func<Task> func)
-        {
-            Task.Run(async () =>
-            {
-                try
-                {
-                    await func.Invoke();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Exception thrown in a service");
-                }
-            });
-
-            return Task.CompletedTask;
-        }
     }
 }

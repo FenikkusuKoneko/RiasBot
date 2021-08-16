@@ -45,7 +45,7 @@ namespace Rias.Services
             Log.Debug("Units loaded: {ElapsedMilliseconds} ms", sw.ElapsedMilliseconds);
 
             if (!string.IsNullOrEmpty(Configuration.ExchangeRateAccessKey))
-                RunTaskAsync(UpdateCurrencyUnitsAsync);
+                RiasUtilities.RunTask(UpdateCurrencyUnitsAsync);
         }
 
         public void ReloadUnits()
@@ -56,7 +56,7 @@ namespace Rias.Services
             LoadUnits();
             
             if (!string.IsNullOrEmpty(Configuration.ExchangeRateAccessKey))
-                RunTaskAsync(UpdateCurrencyUnitsAsync);
+                RiasUtilities.RunTask(UpdateCurrencyUnitsAsync);
         }
 
         private void LoadUnits()
@@ -337,7 +337,7 @@ namespace Rias.Services
             if (_updateCurrencyUnitsCts.IsCancellationRequested)
                 return;
             
-            await RunTaskAsync(UpdateCurrencyUnitsAsync);
+            RiasUtilities.RunTask(UpdateCurrencyUnitsAsync);
         }
     }
 }

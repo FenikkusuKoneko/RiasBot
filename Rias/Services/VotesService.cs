@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Rias.Attributes;
 using Rias.Database;
 using Rias.Database.Entities;
+using Rias.Implementation;
 using Serilog;
 
 namespace Rias.Services
@@ -24,11 +25,11 @@ namespace Rias.Services
                 return;
             
             _webSocket = new WebSocketClient(Configuration.VotesConfiguration);
-            RunTaskAsync(ConnectWebSocket());
+            RiasUtilities.RunTask(() => ConnectWebSocket());
             _webSocket.DataReceived += VoteReceivedAsync;
             _webSocket.Closed += WebSocketClosed;
                 
-            RunTaskAsync(CheckVotesAsync);
+            RiasUtilities.RunTask(CheckVotesAsync);
         }
 
         private async Task CheckVotesAsync()
@@ -66,7 +67,7 @@ namespace Rias.Services
                     Log.Information("Votes WebSocket connected");
 
                     if (recheckVotes)
-                        await RunTaskAsync(CheckVotesAsync);
+                        RiasUtilities.RunTask(CheckVotesAsync);
                     
                     break;
                 }
@@ -114,7 +115,7 @@ namespace Rias.Services
         {
             Log.Warning("Votes WebSocket was closed. Retrying in 10 seconds...");
             await Task.Delay(10000);
-            await RunTaskAsync(ConnectWebSocket(true));
+            RiasUtilities.RunTask(() => ConnectWebSocket(true));
         }
     }
 }

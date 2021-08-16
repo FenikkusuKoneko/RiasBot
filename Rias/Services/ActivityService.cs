@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using Rias.Implementation;
 
 namespace Rias.Services
 {
@@ -40,7 +41,7 @@ namespace Rias.Services
         public Task StartActivityRotationAsync(TimeSpan period, IEnumerable<DiscordActivity> activities)
         {
             _activities = activities.ToArray();
-            _activityTimer = new Timer(_ => RunTaskAsync(SetNextActivityAsync), null, TimeSpan.Zero, period);
+            _activityTimer = new Timer(_ => RiasUtilities.RunTask(SetNextActivityAsync), null, TimeSpan.Zero, period);
             return Task.CompletedTask;
         }
         

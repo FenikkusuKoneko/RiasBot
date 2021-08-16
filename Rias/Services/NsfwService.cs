@@ -7,6 +7,7 @@ using System.Xml;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Rias.Attributes;
+using Rias.Implementation;
 using Serilog;
 
 namespace Rias.Services
@@ -27,7 +28,7 @@ namespace Rias.Services
         public NsfwService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            RunTaskAsync(InitializeAsync);
+            RiasUtilities.RunTask(InitializeAsync);
         }
         
         public enum NsfwImageApiProvider

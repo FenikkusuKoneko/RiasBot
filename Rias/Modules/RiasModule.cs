@@ -151,26 +151,6 @@ namespace Rias.Modules
         /// </summary>
         public string GetText(string key, params object[] args)
             => Localization.GetText(Context.Guild?.Id, key, args);
-        
-        /// <summary>
-        /// Run a task in an async way.
-        /// </summary>
-        public Task RunTaskAsync(Task task)
-        {
-            Task.Run(async () =>
-            {
-                try
-                {
-                    await task;
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Exception thrown in a command");
-                }
-            });
-
-            return Task.CompletedTask;
-        }
 
         public async ValueTask DisposeAsync()
         {

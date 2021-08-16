@@ -160,7 +160,7 @@ namespace Rias.Modules.Administration
                 guildDb.MuteRoleId = role.Id;
                 await DbContext.SaveChangesAsync();
                 
-                await RunTaskAsync(Service.AddMuteRoleToChannelsAsync(role, Context.Guild!));
+                RiasUtilities.RunTask(() => Service.AddMuteRoleToChannelsAsync(role, Context.Guild!));
                 await ReplyConfirmationAsync(Localization.AdministrationNewMuteRoleSet);
             }
 
@@ -177,7 +177,7 @@ namespace Rias.Modules.Administration
                 guildDb.MuteRoleId = role.Id;
                 await DbContext.SaveChangesAsync();
                 
-                await RunTaskAsync(Service.AddMuteRoleToChannelsAsync(role, Context.Guild!));
+                RiasUtilities.RunTask(() => Service.AddMuteRoleToChannelsAsync(role, Context.Guild!));
                 await ReplyConfirmationAsync(Localization.AdministrationNewMuteRoleSet);
             }
         }

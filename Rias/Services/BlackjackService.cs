@@ -130,7 +130,8 @@ namespace Rias.Services
             if (!blackjack.IsRunning)
                 return Task.CompletedTask;
 
-            return RunTaskAsync(ProcessBlackjackAsync(blackjack, args.Emoji));
+            RiasUtilities.RunTask(() => ProcessBlackjackAsync(blackjack, args.Emoji));
+            return Task.CompletedTask;
         }
         
         private Task MessageReactionRemovedAsync(DiscordClient client, MessageReactionRemoveEventArgs args)
@@ -144,7 +145,8 @@ namespace Rias.Services
             if (!blackjack.IsRunning)
                 return Task.CompletedTask;
             
-            return RunTaskAsync(ProcessBlackjackAsync(blackjack, args.Emoji));
+            RiasUtilities.RunTask(() => ProcessBlackjackAsync(blackjack, args.Emoji));
+            return Task.CompletedTask;
         }
 
         private async Task ProcessBlackjackAsync(BlackjackGame blackjack, DiscordEmoji emoji)

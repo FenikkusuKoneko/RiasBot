@@ -55,7 +55,7 @@ namespace Rias.Services
             RiasBot.Client.GuildMembersChunked += GuildMembersChunkedAsync;
             RiasBot.Client.GuildDownloadCompleted += GuildDownloadCompletedAsync;
             
-            RunTaskAsync(RequestMembersAsync);
+            RiasUtilities.RunTask(RequestMembersAsync);
             _discordBotsHttpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
         }
         
@@ -265,22 +265,23 @@ namespace Rias.Services
             }
         }
         
-        private async Task GuildMemberAddedAsync(DiscordClient client, GuildMemberAddEventArgs args)
+        private Task GuildMemberAddedAsync(DiscordClient client, GuildMemberAddEventArgs args)
         {
             if (RiasBot.CurrentUser != null && args.Member.Id == RiasBot.CurrentUser.Id)
-                return;
+                return Task.CompletedTask;
 
             RiasBot.Members[args.Member.Id] = args.Member;
             
-            await RunTaskAsync(SendGreetMessageAsync(args.Member));
+            RiasUtilities.RunTask(() => SendGreetMessageAsync(args.Member));
 
             if (args.Member.IsPending is true)
-                return;
+                return Task.CompletedTask;
             
-            await RunTaskAsync(AddMuteRoleAsync(args.Member));
-            await RunTaskAsync(AddXpIgnoredRole(args.Member));
-            await RunTaskAsync(AddAssignableRoleAsync(args.Member));
-            await RunTaskAsync(AddLevelRolesAsync(args.Member));
+            RiasUtilities.RunTask(() => AddMuteRoleAsync(args.Member));
+            RiasUtilities.RunTask(() => AddXpIgnoredRole(args.Member));
+            RiasUtilities.RunTask(() => AddAssignableRoleAsync(args.Member));
+            RiasUtilities.RunTask(() => AddLevelRolesAsync(args.Member));
+            return Task.CompletedTask;
         }
 
         private async Task AddLevelRolesAsync(DiscordMember member)
@@ -381,12 +382,13 @@ namespace Rias.Services
             await db.SaveChangesAsync();
         }
 
-        private async Task GuildMemberRemovedAsync(DiscordClient client, GuildMemberRemoveEventArgs args)
+        private Task GuildMemberRemovedAsync(DiscordClient client, GuildMemberRemoveEventArgs args)
         {
             if (RiasBot.CurrentUser != null && args.Member.Id == RiasBot.CurrentUser.Id)
-                return;
+                return Task.CompletedTask;
             
-            await RunTaskAsync(SendByeMessageAsync(args.Member));
+            RiasUtilities.RunTask(() => SendByeMessageAsync(args.Member));
+            return Task.CompletedTask;
         }
 
         private async Task SendByeMessageAsync(DiscordMember member)
@@ -484,10 +486,10 @@ namespace Rias.Services
 #endif
                 
                 if (!string.IsNullOrEmpty(Configuration.DiscordBotListToken))
-                    _dblTimer = new Timer(_ => RunTaskAsync(PostDiscordBotListStatsAsync), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+                    _dblTimer = new Timer(_ => RiasUtilities.RunTask(PostDiscordBotListStatsAsync), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
                 
                 if (!string.IsNullOrEmpty(Configuration.DiscordBotsToken))
-                    _dbTimer = new Timer(_ => RunTaskAsync(PostDiscordBotsStatsAsync), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+                    _dbTimer = new Timer(_ => RiasUtilities.RunTask(PostDiscordBotsStatsAsync), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
             }
         }
 
@@ -497,10 +499,10 @@ namespace Rias.Services
 
             if (args.PendingBefore is true && args.PendingAfter is false)
             {
-                await RunTaskAsync(AddMuteRoleAsync(args.Member));
-                await RunTaskAsync(AddXpIgnoredRole(args.Member));
-                await RunTaskAsync(AddAssignableRoleAsync(args.Member));
-                await RunTaskAsync(AddLevelRolesAsync(args.Member));
+                RiasUtilities.RunTask(() => AddMuteRoleAsync(args.Member));
+                RiasUtilities.RunTask(() => AddXpIgnoredRole(args.Member));
+                RiasUtilities.RunTask(() => AddAssignableRoleAsync(args.Member));
+                RiasUtilities.RunTask(() => AddLevelRolesAsync(args.Member));
             }
             
             if (args.RolesBefore.Count == args.RolesAfter.Count)

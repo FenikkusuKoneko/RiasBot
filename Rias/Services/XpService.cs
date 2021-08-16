@@ -42,7 +42,7 @@ namespace Rias.Services
         {
             _botService = serviceProvider.GetRequiredService<BotService>();
 
-            RunTaskAsync(LoadXpIgnoredChannels);
+            RiasUtilities.RunTask(LoadXpIgnoredChannels);
         }
         
         public static string ReplacePlaceholders(DiscordMember member, DiscordRole? role, int level, string message)

@@ -26,7 +26,7 @@ namespace Rias.Services
         public MuteService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            LoadTimers = new Timer(_ => RunTaskAsync(LoadTimersAsync), null, TimeSpan.Zero, TimeSpan.FromDays(7));
+            LoadTimers = new Timer(_ => RiasUtilities.RunTask(LoadTimersAsync), null, TimeSpan.Zero, TimeSpan.FromDays(7));
         }
         
         private Timer LoadTimers { get; }
@@ -76,7 +76,7 @@ namespace Rias.Services
             
             await member.GrantRoleAsync(role);
 
-            await RunTaskAsync(AddMuteAsync(channel, moderator, member, timeout));
+            RiasUtilities.RunTask(() => AddMuteAsync(channel, moderator, member, timeout));
 
             var embed = new DiscordEmbedBuilder
                 {
@@ -167,7 +167,7 @@ namespace Rias.Services
                 return;
             }
 
-            await RunTaskAsync(RemoveMuteAsync(context));
+            RiasUtilities.RunTask(() => RemoveMuteAsync(context));
             await context.Member.RevokeRoleAsync(role);
 
             var embed = new DiscordEmbedBuilder
@@ -242,7 +242,7 @@ namespace Rias.Services
                 var dueTime = muteTimerDb.Expiration - DateTime.UtcNow;
                 if (dueTime < TimeSpan.Zero)
                     dueTime = TimeSpan.Zero;
-                var muteTimer = new Timer(_ => RunTaskAsync(UnmuteUserAsync(context)), null, dueTime, TimeSpan.Zero);
+                var muteTimer = new Timer(_ => RiasUtilities.RunTask(() => UnmuteUserAsync(context)), null, dueTime, TimeSpan.Zero);
                 _timers.TryAdd((muteTimerDb.GuildId, muteTimerDb.UserId), muteTimer);
             }
 
@@ -312,7 +312,7 @@ namespace Rias.Services
             }
 
             var muteContext = new MuteContext(RiasBot, guild.Id, moderator.Id, member.Id, channel.Id);
-            var timer = new Timer(_ => RunTaskAsync(UnmuteUserAsync(muteContext)), null, timeout.Value, TimeSpan.Zero);
+            var timer = new Timer(_ => RiasUtilities.RunTask(() => UnmuteUserAsync(muteContext)), null, timeout.Value, TimeSpan.Zero);
             _timers.TryAdd((guild.Id, member.Id), timer);
             {
                 Log.Debug("Mute timer added");

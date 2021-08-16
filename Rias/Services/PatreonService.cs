@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using Rias.Attributes;
 using Rias.Database;
 using Rias.Database.Entities;
+using Rias.Implementation;
 using Rias.Models;
 using Serilog;
 
@@ -36,16 +37,16 @@ namespace Rias.Services
                 return;
 
             _webSocket = new WebSocketClient(Configuration.PatreonConfiguration);
-            RunTaskAsync(ConnectWebSocket());
+            RiasUtilities.RunTask(() => ConnectWebSocket());
             _webSocket.DataReceived += PledgeReceivedAsync;
             _webSocket.Closed += WebSocketClosed;
                 
-            RunTaskAsync(CheckPatronsAsync);
+            RiasUtilities.RunTask(CheckPatronsAsync);
 
             _httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
             _httpClient.Timeout = TimeSpan.FromMinutes(1);
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Configuration.PatreonConfiguration.Authorization!);
-            _sendPatronsTimer = new Timer(_ => RunTaskAsync(SendPatronsAsync), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+            _sendPatronsTimer = new Timer(_ => RiasUtilities.RunTask(SendPatronsAsync), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
         }
 
         private async Task CheckPatronsAsync()
@@ -78,7 +79,7 @@ namespace Rias.Services
                     Log.Information("Patreon WebSocket connected");
                     
                     if (recheckPatrons)
-                        await RunTaskAsync(CheckPatronsAsync);
+                        RiasUtilities.RunTask(CheckPatronsAsync);
                     
                     break;
                 }
@@ -126,7 +127,7 @@ namespace Rias.Services
         {
             Log.Warning("Patreon WebSocket was closed. Retrying in 10 seconds...");
             await Task.Delay(10000);
-            await RunTaskAsync(ConnectWebSocket(true));
+            RiasUtilities.RunTask(() => ConnectWebSocket(true));
         }
 
         private async Task SendPatronsAsync()

@@ -142,14 +142,16 @@ namespace Rias.Services
             }
         }
         
-        private async Task MessageCreatedAsync(DiscordClient client, MessageCreateEventArgs args)
+        private Task MessageCreatedAsync(DiscordClient client, MessageCreateEventArgs args)
         {
             if (args.Message.MessageType != MessageType.Default && args.Message.MessageType != MessageType.Reply)
-                return;
-            if (args.Message.Author.IsBot)
-                return;
+                return Task.CompletedTask;
             
-            await RunTaskAsync(ExecuteAsync(client, args));
+            if (args.Message.Author.IsBot)
+                return Task.CompletedTask;
+            
+            RiasUtilities.RunTask(() => ExecuteAsync(client, args));
+            return Task.CompletedTask;
         }
 
         private async Task ExecuteAsync(DiscordClient client, MessageCreateEventArgs args)
@@ -159,11 +161,11 @@ namespace Rias.Services
                 var member = (DiscordMember) args.Author;
                 RiasBot.Members[member.Id] = member;
                 
-                await RunTaskAsync(_botService.AddAssignableRoleAsync(member));
-                await RunTaskAsync(_botService.AddMuteRoleAsync(member));
-                await RunTaskAsync(_botService.AddXpIgnoredRole(member));
-                await RunTaskAsync(_xpService.AddUserXpAsync(args.Author));
-                await RunTaskAsync(_xpService.AddGuildUserXpAsync(member, args.Channel));
+                RiasUtilities.RunTask(() => _botService.AddAssignableRoleAsync(member));
+                RiasUtilities.RunTask(() => _botService.AddMuteRoleAsync(member));
+                RiasUtilities.RunTask(() => _botService.AddXpIgnoredRole(member));
+                RiasUtilities.RunTask(() => _xpService.AddUserXpAsync(args.Author));
+                RiasUtilities.RunTask(() => _xpService.AddGuildUserXpAsync(member, args.Channel));
                 
                 var channelPermissions = args.Guild.CurrentMember.PermissionsIn(args.Channel);
                 if (!channelPermissions.HasPermission(Permissions.SendMessages))
@@ -227,7 +229,7 @@ namespace Rias.Services
                 }
                 
                 CommandStatistics.IncrementExecutedCommand();
-                await RunTaskAsync(CommandStatistics.AddCommandTimestampAsync(DateTime.UtcNow));
+                RiasUtilities.RunTask(() => CommandStatistics.AddCommandTimestampAsync(DateTime.UtcNow));
                 return;
             }
             
@@ -236,20 +238,20 @@ namespace Rias.Services
             switch (result)
             {
                 case OverloadsFailedResult overloadsFailedResult:
-                    await RunTaskAsync(SendFailedResultsAsync(context, overloadsFailedResult.FailedOverloads.Values));
+                    RiasUtilities.RunTask(() => SendFailedResultsAsync(context, overloadsFailedResult.FailedOverloads.Values));
                     break;
                 case ChecksFailedResult checksFailedResult:
                     if (checksFailedResult.FailedChecks.Any(checkResult => checkResult.Check is MasterOnlyAttribute))
                         return;
                     
-                    await RunTaskAsync(SendFailedResultsAsync(context, new[] { (FailedResult) result }));
+                    RiasUtilities.RunTask(() => SendFailedResultsAsync(context, new[] { (FailedResult) result }));
                     break;
                 case TypeParseFailedResult:
                 case ArgumentParseFailedResult:
-                    await RunTaskAsync(SendFailedResultsAsync(context, new[] { (FailedResult) result }));
+                    RiasUtilities.RunTask(() => SendFailedResultsAsync(context, new[] { (FailedResult) result }));
                     break;
                 case CommandOnCooldownResult commandOnCooldownResult:
-                    await RunTaskAsync(SendCommandOnCooldownMessageAsync(context, commandOnCooldownResult));
+                    RiasUtilities.RunTask(() => SendCommandOnCooldownMessageAsync(context, commandOnCooldownResult));
                     break;
             }
         }
