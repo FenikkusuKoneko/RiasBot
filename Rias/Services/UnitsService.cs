@@ -24,7 +24,7 @@ namespace Rias.Services
         private const string ExchangeRatesApi = "https://v6.exchangerate-api.com/v6/{0}/latest/USD";
         private static readonly string UnitsPath = Path.Combine(Environment.CurrentDirectory, "assets/units");
 
-        private readonly IDatabase _redisDb;
+        private readonly IDatabase? _redisDb;
 
         private ImmutableDictionary<string, UnitsCategory> _units = null!;
         private ImmutableDictionary<string, SingleOrList<Unit>> _unitSingulars = null!;
@@ -36,7 +36,7 @@ namespace Rias.Services
         public UnitsService(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            _redisDb = serviceProvider.GetRequiredService<ConnectionMultiplexer>().GetDatabase();
+            _redisDb = serviceProvider.GetService<ConnectionMultiplexer>()?.GetDatabase();
             var sw = Stopwatch.StartNew();
             
             LoadUnits();
@@ -287,6 +287,9 @@ namespace Rias.Services
         
         private async Task UpdateCurrencyUnitsAsync()
         {
+            if (_redisDb is null)
+                return;
+            
             var exchangeRatesDataRedis = _redisDb.StringGetWithExpiry("converter:currency");
             var exchangeRatesData = !exchangeRatesDataRedis.Value.IsNullOrEmpty
                 ? exchangeRatesDataRedis.Value.ToString()

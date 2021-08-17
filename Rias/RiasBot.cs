@@ -27,7 +27,7 @@ namespace Rias
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.19.6";
+        public const string Version = "3.19.7";
         public static readonly Stopwatch UpTime = new();
         
         public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new();
@@ -66,9 +66,6 @@ namespace Rias
             if (databaseConnection is null)
                 throw new NullReferenceException("The database connection is not set in credentials.json");
 
-            var redis = ConnectionMultiplexer.Connect("localhost");
-            Log.Information("Redis connected");
-            
             var riasServices = typeof(RiasBot).Assembly.GetTypes()
                 .Where(x => typeof(RiasService).IsAssignableFrom(x)
                             && !x.GetTypeInfo().IsInterface
@@ -77,12 +74,22 @@ namespace Rias
             var services = new ServiceCollection();
             foreach (var serviceType in riasServices)
                 services.AddSingleton(serviceType);
+            
+            try
+            {
+                var redis = ConnectionMultiplexer.Connect("localhost");
+                services.AddSingleton(redis);
+                Log.Information("Redis connected");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Couldn't connect to Redis.");
+            }
 
             _serviceProvider = services
                 .AddSingleton(this)
                 .AddSingleton(_configuration)
                 .AddSingleton(commandService)
-                .AddSingleton(redis)
                 .AddSingleton<Localization>()
                 .AddSingleton<HttpClient>()
                 .AddHttpClient()
