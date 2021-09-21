@@ -124,14 +124,14 @@ namespace Rias.Services
                 return;
 
             var role = member.Guild.GetRole(guildDb?.MuteRoleId ?? 0);
-            if (role != null)
-            {
-                await member.GrantRoleAsync(role);
-            }
-            else
+            if (role is null || currentUser.CheckHierarchy(member) > 0)
             {
                 memberDb.IsMuted = false;
                 await db.SaveChangesAsync();
+            }
+            else
+            {
+                await member.GrantRoleAsync(role);
             }
         }
 
