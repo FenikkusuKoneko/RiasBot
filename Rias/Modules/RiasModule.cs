@@ -80,7 +80,7 @@ namespace Rias.Modules
                 return new Page(content, embed);
             });
 
-            await Context.Interactivity.SendPaginatedMessageAsync(Context.Channel, Context.User, pages, null, timeoutoverride: _interactivityTimeout);
+            await Context.Interactivity.SendPaginatedMessageAsync(Context.Channel, Context.User, pages, null, null, null, _interactivityTimeout);
         }
 
         public Task<InteractivityResult<ComponentInteractionCreateEventArgs>?> SendConfirmationButtonsAsync(string key, params object[] args)

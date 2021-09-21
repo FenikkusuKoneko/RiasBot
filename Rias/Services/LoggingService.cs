@@ -21,7 +21,7 @@ namespace Rias.Services
             commandService.CommandExecutionFailed += CommandExecutionFailedAsync;
         }
 
-        private Task CommandExecutedAsync(CommandExecutedEventArgs args)
+        private ValueTask CommandExecutedAsync(object sender, CommandExecutedEventArgs args)
         {
             var context = (RiasCommandContext) args.Context;
             var command = context.Command;
@@ -35,10 +35,10 @@ namespace Rias.Services
                 Guild = $"{context.Guild?.Name ?? "DM"} ({context.Guild?.Id ?? 0})"
             });
 
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
-        private Task CommandExecutionFailedAsync(CommandExecutionFailedEventArgs args)
+        private ValueTask CommandExecutionFailedAsync(object sender, CommandExecutionFailedEventArgs args)
         {
             var context = (RiasCommandContext) args.Context;
             var command = context.Command;
@@ -54,7 +54,7 @@ namespace Rias.Services
                 ErrorReason = result.FailureReason
             });
 
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
     }
 }
