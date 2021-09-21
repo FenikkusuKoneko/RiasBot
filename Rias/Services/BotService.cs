@@ -126,14 +126,14 @@ namespace Rias.Services
             var role = member.Guild.GetRole(guildDb?.MuteRoleId ?? 0);
             if (role is not null)
             {
-                // this throws with an unknown reason, trying to get more info
-                try
+                if (currentUser.CheckRoleHierarchy(role) > 0)
                 {
                     await member.GrantRoleAsync(role);
                 }
-                catch (Exception ex)
+                else if (guildDb is not null)
                 {
-                    Log.Error(ex, "Exception when muting a member; Member: {Member}, Guild: {Guild}", member.ToString(), member.Guild.ToString());
+                    guildDb.MuteRoleId = 0;
+                    await db.SaveChangesAsync();
                 }
             }
             else
