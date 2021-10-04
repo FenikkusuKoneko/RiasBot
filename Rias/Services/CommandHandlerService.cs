@@ -89,6 +89,96 @@ namespace Rias.Services
 
             throw new InvalidOperationException($"The command info for the command \"{key}\" couldn't be found.");
         }
+        
+        public DiscordEmbedBuilder GenerateHelpEmbedAsync(DiscordGuild? guild, Command command, string prefix)
+        {
+            var moduleName = command.Module.Name;
+            if (command.Module.Parent != null && !string.Equals(command.Module.Name, command.Module.Parent.Name, StringComparison.OrdinalIgnoreCase))
+                moduleName = $"{command.Module.Parent.Name} -> {moduleName}";
+
+            var moduleAlias = command.Module.Aliases.Count != 0 ? $"{command.Module.Aliases[0]} " : string.Empty;
+            var title = string.Join(" / ", command.Aliases.Select(a => $"{prefix}{moduleAlias}{a}"));
+
+            if (command.Checks.Any(c => c is MasterOnlyAttribute))
+                title += $" [{GetText(guild?.Id, Localization.HelpOwnerOnly).ToLowerInvariant()}]";
+
+            var commandInfoKey = $"{command.Module.Name.Replace(' ', '_').ToLower()}_{command.Name.Replace(' ', '_')}";
+            var description = GetCommandInfo(guild?.Id, commandInfoKey);
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Color = RiasUtilities.ConfirmColor,
+                Author = new DiscordEmbedBuilder.EmbedAuthor
+                {
+                    Name = GetText(guild?.Id, Localization.HelpModule, moduleName)
+                },
+                Title = title,
+                Description = description.Replace("[prefix]", prefix).Replace("[currency]", Configuration.Currency)
+            };
+
+            var permissions = new StringBuilder();
+
+            foreach (var attribute in command.Checks)
+            {
+                switch (attribute)
+                {
+                    case MemberPermissionAttribute memberPermissionAttribute:
+                        var memberPermissions = memberPermissionAttribute.Permissions
+                            .ToString()
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
+                            .ToArray();
+                        permissions.Append(GetText(guild?.Id, Localization.HelpRequiresMemberPermissions, string.Join(", ", memberPermissions)));
+                        break;
+                    case BotPermissionAttribute botPermissionAttribute:
+                        var botPermissions = botPermissionAttribute.Permissions
+                            .ToString()
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
+                            .ToArray();
+                        
+                        if (permissions.Length > 0)
+                            permissions.AppendLine();
+                        
+                        permissions.Append(GetText(guild?.Id, Localization.HelpRequiresBotPermissions,  RiasBot.Client.CurrentUser.Username, string.Join(", ", botPermissions)));
+                        break;
+                    case MasterOnlyAttribute:
+                        title = $"{title} **({GetText(guild?.Id, Localization.HelpOwnerOnly)})**";
+                        break;
+                }
+            }
+
+            if (permissions.Length != 0)
+                embed.AddField(GetText(guild?.Id, Localization.HelpRequiresPermissions), permissions.ToString());
+            
+            var commandExamples = GetCommandInfo(guild?.Id, $"{commandInfoKey}_examples").Split('\n');
+            var usages = new StringBuilder();
+            var examples = new StringBuilder();
+
+            foreach (var commandExample in commandExamples)
+            {
+                if (commandExample[0] == '[' && commandExample[^1] == ']')
+                    usages.AppendLine(commandExample[1..^1]);
+                else
+                    examples.AppendLine(commandExample);
+            }
+            
+            embed.AddField(GetText(guild?.Id, Localization.CommonExamples), Formatter.InlineCode(string.Format(examples.ToString(), prefix)), true);
+            embed.AddField(GetText(guild?.Id, Localization.CommonUsages), Formatter.InlineCode(string.Format(usages.ToString(), prefix)), true);
+            
+            var commandCooldown = command.Cooldowns.FirstOrDefault();
+            if (commandCooldown != null)
+            {
+                var locale = Localization.GetGuildLocale(guild?.Id);
+                embed.AddField(GetText(guild?.Id, Localization.CommonCooldown),
+                    $"{GetText(guild?.Id, Localization.CommonAmount)}: **{commandCooldown.Amount}**\n" +
+                    $"{GetText(guild?.Id, Localization.CommonPeriod)}: **{commandCooldown.Per.Humanize(culture: new CultureInfo(locale))}**\n" +
+                    $"{GetText(guild?.Id, Localization.CommonPer)}: **{GetText(guild?.Id, Localization.CommonCooldownBucketType(commandCooldown.BucketType.Humanize(LetterCasing.LowerCase).Underscore()))}**");
+            }
+            
+            embed.WithCurrentTimestamp();
+            return embed;
+        }
 
         private void LoadCommands()
         {
@@ -170,24 +260,9 @@ namespace Rias.Services
                 var channelPermissions = args.Guild.CurrentMember.PermissionsIn(args.Channel);
                 if (!channelPermissions.HasPermission(Permissions.SendMessages))
                     return;
-                
-                var channelEmbedPerm = channelPermissions.HasPermission(Permissions.EmbedLinks);
-                var serverEmbedPerm = args.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks);
-                
-                if (!serverEmbedPerm && !channelEmbedPerm)
-                {
-                    await args.Channel.SendMessageAsync(GetText(args.Guild.Id, Localization.ServiceNoEmbedLinksPermission));
-                    return;
-                }
-
-                if (serverEmbedPerm && !channelEmbedPerm)
-                {
-                    await args.Channel.SendMessageAsync(GetText(args.Guild.Id, Localization.ServiceNoEmbedLinksChannelPermission));
-                    return;
-                }
             }
 
-            var isMentionPrefix = false;
+            var sendHelpMessage = false;
             
             var prefix = await GetGuildPrefixAsync(args.Guild);
             if (!CommandUtilities.HasPrefix(args.Message.Content, prefix, StringComparison.InvariantCultureIgnoreCase, out var output))
@@ -198,7 +273,7 @@ namespace Rias.Services
                 if (args.Message.HasMentionPrefix(client.CurrentUser, out output))
                 {
                     if (string.IsNullOrEmpty(output))
-                        isMentionPrefix = true;
+                        sendHelpMessage = true;
                 }
                 else if (!CommandUtilities.HasPrefix(args.Message.Content, client.CurrentUser.Username, StringComparison.InvariantCultureIgnoreCase, out output))
                     return;
@@ -209,15 +284,44 @@ namespace Rias.Services
             
             var context = new RiasCommandContext(RiasBot, args.Message, prefix);
 
-            if (isMentionPrefix)
+            if (args.Guild is not null)
+            {
+                var channelPermissions = args.Guild.CurrentMember.PermissionsIn(args.Channel);
+                var channelEmbedPerm = channelPermissions.HasPermission(Permissions.EmbedLinks);
+                var serverEmbedPerm = args.Guild.CurrentMember.GetPermissions().HasPermission(Permissions.EmbedLinks);
+
+                if (!serverEmbedPerm || !channelEmbedPerm)
+                {
+                    var commandsCount = _commandService.FindCommands(output).Count;
+                    if (commandsCount != 0 || sendHelpMessage)
+                    {
+                        if (!serverEmbedPerm && !channelEmbedPerm)
+                        {
+                            await args.Channel.SendMessageAsync(GetText(args.Guild.Id, Localization.ServiceNoEmbedLinksPermission));
+                            return;
+                        }
+
+                        if (serverEmbedPerm && !channelEmbedPerm)
+                        {
+                            await args.Channel.SendMessageAsync(GetText(args.Guild.Id, Localization.ServiceNoEmbedLinksChannelPermission));
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            if (sendHelpMessage)
             {
                 var prefixCommand = _commandService.FindCommands("prefix");
                 await _commandService.ExecuteAsync(prefixCommand[0].Command, string.Empty, context);
                 return;
             }
-            
+
             var result = await _commandService.ExecuteAsync(output, context);
-            
+
+            if (result is CommandNotFoundResult)
+                return;
+
             if (result.IsSuccessful)
             {
                 if (args.Guild is not null
@@ -341,97 +445,7 @@ namespace Rias.Services
             
             return !string.IsNullOrEmpty(prefix) ? prefix : Configuration.Prefix;
         }
-        
-        public DiscordEmbedBuilder GenerateHelpEmbedAsync(DiscordGuild? guild, Command command, string prefix)
-        {
-            var moduleName = command.Module.Name;
-            if (command.Module.Parent != null && !string.Equals(command.Module.Name, command.Module.Parent.Name, StringComparison.OrdinalIgnoreCase))
-                moduleName = $"{command.Module.Parent.Name} -> {moduleName}";
 
-            var moduleAlias = command.Module.Aliases.Count != 0 ? $"{command.Module.Aliases[0]} " : string.Empty;
-            var title = string.Join(" / ", command.Aliases.Select(a => $"{prefix}{moduleAlias}{a}"));
-
-            if (command.Checks.Any(c => c is MasterOnlyAttribute))
-                title += $" [{GetText(guild?.Id, Localization.HelpOwnerOnly).ToLowerInvariant()}]";
-
-            var commandInfoKey = $"{command.Module.Name.Replace(' ', '_').ToLower()}_{command.Name.Replace(' ', '_')}";
-            var description = GetCommandInfo(guild?.Id, commandInfoKey);
-
-            var embed = new DiscordEmbedBuilder
-            {
-                Color = RiasUtilities.ConfirmColor,
-                Author = new DiscordEmbedBuilder.EmbedAuthor
-                {
-                    Name = GetText(guild?.Id, Localization.HelpModule, moduleName)
-                },
-                Title = title,
-                Description = description.Replace("[prefix]", prefix).Replace("[currency]", Configuration.Currency)
-            };
-
-            var permissions = new StringBuilder();
-
-            foreach (var attribute in command.Checks)
-            {
-                switch (attribute)
-                {
-                    case MemberPermissionAttribute memberPermissionAttribute:
-                        var memberPermissions = memberPermissionAttribute.Permissions
-                            .ToString()
-                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
-                            .ToArray();
-                        permissions.Append(GetText(guild?.Id, Localization.HelpRequiresMemberPermissions, string.Join(", ", memberPermissions)));
-                        break;
-                    case BotPermissionAttribute botPermissionAttribute:
-                        var botPermissions = botPermissionAttribute.Permissions
-                            .ToString()
-                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => Formatter.InlineCode(x.Humanize(LetterCasing.Title)))
-                            .ToArray();
-                        
-                        if (permissions.Length > 0)
-                            permissions.AppendLine();
-                        
-                        permissions.Append(GetText(guild?.Id, Localization.HelpRequiresBotPermissions,  RiasBot.Client.CurrentUser.Username, string.Join(", ", botPermissions)));
-                        break;
-                    case MasterOnlyAttribute:
-                        title = $"{title} **({GetText(guild?.Id, Localization.HelpOwnerOnly)})**";
-                        break;
-                }
-            }
-
-            if (permissions.Length != 0)
-                embed.AddField(GetText(guild?.Id, Localization.HelpRequiresPermissions), permissions.ToString());
-            
-            var commandExamples = GetCommandInfo(guild?.Id, $"{commandInfoKey}_examples").Split('\n');
-            var usages = new StringBuilder();
-            var examples = new StringBuilder();
-
-            foreach (var commandExample in commandExamples)
-            {
-                if (commandExample[0] == '[' && commandExample[^1] == ']')
-                    usages.AppendLine(commandExample[1..^1]);
-                else
-                    examples.AppendLine(commandExample);
-            }
-            
-            embed.AddField(GetText(guild?.Id, Localization.CommonExamples), Formatter.InlineCode(string.Format(examples.ToString(), prefix)), true);
-            embed.AddField(GetText(guild?.Id, Localization.CommonUsages), Formatter.InlineCode(string.Format(usages.ToString(), prefix)), true);
-            
-            var commandCooldown = command.Cooldowns.FirstOrDefault();
-            if (commandCooldown != null)
-            {
-                var locale = Localization.GetGuildLocale(guild?.Id);
-                embed.AddField(GetText(guild?.Id, Localization.CommonCooldown),
-                    $"{GetText(guild?.Id, Localization.CommonAmount)}: **{commandCooldown.Amount}**\n" +
-                    $"{GetText(guild?.Id, Localization.CommonPeriod)}: **{commandCooldown.Per.Humanize(culture: new CultureInfo(locale))}**\n" +
-                    $"{GetText(guild?.Id, Localization.CommonPer)}: **{GetText(guild?.Id, Localization.CommonCooldownBucketType(commandCooldown.BucketType.Humanize(LetterCasing.LowerCase).Underscore()))}**");
-            }
-            
-            embed.WithCurrentTimestamp();
-            return embed;
-        }
-        
         private async Task<bool> CheckGuildCommandMessageDeletion(DiscordGuild guild)
         {
             using var scope = RiasBot.CreateScope();
