@@ -24,7 +24,7 @@ namespace Rias.Modules.Searches
         [Cooldown(1, 5, CooldownMeasure.Seconds, BucketType.User)]
         public async Task WikipediaAsync([Remainder] string title)
         {
-            //await Context.Channel.TriggerTypingAsync();
+            await Context.Channel.TriggerTypingAsync();
             using var response = await HttpClient.GetAsync("https://en.wikipedia.org//w/api.php?action=query&format=json&prop=info&redirects=1&formatversion=2&inprop=url&titles=" +
                                                            Uri.EscapeDataString(title));
             if (!response.IsSuccessStatusCode)
@@ -59,7 +59,7 @@ namespace Rias.Modules.Searches
                 return;
             }
             
-            //await Context.Channel.TriggerTypingAsync();
+            await Context.Channel.TriggerTypingAsync();
             
             using var request = new HttpRequestMessage(HttpMethod.Get, $"https://mashape-community-urban-dictionary.p.rapidapi.com/define?term={Uri.EscapeUriString(term)}");
             request.Headers.Add("x-rapidapi-key", Configuration.UrbanDictionaryApiKey);

@@ -28,7 +28,7 @@ namespace Rias.Modules.Profile
         public async Task ProfileAsync([Remainder] DiscordMember? member = null)
         {
             member ??= (DiscordMember) Context.User;
-            //await Context.Channel.TriggerTypingAsync();
+            await Context.Channel.TriggerTypingAsync();
 
             var serverAttachFilesPerm = Context.Guild!.CurrentMember.GetPermissions().HasPermission(Permissions.AttachFiles);
             var channelAttachFilesPerm = Context.Guild!.CurrentMember.PermissionsIn(Context.Channel).HasPermission(Permissions.AttachFiles);
@@ -74,7 +74,7 @@ namespace Rias.Modules.Profile
                 return;
             }
 
-            //await Context.Channel.TriggerTypingAsync();
+            await Context.Channel.TriggerTypingAsync();
             
             using var result = await HttpClient.GetAsync(backgroundUri);
             if (!result.IsSuccessStatusCode)

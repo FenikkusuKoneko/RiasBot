@@ -220,7 +220,7 @@ namespace Rias.Modules.Utility
         public async Task PingAsync()
         {
             var sw = Stopwatch.StartNew();
-            //await Context.Channel.TriggerTypingAsync();
+            await Context.Channel.TriggerTypingAsync();
             sw.Stop();
             var timeOne = sw.ElapsedMilliseconds;
             

@@ -36,7 +36,7 @@ namespace Rias.Modules.Xp
         public async Task XpAsync([Remainder] DiscordMember? member = null)
         {
             member ??= (DiscordMember) Context.User;
-            //await Context.Channel.TriggerTypingAsync();
+            await Context.Channel.TriggerTypingAsync();
 
             var serverAttachFilesPerm = Context.Guild!.CurrentMember.GetPermissions().HasPermission(Permissions.AttachFiles);
             var channelAttachFilesPerm = Context.Guild!.CurrentMember.PermissionsIn(Context.Channel).HasPermission(Permissions.AttachFiles);

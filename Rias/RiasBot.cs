@@ -27,7 +27,7 @@ namespace Rias
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.19.12";
+        public const string Version = "3.19.13";
         public static readonly Stopwatch UpTime = new();
         
         public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new();
