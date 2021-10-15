@@ -12,12 +12,12 @@
 
     <ItemGroup>
         <PackageReference Include="CoreCLR-NCalc" Version="2.2.92" />
-        <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01022" />
+        <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01030" />
         <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01022" />
         <PackageReference Include="EFCore.NamingConventions" Version="5.0.2" />
         <PackageReference Include="Humanizer" Version="2.11.10" />
-        <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="8.3.2" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.0-4.final" />
+        <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="8.3.3" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.0-5.final" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
             <PrivateAssets>all</PrivateAssets>
@@ -35,7 +35,7 @@
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1-dev-00876" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
-        <PackageReference Include="StackExchange.Redis" Version="2.2.62" />
+        <PackageReference Include="StackExchange.Redis" Version="2.2.79" />
     </ItemGroup>
     
     <ItemGroup>

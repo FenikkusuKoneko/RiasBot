@@ -203,7 +203,8 @@ namespace Rias.Services
                 isAdult
                 description
                 coverImage {
-                  large
+                  extraLarge
+                  color
                 }
                 characters {
                   nodes {
@@ -254,7 +255,8 @@ namespace Rias.Services
                   isAdult
                   description
                   coverImage {
-                    large
+                    extraLarge
+                    color
                   }
                 }
             }";

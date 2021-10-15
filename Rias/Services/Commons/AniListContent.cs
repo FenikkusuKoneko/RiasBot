@@ -26,7 +26,8 @@ namespace Rias.Services.Commons
 
         public struct CoverImageInfo
         {
-            public string? Large { get; set; }
+            public string? ExtraLarge { get; set; }
+            public string? Color { get; set; }
         }
 
         public struct CharacterName
