@@ -155,9 +155,8 @@ namespace Rias.Modules.Utility
                     .AddField(GetText(Localization.UtilityVoiceChannels), Context.Guild.Channels.Count(x => x.Value.Type == ChannelType.Voice).ToString(), true)
                     .AddField(GetText(Localization.UtilitySystemChannel), Context.Guild.SystemChannel?.Mention ?? "-", true)
                     .AddField(GetText(Localization.UtilityAfkChannel), Context.Guild.AfkChannel?.Name ?? "-", true)
-                    .AddField(GetText(Localization.UtilityRegion), Context.Guild.VoiceRegion.Id, true)
                     .AddField(GetText(Localization.UtilityVerificationLevel), Context.Guild.VerificationLevel.ToString(), true)
-                    .AddField(GetText(Localization.UtilityBoostTier), Context.Guild.PremiumTier.ToString(), true)
+                    .AddField(GetText(Localization.UtilityBoostTier), Context.Guild.PremiumTier.Humanize(), true)
                     .AddField(GetText(Localization.UtilityBoosts), Context.Guild.PremiumSubscriptionCount?.ToString() ?? "0", true);
 
                 if (!string.IsNullOrEmpty(Context.Guild.VanityUrlCode))
@@ -165,7 +164,7 @@ namespace Rias.Modules.Utility
 
                 if (Context.Guild.Features.Count != 0)
                     embed.AddField(GetText(Localization.UtilityFeatures, Context.Guild.Features.Count),
-                        string.Join("\n", Context.Guild.Features.Select(x => x.ToLower().Humanize(LetterCasing.Sentence))), true);
+                        string.Join(" • ", Context.Guild.Features.OrderBy(f => f).Select(x => x.ToLower().Humanize(LetterCasing.Sentence))));
 
                 var emotes = new StringBuilder();
                 foreach (var (_, emote) in Context.Guild.Emojis)

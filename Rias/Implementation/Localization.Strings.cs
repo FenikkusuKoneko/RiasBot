@@ -460,7 +460,6 @@ namespace Rias.Implementation
         public const string UtilityCreatedAt = "utility_created_at";
         public const string UtilitySystemChannel = "utility_system_channel";
         public const string UtilityAfkChannel = "utility_afk_channel";
-        public const string UtilityRegion = "utility_region";
         public const string UtilityVerificationLevel = "utility_verification_level";
         public const string UtilityBoostTier = "utility_boost_tier";
         public const string UtilityBoosts = "utility_boosts";
