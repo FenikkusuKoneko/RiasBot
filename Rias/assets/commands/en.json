@@ -315,8 +315,10 @@
   "info_memberinfo_examples": "[{0}memberinfo [MEMBER]]\n{0}memberinfo\n{0}memberinfo Member\n{0}memberinfo @Member\n{0}memberinfo 327927038360944640",
   "info_serverinfo": "Shows the info for this server.",
   "info_serverinfo_examples": "[{0}sinfo]\n{0}sinfo",
-  "info_avatar": "Shows the avatar for a member. Provide no arguments to show your avatar.",
+  "info_avatar": "Shows the server avatar for a member. Provide no arguments to show your server avatar.",
   "info_avatar_examples": "[{0}avatar [MEMBER]]\n{0}avatar\n{0}avatar Member\n{0}avatar @Member\n{0}avatar 327927038360944640",
+  "info_useravatar": "Shows the global avatar for a member. Provide no arguments to show your global avatar.",
+  "info_useravatar_examples": "[{0}useravatar [MEMBER]]\n{0}useravatar\n{0}useravatar Member\n{0}useravatar @Member\n{0}useravatar 327927038360944640",
   "info_servericon": "Shows the icon of this server.",
   "info_servericon_examples": "[{0}servericon]\n{0}servericon",
   

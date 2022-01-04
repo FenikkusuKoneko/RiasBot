@@ -121,7 +121,7 @@ namespace Rias.Modules.Utility
 
                 var embed = new DiscordEmbedBuilder()
                     .WithColor(RiasUtilities.ConfirmColor)
-                    .WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto))
+                    .WithThumbnail(string.IsNullOrEmpty(member.GuildAvatarHash) ? member.AvatarUrl : member.GuildAvatarUrl)
                     .AddField(GetText(Localization.UtilityUsername), member.FullName(), true)
                     .AddField(GetText(Localization.UtilityNickname), member.Nickname ?? "-", true)
                     .AddField(GetText(Localization.CommonId), member.Id.ToString(), true)
@@ -188,9 +188,12 @@ namespace Rias.Modules.Utility
 
             [Command("avatar", "av")]
             [Context(ContextType.Guild)]
-            public async Task AvatarAsync([Remainder] DiscordMember? member = null)
+            public async Task GuildAvatarAsync([Remainder] DiscordMember? member = null)
             {
                 member ??= (DiscordMember) Context.User;
+                var avatarUrl = string.IsNullOrEmpty(member.GuildAvatarHash)
+                    ? member.AvatarUrl
+                    : member.GuildAvatarUrl;
 
                 var embed = new DiscordEmbedBuilder
                 {
@@ -198,10 +201,32 @@ namespace Rias.Modules.Utility
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = member.FullName(),
-                        IconUrl = member.GetAvatarUrl(ImageFormat.Auto),
-                        Url = member.GetAvatarUrl(ImageFormat.Auto)
+                        IconUrl = avatarUrl,
+                        Url = avatarUrl
                     },
-                    ImageUrl = member.GetAvatarUrl(ImageFormat.Auto)
+                    ImageUrl = avatarUrl
+                };
+
+                await ReplyAsync(embed);
+            }
+            
+            [Command("useravatar", "uav")]
+            [Context(ContextType.Guild)]
+            public async Task GlobalAvatarAsync([Remainder] DiscordMember? member = null)
+            {
+                member ??= (DiscordMember) Context.User;
+                var avatarUrl = member.AvatarUrl;
+
+                var embed = new DiscordEmbedBuilder
+                {
+                    Color = RiasUtilities.ConfirmColor,
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
+                    {
+                        Name = member.FullName(),
+                        IconUrl = avatarUrl,
+                        Url = avatarUrl
+                    },
+                    ImageUrl = avatarUrl
                 };
 
                 await ReplyAsync(embed);
