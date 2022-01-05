@@ -82,18 +82,21 @@ namespace Rias.Services
         private async Task InitializeAsync()
         {
             var danbooruImages = await DeserializeJsonHentaiAsync(DanbooruApi);
-            await PopulateCacheAsync(danbooruImages, NsfwImageApiProvider.Danbooru);
+            PopulateCache(danbooruImages, NsfwImageApiProvider.Danbooru);
+            
             var konachanImages = await DeserializeJsonHentaiAsync(KonachanApi);
-            await PopulateCacheAsync(konachanImages, NsfwImageApiProvider.Konachan);
+            PopulateCache(konachanImages, NsfwImageApiProvider.Konachan);
+            
             var yandereImages = await DeserializeJsonHentaiAsync(YandereApi);
-            await PopulateCacheAsync(yandereImages, NsfwImageApiProvider.Yandere);
+            PopulateCache(yandereImages, NsfwImageApiProvider.Yandere);
+            
             var gelbooruImages = await DeserializeXmlHentaiAsync(GelbooruApi);
-            await PopulateCacheAsync(gelbooruImages, NsfwImageApiProvider.Gelbooru);
+            PopulateCache(gelbooruImages, NsfwImageApiProvider.Gelbooru);
 
             CacheInitialized = true;
         }
         
-        private async Task PopulateCacheAsync(IList<NsfwImageApi>? nsfwImagesApi, NsfwImageApiProvider provider)
+        private void PopulateCache(IList<NsfwImageApi>? nsfwImagesApi, NsfwImageApiProvider provider)
         {
             if (nsfwImagesApi is null)
                 return;
@@ -114,13 +117,10 @@ namespace Rias.Services
                 });
             }
 
+            var nsfwImages = _cache.GetOrCreate(provider, _ => new HashSet<NsfwImage>());
             foreach (var image in imagesApi)
-            {
-                var nsfwList = await _cache.GetOrCreateAsync(provider, _ => Task.FromResult(new HashSet<NsfwImage>()));
-                if (!nsfwList.Contains(image))
-                    nsfwList.Add(image);
-            }
-
+                nsfwImages.Add(image);
+            
             Log.Debug("{Provider} NSFW images cached", provider);
         }
         
@@ -141,8 +141,7 @@ namespace Rias.Services
                 ? await DeserializeJsonHentaiAsync(url + tag)
                 : await DeserializeXmlHentaiAsync(url + tag);
 
-            await PopulateCacheAsync(nsfwImages, provider);
-            
+            PopulateCache(nsfwImages, provider);
             Log.Debug("NSFW tag <{Tag}> downloaded", tag);
         }
         
@@ -174,21 +173,42 @@ namespace Rias.Services
 
                 await using var stream = await response.Content.ReadAsStreamAsync();
                 using var reader = XmlReader.Create(stream, new XmlReaderSettings { Async = true });
-            
+                await reader.MoveToContentAsync();
+
                 var nsfwImages = new List<NsfwImageApi>();
+                var image = new NsfwImageApi();
+                var postFound = false;
+                
                 while (await reader.ReadAsync())
                 {
-                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "post")
+                    if (postFound)
                     {
-                        var fileUrl = reader["file_url"];
-                        if (string.IsNullOrEmpty(fileUrl))
-                            continue;
-                        
-                        nsfwImages.Add(new NsfwImageApi
+                        if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "post")
                         {
-                            FileUrl = fileUrl,
-                            Tags = reader["tags"]
-                        });
+                            if (!string.IsNullOrEmpty(image.FileUrl) && !string.IsNullOrEmpty(image.Tags))
+                                nsfwImages.Add(image);
+                            
+                            image = new NsfwImageApi();
+                            postFound = false;
+                        }
+                        else
+                        {
+                            switch (reader.Name)
+                            {
+                                case "file_url" when reader.NodeType == XmlNodeType.Element:
+                                    await reader.ReadAsync();
+                                    image.FileUrl = reader.Value;
+                                    break;
+                                case "tags" when reader.NodeType == XmlNodeType.Element:
+                                    await reader.ReadAsync();
+                                    image.Tags = reader.Value;
+                                    break;
+                            }
+                        }
+                    }
+                    else if (reader.NodeType == XmlNodeType.Element && reader.Name == "post")
+                    {
+                        postFound = true;
                     }
                 }
 
