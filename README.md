@@ -1,5 +1,5 @@
 ﻿# Rias - Discord Bot
-### A cute Discord bot that you will enjoy using
+### A cute multi-purpose Discord bot
 
 ### Discord library used:
 [Disqord](https://github.com/Quahu/Disqord) (An asynchronous Discord API wrapper for .NET 5 that aims to make Discord bot development simple and enjoyable without needless boilerplate)
