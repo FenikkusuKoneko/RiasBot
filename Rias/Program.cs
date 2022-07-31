@@ -1,9 +1,13 @@
 ﻿using System.Reflection;
+using Disqord.Bot;
 using Disqord.Bot.Hosting;
 using Disqord.Gateway;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Rias;
+using Rias.Common;
+using Rias.Services;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
@@ -36,6 +40,11 @@ await new HostBuilder()
         
         var logger = loggerConfig.CreateLogger();
         builder.AddSerilog(logger, true);
+    })
+    .ConfigureServices((context, services) =>
+    {
+        services.Configure<RiasOptions>(context.Configuration);
+        services.AddPrefixProvider<RiasPrefixProvider>();
     })
     .ConfigureDiscordBot<RiasBot>((context, bot) =>
     {
