@@ -2,5 +2,5 @@
 
 public record RiasOptions
 {
-    public string[]? Prefixes { get; set; }
+    public string? Prefix { get; set; }
 }

@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rias.TextCommands", "Rias.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rias.Services", "Rias.Services\Rias.Services.csproj", "{DBC66858-163F-433D-A235-A8233669C40E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rias.Database", "Rias.Database\Rias.Database.csproj", "{AE5E96E2-729D-4F8D-BA66-F2830EA8DADD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{DBC66858-163F-433D-A235-A8233669C40E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBC66858-163F-433D-A235-A8233669C40E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBC66858-163F-433D-A235-A8233669C40E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE5E96E2-729D-4F8D-BA66-F2830EA8DADD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE5E96E2-729D-4F8D-BA66-F2830EA8DADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE5E96E2-729D-4F8D-BA66-F2830EA8DADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE5E96E2-729D-4F8D-BA66-F2830EA8DADD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

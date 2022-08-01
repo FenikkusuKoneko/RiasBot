@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Rias.Common\Rias.Common.csproj" />
+      <ProjectReference Include="..\Rias.Database\Rias.Database.csproj" />
     </ItemGroup>
 
 </Project>
