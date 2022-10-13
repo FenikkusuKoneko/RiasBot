@@ -1,9 +1,12 @@
-﻿using Disqord;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
+using Disqord;
 using Disqord.Bot;
 using Disqord.Bot.Commands.Text;
 using Disqord.Gateway;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rias.Common;
 using Rias.Database;
@@ -13,41 +16,64 @@ namespace Rias.Services;
 public class RiasPrefixProvider : IPrefixProvider
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly RiasOptions _riasOptions;
-    
-    public RiasPrefixProvider(IServiceProvider serviceProvider, IOptions<RiasOptions> riasConfiguration)
+    private readonly RiasOptions _options;
+    private readonly ILogger<RiasPrefixProvider> _logger;
+
+    private readonly ConcurrentDictionary<ulong, string> _guildPrefixes = new();
+
+    public RiasPrefixProvider(IServiceProvider serviceProvider, IOptions<RiasOptions> options, ILogger<RiasPrefixProvider> logger)
     {
         _serviceProvider = serviceProvider;
-        _riasOptions = riasConfiguration.Value;
+        _options = options.Value;
+        _logger = logger;
     }
     
-    public async ValueTask<IEnumerable<IPrefix>?> GetPrefixesAsync(IGatewayUserMessage message)
+    public ValueTask<IEnumerable<IPrefix>?> GetPrefixesAsync(IGatewayUserMessage message)
     {
         var prefixes = new HashSet<IPrefix>();
 
-        var prefix = _riasOptions.Prefix;
-        if (message.GuildId.HasValue)
+        if (_options.Prefixes is not null)
         {
-            var guildPrefix = await GetGuildPrefixAsync(message.GuildId.Value);
-            if (!string.IsNullOrEmpty(guildPrefix))
-                prefix = guildPrefix;
+            foreach (var prefix in _options.Prefixes)
+                prefixes.Add(new StringPrefix(prefix));
         }
 
-        if (!string.IsNullOrEmpty(prefix))
-            prefixes.Add(new StringPrefix(prefix));
-        
-        if (message.Client.CurrentUser is not null)
-            prefixes.Add(new StringPrefix(message.Client.CurrentUser.Name));
-        
-        return prefixes;
-    }
+        if (message.GuildId.HasValue && _guildPrefixes.TryGetValue(message.GuildId.Value, out var guildPrefix))
+            prefixes.Add(new StringPrefix(guildPrefix));
 
-    public async Task<string?> GetGuildPrefixAsync(Snowflake guildId)
+        prefixes.Add(new StringPrefix(message.Client.CurrentUser.Name));
+        prefixes.Add(new MentionPrefix(message.Client.CurrentUser.Id));
+
+        return new ValueTask<IEnumerable<IPrefix>?>(prefixes);
+    }
+    
+    public async Task LoadGuildPrefixesAsync()
     {
+        var sw = Stopwatch.StartNew();
+        
         using var scope = _serviceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
+        var prefixes = await db.Guilds.Where(g => !string.IsNullOrEmpty(g.Prefix)).ToListAsync();
+        
+        foreach (var prefix in prefixes)
+            _guildPrefixes.TryAdd(prefix.GuildId, prefix.Prefix ?? string.Empty);
+        
+        sw.Stop();
+        _logger.LogInformation("Loaded {Count} guild prefixes in {Elapsed}ms", prefixes.Count, sw.ElapsedMilliseconds);
+    }
 
-        var guild = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == guildId.RawValue);
-        return guild?.Prefix;
+    public string? GetPrefix(Snowflake guildId)
+    {
+        return _guildPrefixes.TryGetValue(guildId, out var prefix)
+            ? prefix 
+            : _options.Prefixes?.FirstOrDefault() ?? null;
+    }
+    
+    public void SetPrefix(Snowflake guildId, string? prefix)
+    {
+        if (prefix is null)
+            _guildPrefixes.TryRemove(guildId, out _);
+        else
+            _guildPrefixes.AddOrUpdate(guildId, prefix, (_, _) => prefix);
     }
 }

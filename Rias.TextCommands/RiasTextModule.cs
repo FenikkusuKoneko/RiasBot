@@ -7,12 +7,12 @@ using Rias.Services;
 
 namespace Rias.TextCommands;
 
-public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
+public abstract class RiasTextModule : DiscordTextModuleBase
 {
     protected LocalizationService Localization => _localizationService.Value;
     private readonly Lazy<LocalizationService> _localizationService;
     
-    public RiasTextGuildModule()
+    public RiasTextModule()
     {
         _localizationService = new Lazy<LocalizationService>(() => Context.Services.GetRequiredService<LocalizationService>());
     }
@@ -22,7 +22,7 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         return Reply(new LocalEmbed
         {
             Color = Utils.ConfirmationColor,
-            Description = Localization.GetText(Context.GuildId, key)
+            Description = Localization.GetText(null, key)
         });
     }
     
@@ -31,7 +31,7 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         return Reply(new LocalEmbed
         {
             Color = Utils.ConfirmationColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0)
+            Description = Localization.GetText(null, key, arg0)
         });
     }
     
@@ -40,7 +40,7 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         return Reply(new LocalEmbed
         {
             Color = Utils.ConfirmationColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0, arg1)
+            Description = Localization.GetText(null, key, arg0, arg1)
         });
     }
     
@@ -49,7 +49,7 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         return Reply(new LocalEmbed
         {
             Color = Utils.ConfirmationColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0, arg1, arg2)
+            Description = Localization.GetText(null, key, arg0, arg1, arg2)
         });
     }
     
@@ -58,7 +58,7 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         return Reply(new LocalEmbed
         {
             Color = Utils.ConfirmationColor,
-            Description = Localization.GetText(Context.GuildId, key, args)
+            Description = Localization.GetText(null, key, args)
         });
     }
     
@@ -67,7 +67,7 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         return Reply(new LocalEmbed
         {
             Color = Utils.ErrorColor,
-            Description = Localization.GetText(Context.GuildId, key)
+            Description = Localization.GetText(null, key)
         });
     }
     
@@ -76,7 +76,7 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         return Reply(new LocalEmbed
         {
             Color = Utils.ErrorColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0)
+            Description = Localization.GetText(null, key, arg0)
         });
     }
     
@@ -85,7 +85,7 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         return Reply(new LocalEmbed
         {
             Color = Utils.ErrorColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0, arg1)
+            Description = Localization.GetText(null, key, arg0, arg1)
         });
     }
     
@@ -94,7 +94,7 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         return Reply(new LocalEmbed
         {
             Color = Utils.ErrorColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0, arg1, arg2)
+            Description = Localization.GetText(null, key, arg0, arg1, arg2)
         });
     }
     
@@ -103,12 +103,12 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         return Reply(new LocalEmbed
         {
             Color = Utils.ErrorColor,
-            Description = Localization.GetText(Context.GuildId, key, args)
+            Description = Localization.GetText(null, key, args)
         });
     }
 }
 
-public abstract class RiasTextGuildModule<TService> : RiasTextGuildModule
+public abstract class RiasTextModule<TService> : RiasTextModule
     where TService : RiasCommandService
 {
     protected TService Service => _service.Value;
@@ -117,7 +117,7 @@ public abstract class RiasTextGuildModule<TService> : RiasTextGuildModule
     // The Service must be called only in command methods.
     private readonly Lazy<TService> _service;
 
-    protected RiasTextGuildModule()
+    protected RiasTextModule()
     {
         _service = new Lazy<TService>(() => Context.Services.GetRequiredService<TService>());
     }

@@ -1,0 +1,19 @@
+﻿{
+  "help_title": "{0} v{1} help page",
+  "help_info": "I'm based on modules and submodules. Each module has submodules and each submodule has commands.\n\nType `{0}modules` to get a list with all modules and submodules.\n\nType `{0}commands <moduleName>` or `{0}commands <submoduleName>` to get a list with all commands from the module or submodule.\nExample: `{0}commands Administration`, `{0}commands Server`\n\nType `{0}allcommands` to get a list with all commands.\nCheck https://rias.gg/commands to see all commands with their description and examples.",
+  "help_support_server": "[**Join to {0}** - Beautiful and cool community]({1})",
+  "help_invite_me": "[**Invite me** - I would like to be in your server]({0})",
+  "help_website": "[**Website** - Check info about me or about the commands]({0})",
+  "help_donate": "[**Become a Patron** - Support this project]({0})",
+  "help_footer": "© {0}-{1} Copyright: Koneko#0001",
+  "help_command_not_found": "I couldn't find that command. For help type `{0}help`",
+  "help_module": "Module: {0}",
+  
+  "utility_prefix_is": "My prefix in this server is **{0}**.",
+  "utility_prefix_name_or_mention": "My prefix in this server is my **name** or my **mention**.",
+  
+  "links": "Links",
+  "no_description": "No description.",
+  "examples": "Examples",
+  "usages": "Usages"
+}

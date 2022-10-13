@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Disqord.Bot;
 
 namespace Rias.Common;
 
@@ -19,4 +20,7 @@ public static class Helpers
 
         return null;
     }
+    
+    public static string Stringify(this IPrefix prefix)
+        => char.IsLetter(prefix.ToString()![^1]) ? prefix + " " : prefix.ToString()!;
 }

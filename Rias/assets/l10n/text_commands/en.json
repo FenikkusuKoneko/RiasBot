@@ -1,0 +1,5 @@
+{
+  "help_help": "Shows a page info for a command, or shows the general help page if no arguments are given.\nMost of the commands are single word but there are command groups (or subcommands of those commands).",
+  
+  "utility_prefix": "Shows my prefix in this server."
+}

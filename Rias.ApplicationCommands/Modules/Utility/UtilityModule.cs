@@ -1,18 +1,29 @@
 ﻿using Disqord.Bot.Commands.Application;
+using Disqord.Bot.Commands.Text;
 using Qmmands;
+using Rias.Common;
+using Rias.Services;
 using Rias.Services.Commands;
 
 namespace Rias.ApplicationCommands.Modules.Utility;
 
 public class UtilityModule : RiasApplicationGuildModule<UtilityService>
 {
-    [SlashCommand("prefix")]
-    public async Task<IResult> PrefixAsync()
+    private readonly RiasPrefixProvider _prefixProvider;
+    
+    public UtilityModule(IPrefixProvider prefixProvider)
     {
-        var prefix = await Service.GetGuildPrefixAsync(Context.GuildId);
-        
-        return ConfirmationResponse(!string.IsNullOrEmpty(prefix)
-            ? $"The prefix on this server is `{prefix}`."
-            : "No prefix set on this server.");
+        _prefixProvider = (RiasPrefixProvider) prefixProvider;
+    }
+    
+    [SlashCommand("prefix")]
+    [Description("Shows the prefix for this server.")]
+    public IResult Prefix()
+    {
+        var prefix = _prefixProvider.GetPrefix(Context.GuildId);
+
+        return !string.IsNullOrEmpty(prefix)
+            ? ConfirmationResponse(Strings.UtilityPrefixIs, prefix) 
+            : ConfirmationResponse(Strings.UtilityPrefixNameOrMention);
     }
 }

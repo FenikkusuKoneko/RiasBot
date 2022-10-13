@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Disqord.Bot;
+using Disqord.Bot.Commands.Text;
 using Disqord.Bot.Hosting;
 using Disqord.Gateway;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,6 @@ using Rias;
 using Rias.Common;
 using Rias.Database;
 using Rias.Services;
-using Rias.Services.Commands;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
@@ -25,7 +25,7 @@ var builder = new HostBuilder()
     .ConfigureAppConfiguration((context, configBuilder) =>
     {
         var env = context.HostingEnvironment;
-        configBuilder.AddJsonFile("appsettings.json", true, true);
+        configBuilder.AddJsonFile("appsettings.json", false, true);
 
         if (File.Exists($"appsettings.{env.EnvironmentName}.json"))
             configBuilder.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
@@ -43,7 +43,7 @@ var builder = new HostBuilder()
         if (!string.IsNullOrEmpty(intermediateColor))
             Utils.IntermediateColor = Helpers.HexToInt(intermediateColor) ?? Utils.IntermediateColor;
     })
-    .ConfigureLogging((context, builder) =>
+    .ConfigureLogging((context, loggingBuilder) =>
     {
         var loggerConfig = new LoggerConfiguration()
             .MinimumLevel.Information()
@@ -53,24 +53,37 @@ var builder = new HostBuilder()
             loggerConfig.MinimumLevel.Debug();
 
         var logger = loggerConfig.CreateLogger();
-        builder.AddSerilog(logger, true);
+        loggingBuilder.AddSerilog(logger, true);
     })
     .ConfigureServices((context, services) =>
     {
-        services.AddScoped<UtilityService>();
+        services.AddSingleton<LocalizationService>();
         
-        var dbConnectionString = context.Configuration.GetConnectionString("Database") ?? throw new NullReferenceException("Missing database configuration.");
-        services.AddDbContext<RiasDbContext>(options =>
-            options.UseNpgsql(dbConnectionString, npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()).UseSnakeCaseNamingConvention());
-
-        services.Configure<RiasOptions>(context.Configuration);
         services.AddPrefixProvider<RiasPrefixProvider>();
+        services.Configure<RiasOptions>(context.Configuration);
+        
+        var dbConnectionString = context.Configuration.GetConnectionString("Database") ?? throw new Exception("Database connection string is not set.");
+        services.AddDbContext<RiasDbContext>(options =>
+            options.UseNpgsql(dbConnectionString, npgsqlOptions => npgsqlOptions.EnableRetryOnFailure())
+                .UseSnakeCaseNamingConvention()
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+
+        var commandServices = typeof(RiasCommandService).Assembly
+            .GetTypes()
+            .Where(t => t.IsSubclassOf(typeof(RiasCommandService)) && !t.IsAbstract && !t.IsInterface);
+        
+        foreach (var commandService in commandServices)
+            services.AddScoped(commandService);
     })
     .ConfigureDiscordBot<RiasBot>((context, bot) =>
     {
         bot.Token = context.Configuration["Token"];
         bot.Intents = GatewayIntents.All & ~GatewayIntents.Presences;
-        bot.Activities = new[] { LocalActivity.Playing("rias help | rias.gg") };
+        bot.ServiceAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+        
+        var activity = context.Configuration["Activity"];
+        if (!string.IsNullOrEmpty(activity))
+            bot.Activities = new[] { LocalActivity.Playing(activity) };
     })
     .UseDefaultServiceProvider(options =>
     {
@@ -81,8 +94,14 @@ var builder = new HostBuilder()
 
 var host = builder.Build();
 
-using var scope = host.Services.CreateScope();
+await using var scope = host.Services.CreateAsyncScope();
 var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
 await db.Database.MigrateAsync();
+
+var localization = host.Services.GetRequiredService<LocalizationService>();
+await localization.LoadAsync();
+
+var prefixProvider = (RiasPrefixProvider) host.Services.GetRequiredService<IPrefixProvider>();
+await prefixProvider.LoadGuildPrefixesAsync();
 
 await host.RunAsync();
