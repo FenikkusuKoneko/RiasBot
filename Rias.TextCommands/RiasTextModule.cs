@@ -106,6 +106,21 @@ public abstract class RiasTextModule : DiscordTextModuleBase
             Description = Localization.GetText(null, key, args)
         });
     }
+    
+    protected string GetText(string key)
+        => Localization.GetText(Context.GuildId, key);
+    
+    protected string GetText(string key, object arg0)
+        => Localization.GetText(Context.GuildId, key, arg0);
+    
+    protected string GetText(string key, object arg0, object arg1)
+        => Localization.GetText(Context.GuildId, key, arg0, arg1);
+    
+    protected string GetText(string key, object arg0, object arg1, object arg2)
+        => Localization.GetText(Context.GuildId, key, arg0, arg1, arg2);
+    
+    protected string GetText(string key, params object[] args)
+        => Localization.GetText(Context.GuildId, key, args);
 }
 
 public abstract class RiasTextModule<TService> : RiasTextModule

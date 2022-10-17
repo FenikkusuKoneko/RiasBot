@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Disqord;
 using Disqord.Bot;
+using Disqord.Bot.Commands;
 using Disqord.Gateway;
 using Microsoft.Extensions.Options;
 using Qmmands.Text;
@@ -33,8 +34,8 @@ public class HelpService : RiasCommandService
         var moduleAlias = command.Module.Aliases.Count != 0 ? $"{command.Module.Aliases[0]} " : string.Empty;
         var title = string.Join(" / ", command.Aliases.Select(a => $"{moduleAlias}{a}"));
         
-        // if (command.Checks.Any(c => c is MasterOnlyAttribute))
-        //     title += $" [{GetText(guild?.Id, Localization.HelpOwnerOnly).ToLowerInvariant()}]";
+        if (command.Checks.Any(c => c is RequireBotOwnerAttribute))
+            title += $" [{_localization.GetText(guild?.Id, Strings.HelpOwnerOnly).ToLowerInvariant()}]";
         
         var commandInfoKey = $"{command.Module.Name.Replace(' ', '_').ToLower()}_{command.Name.Replace(' ', '_')}";
         var description = _localization.GetCommandText(guild?.Id, commandInfoKey);
@@ -64,7 +65,7 @@ public class HelpService : RiasCommandService
         {
             usages.AppendLine()
                 .Append($"{prefixString}{cmd.Aliases[0]} ")
-                .AppendJoin(" ", cmd.Parameters.Select(p => p.ParameterInfo is not null && p.ParameterInfo.IsOptional ? $"[{p.Name}]" : $"<{p.Name}>"));
+                .AppendJoin(' ', cmd.Parameters.Select(p => p.ParameterInfo is not null && p.ParameterInfo.IsOptional ? $"[{p.Name}]" : $"<{p.Name}>"));
         }
         
         embed.AddField(_localization.GetText(guild?.Id, Strings.Usages), usages.ToString());

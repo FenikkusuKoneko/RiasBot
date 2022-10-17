@@ -1,4 +1,7 @@
-﻿using Disqord.Gateway;
+﻿using System.Text;
+using Disqord;
+using Disqord.Bot.Commands;
+using Disqord.Gateway;
 using Qmmands;
 using Qmmands.Text;
 using Rias.Common;
@@ -17,16 +20,16 @@ public class HelpModule : RiasTextModule<HelpService>
     }
     
     [TextCommand("help", "h")]
-    public IResult HelpAsync()
+    public IResult Help()
     {
         return Reply("No help bro.");
     }
 
     [TextCommand("help", "h")]
-    public IResult HelpAsync(string command, string? subcommand = null)
+    public IResult Help(string command, string? subcommand = null)
     {
-        var module = _commandService.EnumerateTextModules().FirstOrDefault(m =>
-            m.Aliases.Any(a => string.Equals(a, command, StringComparison.OrdinalIgnoreCase)));
+        var module = _commandService.EnumerateTextModules()
+            .FirstOrDefault(m => string.Equals(m.Name, command, StringComparison.OrdinalIgnoreCase));
         
         var commands = GetCommands(module, module is null ? command : subcommand).ToList();
 
@@ -35,6 +38,179 @@ public class HelpModule : RiasTextModule<HelpService>
 
         var guild = Context.GuildId.HasValue ? Context.Bot.GetGuild(Context.GuildId.Value) : null;
         var embed = Service.GenerateHelpEmbed(Context.Author, guild, commands, Context.Prefix);
+        return Reply(embed);
+    }
+
+    [TextCommand("modules", "mdls")]
+    public async Task<IResult> ModulesAsync()
+    {
+        var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
+        
+        Func<ITextModule, bool> modulesPredicate;
+        if (isOwner)
+            modulesPredicate = m => m.Parent is null;
+        else
+            modulesPredicate = m => m.Parent is null && m.Commands.All(c => !c.Checks.Any(ch => ch is RequireBotOwnerAttribute));
+        
+        var modules = _commandService.EnumerateTextModules()
+            .Where(modulesPredicate)
+            .OrderBy(m => m.Name)
+            .ToList();
+        
+        Func<ITextModule, bool> submodulesOwnerPredicate;
+        if (isOwner)
+            submodulesOwnerPredicate = m => !string.Equals(m.Parent?.Name, m.Name, StringComparison.OrdinalIgnoreCase);
+        else
+            submodulesOwnerPredicate = m => !string.Equals(m.Parent?.Name, m.Name, StringComparison.OrdinalIgnoreCase)
+                                            && m.Commands.All(c => !c.Checks.Any(ch => ch is RequireBotOwnerAttribute));
+
+        var description = new StringBuilder();
+        
+        foreach (var module in modules)
+        {
+            description.Append(Markdown.Code(module.Name));
+            
+            if (module.Submodules.Count != 0)
+            {
+                var submodules = module.Submodules
+                    .Where(submodulesOwnerPredicate)
+                    .OrderBy(m => m.Name)
+                    .Select(m => Markdown.Code(m.Name))
+                    .ToList();
+
+                if (submodules.Count != 0)
+                    description.Append(": ").AppendJoin(", ", submodules);
+            }
+
+            description.AppendLine();
+        }
+
+        var embed = new LocalEmbed
+        {
+            Color = Utils.ConfirmationColor,
+            Title = GetText(Strings.HelpModulesListTitle, Context.Prefix.Stringify()),
+            Description = description.ToString(),
+            Footer = new LocalEmbedFooter().WithText($"{Context.Author.Tag} | {GetText(Strings.HelpModulesListFooter)}")
+        };
+        
+        return Reply(embed);
+    }
+
+    [TextCommand("commands", "cmds")]
+    public async Task<IResult> CommandsAsync([Remainder, Name("module")] string? moduleName = null)
+    {
+        if (string.IsNullOrWhiteSpace(moduleName))
+            return await AllCommandsAsync();
+        
+        var module = _commandService.EnumerateTextModules()
+            .FirstOrDefault(m => string.Equals(m.Name, moduleName, StringComparison.OrdinalIgnoreCase));
+        
+        if (module is null)
+            return ReplyErrorResponse(Strings.HelpModuleNotFound, Context.Prefix.Stringify());
+        
+        var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
+        var commands = GetModuleCommands(module, isOwner).ToList();
+        
+        if (commands.Count == 0)
+            return ReplyErrorResponse(Strings.HelpModuleNotFound, Context.Prefix.Stringify());
+
+        var commandAliases = GetAliases(commands).ToList();
+        var description = new StringBuilder($"**{module.Name}:** {string.Join(", ", commandAliases.Select(Markdown.Code))}");
+
+        var submodules = module.Submodules
+            .Where(sm => string.Equals(sm.Name, sm.Parent?.Name, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(sm => sm.Name);
+
+        foreach (var submodule in submodules)
+        {
+            var groupModuleCommands = GetModuleCommands(submodule, isOwner).ToList();
+
+            if (groupModuleCommands.Count != 0)
+            {
+                var groupCommandAliases = GetAliases(groupModuleCommands).ToList();
+                description.AppendLine().Append($"**{submodule.Name}:** {string.Join(", ", groupCommandAliases.Select(Markdown.Code))}");
+            }
+        }
+
+        var prefix = Context.Prefix.Stringify();
+        var embed = new LocalEmbed
+        {
+            Color = Utils.ConfirmationColor,
+            Title = GetText(module.Parent is null ? Strings.HelpAllModuleCommands : Strings.HelpAllSubmoduleCommands, prefix),
+            Description = description.ToString(),
+            Footer = new LocalEmbedFooter().WithText($"{Context.Author.Tag} | {GetText(Strings.HelpCommandInfo, prefix)}")
+        };
+        
+        return Reply(embed);
+    }
+
+    [TextCommand("allcommands", "allcmds")]
+    public async Task<IResult> AllCommandsAsync()
+    {
+            var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
+        
+        Func<ITextModule, bool> modulesPredicate;
+        if (isOwner)
+            modulesPredicate = m => m.Parent is null;
+        else
+            modulesPredicate = m => m.Parent is null && m.Commands.All(c => !c.Checks.Any(ch => ch is RequireBotOwnerAttribute));
+        
+        var modules = _commandService.EnumerateTextModules()
+            .Where(modulesPredicate)
+            .OrderBy(m => m.Name)
+            .ToList();
+        
+        Func<ITextModule, bool> submodulesOwnerPredicate;
+        if (isOwner)
+            submodulesOwnerPredicate = m => !string.Equals(m.Parent?.Name, m.Name, StringComparison.OrdinalIgnoreCase);
+        else
+            submodulesOwnerPredicate = m => !string.Equals(m.Parent?.Name, m.Name, StringComparison.OrdinalIgnoreCase)
+                                            && m.Commands.All(c => !c.Checks.Any(ch => ch is RequireBotOwnerAttribute));
+
+        var description = new StringBuilder();
+        
+        foreach (var module in modules)
+        {
+            var moduleCommands = GetModuleCommands(module, isOwner).ToList();
+            if (moduleCommands.Count == 0)
+                continue;
+            
+            var commandAliases = GetAliases(moduleCommands).ToList();
+            description.Append($"**{module.Name}:** {string.Join(", ", commandAliases.Select(Markdown.Code))}");
+            
+            if (module.Submodules.Count != 0)
+            {
+                var submodules = module.Submodules
+                    .Where(submodulesOwnerPredicate)
+                    .OrderBy(m => m.Name)
+                    .ToList();
+
+                if (submodules.Count != 0)
+                {
+                    foreach (var submodule in submodules)
+                    {
+                        var groupModuleCommands = GetModuleCommands(submodule, isOwner).ToList();
+                        if (groupModuleCommands.Count != 0)
+                        {
+                            var groupCommandAliases = GetAliases(groupModuleCommands).ToList();
+                            description.AppendLine().Append($"**{submodule.Name}:** {string.Join(", ", groupCommandAliases.Select(Markdown.Code))}");
+                        }
+                    }
+                }
+            }
+
+            description.AppendLine();
+        }
+
+        var prefix = Context.Prefix.Stringify();
+        var embed = new LocalEmbed
+        {
+            Color = Utils.ConfirmationColor,
+            Title = GetText(Strings.HelpAllCommands, prefix),
+            Description = description.ToString(),
+            Footer = new LocalEmbedFooter().WithText($"{Context.Author.Tag} | {GetText(Strings.HelpCommandInfo, prefix)}")
+        };
+        
         return Reply(embed);
     }
 
@@ -58,4 +234,31 @@ public class HelpModule : RiasTextModule<HelpService>
 
         return c.Module.Aliases.Count == 0 && c.Aliases.Any(y => string.Equals(y, alias, StringComparison.OrdinalIgnoreCase));
     });
+
+    private IEnumerable<ITextCommand> GetModuleCommands(ITextModule module, bool isOwner)
+    {
+        var commands = module.Commands.AsEnumerable();
+        var submoduleCommands = module.Submodules.FirstOrDefault(sm => string.Equals(sm.Name, sm.Parent?.Name, StringComparison.OrdinalIgnoreCase))?.Commands;
+        
+        if (submoduleCommands is not null)
+            commands = commands.Concat(submoduleCommands);
+
+        if (!isOwner)
+            commands = commands.Where(c => !c.Checks.Any(ch => ch is RequireBotOwnerAttribute));
+
+        return commands.GroupBy(c => c.Name)
+            .Select(cg => cg.First())
+            .OrderBy(c => c.Name);
+    }
+
+    private IEnumerable<string> GetAliases(IEnumerable<ITextCommand> commands)
+        => commands.Select(command =>
+        {
+            var aliases = string.Join('/', command.Aliases);
+            var moduleAlias = command.Module.Aliases.Count != 0 ? $"{command.Module.Aliases[0]} " : null;
+            var isMasterOnly = command.Checks.Any(c => c is RequireBotOwnerAttribute);
+            aliases = $"{moduleAlias}{aliases}";
+            
+            return isMasterOnly ? $"{aliases}*" : aliases;
+        });
 }
