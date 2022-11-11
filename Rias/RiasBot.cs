@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ConcurrentCollections;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.SlashCommands;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
@@ -18,6 +19,7 @@ using Rias.Configurations;
 using Rias.Database;
 using Rias.Implementation;
 using Rias.Services;
+using Rias.SlashModules.Help;
 using Serilog;
 using Serilog.Extensions.Logging;
 using StackExchange.Redis;
@@ -27,7 +29,7 @@ namespace Rias
     public class RiasBot : IServiceProvider
     {
         public const string Author = "Koneko#0001";
-        public const string Version = "3.21.2";
+        public const string Version = "3.22.0";
         public static readonly Stopwatch UpTime = new();
         
         public readonly ConcurrentHashSet<ulong> ChunkedGuilds = new();
@@ -50,11 +52,11 @@ namespace Rias
             Client = new DiscordShardedClient(new DiscordConfiguration
             {
                 Token = _configuration.Token,
-                Intents = DiscordIntents.AllUnprivileged | DiscordIntents.GuildMembers,
+                Intents = DiscordIntents.All & ~DiscordIntents.GuildPresences,
                 MessageCacheSize = 0,
                 LoggerFactory = new SerilogLoggerFactory(Log.Logger)
             });
-
+            
             var commandService = new CommandService(new CommandServiceConfiguration
             {
                 DefaultRunMode = RunMode.Parallel,
@@ -90,7 +92,7 @@ namespace Rias
                 .AddSingleton(this)
                 .AddSingleton(_configuration)
                 .AddSingleton(commandService)
-                .AddSingleton<Localization>()
+                .AddSingleton<Implementation.Localization>()
                 .AddSingleton<HttpClient>()
                 .AddHttpClient()
                 .AddDbContext<RiasDbContext>(x =>
@@ -99,7 +101,7 @@ namespace Rias
             
             ApplyDatabaseMigrations();
 
-            _serviceProvider.GetRequiredService<Localization>();
+            _serviceProvider.GetRequiredService<Implementation.Localization>();
             var autoStartServices = typeof(RiasBot).Assembly.GetTypes()
                 .Where(x => typeof(RiasService).IsAssignableFrom(x)
                             && x.GetCustomAttribute<AutoStartAttribute>() != null
@@ -118,8 +120,16 @@ namespace Rias
         
         public int Latency => (int) Client.ShardClients.Average(x => x.Value.Ping);
 
-        public Task StartAsync()
-            => Client.StartAsync();
+        public async Task StartAsync()
+        {
+            var slash = await Client.UseSlashCommandsAsync(new SlashCommandsConfiguration
+            {
+                Services = _serviceProvider
+            });
+            slash.RegisterCommands<HelpSlashModule>();
+
+            await Client.StartAsync();
+        }
 
         public int GetShardId(DiscordGuild? guild)
             => guild != null ? Client.ShardClients.First(x => x.Value.Guilds.ContainsKey(guild.Id)).Value.ShardId : 0;

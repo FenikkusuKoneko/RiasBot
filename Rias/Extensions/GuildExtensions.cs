@@ -40,7 +40,7 @@ namespace Rias.Extensions
 
             return ulong.TryParse(value, out channelId)
                 ? guild.GetChannel(channelId)
-                : guild.Channels.Where(x => x.Value.Type is ChannelType.Text or ChannelType.News or ChannelType.Store)
+                : guild.Channels.Where(x => x.Value.Type is ChannelType.Text or ChannelType.News)
                     .FirstOrDefault(x => string.Equals(x.Value.Name, value.Replace(' ', '-'), StringComparison.OrdinalIgnoreCase)).Value;
         }
 

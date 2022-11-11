@@ -54,7 +54,7 @@ namespace Rias.TypeParsers
                 {
                     var allowChannel = channelType switch
                     {
-                        ChannelType.Text => channel.Type is ChannelType.Text or ChannelType.News or ChannelType.Store,
+                        ChannelType.Text => channel.Type is ChannelType.Text or ChannelType.News,
                         ChannelType.Voice => channel.Type is ChannelType.Voice or ChannelType.Stage,
                         _ => channel.Type == channelType || channelType is ChannelType.Unknown
                     };

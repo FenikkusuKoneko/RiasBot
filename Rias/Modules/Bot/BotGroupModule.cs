@@ -42,7 +42,7 @@ namespace Rias.Modules.Bot
                         return;
                     }
 
-                    if (channel.Type != ChannelType.Text && channel.Type != ChannelType.News && channel.Type != ChannelType.Store)
+                    if (channel.Type != ChannelType.Text && channel.Type != ChannelType.News)
                     {
                         await ReplyErrorAsync(Localization.BotChannelNotTextChannel);
                         return;
@@ -134,7 +134,7 @@ namespace Rias.Modules.Bot
                     return;
                 }
 
-                if (channel.Type != ChannelType.Text && channel.Type != ChannelType.News && channel.Type != ChannelType.Store)
+                if (channel.Type != ChannelType.Text && channel.Type != ChannelType.News)
                 {
                     await ReplyErrorAsync(Localization.BotChannelNotTextChannel);
                     return;
