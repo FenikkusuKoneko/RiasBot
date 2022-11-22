@@ -4,6 +4,7 @@ using Disqord.Rest;
 using Rias.Common;
 using Rias.Database;
 using Rias.Database.Entities;
+using Rias.Services.Extensions;
 using Rias.Services.Responses.Administration;
 
 namespace Rias.Services.Commands;
@@ -35,7 +36,7 @@ public class AdministrationService : RiasCommandService
             guildEntity.GreetNotification = true;
         
         var webhook = guildEntity.GreetWebhookId > 0
-            ? (await guild.FetchWebhooksAsync()).FirstOrDefault(w => w.Id == guildEntity.GreetWebhookId)
+            ? await guild.GetWebhookAsync(guildEntity.GreetWebhookId)
             : null;
         
         if (!guildEntity.GreetNotification)
@@ -106,7 +107,7 @@ public class AdministrationService : RiasCommandService
         await Db.SaveChangesAsync();
 
         var webhook = guildEntity.GreetWebhookId > 0
-            ? (await guild.FetchWebhooksAsync()).FirstOrDefault(w => w.Id == guildEntity.GreetWebhookId)
+            ? await guild.GetWebhookAsync(guildEntity.GreetWebhookId)
             : null;
 
         var channel = webhook?.ChannelId is not null
@@ -137,7 +138,7 @@ public class AdministrationService : RiasCommandService
             guildEntity.ByeNotification = true;
         
         var webhook = guildEntity.ByeWebhookId > 0
-            ? (await guild.FetchWebhooksAsync()).FirstOrDefault(w => w.Id == guildEntity.ByeWebhookId)
+            ? await guild.GetWebhookAsync(guildEntity.ByeWebhookId)
             : null;
         
         if (!guildEntity.ByeNotification)
@@ -208,7 +209,7 @@ public class AdministrationService : RiasCommandService
         await Db.SaveChangesAsync();
 
         var webhook = guildEntity.ByeWebhookId > 0
-            ? (await guild.FetchWebhooksAsync()).FirstOrDefault(w => w.Id == guildEntity.ByeWebhookId)
+            ? await guild.GetWebhookAsync(guildEntity.ByeWebhookId)
             : null;
 
         var channel = webhook?.ChannelId is not null

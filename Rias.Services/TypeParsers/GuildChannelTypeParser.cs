@@ -1,7 +1,6 @@
 ﻿using Disqord;
 using Disqord.Bot.Commands;
 using Disqord.Gateway;
-using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Qommon.Collections;
 using Rias.Common;

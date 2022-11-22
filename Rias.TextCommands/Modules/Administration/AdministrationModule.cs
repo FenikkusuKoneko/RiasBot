@@ -139,7 +139,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         if (string.IsNullOrWhiteSpace(setByeResponse.Content) && setByeResponse.Embed is null)
         {
             var embed = new LocalEmbed()
-                .WithColor(Utils.ConfirmationColor)
+                .WithColor(Utils.ErrorColor)
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultByeMessage, Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
@@ -196,7 +196,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         else if (string.IsNullOrEmpty(message))
         {
             var defaultEmbed = new LocalEmbed()
-                .WithColor(Utils.ConfirmationColor)
+                .WithColor(Utils.ErrorColor)
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultByeMessage, Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
