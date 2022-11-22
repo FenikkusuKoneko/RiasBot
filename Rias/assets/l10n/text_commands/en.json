@@ -1,4 +1,11 @@
 {
+  "administration_greet": "Enables the announcements in this channel or another channel for the members joining this server. Provide no channel to disable them.",
+  "administration_greetmessage": "Sets the announcement message when someone joins the server.\nPlaceholders:\n`%mention%` - will mention the member\n`%member% or %user%` - will write the member's username\n`%server%` - will write the name of the server\n`%members%`- will write the server member count.\n`%avatar%` - will write the member's avatar url, use it in the embed's thumbnail or image\nEmbed is supported, generate one here: https://rias.gg/embed.\nIf the preview is not right, then it means the json code is too long or copied wrong.",
+  "administration_greetmessage_examples": "Welcome to **%server%**, **%user%**!",
+  "administration_bye": "Enables the announcements in this channel or another channel for the members leaving this server. Provide no channel to disable them.",
+  "administration_byemessage": "Sets the announcement message when someone leaves the server.\nPlaceholders:\n`%mention%` - will mention the member\n`%member% or %user%` - will write the member's username\n`%server%` - will write the name of the server\n`%members%`- will write the server member count.\n`%avatar%` - will write the member's avatar url, use it in the embed's thumbnail or image\nEmbed is supported, generate one here: https://rias.gg/embed.\nIf the preview is not right, then it means the json code is too long or copied wrong.",
+  "administration_byemessage_examples": "**%user%** left.",
+  
   "help_help": "Shows a page info for a command, or shows the general help page if no arguments are given.\nMost of the commands are single word but there are command groups (or subcommands of those commands).",
   "help_modules": "Shows all modules and submodules.",
   "help_commands": "Shows all commands or shows the commands for a module or submodule.",

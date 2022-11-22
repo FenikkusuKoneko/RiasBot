@@ -1,12 +1,11 @@
-﻿namespace Rias.Database.Entities;
+﻿using Disqord;
+
+namespace Rias.Database.Entities;
 
 public class WarningEntity : DbEntity
 {
-    public ulong GuildId { get; set; }
-        
-    public ulong UserId { get; set; }
-        
+    public Snowflake GuildId { get; set; }
+    public Snowflake UserId { get; set; }
     public string? Reason { get; set; }
-        
-    public ulong ModeratorId { get; set; }
+    public Snowflake ModeratorId { get; set; }
 }

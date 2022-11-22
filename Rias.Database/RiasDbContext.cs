@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Disqord;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +13,7 @@ public class RiasContextFactory : IDesignTimeDbContextFactory<RiasDbContext>
 {
     public RiasDbContext CreateDbContext(string[] args)
     {
-        var configPath = Path.Combine(Environment.CurrentDirectory, "data/configuration.json");
+        var configPath = Path.Combine(Environment.CurrentDirectory, "../Rias/appsettings.Development.json");
         var config = new ConfigurationBuilder().AddJsonFile(configPath).Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<RiasDbContext>()
@@ -79,21 +80,13 @@ public class RiasDbContext : DbContext
         modelBuilder.HasPostgresEnum<LastChargeStatus>();
         modelBuilder.HasPostgresEnum<PatronStatus>();
         
-        foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            relationship.DeleteBehavior = DeleteBehavior.Restrict;
-        
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(RiasDbContext).Assembly);
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-        var entries = ChangeTracker
-            .Entries()
-            .Where(e => e.Entity is DbEntity && e.State is EntityState.Modified);
-
-        foreach (var entityEntry in entries)
-            ((DbEntity) entityEntry.Entity).UpdatedAt = DateTime.UtcNow;
-            
-        return base.SaveChangesAsync(cancellationToken);
+        configurationBuilder
+            .Properties<Snowflake>()
+            .HaveConversion<SnowflakeConverter>();
     }
 }

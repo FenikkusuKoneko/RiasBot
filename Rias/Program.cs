@@ -11,6 +11,7 @@ using Rias;
 using Rias.Common;
 using Rias.Database;
 using Rias.Services;
+using Rias.Services.Commands;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
@@ -61,6 +62,8 @@ var builder = new HostBuilder()
         
         services.AddPrefixProvider<RiasPrefixProvider>();
         services.Configure<RiasOptions>(context.Configuration);
+        
+        services.AddHttpClient<AdministrationService>();
         
         var dbConnectionString = context.Configuration.GetConnectionString("Database") ?? throw new Exception("Database connection string is not set.");
         services.AddDbContext<RiasDbContext>(options =>

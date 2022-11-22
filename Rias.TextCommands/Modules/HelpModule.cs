@@ -34,7 +34,7 @@ public class HelpModule : RiasTextModule<HelpService>
         var commands = GetCommands(module, module is null ? command : subcommand).ToList();
 
         if (commands.Count == 0)
-            return ReplyErrorResponse(Strings.HelpCommandNotFound, Context.Prefix.Stringify());
+            return ReplyErrorResponse(Strings.Help.CommandNotFound, Context.Prefix.Stringify());
 
         var guild = Context.GuildId.HasValue ? Context.Bot.GetGuild(Context.GuildId.Value) : null;
         var embed = Service.GenerateHelpEmbed(Context.Author, guild, commands, Context.Prefix);
@@ -58,6 +58,7 @@ public class HelpModule : RiasTextModule<HelpService>
             .ToList();
         
         Func<ITextModule, bool> submodulesOwnerPredicate;
+        
         if (isOwner)
             submodulesOwnerPredicate = m => !string.Equals(m.Parent?.Name, m.Name, StringComparison.OrdinalIgnoreCase);
         else
@@ -85,13 +86,11 @@ public class HelpModule : RiasTextModule<HelpService>
             description.AppendLine();
         }
 
-        var embed = new LocalEmbed
-        {
-            Color = Utils.ConfirmationColor,
-            Title = GetText(Strings.HelpModulesListTitle, Context.Prefix.Stringify()),
-            Description = description.ToString(),
-            Footer = new LocalEmbedFooter().WithText($"{Context.Author.Tag} | {GetText(Strings.HelpModulesListFooter)}")
-        };
+        var embed = new LocalEmbed()
+            .WithColor(Utils.ConfirmationColor)
+            .WithTitle(GetText(Strings.Help.ModulesListTitle, Context.Prefix.Stringify()))
+            .WithDescription(description.ToString())
+            .WithFooter($"{Context.Author.Tag} | {GetText(Strings.Help.ModulesListFooter)}");
         
         return Reply(embed);
     }
@@ -103,16 +102,16 @@ public class HelpModule : RiasTextModule<HelpService>
             return await AllCommandsAsync();
         
         var module = _commandService.EnumerateTextModules()
-            .FirstOrDefault(m => string.Equals(m.Name, moduleName, StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefault(m => m.Name.StartsWith(moduleName, StringComparison.OrdinalIgnoreCase));
         
         if (module is null)
-            return ReplyErrorResponse(Strings.HelpModuleNotFound, Context.Prefix.Stringify());
+            return ReplyErrorResponse(Strings.Help.ModuleNotFound, Context.Prefix.Stringify());
         
         var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
         var commands = GetModuleCommands(module, isOwner).ToList();
         
         if (commands.Count == 0)
-            return ReplyErrorResponse(Strings.HelpModuleNotFound, Context.Prefix.Stringify());
+            return ReplyErrorResponse(Strings.Help.ModuleNotFound, Context.Prefix.Stringify());
 
         var commandAliases = GetAliases(commands).ToList();
         var description = new StringBuilder($"**{module.Name}:** {string.Join(", ", commandAliases.Select(Markdown.Code))}");
@@ -133,21 +132,19 @@ public class HelpModule : RiasTextModule<HelpService>
         }
 
         var prefix = Context.Prefix.Stringify();
-        var embed = new LocalEmbed
-        {
-            Color = Utils.ConfirmationColor,
-            Title = GetText(module.Parent is null ? Strings.HelpAllModuleCommands : Strings.HelpAllSubmoduleCommands, prefix),
-            Description = description.ToString(),
-            Footer = new LocalEmbedFooter().WithText($"{Context.Author.Tag} | {GetText(Strings.HelpCommandInfo, prefix)}")
-        };
-        
+        var embed = new LocalEmbed()
+            .WithColor(Utils.ConfirmationColor)
+            .WithTitle(GetText(module.Parent is null ? Strings.Help.AllModuleCommands : Strings.Help.AllSubmoduleCommands, module.Name))
+            .WithDescription(description.ToString())
+            .WithFooter($"{Context.Author.Tag} | {GetText(Strings.Help.CommandInfo, prefix)}");
+
         return Reply(embed);
     }
 
     [TextCommand("allcommands", "allcmds")]
     public async Task<IResult> AllCommandsAsync()
     {
-            var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
+        var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
         
         Func<ITextModule, bool> modulesPredicate;
         if (isOwner)
@@ -161,6 +158,7 @@ public class HelpModule : RiasTextModule<HelpService>
             .ToList();
         
         Func<ITextModule, bool> submodulesOwnerPredicate;
+        
         if (isOwner)
             submodulesOwnerPredicate = m => !string.Equals(m.Parent?.Name, m.Name, StringComparison.OrdinalIgnoreCase);
         else
@@ -203,13 +201,11 @@ public class HelpModule : RiasTextModule<HelpService>
         }
 
         var prefix = Context.Prefix.Stringify();
-        var embed = new LocalEmbed
-        {
-            Color = Utils.ConfirmationColor,
-            Title = GetText(Strings.HelpAllCommands, prefix),
-            Description = description.ToString(),
-            Footer = new LocalEmbedFooter().WithText($"{Context.Author.Tag} | {GetText(Strings.HelpCommandInfo, prefix)}")
-        };
+        var embed = new LocalEmbed()
+            .WithColor(Utils.ConfirmationColor)
+            .WithTitle(GetText(Strings.Help.AllCommands, prefix))
+            .WithDescription(description.ToString())
+            .WithFooter($"{Context.Author.Tag} | {GetText(Strings.Help.CommandInfo, prefix)}");
         
         return Reply(embed);
     }
@@ -235,7 +231,7 @@ public class HelpModule : RiasTextModule<HelpService>
         return c.Module.Aliases.Count == 0 && c.Aliases.Any(y => string.Equals(y, alias, StringComparison.OrdinalIgnoreCase));
     });
 
-    private IEnumerable<ITextCommand> GetModuleCommands(ITextModule module, bool isOwner)
+    private static IEnumerable<ITextCommand> GetModuleCommands(ITextModule module, bool isOwner)
     {
         var commands = module.Commands.AsEnumerable();
         var submoduleCommands = module.Submodules.FirstOrDefault(sm => string.Equals(sm.Name, sm.Parent?.Name, StringComparison.OrdinalIgnoreCase))?.Commands;
@@ -251,7 +247,7 @@ public class HelpModule : RiasTextModule<HelpService>
             .OrderBy(c => c.Name);
     }
 
-    private IEnumerable<string> GetAliases(IEnumerable<ITextCommand> commands)
+    private static IEnumerable<string> GetAliases(IEnumerable<ITextCommand> commands)
         => commands.Select(command =>
         {
             var aliases = string.Join('/', command.Aliases);

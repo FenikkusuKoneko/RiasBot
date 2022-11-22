@@ -1,20 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Disqord;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Rias.Database.Entities;
 
 public class MembersEntity : DbEntity
 {
-    public ulong GuildId { get; set; }
-
-    public ulong MemberId { get; set; }
-
+    public Snowflake GuildId { get; set; }
+    public Snowflake MemberId { get; set; }
     public int Xp { get; set; }
-
     public DateTime LastMessageDate { get; set; }
-        
     public bool IsMuted { get; set; }
-        
     public bool IsXpIgnored { get; set; }
 }
 

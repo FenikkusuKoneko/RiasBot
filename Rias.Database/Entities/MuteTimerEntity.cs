@@ -1,18 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Disqord;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Rias.Database.Entities;
 
 public class MuteTimerEntity : DbEntity
 {
-    public ulong GuildId { get; set; }
-        
-    public ulong UserId { get; set; }
-        
-    public ulong ModeratorId { get; set; }
-        
-    public ulong MuteChannelSourceId { get; set; }
-        
+    public Snowflake GuildId { get; set; }
+    public Snowflake UserId { get; set; }
+    public Snowflake ModeratorId { get; set; }
+    public Snowflake MuteChannelSourceId { get; set; }
     public DateTime Expiration { get; set; }
 }
 

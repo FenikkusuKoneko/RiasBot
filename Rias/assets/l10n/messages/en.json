@@ -1,4 +1,20 @@
 ﻿{
+  "administration_greet_enabled": "The announcements for the members joining this server are **enabled** in this channel.",
+  "administration_greet_enabled_channel": "The announcements for the members joining this are **enabled** in {0}.",
+  "administration_greet_disabled": "The announcements for the members joining this server are **disabled**.",
+  "administration_greet_message_set_to_default": "The greeting message has been set to the default one.", 
+  "administration_greet_message_length_limit": "The greeting message's length cannot be longer than {0} characters.",
+  "administration_greet_message_set": "A new greeting message has been set for the members joining this server.",
+  "administration_bye_enabled": "The announcements for the members leaving this server are **enabled** in this channel.",
+  "administration_bye_enabled_channel": "The announcements for the members leaving this server are **enabled** in {0}.",
+  "administration_bye_disabled": "The announcements for the members leaving this server are **disabled**.",
+  "administration_bye_message_set_to_default": "The bye message has been set to the default one.",
+  "administration_bye_message_length_limit": "The bye message's length cannot be longer than {0} characters.",
+  "administration_bye_message_set": "A new bye message has been set for the members leaving this server.",
+  "administration_default_greet_message": "Welcome to {0}, {1}!\nWe hope you enjoy your stay here.\n\nYou are the {2} member.",
+  "administration_default_bye_message": "{0} left.\n\nWe are now {1} members.",
+  "administration_invalid_custom_message": "The custom message contains an invalid or empty content or an invalid embed.",
+  
   "help_title": "{0} v{1} help page",
   "help_info": "I'm based on modules and submodules. Each module has submodules and each submodule has commands.\n\nType `{0}modules` to get a list with all modules and submodules.\n\nType `{0}commands <moduleName>` or `{0}commands <submoduleName>` to get a list with all commands from the module or submodule.\nExample: `{0}commands Administration`, `{0}commands Server`\n\nType `{0}allcommands` to get a list with all commands.\nCheck https://rias.gg/commands to see all commands with their description and examples.",
   "help_support_server": "[**Join to {0}** - Beautiful and cool community]({1})",
@@ -19,6 +35,8 @@
   
   "utility_prefix_is": "My prefix in this server is **{0}**.",
   "utility_prefix_name_or_mention": "My prefix in this server is my **name** or my **mention**.",
+
+  "service_command_cooldown": "Hey, calm down! Take a breath and try again in **{0}**.",
   
   "links": "Links",
   "no_description": "No description.",

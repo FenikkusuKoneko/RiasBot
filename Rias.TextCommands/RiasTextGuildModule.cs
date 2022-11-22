@@ -18,94 +18,34 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
     }
 
     protected IResult ReplyConfirmationResponse(string key)
-    {
-        return Reply(new LocalEmbed
-        {
-            Color = Utils.ConfirmationColor,
-            Description = Localization.GetText(Context.GuildId, key)
-        });
-    }
-    
+        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localization.GetText(Context.GuildId, key)));
+
     protected IResult ReplyConfirmationResponse(string key, object arg0)
-    {
-        return Reply(new LocalEmbed
-        {
-            Color = Utils.ConfirmationColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0)
-        });
-    }
+        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localization.GetText(Context.GuildId, key, arg0)));
     
     protected IResult ReplyConfirmationResponse(string key, object arg0, object arg1)
-    {
-        return Reply(new LocalEmbed
-        {
-            Color = Utils.ConfirmationColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0, arg1)
-        });
-    }
+        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localization.GetText(Context.GuildId, key, arg0, arg1)));
     
     protected IResult ReplyConfirmationResponse(string key, object arg0, object arg1, object arg2)
-    {
-        return Reply(new LocalEmbed
-        {
-            Color = Utils.ConfirmationColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0, arg1, arg2)
-        });
-    }
+        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localization.GetText(Context.GuildId, key, arg0, arg1, arg2)));
     
     protected IResult ReplyConfirmationResponse(string key, params object[] args)
-    {
-        return Reply(new LocalEmbed
-        {
-            Color = Utils.ConfirmationColor,
-            Description = Localization.GetText(Context.GuildId, key, args)
-        });
-    }
+        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localization.GetText(Context.GuildId, key, args)));
     
     protected IResult ReplyErrorResponse(string key)
-    {
-        return Reply(new LocalEmbed
-        {
-            Color = Utils.ErrorColor,
-            Description = Localization.GetText(Context.GuildId, key)
-        });
-    }
+        => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localization.GetText(Context.GuildId, key)));
     
     protected IResult ReplyErrorResponse(string key, object arg0)
-    {
-        return Reply(new LocalEmbed
-        {
-            Color = Utils.ErrorColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0)
-        });
-    }
+        => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localization.GetText(Context.GuildId, key, arg0)));
     
     protected IResult ReplyErrorResponse(string key, object arg0, object arg1)
-    {
-        return Reply(new LocalEmbed
-        {
-            Color = Utils.ErrorColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0, arg1)
-        });
-    }
+        => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localization.GetText(Context.GuildId, key, arg0, arg1)));
     
     protected IResult ReplyErrorResponse(string key, object arg0, object arg1, object arg2)
-    {
-        return Reply(new LocalEmbed
-        {
-            Color = Utils.ErrorColor,
-            Description = Localization.GetText(Context.GuildId, key, arg0, arg1, arg2)
-        });
-    }
+        => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localization.GetText(Context.GuildId, key, arg0, arg1, arg2)));
     
     protected IResult ReplyErrorResponse(string key, params object[] args)
-    {
-        return Reply(new LocalEmbed
-        {
-            Color = Utils.ErrorColor,
-            Description = Localization.GetText(Context.GuildId, key, args)
-        });
-    }
+        => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localization.GetText(Context.GuildId, key, args)));
 
     protected string GetText(string key)
         => Localization.GetText(Context.GuildId, key);

@@ -1,14 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Disqord;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Rias.Database.Entities;
 
 public class GuildXpRoleEntity : DbEntity
 {
-    public ulong GuildId { get; set; }
-        
-    public ulong RoleId { get; set; }
-        
+    public Snowflake GuildId { get; set; }
+    public Snowflake RoleId { get; set; }
     public int Level { get; set; }
 }
 

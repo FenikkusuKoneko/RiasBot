@@ -35,7 +35,7 @@ public class HelpService : RiasCommandService
         var title = string.Join(" / ", command.Aliases.Select(a => $"{moduleAlias}{a}"));
         
         if (command.Checks.Any(c => c is RequireBotOwnerAttribute))
-            title += $" [{_localization.GetText(guild?.Id, Strings.HelpOwnerOnly).ToLowerInvariant()}]";
+            title += $" [{_localization.GetText(guild?.Id, Strings.Help.OwnerOnly).ToLowerInvariant()}]";
         
         var commandInfoKey = $"{command.Module.Name.Replace(' ', '_').ToLower()}_{command.Name.Replace(' ', '_')}";
         var description = _localization.GetCommandText(guild?.Id, commandInfoKey);
@@ -43,7 +43,7 @@ public class HelpService : RiasCommandService
         if (!string.IsNullOrEmpty(description))
         {
             description = description.Replace("{prefix}", prefixString).Replace("{currency}", _options.CurrencyEmoji)
-                          + $"\n\n{_localization.GetText(guild?.Id, Strings.HelpModule, Markdown.Bold(moduleName))}";
+                          + $"\n\n{_localization.GetText(guild?.Id, Strings.Help.Module, Markdown.Bold(moduleName))}";
         }
         else
         {
@@ -58,7 +58,10 @@ public class HelpService : RiasCommandService
         
         var examples = _localization.GetCommandText(guild?.Id, $"{commandInfoKey}_examples");
         if (!string.IsNullOrEmpty(examples))
+        {
+            examples = string.Join('\n', examples.Split('\n').Select(ex => $"{command.Aliases[0]} {ex}"));
             embed.AddField(_localization.GetText(guild?.Id, Strings.Examples), examples);
+        }
 
         var usages = new StringBuilder();
         foreach (var cmd in commands.OrderBy(c => c.Parameters.Count))
