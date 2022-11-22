@@ -58,7 +58,7 @@ var builder = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
-        services.AddSingleton<LocalizationService>();
+        services.AddSingleton<LocalisationService>();
         
         services.AddPrefixProvider<RiasPrefixProvider>();
         services.Configure<RiasOptions>(context.Configuration);
@@ -101,7 +101,7 @@ await using var scope = host.Services.CreateAsyncScope();
 var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
 await db.Database.MigrateAsync();
 
-var localization = host.Services.GetRequiredService<LocalizationService>();
+var localization = host.Services.GetRequiredService<LocalisationService>();
 await localization.LoadAsync();
 
 var prefixProvider = (RiasPrefixProvider) host.Services.GetRequiredService<IPrefixProvider>();

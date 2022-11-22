@@ -12,13 +12,13 @@ namespace Rias.Services.Commands;
 
 public class HelpService : RiasCommandService
 {
-    private readonly LocalizationService _localization;
+    private readonly LocalisationService _localisation;
     private readonly RiasOptions _options;
     
-    public HelpService(RiasDbContext db, LocalizationService localization, IOptions<RiasOptions> options)
+    public HelpService(RiasDbContext db, LocalisationService localisation, IOptions<RiasOptions> options)
         : base(db)
     {
-        _localization = localization;
+        _localisation = localisation;
         _options = options.Value;
     }
 
@@ -35,19 +35,19 @@ public class HelpService : RiasCommandService
         var title = string.Join(" / ", command.Aliases.Select(a => $"{moduleAlias}{a}"));
         
         if (command.Checks.Any(c => c is RequireBotOwnerAttribute))
-            title += $" [{_localization.GetText(guild?.Id, Strings.Help.OwnerOnly).ToLowerInvariant()}]";
+            title += $" [{_localisation.GetText(guild?.Id, Strings.Help.OwnerOnly).ToLowerInvariant()}]";
         
         var commandInfoKey = $"{command.Module.Name.Replace(' ', '_').ToLower()}_{command.Name.Replace(' ', '_')}";
-        var description = _localization.GetCommandText(guild?.Id, commandInfoKey);
+        var description = _localisation.GetCommandText(guild?.Id, commandInfoKey);
 
         if (!string.IsNullOrEmpty(description))
         {
             description = description.Replace("{prefix}", prefixString).Replace("{currency}", _options.CurrencyEmoji)
-                          + $"\n\n{_localization.GetText(guild?.Id, Strings.Help.Module, Markdown.Bold(moduleName))}";
+                          + $"\n\n{_localisation.GetText(guild?.Id, Strings.Help.Module, Markdown.Bold(moduleName))}";
         }
         else
         {
-            description = _localization.GetText(guild?.Id, Strings.NoDescription);
+            description = _localisation.GetText(guild?.Id, Strings.NoDescription);
         }
 
         var embed = new LocalEmbed()
@@ -56,11 +56,11 @@ public class HelpService : RiasCommandService
             .WithDescription(description)
             .WithFooter($"{user.Tag} | <> - mandatory; [] - optional", user.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
         
-        var examples = _localization.GetCommandText(guild?.Id, $"{commandInfoKey}_examples");
+        var examples = _localisation.GetCommandText(guild?.Id, $"{commandInfoKey}_examples");
         if (!string.IsNullOrEmpty(examples))
         {
             examples = string.Join('\n', examples.Split('\n').Select(ex => $"{command.Aliases[0]} {ex}"));
-            embed.AddField(_localization.GetText(guild?.Id, Strings.Examples), examples);
+            embed.AddField(_localisation.GetText(guild?.Id, Strings.Examples), examples);
         }
 
         var usages = new StringBuilder();
@@ -71,7 +71,7 @@ public class HelpService : RiasCommandService
                 .AppendJoin(' ', cmd.Parameters.Select(p => p.ParameterInfo is not null && p.ParameterInfo.IsOptional ? $"[{p.Name}]" : $"<{p.Name}>"));
         }
         
-        embed.AddField(_localization.GetText(guild?.Id, Strings.Usages), usages.ToString());
+        embed.AddField(_localisation.GetText(guild?.Id, Strings.Usages), usages.ToString());
         return embed;
     }
 }

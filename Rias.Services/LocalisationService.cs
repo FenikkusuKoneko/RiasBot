@@ -9,12 +9,12 @@ using Rias.Database;
 
 namespace Rias.Services;
 
-public class LocalizationService
+public class LocalisationService
 {
     public const string DefaultLocale = "en";
     
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<LocalizationService> _logger;
+    private readonly ILogger<LocalisationService> _logger;
 
     // first string is the locale, second string is the key, third string is the value
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _locales = new();
@@ -24,7 +24,7 @@ public class LocalizationService
     private readonly ConcurrentDictionary<Snowflake, string> _guildLocales = new();
     private readonly string _localesPath = Path.Combine(Environment.CurrentDirectory, "assets/l10n");
 
-    public LocalizationService(IServiceProvider serviceProvider, ILogger<LocalizationService> logger)
+    public LocalisationService(IServiceProvider serviceProvider, ILogger<LocalisationService> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;

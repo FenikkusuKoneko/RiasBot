@@ -53,6 +53,16 @@ public static class Strings
         public const string CommandCooldown = "service_command_cooldown";
     }
 
+    public static class TypeParser
+    {
+        public static string ChannelNotFound(string? type = null) => type switch
+        {
+            null => "type_parser_channel_not_found",
+            "message" => "type_parser_text_channel_not_found",
+            _ => $"type_parser_{type}_channel_not_found"
+        };
+    }
+
     public const string Links = "links";
     public const string NoDescription = "no_description";
     public const string Examples = "examples";
