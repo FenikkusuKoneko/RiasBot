@@ -18,6 +18,9 @@ public static class Strings
         public const string ByeMessageSet = "administration_bye_message_set";
         public const string DefaultGreetMessage = "administration_default_greet_message";
         public const string DefaultByeMessage = "administration_default_bye_message";
+        public const string ModLogEnabled = "administration_mod_log_enabled";
+        public const string ModLogEnabledChannel = "administration_mod_log_enabled_channel";
+        public const string ModLogDisabled = "administration_mod_log_disabled";
         public const string InvalidCustomMessage = "administration_invalid_custom_message";
     }
 

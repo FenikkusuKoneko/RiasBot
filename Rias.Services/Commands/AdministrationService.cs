@@ -24,13 +24,13 @@ public class AdministrationService : RiasCommandService
         IGuild guild,
         IMessageGuildChannel channel,
         IMember member,
-        bool switchGreet)
+        bool toggleGreet)
     {
         var guildEntity = await Db.Guilds.GetOrAddAsync(
             g => g.GuildId == guild.Id,
             () => new GuildEntity { GuildId = guild.Id });
 
-        if (switchGreet)
+        if (toggleGreet)
             guildEntity.IsGreetEnabled = !guildEntity.IsGreetEnabled;
         else
             guildEntity.IsGreetEnabled = true;
@@ -126,13 +126,13 @@ public class AdministrationService : RiasCommandService
         IGuild guild,
         IMessageGuildChannel channel,
         IMember member,
-        bool switchBye)
+        bool toggleBye)
     {
         var guildEntity = await Db.Guilds.GetOrAddAsync(
             g => g.GuildId == guild.Id,
             () => new GuildEntity { GuildId = guild.Id });
 
-        if (switchBye)
+        if (toggleBye)
             guildEntity.IsByeEnabled = !guildEntity.IsByeEnabled;
         else
             guildEntity.IsByeEnabled = true;
@@ -221,5 +221,28 @@ public class AdministrationService : RiasCommandService
             IsByeEnabled = guildEntity.IsByeEnabled,
             Channel = channel
         };
+    }
+
+    public async Task<bool> SetModLogAsync(IMessageGuildChannel channel, bool toggleModLog)
+    {
+        var guildEntity = await Db.Guilds.GetOrAddAsync(
+            g => g.GuildId == channel.GuildId, 
+            () => new GuildEntity { GuildId = channel.GuildId });
+
+        if (toggleModLog)
+        {
+            guildEntity.ModLogChannelId = guildEntity.ModLogChannelId == 0
+                ? channel.Id
+                : 0;
+        }
+        else
+        {
+            guildEntity.ModLogChannelId = channel.Id;
+        }
+
+        Db.Guilds.Update(guildEntity);
+        await Db.SaveChangesAsync();
+        
+        return guildEntity.ModLogChannelId > 0;
     }
 }

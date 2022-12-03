@@ -139,7 +139,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         if (string.IsNullOrWhiteSpace(setByeResponse.Content) && setByeResponse.Embed is null)
         {
             var embed = new LocalEmbed()
-                .WithColor(Utils.ErrorColor)
+                .WithColor(Utils.ConfirmationColor)
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultByeMessage, Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
@@ -196,7 +196,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         else if (string.IsNullOrEmpty(message))
         {
             var defaultEmbed = new LocalEmbed()
-                .WithColor(Utils.ErrorColor)
+                .WithColor(Utils.ConfirmationColor)
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultByeMessage, Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
@@ -204,5 +204,24 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         }
         
         return Reply(replyMessage);
+    }
+
+    [TextCommand("setmodlog", "modlog")]
+    [RequireAuthorPermissions(Permissions.Administrator)]
+    public async Task<IResult> SetModLogAsync(IMessageGuildChannel? channel = null)
+    {
+        var toggleModLog = channel is null;
+        channel ??= Context.GetChannel();
+        
+        var modLogEnabled = await Service.SetModLogAsync(channel, toggleModLog);
+
+        if (modLogEnabled)
+        {
+            return channel.Id == Context.ChannelId
+                ? ReplyConfirmationResponse(Strings.Administration.ModLogEnabled)
+                : ReplyConfirmationResponse(Strings.Administration.ModLogEnabledChannel, channel.Mention);
+        }
+
+        return ReplyConfirmationResponse(Strings.Administration.ModLogDisabled);
     }
 }

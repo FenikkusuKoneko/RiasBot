@@ -13,6 +13,9 @@
   "administration_bye_message_set": "A new bye message has been set for the members leaving this server.",
   "administration_default_greet_message": "Welcome to {0}, {1}!\nWe hope you enjoy your stay here.\n\nYou are the {2} member.",
   "administration_default_bye_message": "{0} left.\n\nWe are now {1} members.",
+  "administration_mod_log_enabled": "The notifications about warn, mute, unmute, kick, ban, unban, softban and pruneban will be **posted** in this channel.",
+  "administration_mod_log_enabled_channel": "The notifications about warn, mute, unmute, kick, ban, unban, softban and pruneban will be **posted** in {0}.",
+  "administration_mod_log_disabled": "The notifications about warn, mute, unmute, kick, ban, unban, softban and pruneban are **disabled**.",
   "administration_invalid_custom_message": "The custom message contains an invalid or empty content or an invalid embed.",
   
   "help_title": "{0} v{1} help page",

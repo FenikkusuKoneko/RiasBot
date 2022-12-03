@@ -158,7 +158,7 @@ public class BotService : DiscordClientService
         
         {
             var defaultEmbed = new LocalEmbed()
-                .WithColor(Utils.ErrorColor)
+                .WithColor(Utils.ConfirmationColor)
                 .WithThumbnailUrl(user.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(_localisation.GetText(guild.Id, Strings.Administration.DefaultByeMessage, Markdown.Bold(user.Tag), guild.MemberCount));
 
