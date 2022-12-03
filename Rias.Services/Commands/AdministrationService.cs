@@ -31,15 +31,15 @@ public class AdministrationService : RiasCommandService
             () => new GuildEntity { GuildId = guild.Id });
 
         if (switchGreet)
-            guildEntity.GreetNotification = !guildEntity.GreetNotification;
+            guildEntity.IsGreetEnabled = !guildEntity.IsGreetEnabled;
         else
-            guildEntity.GreetNotification = true;
+            guildEntity.IsGreetEnabled = true;
         
         var webhook = guildEntity.GreetWebhookId > 0
             ? await guild.GetWebhookAsync(guildEntity.GreetWebhookId)
             : null;
         
-        if (!guildEntity.GreetNotification)
+        if (!guildEntity.IsGreetEnabled)
         {
             if (webhook is not null)
                 await webhook.DeleteAsync();
@@ -50,7 +50,7 @@ public class AdministrationService : RiasCommandService
 
             return new SetGreetResponse
             {
-                GreetEnabled = false
+                IsGreetEnabled = false
             };
         }
         
@@ -83,7 +83,7 @@ public class AdministrationService : RiasCommandService
         {
             return new SetGreetResponse
             {
-                GreetEnabled = true,
+                IsGreetEnabled = true,
                 Content = content,
                 Embed = embed
             };
@@ -91,7 +91,7 @@ public class AdministrationService : RiasCommandService
 
         return new SetGreetResponse
         {
-            GreetEnabled = true,
+            IsGreetEnabled = true,
             Content = greetMessage
         };
     }
@@ -116,7 +116,7 @@ public class AdministrationService : RiasCommandService
 
         return new SetGreetMessageResponse
         {
-            GreetEnabled = guildEntity.GreetNotification,
+            IsGreetEnabled = guildEntity.IsGreetEnabled,
             Channel = channel
         };
     }
@@ -133,15 +133,15 @@ public class AdministrationService : RiasCommandService
             () => new GuildEntity { GuildId = guild.Id });
 
         if (switchBye)
-            guildEntity.ByeNotification = !guildEntity.ByeNotification;
+            guildEntity.IsByeEnabled = !guildEntity.IsByeEnabled;
         else
-            guildEntity.ByeNotification = true;
+            guildEntity.IsByeEnabled = true;
         
         var webhook = guildEntity.ByeWebhookId > 0
             ? await guild.GetWebhookAsync(guildEntity.ByeWebhookId)
             : null;
         
-        if (!guildEntity.ByeNotification)
+        if (!guildEntity.IsByeEnabled)
         {
             if (webhook is not null)
                 await webhook.DeleteAsync();
@@ -152,7 +152,7 @@ public class AdministrationService : RiasCommandService
 
             return new SetByeResponse
             {
-                ByeEnabled = false
+                IsByeEnabled = false
             };
         }
         
@@ -185,7 +185,7 @@ public class AdministrationService : RiasCommandService
         {
             return new SetByeResponse
             {
-                ByeEnabled = true,
+                IsByeEnabled = true,
                 Content = content,
                 Embed = embed
             };
@@ -193,7 +193,7 @@ public class AdministrationService : RiasCommandService
 
         return new SetByeResponse
         {
-            ByeEnabled = true,
+            IsByeEnabled = true,
             Content = byeMessage
         };
     }
@@ -218,7 +218,7 @@ public class AdministrationService : RiasCommandService
 
         return new SetByeMessageResponse
         {
-            ByeEnabled = guildEntity.ByeNotification,
+            IsByeEnabled = guildEntity.IsByeEnabled,
             Channel = channel
         };
     }

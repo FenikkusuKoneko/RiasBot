@@ -26,7 +26,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
 
         var setGreetResponse = await Service.SetGreetAsync(Context.GetCurrentMember(), guild, channel, Context.Author, switchGreet);
         
-        if (!setGreetResponse.GreetEnabled)
+        if (!setGreetResponse.IsGreetEnabled)
             return ReplyConfirmationResponse(Strings.Administration.GreetDisabled);
 
         var message = new LocalMessage()
@@ -75,7 +75,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
                 ? GetText(Strings.Administration.GreetMessageSetToDefault)
                 : GetText(Strings.Administration.GreetMessageSet));
 
-        if (!greetMessageResponse.GreetEnabled || greetMessageResponse.Channel is null)
+        if (!greetMessageResponse.IsGreetEnabled || greetMessageResponse.Channel is null)
         {
             content.AppendLine(GetText(Strings.Administration.GreetDisabled));
         }
@@ -122,7 +122,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
 
         var setByeResponse = await Service.SetByeAsync(Context.GetCurrentMember(), guild, channel, Context.Author, switchBye);
         
-        if (!setByeResponse.ByeEnabled)
+        if (!setByeResponse.IsByeEnabled)
             return ReplyConfirmationResponse(Strings.Administration.ByeDisabled);
 
         var message = new LocalMessage()
@@ -171,7 +171,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
                 ? GetText(Strings.Administration.ByeMessageSetToDefault)
                 : GetText(Strings.Administration.ByeMessageSet));
 
-        if (!byeMessageResponse.ByeEnabled || byeMessageResponse.Channel is null)
+        if (!byeMessageResponse.IsByeEnabled || byeMessageResponse.Channel is null)
         {
             content.AppendLine(GetText(Strings.Administration.ByeDisabled));
         }

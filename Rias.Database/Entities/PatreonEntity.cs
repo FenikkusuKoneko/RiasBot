@@ -25,5 +25,9 @@ public class PatreonEntityTypeConfiguration : IEntityTypeConfiguration<PatreonEn
     public void Configure(EntityTypeBuilder<PatreonEntity> builder)
     {
         builder.HasIndex(p => new { p.PatreonUserId, p.UserId }).IsUnique();
+        
+        // Temporary hard-coded types until Npgsql 7.0.0 is fixed
+        builder.Property(p => p.LastChargeStatus).HasColumnType("last_charge_status");
+        builder.Property(p => p.PatronStatus).HasColumnType("patron_status");
     }
 }

@@ -42,7 +42,7 @@ public class BotService : DiscordClientService
         var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
         var guildEntity = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == guild.Id);
 
-        if (guildEntity is null || !guildEntity.GreetNotification)
+        if (guildEntity is null || !guildEntity.IsGreetEnabled)
             return;
 
         var currentMember = guild.GetCurrentMember();
@@ -100,7 +100,7 @@ public class BotService : DiscordClientService
 
         async Task DisableGreetAsync()
         {
-            guildEntity.GreetNotification = false;
+            guildEntity.IsGreetEnabled = false;
             await db.SaveChangesAsync();
         }
     }
@@ -111,7 +111,7 @@ public class BotService : DiscordClientService
         var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
         var guildEntity = await db.Guilds.FirstOrDefaultAsync(g => g.GuildId == guild.Id);
 
-        if (guildEntity is null || !guildEntity.ByeNotification)
+        if (guildEntity is null || !guildEntity.IsByeEnabled)
             return;
 
         var currentMember = guild.GetCurrentMember();
@@ -169,7 +169,7 @@ public class BotService : DiscordClientService
 
         async Task DisableByeAsync()
         {
-            guildEntity.ByeNotification = false;
+            guildEntity.IsByeEnabled = false;
             await db.SaveChangesAsync();
         }
     }

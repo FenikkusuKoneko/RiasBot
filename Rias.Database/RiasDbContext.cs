@@ -3,7 +3,6 @@ using Disqord;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Rias.Database.Entities;
 using Rias.Database.Enums;
 
@@ -71,8 +70,6 @@ public class RiasDbContext : DbContext
     public RiasDbContext(DbContextOptions<RiasDbContext> options)
         : base(options)
     {
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<LastChargeStatus>();
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<PatronStatus>();
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)

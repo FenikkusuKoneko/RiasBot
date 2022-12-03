@@ -7,14 +7,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
 using Rias.Database;
-using Rias.Database.Enums;
 
 #nullable disable
 
 namespace Rias.Migrations
 {
     [DbContext(typeof(RiasDbContext))]
-    [Migration("20221024084809_V4")]
+    [Migration("20221203110701_V4")]
     partial class V4
     {
         /// <inheritdoc />
@@ -22,7 +21,7 @@ namespace Rias.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0-rc.2.22472.11")
+                .HasAnnotation("ProductVersion", "7.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "last_charge_status", new[] { "paid", "declined", "pending", "refunded", "fraud", "other" });
@@ -190,7 +189,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<decimal>("UserId")
+                    b.Property<ulong>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
 
@@ -209,7 +208,7 @@ namespace Rias.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("AutoAssignableRoleId")
+                    b.Property<ulong>("AutoAssignableRoleId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("auto_assignable_role_id");
 
@@ -217,11 +216,7 @@ namespace Rias.Migrations
                         .HasColumnType("text")
                         .HasColumnName("bye_message");
 
-                    b.Property<bool>("ByeNotification")
-                        .HasColumnType("boolean")
-                        .HasColumnName("bye_notification");
-
-                    b.Property<decimal>("ByeWebhookId")
+                    b.Property<ulong>("ByeWebhookId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("bye_webhook_id");
 
@@ -230,35 +225,39 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<bool>("DeleteCommandMessage")
-                        .HasColumnType("boolean")
-                        .HasColumnName("delete_command_message");
-
                     b.Property<string>("GreetMessage")
                         .HasColumnType("text")
                         .HasColumnName("greet_message");
 
-                    b.Property<bool>("GreetNotification")
-                        .HasColumnType("boolean")
-                        .HasColumnName("greet_notification");
-
-                    b.Property<decimal>("GreetWebhookId")
+                    b.Property<ulong>("GreetWebhookId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("greet_webhook_id");
 
-                    b.Property<decimal>("GuildId")
+                    b.Property<ulong>("GuildId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("guild_id");
+
+                    b.Property<bool>("IsByeEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_bye_enabled");
+
+                    b.Property<bool>("IsGreetEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_greet_enabled");
+
+                    b.Property<bool>("IsXpNotificationEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_xp_notification_enabled");
 
                     b.Property<string>("Locale")
                         .HasColumnType("text")
                         .HasColumnName("locale");
 
-                    b.Property<decimal>("ModLogChannelId")
+                    b.Property<ulong>("ModLogChannelId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("mod_log_channel_id");
 
-                    b.Property<decimal>("MuteRoleId")
+                    b.Property<ulong>("MuteRoleId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("mute_role_id");
 
@@ -266,9 +265,9 @@ namespace Rias.Migrations
                         .HasColumnType("text")
                         .HasColumnName("prefix");
 
-                    b.Property<int>("PunishmentWarningsRequired")
+                    b.Property<int>("RequiredPunishmentWarnings")
                         .HasColumnType("integer")
-                        .HasColumnName("punishment_warnings_required");
+                        .HasColumnName("required_punishment_warnings");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
@@ -295,11 +294,7 @@ namespace Rias.Migrations
                         .HasColumnType("text")
                         .HasColumnName("xp_level_up_role_reward_message");
 
-                    b.Property<bool>("XpNotification")
-                        .HasColumnType("boolean")
-                        .HasColumnName("xp_notification");
-
-                    b.Property<decimal>("XpWebhookId")
+                    b.Property<ulong>("XpWebhookId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("xp_webhook_id");
 
@@ -327,7 +322,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<decimal>("GuildId")
+                    b.Property<ulong>("GuildId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("guild_id");
 
@@ -335,7 +330,7 @@ namespace Rias.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("level");
 
-                    b.Property<decimal>("RoleId")
+                    b.Property<ulong>("RoleId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("role_id");
 
@@ -368,7 +363,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<decimal>("GuildId")
+                    b.Property<ulong>("GuildId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("guild_id");
 
@@ -384,7 +379,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_message_date");
 
-                    b.Property<decimal>("MemberId")
+                    b.Property<ulong>("MemberId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("member_id");
 
@@ -425,15 +420,15 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("expiration");
 
-                    b.Property<decimal>("GuildId")
+                    b.Property<ulong>("GuildId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("guild_id");
 
-                    b.Property<decimal>("ModeratorId")
+                    b.Property<ulong>("ModeratorId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("moderator_id");
 
-                    b.Property<decimal>("MuteChannelSourceId")
+                    b.Property<ulong>("MuteChannelSourceId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("mute_channel_source_id");
 
@@ -442,7 +437,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<decimal>("UserId")
+                    b.Property<ulong>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
 
@@ -482,7 +477,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_charge_date");
 
-                    b.Property<LastChargeStatus?>("LastChargeStatus")
+                    b.Property<int?>("LastChargeStatus")
                         .HasColumnType("last_charge_status")
                         .HasColumnName("last_charge_status");
 
@@ -494,7 +489,7 @@ namespace Rias.Migrations
                         .HasColumnType("text")
                         .HasColumnName("patreon_user_name");
 
-                    b.Property<PatronStatus?>("PatronStatus")
+                    b.Property<int?>("PatronStatus")
                         .HasColumnType("patron_status")
                         .HasColumnName("patron_status");
 
@@ -511,7 +506,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<decimal>("UserId")
+                    b.Property<ulong>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
 
@@ -568,7 +563,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<decimal>("UserId")
+                    b.Property<ulong>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
 
@@ -596,11 +591,11 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<decimal>("GuildId")
+                    b.Property<ulong>("GuildId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("guild_id");
 
-                    b.Property<decimal>("RoleId")
+                    b.Property<ulong>("RoleId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("role_id");
 
@@ -654,7 +649,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<decimal>("UserId")
+                    b.Property<ulong>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
 
@@ -707,7 +702,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<decimal>("UserId")
+                    b.Property<ulong>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
 
@@ -760,7 +755,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<decimal>("UserId")
+                    b.Property<ulong>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
 
@@ -790,11 +785,11 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<decimal>("GuildId")
+                    b.Property<ulong>("GuildId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("guild_id");
 
-                    b.Property<decimal>("ModeratorId")
+                    b.Property<ulong>("ModeratorId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("moderator_id");
 
@@ -807,7 +802,7 @@ namespace Rias.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<decimal>("UserId")
+                    b.Property<ulong>("UserId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id");
 

@@ -12,6 +12,30 @@ namespace Rias.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "delete_command_message",
+                table: "guilds");
+
+            migrationBuilder.RenameColumn(
+                name: "xp_notification",
+                table: "guilds",
+                newName: "is_xp_notification_enabled");
+
+            migrationBuilder.RenameColumn(
+                name: "punishment_warnings_required",
+                table: "guilds",
+                newName: "required_punishment_warnings");
+
+            migrationBuilder.RenameColumn(
+                name: "greet_notification",
+                table: "guilds",
+                newName: "is_greet_enabled");
+
+            migrationBuilder.RenameColumn(
+                name: "bye_notification",
+                table: "guilds",
+                newName: "is_bye_enabled");
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "updated_at",
                 table: "warnings",
@@ -317,6 +341,26 @@ namespace Rias.Migrations
                 name: "ix_patreon_patreon_user_id_user_id",
                 table: "patreon");
 
+            migrationBuilder.RenameColumn(
+                name: "required_punishment_warnings",
+                table: "guilds",
+                newName: "punishment_warnings_required");
+
+            migrationBuilder.RenameColumn(
+                name: "is_xp_notification_enabled",
+                table: "guilds",
+                newName: "xp_notification");
+
+            migrationBuilder.RenameColumn(
+                name: "is_greet_enabled",
+                table: "guilds",
+                newName: "greet_notification");
+
+            migrationBuilder.RenameColumn(
+                name: "is_bye_enabled",
+                table: "guilds",
+                newName: "bye_notification");
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "updated_at",
                 table: "warnings",
@@ -517,6 +561,13 @@ namespace Rias.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone");
+
+            migrationBuilder.AddColumn<bool>(
+                name: "delete_command_message",
+                table: "guilds",
+                type: "boolean",
+                nullable: false,
+                defaultValue: false);
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "updated_at",

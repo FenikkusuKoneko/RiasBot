@@ -9,21 +9,20 @@ public class GuildEntity : DbEntity
     public Snowflake GuildId { get; set; }
     public string? Prefix { get; set; }
     public Snowflake MuteRoleId { get; set; }
-    public bool GreetNotification { get; set; }
+    public bool IsGreetEnabled { get; set; }
     public string? GreetMessage { get; set; }
     public Snowflake GreetWebhookId { get; set; }
-    public bool ByeNotification { get; set; }
+    public bool IsByeEnabled { get; set; }
     public string? ByeMessage { get; set; }
     public Snowflake ByeWebhookId { get; set; }
-    public bool XpNotification { get; set; }
+    public bool IsXpNotificationEnabled { get; set; }
     public Snowflake XpWebhookId { get; set; }
     public string? XpLevelUpMessage { get; set; }
     public string? XpLevelUpRoleRewardMessage { get; set; }
     public Snowflake AutoAssignableRoleId { get; set; }
-    public int PunishmentWarningsRequired { get; set; }
+    public int RequiredPunishmentWarnings { get; set; }
     public string? WarningPunishment { get; set; }
     public Snowflake ModLogChannelId { get; set; }
-    public bool DeleteCommandMessage { get; set; }
     public string? Locale { get; set; }
     public ulong[]? XpIgnoredChannels { get; set; }
     public ulong XpIgnoredRoleId { get; set; }

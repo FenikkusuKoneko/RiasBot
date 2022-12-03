@@ -4,7 +4,7 @@ namespace Rias.Services.Responses.Administration;
 
 public class SetByeResponse
 {
-    public bool ByeEnabled { get; init; }
+    public bool IsByeEnabled { get; init; }
     public string? Content { get; init; }
     public LocalEmbed? Embed { get; init; }
 }

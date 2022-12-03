@@ -59,7 +59,7 @@ public class HelpService : RiasCommandService
         var examples = _localisation.GetCommandText(guild?.Id, $"{commandInfoKey}_examples");
         if (!string.IsNullOrEmpty(examples))
         {
-            examples = string.Join('\n', examples.Split('\n').Select(ex => $"{command.Aliases[0]} {ex}"));
+            examples = string.Join('\n', examples.Split('\n').Select(ex => $"{prefixString}{command.Aliases[0]} {ex}"));
             embed.AddField(_localisation.GetText(guild?.Id, Strings.Examples), examples);
         }
 

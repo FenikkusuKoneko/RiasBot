@@ -7,9 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 using Rias;
 using Rias.Common;
 using Rias.Database;
+using Rias.Database.Enums;
 using Rias.Services;
 using Rias.Services.Commands;
 using Serilog;
@@ -64,16 +66,20 @@ var builder = new HostBuilder()
         services.Configure<RiasOptions>(context.Configuration);
         
         services.AddHttpClient<AdministrationService>();
-        
+
         var dbConnectionString = context.Configuration.GetConnectionString("Database") ?? throw new Exception("Database connection string is not set.");
+        var dbDataSource = new NpgsqlDataSourceBuilder(dbConnectionString);
+        dbDataSource.MapEnum<LastChargeStatus>();
+        dbDataSource.MapEnum<PatronStatus>();
+        
         services.AddDbContext<RiasDbContext>(options =>
-            options.UseNpgsql(dbConnectionString, npgsqlOptions => npgsqlOptions.EnableRetryOnFailure())
+            options.UseNpgsql(dbDataSource.Build(), npgsqlOptions => npgsqlOptions.EnableRetryOnFailure())
                 .UseSnakeCaseNamingConvention()
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
         var commandServices = typeof(RiasCommandService).Assembly
             .GetTypes()
-            .Where(t => t.IsSubclassOf(typeof(RiasCommandService)) && !t.IsAbstract && !t.IsInterface);
+            .Where(t => t.IsSubclassOf(typeof(RiasCommandService)) && t is { IsAbstract: false, IsInterface: false });
         
         foreach (var commandService in commandServices)
             services.AddScoped(commandService);
