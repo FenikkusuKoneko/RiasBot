@@ -28,6 +28,13 @@
   "help_command_not_found": "I couldn't find that command. For help type `{0}help`",
   "help_module": "Module: {0}",
   "help_owner_only": "Owner only",
+  "help_required_permissions": "Required permissions",
+  "help_required_permissions_you": "You: {0}",
+  "help_required_permissions_me": "Me: {0}",
+  "help_cooldown": "Cooldown",
+  "help_cooldown_uses": "Uses: **{0}**",
+  "help_cooldown_window": "Window: **{0}**",
+  "help_cooldown_scope": "Scope: **{0}**",
   "help_modules_list_title": "The list with all modules and submodules",
   "help_modules_list_footer": "To get all commands type **{0}cmds**. To get all commands for a module or submodule type **{0}cmds <module>** or **{0}cmds <submodule>**",
   "help_module_not_found": "I couldn't find the module or submodule. Type `{0}modules` to get all modules and submodules.",
@@ -57,8 +64,12 @@
   "type_parser_category_channel_not_found": "I couldn't find the category channel.",
 
   "and": "and",
+  "channel": "Channel",
   "examples": "Examples",
   "links": "Links",
+  "Member": "Member",
   "no_description": "No description.",
-  "usages": "Usages"
+  "server": "Server",
+  "usages": "Usages",
+  "user": "User"
 }

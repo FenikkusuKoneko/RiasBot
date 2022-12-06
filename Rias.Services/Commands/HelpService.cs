@@ -1,12 +1,17 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Globalization;
+using System.Text;
 using Disqord;
 using Disqord.Bot;
 using Disqord.Bot.Commands;
 using Disqord.Gateway;
+using Humanizer;
 using Microsoft.Extensions.Options;
+using Qmmands;
 using Qmmands.Text;
 using Rias.Common;
 using Rias.Database;
+using Rias.Services.Attributes;
 
 namespace Rias.Services.Commands;
 
@@ -55,6 +60,62 @@ public class HelpService : RiasCommandService
             .WithTitle(title)
             .WithDescription(description)
             .WithFooter(_localisation.GetText(guild?.Id, Strings.Help.CommandInfoFooter, user.Tag), user.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
+
+        string? requiredAuthorPermissions = null;
+        string? requiredBotPermissions = null;
+        
+        foreach (var attribute in command.Checks)
+        {
+            switch (attribute)
+            {
+                case AuthorPermissionsAttribute authorPermissionsAttribute:
+                {
+                    var permissionsList = Enum.GetValues<Permissions>()
+                        .Where(p => p is not Permissions.None && authorPermissionsAttribute.Permissions.HasFlag(p))
+                        .ToList();
+
+                    requiredAuthorPermissions = string.Join(" ", permissionsList.Select(p => Markdown.Code(p.Humanize(LetterCasing.Title))));
+                    break;
+                }
+                case BotPermissionsAttribute botPermissionsAttribute:
+                {
+                    var permissionsList = Enum.GetValues<Permissions>()
+                        .Where(p => p is not Permissions.None && botPermissionsAttribute.Permissions.HasFlag(p))
+                        .ToList();
+
+                    requiredBotPermissions = string.Join(" ", permissionsList.Select(p => Markdown.Code(p.Humanize(LetterCasing.Title))));
+                    break;
+                }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(requiredAuthorPermissions) || !string.IsNullOrEmpty(requiredBotPermissions))
+        {
+            embed.AddField(_localisation.GetText(guild?.Id, Strings.Help.RequiredPermissions),
+                $"{(string.IsNullOrEmpty(requiredAuthorPermissions) ? string.Empty : _localisation.GetText(guild?.Id, Strings.Help.RequiredPermissionsYou, requiredAuthorPermissions))}\n" +
+                $"{(string.IsNullOrEmpty(requiredBotPermissions) ? string.Empty : _localisation.GetText(guild?.Id, Strings.Help.RequiredPermissionsMe, requiredBotPermissions))}",
+                true);
+        }
+        
+        var rateLimitAttribute = command.CustomAttributes.OfType<RateLimitAttribute>().FirstOrDefault();
+        if (rateLimitAttribute is not null)
+        {
+            var cooldownWindow = rateLimitAttribute.Window.Humanize(1, new CultureInfo(_localisation.GetGuildLocale(guild?.Id)));
+            var cooldownScope = _localisation.GetText(guild?.Id, rateLimitAttribute.BucketType switch
+            {
+                RateLimitBucketType.User => Strings.User,
+                RateLimitBucketType.Member => Strings.Member,
+                RateLimitBucketType.Guild => Strings.Server,
+                RateLimitBucketType.Channel => Strings.Channel,
+                _ => throw new UnreachableException()
+            }).ToLowerInvariant();
+
+            var cooldownValue = $"{_localisation.GetText(guild?.Id, Strings.Help.HelpCooldownUses, rateLimitAttribute.Uses)}\n" +
+                                $"{_localisation.GetText(guild?.Id, Strings.Help.HelpCooldownWindow, cooldownWindow)}\n" +
+                                $"{_localisation.GetText(guild?.Id, Strings.Help.HelpCooldownScope, cooldownScope)}";
+            
+            embed.AddField(_localisation.GetText(guild?.Id, Strings.Help.HelpCooldown), cooldownValue, true);
+        }
         
         var examples = _localisation.GetCommandText(guild?.Id, $"{commandInfoKey}_examples");
         if (!string.IsNullOrEmpty(examples))

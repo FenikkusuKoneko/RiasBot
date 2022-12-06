@@ -14,11 +14,11 @@ namespace Rias.Services.Attributes;
 /// </summary>
 public class AuthorPermissionsAttribute : DiscordCheckAttribute
 {
-    private readonly Permissions _permissions;
+    public readonly Permissions Permissions;
     
     public AuthorPermissionsAttribute(Permissions permissions)
     {
-        _permissions = permissions;
+        Permissions = permissions;
     }
 
     public override ValueTask<IResult> CheckAsync(IDiscordCommandContext context)
@@ -32,9 +32,9 @@ public class AuthorPermissionsAttribute : DiscordCheckAttribute
         {
             var permissions = interactionContext.AuthorPermissions;
 
-            if (!permissions.HasFlag(_permissions))
+            if (!permissions.HasFlag(Permissions))
                 return Results.Failure(localisation.GetText(context.GuildId, Strings.Attribute.MissingAuthorPermissions, 
-                    _permissions & ~permissions));
+                    Permissions & ~permissions));
         }
         else
         {
@@ -44,17 +44,17 @@ public class AuthorPermissionsAttribute : DiscordCheckAttribute
             var guildPermissions = guildContext.Author.CalculateGuildPermissions();
             var channelPermissions = guildContext.Author.CalculateChannelPermissions(channel);
             
-            var hasGuildPermissions = guildPermissions.HasFlag(_permissions);
-            var hasChannelPermissions = channelPermissions.HasFlag(_permissions);
+            var hasGuildPermissions = guildPermissions.HasFlag(Permissions);
+            var hasChannelPermissions = channelPermissions.HasFlag(Permissions);
 
             switch (hasGuildPermissions)
             {
                 case false when !hasChannelPermissions:
                     return Results.Failure(localisation.GetText(context.GuildId, Strings.Attribute.MissingAuthorGuildPermissions,
-                        HumanizePermissions(_permissions & ~guildPermissions, context.GuildId, localisation)));
+                        HumanizePermissions(Permissions & ~guildPermissions, context.GuildId, localisation)));
                 case true when !hasChannelPermissions:
                     return Results.Failure(localisation.GetText(context.GuildId, Strings.Attribute.MissingAuthorChannelPermissions,
-                        HumanizePermissions(_permissions & ~channelPermissions, context.GuildId, localisation)));
+                        HumanizePermissions(Permissions & ~channelPermissions, context.GuildId, localisation)));
             }
         }
 

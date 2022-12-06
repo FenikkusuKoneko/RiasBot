@@ -36,6 +36,13 @@ public static class Strings
         public const string CommandNotFound = "help_command_not_found";
         public const string Module = "help_module";
         public const string OwnerOnly = "help_owner_only";
+        public const string RequiredPermissions = "help_required_permissions";
+        public const string RequiredPermissionsYou = "help_required_permissions_you";
+        public const string RequiredPermissionsMe = "help_required_permissions_me";
+        public const string HelpCooldown = "help_cooldown";
+        public const string HelpCooldownUses = "help_cooldown_uses";
+        public const string HelpCooldownWindow = "help_cooldown_window";
+        public const string HelpCooldownScope = "help_cooldown_scope";
         public const string ModulesListTitle = "help_modules_list_title";
         public const string ModulesListFooter = "help_modules_list_footer";
         public const string ModuleNotFound = "help_module_not_found";
@@ -80,8 +87,12 @@ public static class Strings
     }
 
     public const string And = "and";
+    public const string Channel = "channel";
     public const string Examples = "examples";
     public const string Links = "links";
+    public const string Member = "member";
     public const string NoDescription = "no_description";
+    public const string Server = "server";
     public const string Usages = "usages";
+    public const string User = "user";
 }
