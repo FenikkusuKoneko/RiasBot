@@ -13,5 +13,5 @@ public static class ContextExtensions
         => context.Channel ?? throw new InvalidOperationException($"The message channel ({context.ChannelId}) is not cached");
     
     public static CachedMember GetCurrentMember(this IDiscordTextGuildCommandContext context)
-        => context.GetGuild().GetMember(context.Bot.CurrentUser.Id) ?? throw new InvalidOperationException($"The current member is not cached in the guild ({context.GuildId})");
+        => context.Bot.GetCurrentMember(context.GuildId) ?? throw new InvalidOperationException($"The current member is not cached in the guild ({context.GuildId})");
 }

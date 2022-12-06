@@ -3,6 +3,7 @@ using System.Reflection;
 using Disqord;
 using Disqord.Bot;
 using Disqord.Bot.Commands;
+using Disqord.Bot.Commands.Application;
 using Humanizer;
 using Humanizer.Localisation;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Qmmands;
 using Qmmands.Default;
+using Qmmands.Text;
 using Rias.Common;
 using Rias.Services;
 using Rias.Services.TypeParsers;
@@ -57,9 +59,10 @@ public class RiasBot : DiscordBot
         {
             case CommandNotFoundResult:
                 return null;
+            case ChecksFailedResult checksFailedResult:
+                return string.Join('\n', checksFailedResult.FailedChecks.Select(check => $"• {check.Value.FailureReason}"));
             case TypeParseFailedResult typeParseFailedResult:
-                // The failure reason of the type parser is a localisation key
-                return _localisation.GetText(context.GuildId, typeParseFailedResult.FailureReason);
+                return typeParseFailedResult.FailureReason;
             case CommandRateLimitedResult rateLimitedResult:
             {
                 var (rateLimitAttribute, retryAfter) = rateLimitedResult.RateLimits.First();
@@ -86,7 +89,23 @@ public class RiasBot : DiscordBot
         
         var embed = new LocalEmbed()
             .WithColor(Utils.ErrorColor)
-            .WithDescription(reason);
+            .WithTitle(_localisation.GetText(context.GuildId, Strings.Service.CommandNotExecuted))
+            .WithDescription(reason)
+            .WithFooter(context.Author.Tag, context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
+
+        switch (context.Command)
+        {
+            case TextCommand textCommand:
+            {
+                var moduleAlias = textCommand.Module.Aliases.Count != 0 ? $"{textCommand.Module.Aliases[0]} " : string.Empty;
+                var author = string.Join(" / ", textCommand.Aliases.Select(a => $"{moduleAlias}{a}"));
+                embed.WithAuthor(author);
+                break;
+            }
+            case ApplicationCommand applicationCommand:
+                embed.WithAuthor(applicationCommand.Alias);
+                break;
+        }
 
         message.AddEmbed(embed);
         message.WithAllowedMentions(LocalAllowedMentions.None);

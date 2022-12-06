@@ -4,6 +4,7 @@ using Disqord.Bot.Commands;
 using Qmmands;
 using Qmmands.Text;
 using Rias.Common;
+using Rias.Services.Attributes;
 using Rias.Services.Commands;
 using Rias.Services.Extensions;
 
@@ -15,8 +16,8 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
     private const int GreetByeMessageLengthLimit = 1500;
     
     [TextCommand("greet", "setgreet")]
-    [RequireAuthorPermissions(Permissions.Administrator)]
-    [RequireBotPermissions(Permissions.ManageWebhooks)]
+    [AuthorPermissions(Permissions.Administrator)]
+    [BotPermissions(Permissions.ManageWebhooks)]
     [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
     public async Task<IResult> SetGreetAsync(IMessageGuildChannel? channel = null)
     {
@@ -54,8 +55,8 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
     }
 
     [TextCommand("greetmessage", "greetmsg")]
-    [RequireAuthorPermissions(Permissions.Administrator)]
-    [RequireBotPermissions(Permissions.ManageWebhooks)]
+    [AuthorPermissions(Permissions.Administrator)]
+    [BotPermissions(Permissions.ManageWebhooks)]
     public async Task<IResult> GreetMessageAsync([Remainder] string? message = null)
     {
         var guild = Context.GetGuild();
@@ -111,8 +112,8 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
     }
     
     [TextCommand("bye", "setbye")]
-    [RequireAuthorPermissions(Permissions.Administrator)]
-    [RequireBotPermissions(Permissions.ManageWebhooks)]
+    [AuthorPermissions(Permissions.Administrator)]
+    [BotPermissions(Permissions.ManageWebhooks)]
     [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
     public async Task<IResult> SetByeAsync(IMessageGuildChannel? channel = null)
     {
@@ -150,8 +151,8 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
     }
     
     [TextCommand("byemessage", "byemsg")]
-    [RequireAuthorPermissions(Permissions.Administrator)]
-    [RequireBotPermissions(Permissions.ManageWebhooks)]
+    [AuthorPermissions(Permissions.Administrator)]
+    [BotPermissions(Permissions.ManageWebhooks)]
     public async Task<IResult> ByeMessageAsync([Remainder] string? message = null)
     {
         var guild = Context.GetGuild();
@@ -207,7 +208,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
     }
 
     [TextCommand("setmodlog", "modlog")]
-    [RequireAuthorPermissions(Permissions.Administrator)]
+    [AuthorPermissions(Permissions.Administrator)]
     public async Task<IResult> SetModLogAsync(IMessageGuildChannel? channel = null)
     {
         var toggleModLog = channel is null;

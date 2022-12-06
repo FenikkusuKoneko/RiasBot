@@ -42,6 +42,7 @@ public static class Strings
         public const string AllModuleCommands = "help_all_module_commands";
         public const string AllSubmoduleCommands = "help_all_submodule_commands";
         public const string CommandInfo = "help_command_info";
+        public const string CommandInfoFooter = "help_command_info_footer";
         public const string AllCommands = "help_all_commands";
     }
 
@@ -54,6 +55,18 @@ public static class Strings
     public static class Service
     {
         public const string CommandCooldown = "service_command_cooldown";
+        public const string CommandNotExecuted = "service_command_not_executed";
+        public const string CommandNotExecutedGetInfo = "service_command_not_executed_get_info";
+    }
+
+    public static class Attribute
+    {
+        public const string MissingAuthorPermissions = "attribute_missing_author_permissions";
+        public const string MissingAuthorGuildPermissions = "attribute_missing_author_guild_permissions";
+        public const string MissingAuthorChannelPermissions = "attribute_missing_author_channel_permissions";
+        public const string MissingBotPermissions = "attribute_missing_bot_permissions";
+        public const string MissingBotGuildPermissions = "attribute_missing_bot_guild_permissions";
+        public const string MissingBotChannelPermissions = "attribute_missing_bot_channel_permissions";
     }
 
     public static class TypeParser
@@ -66,8 +79,9 @@ public static class Strings
         };
     }
 
+    public const string And = "and";
+    public const string Examples = "examples";
     public const string Links = "links";
     public const string NoDescription = "no_description";
-    public const string Examples = "examples";
     public const string Usages = "usages";
 }

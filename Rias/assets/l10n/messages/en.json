@@ -29,25 +29,36 @@
   "help_module": "Module: {0}",
   "help_owner_only": "Owner only",
   "help_modules_list_title": "The list with all modules and submodules",
-  "help_modules_list_footer": "To get all commands type type {0}cmds. To get all commands for a module or submodule type {0}cmds <module> or {0}cmds <submodule>",
+  "help_modules_list_footer": "To get all commands type **{0}cmds**. To get all commands for a module or submodule type **{0}cmds <module>** or **{0}cmds <submodule>**",
   "help_module_not_found": "I couldn't find the module or submodule. Type `{0}modules` to get all modules and submodules.",
   "help_all_module_commands": "All commands for module {0}",
   "help_all_submodule_commands": "All commands for submodule {0}",
-  "help_command_info": "For a specific command info type {0}h <command>",
+  "help_command_info": "For a specific command info type **{0}h <command>**",
+  "help_command_info_footer": "{0} | <> - mandatory; [] - optional",
   "help_all_commands": "All commands",
   
   "utility_prefix_is": "My prefix in this server is **{0}**.",
   "utility_prefix_name_or_mention": "My prefix in this server is my **name** or my **mention**.",
 
   "service_command_cooldown": "Hey, calm down! Take a breath and try again in **{0}**.",
+  "service_command_not_executed": "The command couldn't be executed",
+  "service_command_not_executed_footer": "{0} | Get more info about the command by typing `{0}h {1}`.",
+
+  "attribute_missing_author_permissions": "You lack the following permission(s): {0}",
+  "attribute_missing_author_guild_permissions": "You lack the following permission(s) in this server: {0}",
+  "attribute_missing_author_channel_permissions": "You lack the following permission(s) in this channel: {0}",
+  "attribute_missing_bot_permissions": "I lack the following permission(s): {0}",
+  "attribute_missing_bot_guild_permissions": "I lack the following permission(s) in this server: {0}",
+  "attribute_missing_bot_channel_permissions": "I lack the following permission(s) in this channel: {0}",
 
   "type_parser_channel_not_found": "I couldn't find the channel.",
   "type_parser_text_channel_not_found": "I couldn't find the text channel.",
   "type_parser_voice_channel_not_found": "I couldn't find the voice channel.",
   "type_parser_category_channel_not_found": "I couldn't find the category channel.",
-  
+
+  "and": "and",
+  "examples": "Examples",
   "links": "Links",
   "no_description": "No description.",
-  "examples": "Examples",
   "usages": "Usages"
 }

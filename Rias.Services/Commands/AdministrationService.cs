@@ -54,7 +54,7 @@ public class AdministrationService : RiasCommandService
             };
         }
         
-        await using var stream = await _httpClient.GetStreamAsync(currentUser.GetAvatarUrl());
+        await using var stream = await _httpClient.GetStreamAsync(currentUser.GetAvatarUrl(CdnAssetFormat.Automatic, 2048));
         await using var webhookAvatar = new MemoryStream();
         await stream.CopyToAsync(webhookAvatar);
         webhookAvatar.Position = 0;
@@ -156,7 +156,7 @@ public class AdministrationService : RiasCommandService
             };
         }
         
-        await using var stream = await _httpClient.GetStreamAsync(currentUser.GetAvatarUrl());
+        await using var stream = await _httpClient.GetStreamAsync(currentUser.GetAvatarUrl(CdnAssetFormat.Automatic, 2048));
         await using var webhookAvatar = new MemoryStream();
         await stream.CopyToAsync(webhookAvatar);
         webhookAvatar.Position = 0;

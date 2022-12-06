@@ -65,7 +65,9 @@ public class HelpModule : RiasTextModule<HelpService>
             submodulesOwnerPredicate = m => !string.Equals(m.Parent?.Name, m.Name, StringComparison.OrdinalIgnoreCase)
                                             && m.Commands.All(c => !c.Checks.Any(ch => ch is RequireBotOwnerAttribute));
 
-        var description = new StringBuilder();
+        var description = new StringBuilder()
+            .AppendLine(GetText(Strings.Help.ModulesListFooter, Context.Prefix.Stringify()))
+            .AppendLine();
         
         foreach (var module in modules)
         {
@@ -88,9 +90,9 @@ public class HelpModule : RiasTextModule<HelpService>
 
         var embed = new LocalEmbed()
             .WithColor(Utils.ConfirmationColor)
-            .WithTitle(GetText(Strings.Help.ModulesListTitle, Context.Prefix.Stringify()))
+            .WithTitle(GetText(Strings.Help.ModulesListTitle))
             .WithDescription(description.ToString())
-            .WithFooter($"{Context.Author.Tag} | {GetText(Strings.Help.ModulesListFooter)}");
+            .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
         
         return Reply(embed);
     }
@@ -114,7 +116,10 @@ public class HelpModule : RiasTextModule<HelpService>
             return ReplyErrorResponse(Strings.Help.ModuleNotFound, Context.Prefix.Stringify());
 
         var commandAliases = GetAliases(commands).ToList();
-        var description = new StringBuilder($"**{module.Name}:** {string.Join(", ", commandAliases.Select(Markdown.Code))}");
+        var description = new StringBuilder()
+            .AppendLine(GetText(Strings.Help.CommandInfo, Context.Prefix.Stringify()))
+            .AppendLine()
+            .AppendLine($"**{module.Name}:** {string.Join(" ", commandAliases.Select(Markdown.Code))}");
 
         var submodules = module.Submodules
             .Where(sm => string.Equals(sm.Name, sm.Parent?.Name, StringComparison.OrdinalIgnoreCase))
@@ -127,16 +132,15 @@ public class HelpModule : RiasTextModule<HelpService>
             if (groupModuleCommands.Count != 0)
             {
                 var groupCommandAliases = GetAliases(groupModuleCommands).ToList();
-                description.AppendLine().Append($"**{submodule.Name}:** {string.Join(", ", groupCommandAliases.Select(Markdown.Code))}");
+                description.AppendLine().Append($"**{submodule.Name}:** {string.Join(" ", groupCommandAliases.Select(Markdown.Code))}");
             }
         }
 
-        var prefix = Context.Prefix.Stringify();
         var embed = new LocalEmbed()
             .WithColor(Utils.ConfirmationColor)
             .WithTitle(GetText(module.Parent is null ? Strings.Help.AllModuleCommands : Strings.Help.AllSubmoduleCommands, module.Name))
             .WithDescription(description.ToString())
-            .WithFooter($"{Context.Author.Tag} | {GetText(Strings.Help.CommandInfo, prefix)}");
+            .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
 
         return Reply(embed);
     }
@@ -165,7 +169,9 @@ public class HelpModule : RiasTextModule<HelpService>
             submodulesOwnerPredicate = m => !string.Equals(m.Parent?.Name, m.Name, StringComparison.OrdinalIgnoreCase)
                                             && m.Commands.All(c => !c.Checks.Any(ch => ch is RequireBotOwnerAttribute));
 
-        var description = new StringBuilder();
+        var description = new StringBuilder()
+            .AppendLine(GetText(Strings.Help.CommandInfo, Context.Prefix.Stringify()))
+            .AppendLine();
         
         foreach (var module in modules)
         {
@@ -174,7 +180,7 @@ public class HelpModule : RiasTextModule<HelpService>
                 continue;
             
             var commandAliases = GetAliases(moduleCommands).ToList();
-            description.Append($"**{module.Name}:** {string.Join(", ", commandAliases.Select(Markdown.Code))}");
+            description.Append($"**{module.Name}:** {string.Join(" ", commandAliases.Select(Markdown.Code))}");
             
             if (module.Submodules.Count != 0)
             {
@@ -191,7 +197,7 @@ public class HelpModule : RiasTextModule<HelpService>
                         if (groupModuleCommands.Count != 0)
                         {
                             var groupCommandAliases = GetAliases(groupModuleCommands).ToList();
-                            description.AppendLine().Append($"**{submodule.Name}:** {string.Join(", ", groupCommandAliases.Select(Markdown.Code))}");
+                            description.AppendLine().Append($"**{submodule.Name}:** {string.Join(" ", groupCommandAliases.Select(Markdown.Code))}");
                         }
                     }
                 }
@@ -199,13 +205,12 @@ public class HelpModule : RiasTextModule<HelpService>
 
             description.AppendLine();
         }
-
-        var prefix = Context.Prefix.Stringify();
+        
         var embed = new LocalEmbed()
             .WithColor(Utils.ConfirmationColor)
-            .WithTitle(GetText(Strings.Help.AllCommands, prefix))
+            .WithTitle(GetText(Strings.Help.AllCommands))
             .WithDescription(description.ToString())
-            .WithFooter($"{Context.Author.Tag} | {GetText(Strings.Help.CommandInfo, prefix)}");
+            .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
         
         return Reply(embed);
     }

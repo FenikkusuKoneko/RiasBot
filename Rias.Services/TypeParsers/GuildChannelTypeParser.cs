@@ -1,6 +1,7 @@
 ﻿using Disqord;
 using Disqord.Bot.Commands;
 using Disqord.Gateway;
+using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Qommon.Collections;
 using Rias.Common;
@@ -74,7 +75,8 @@ public class GuildChannelTypeParser<TChannel> : DiscordGuildTypeParser<TChannel>
 
         if (foundChannel != null)
             return Success(foundChannel);
-
-        return Failure(ChannelNotFoundString);
+        
+        var localisation = context.Services.GetRequiredService<LocalisationService>();
+        return Failure(localisation.GetText(context.GuildId, ChannelNotFoundString));
     }
 }

@@ -54,7 +54,7 @@ public class HelpService : RiasCommandService
             .WithColor(Utils.ConfirmationColor)
             .WithTitle(title)
             .WithDescription(description)
-            .WithFooter($"{user.Tag} | <> - mandatory; [] - optional", user.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
+            .WithFooter(_localisation.GetText(guild?.Id, Strings.Help.CommandInfoFooter, user.Tag), user.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
         
         var examples = _localisation.GetCommandText(guild?.Id, $"{commandInfoKey}_examples");
         if (!string.IsNullOrEmpty(examples))

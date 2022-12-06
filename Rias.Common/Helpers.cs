@@ -10,6 +10,9 @@ namespace Rias.Common;
 
 public static class Helpers
 {
+    public static string Stringify(this IPrefix prefix)
+        => char.IsLetter(prefix.ToString()![^1]) ? prefix + " " : prefix.ToString()!;
+    
     public static int? HexToInt(string? hex, int decimals = 6)
     {
         hex = hex?.Replace("#", string.Empty);
@@ -25,10 +28,7 @@ public static class Helpers
 
         return null;
     }
-    
-    public static string Stringify(this IPrefix prefix)
-        => char.IsLetter(prefix.ToString()![^1]) ? prefix + " " : prefix.ToString()!;
-    
+
     public static string? FormatPlaceholders(IUser user, string? message)
     {
         if (message is null)
