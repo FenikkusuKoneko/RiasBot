@@ -17,20 +17,20 @@ public abstract class RiasTextModule : DiscordTextModuleBase
         _localizationService = new Lazy<LocalisationService>(() => Context.Services.GetRequiredService<LocalisationService>());
     }
 
-    protected IResult ReplyConfirmationResponse(string key)
-        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localisation.GetText(null, key)));
+    protected IResult ReplySuccessResponse(string key)
+        => Reply(new LocalEmbed().WithColor(Utils.SuccessColor).WithDescription(Localisation.GetText(null, key)));
 
-    protected IResult ReplyConfirmationResponse(string key, object arg0)
-        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localisation.GetText(null, key, arg0)));
+    protected IResult ReplySuccessResponse(string key, object arg0)
+        => Reply(new LocalEmbed().WithColor(Utils.SuccessColor).WithDescription(Localisation.GetText(null, key, arg0)));
     
-    protected IResult ReplyConfirmationResponse(string key, object arg0, object arg1)
-        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localisation.GetText(null, key, arg0, arg1)));
+    protected IResult ReplySuccessResponse(string key, object arg0, object arg1)
+        => Reply(new LocalEmbed().WithColor(Utils.SuccessColor).WithDescription(Localisation.GetText(null, key, arg0, arg1)));
     
-    protected IResult ReplyConfirmationResponse(string key, object arg0, object arg1, object arg2)
-        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localisation.GetText(null, key, arg0, arg1, arg2)));
+    protected IResult ReplySuccessResponse(string key, object arg0, object arg1, object arg2)
+        => Reply(new LocalEmbed().WithColor(Utils.SuccessColor).WithDescription(Localisation.GetText(null, key, arg0, arg1, arg2)));
     
-    protected IResult ReplyConfirmationResponse(string key, params object[] args)
-        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localisation.GetText(null, key, args)));
+    protected IResult ReplySuccessResponse(string key, params object[] args)
+        => Reply(new LocalEmbed().WithColor(Utils.SuccessColor).WithDescription(Localisation.GetText(null, key, args)));
     
     protected IResult ReplyErrorResponse(string key)
         => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localisation.GetText(null, key)));

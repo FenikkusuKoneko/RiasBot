@@ -9,7 +9,7 @@ using Rias.Common;
 using Rias.Database;
 using Rias.Services.Extensions;
 
-namespace Rias.Services;
+namespace Rias.Services.Client;
 
 public class BotService : DiscordClientService
 {
@@ -89,7 +89,7 @@ public class BotService : DiscordClientService
         
         {
             var defaultEmbed = new LocalEmbed()
-                .WithColor(Utils.ConfirmationColor)
+                .WithColor(Utils.SuccessColor)
                 .WithThumbnailUrl(member.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(_localisation.GetText(guild.Id, Strings.Administration.DefaultGreetMessage, Markdown.Bold(guild.Name), Markdown.Bold(member.Tag), guild.MemberCount));
 
@@ -158,7 +158,7 @@ public class BotService : DiscordClientService
         
         {
             var defaultEmbed = new LocalEmbed()
-                .WithColor(Utils.ConfirmationColor)
+                .WithColor(Utils.SuccessColor)
                 .WithThumbnailUrl(user.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(_localisation.GetText(guild.Id, Strings.Administration.DefaultByeMessage, Markdown.Bold(user.Tag), guild.MemberCount));
 

@@ -23,7 +23,7 @@ public class UtilityModule : RiasApplicationGuildModule<UtilityService>
         var prefix = _prefixProvider.GetPrefix(Context.GuildId);
 
         return !string.IsNullOrEmpty(prefix)
-            ? ConfirmationResponse(Strings.Utility.PrefixIs, prefix) 
-            : ConfirmationResponse(Strings.Utility.PrefixNameOrMention);
+            ? SuccessResponse(Strings.Utility.PrefixIs, prefix) 
+            : SuccessResponse(Strings.Utility.PrefixNameOrMention);
     }
 }

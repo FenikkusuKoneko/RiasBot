@@ -27,7 +27,7 @@ namespace Rias.Services.TypeParsers;
 ///         </item>
 ///         <item>
 ///             <term> Name </term>
-///             <description> The name of the channel. This is case-sensitive. </description>
+///             <description> The name of the channel. This is case-insensitive. </description>
 ///         </item>
 ///     </list>
 /// </remarks>
@@ -65,7 +65,7 @@ public class GuildChannelTypeParser<TChannel> : DiscordGuildTypeParser<TChannel>
             // The value is possibly a name.
             foreach (var channel in channels.Values)
             {
-                if (!valueSpan.Equals(channel.Name, StringComparison.Ordinal))
+                if (!valueSpan.Equals(channel.Name, StringComparison.InvariantCultureIgnoreCase))
                     continue;
 
                 foundChannel = channel;

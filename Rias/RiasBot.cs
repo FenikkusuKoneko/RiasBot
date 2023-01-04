@@ -55,29 +55,38 @@ public class RiasBot : DiscordBot
 
     protected override string? FormatFailureReason(IDiscordCommandContext context, IResult result)
     {
-        switch (result)
-        {
-            case CommandNotFoundResult:
-                return null;
-            case ChecksFailedResult checksFailedResult:
-                return string.Join('\n', checksFailedResult.FailedChecks.Select(check => $"• {check.Value.FailureReason}"));
-            case TypeParseFailedResult typeParseFailedResult:
-                return typeParseFailedResult.FailureReason;
-            case CommandRateLimitedResult rateLimitedResult:
-            {
-                var (rateLimitAttribute, retryAfter) = rateLimitedResult.RateLimits.First();
-                var key = GetRateLimitBucketKey(context, (RateLimitBucketType) rateLimitAttribute.BucketType);
-            
-                if (_rateLimits.Contains(key))
-                    return null;
-            
-                _rateLimits.AddOrUpdate(key, retryAfter);
+        if (result is OverloadsFailedResult overloadsFailedResult)
+            return string.Join('\n', overloadsFailedResult.FailedOverloads
+                .Select(overload => GetFailureReason(overload.Value)).ToHashSet());
 
-                return _localisation.GetText(context.GuildId, Strings.Service.CommandCooldown,
-                    retryAfter.Humanize(culture: new CultureInfo(_localisation.GetGuildLocale(context.GuildId)), minUnit: TimeUnit.Second));
+        return GetFailureReason(result);
+
+        string? GetFailureReason(IResult innerResult)
+        {
+            switch (innerResult)
+            {
+                case CommandNotFoundResult:
+                    return null;
+                case ChecksFailedResult checksFailedResult:
+                    return string.Join('\n', checksFailedResult.FailedChecks.Select(check => $"• {check.Value.FailureReason}"));
+                case TypeParseFailedResult typeParseFailedResult:
+                    return typeParseFailedResult.FailureReason;
+                case CommandRateLimitedResult rateLimitedResult:
+                {
+                    var (rateLimitAttribute, retryAfter) = rateLimitedResult.RateLimits.First();
+                    var key = GetRateLimitBucketKey(context, (RateLimitBucketType) rateLimitAttribute.BucketType);
+            
+                    if (_rateLimits.Contains(key))
+                        return null;
+            
+                    _rateLimits.AddOrUpdate(key, retryAfter);
+
+                    return _localisation.GetText(context.GuildId, Strings.Service.CommandCooldown,
+                        retryAfter.Humanize(culture: new CultureInfo(_localisation.GetGuildLocale(context.GuildId)), minUnit: TimeUnit.Second));
+                }
+                default:
+                    return null;
             }
-            default:
-                return null;
         }
     }
 

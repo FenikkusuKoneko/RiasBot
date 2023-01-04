@@ -52,11 +52,12 @@ public class HelpService : RiasCommandService
         }
         else
         {
-            description = _localisation.GetText(guild?.Id, Strings.NoDescription);
+            description = _localisation.GetText(guild?.Id, Strings.NoDescription)
+                          + $"\n\n{_localisation.GetText(guild?.Id, Strings.Help.Module, Markdown.Bold(moduleName))}";
         }
 
         var embed = new LocalEmbed()
-            .WithColor(Utils.ConfirmationColor)
+            .WithColor(Utils.SuccessColor)
             .WithTitle(title)
             .WithDescription(description)
             .WithFooter(_localisation.GetText(guild?.Id, Strings.Help.CommandInfoFooter, user.Tag), user.GetAvatarUrl(CdnAssetFormat.Automatic, 128));

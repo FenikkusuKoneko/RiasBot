@@ -22,6 +22,14 @@ public static class Strings
         public const string ModLogEnabledChannel = "administration_mod_log_enabled_channel";
         public const string ModLogDisabled = "administration_mod_log_disabled";
         public const string InvalidCustomMessage = "administration_invalid_custom_message";
+        public const string ChannelNameLengthLimit = "administration_channel_name_length_limit";
+        public const string CategoryChannelCreated = "administration_category_channel_created";
+        public const string CategoryChannelRenamed = "administration_category_channel_renamed";
+        public const string CategoryChannelDeleted = "administration_category_channel_deleted";
+        public const string TextChannelAddedToCategory = "administration_text_channel_added_to_category";
+        public const string VoiceChannelAddedToCategory = "administration_voice_channel_added_to_category";
+        public const string AuthorMissingChannelManagePermission = "administration_author_missing_channel_manage_permission";
+        public const string BotMissingChannelManagePermission = "administration_bot_missing_channel_manage_permission";
     }
 
     public static class Help

@@ -11,7 +11,7 @@ using Rias.Services.Extensions;
 namespace Rias.TextCommands.Modules.Administration;
 
 [Name("Administration")]
-public class AdministrationModule : RiasTextGuildModule<AdministrationService>
+public partial class AdministrationModule : RiasTextGuildModule<AdministrationService>
 {
     private const int GreetByeMessageLengthLimit = 1500;
     
@@ -28,7 +28,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         var setGreetResponse = await Service.SetGreetAsync(Context.GetCurrentMember(), guild, channel, Context.Author, switchGreet);
         
         if (!setGreetResponse.IsGreetEnabled)
-            return ReplyConfirmationResponse(Strings.Administration.GreetDisabled);
+            return ReplySuccessResponse(Strings.Administration.GreetDisabled);
 
         var message = new LocalMessage()
             .WithContent(channel.Id == Context.ChannelId
@@ -44,7 +44,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         if (string.IsNullOrWhiteSpace(setGreetResponse.Content) && setGreetResponse.Embed is null)
         {
             var embed = new LocalEmbed()
-                .WithColor(Utils.ConfirmationColor)
+                .WithColor(Utils.SuccessColor)
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultGreetMessage, Markdown.Bold(guild.Name), Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
@@ -101,7 +101,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         else if (string.IsNullOrEmpty(message))
         {
             var defaultEmbed = new LocalEmbed()
-                .WithColor(Utils.ConfirmationColor)
+                .WithColor(Utils.SuccessColor)
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultGreetMessage, Markdown.Bold(guild.Name), Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
@@ -124,7 +124,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         var setByeResponse = await Service.SetByeAsync(Context.GetCurrentMember(), guild, channel, Context.Author, switchBye);
         
         if (!setByeResponse.IsByeEnabled)
-            return ReplyConfirmationResponse(Strings.Administration.ByeDisabled);
+            return ReplySuccessResponse(Strings.Administration.ByeDisabled);
 
         var message = new LocalMessage()
             .WithContent(channel.Id == Context.ChannelId
@@ -140,7 +140,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         if (string.IsNullOrWhiteSpace(setByeResponse.Content) && setByeResponse.Embed is null)
         {
             var embed = new LocalEmbed()
-                .WithColor(Utils.ConfirmationColor)
+                .WithColor(Utils.SuccessColor)
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultByeMessage, Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
@@ -197,7 +197,7 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         else if (string.IsNullOrEmpty(message))
         {
             var defaultEmbed = new LocalEmbed()
-                .WithColor(Utils.ConfirmationColor)
+                .WithColor(Utils.SuccessColor)
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultByeMessage, Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
@@ -219,10 +219,10 @@ public class AdministrationModule : RiasTextGuildModule<AdministrationService>
         if (modLogEnabled)
         {
             return channel.Id == Context.ChannelId
-                ? ReplyConfirmationResponse(Strings.Administration.ModLogEnabled)
-                : ReplyConfirmationResponse(Strings.Administration.ModLogEnabledChannel, channel.Mention);
+                ? ReplySuccessResponse(Strings.Administration.ModLogEnabled)
+                : ReplySuccessResponse(Strings.Administration.ModLogEnabledChannel, channel.Mention);
         }
 
-        return ReplyConfirmationResponse(Strings.Administration.ModLogDisabled);
+        return ReplySuccessResponse(Strings.Administration.ModLogDisabled);
     }
 }

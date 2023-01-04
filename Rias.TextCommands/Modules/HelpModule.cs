@@ -26,12 +26,14 @@ public class HelpModule : RiasTextModule<HelpService>
     }
 
     [TextCommand("help", "h")]
-    public IResult Help(string command, string? subcommand = null)
+    public IResult Help([Remainder] string command)
     {
-        var module = _commandService.EnumerateTextModules()
-            .FirstOrDefault(m => string.Equals(m.Name, command, StringComparison.OrdinalIgnoreCase));
-        
-        var commands = GetCommands(module, module is null ? command : subcommand).ToList();
+        var commands = _commandService
+            .GetCommandMapProvider()
+            .GetRequiredMap<ITextCommandMap>()
+            .FindMatches(command.ToCharArray())
+            .Select(m => m.Command)
+            .ToList();
 
         if (commands.Count == 0)
             return ReplyErrorResponse(Strings.Help.CommandNotFound, Context.Prefix.Stringify());
@@ -89,7 +91,7 @@ public class HelpModule : RiasTextModule<HelpService>
         }
 
         var embed = new LocalEmbed()
-            .WithColor(Utils.ConfirmationColor)
+            .WithColor(Utils.SuccessColor)
             .WithTitle(GetText(Strings.Help.ModulesListTitle))
             .WithDescription(description.ToString())
             .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
@@ -103,7 +105,9 @@ public class HelpModule : RiasTextModule<HelpService>
         if (string.IsNullOrWhiteSpace(moduleName))
             return await AllCommandsAsync();
         
-        var module = _commandService.EnumerateTextModules()
+        var module = _commandService
+            .EnumerateTextModules()
+            .SelectMany(m => m.Submodules.Prepend(m))
             .FirstOrDefault(m => m.Name.StartsWith(moduleName, StringComparison.OrdinalIgnoreCase));
         
         if (module is null)
@@ -120,24 +124,20 @@ public class HelpModule : RiasTextModule<HelpService>
             .AppendLine(GetText(Strings.Help.CommandInfo, Context.Prefix.Stringify()))
             .AppendLine()
             .AppendLine($"**{module.Name}:** {string.Join(" ", commandAliases.Select(Markdown.Code))}");
-
-        var submodules = module.Submodules
-            .Where(sm => string.Equals(sm.Name, sm.Parent?.Name, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(sm => sm.Name);
-
-        foreach (var submodule in submodules)
+        
+        foreach (var submodule in module.Submodules.OrderBy(sm => sm.Name))
         {
             var groupModuleCommands = GetModuleCommands(submodule, isOwner).ToList();
 
             if (groupModuleCommands.Count != 0)
             {
                 var groupCommandAliases = GetAliases(groupModuleCommands).ToList();
-                description.AppendLine().Append($"**{submodule.Name}:** {string.Join(" ", groupCommandAliases.Select(Markdown.Code))}");
+                description.AppendLine($"**{submodule.Name}:** {string.Join(" ", groupCommandAliases.Select(Markdown.Code))}");
             }
         }
 
         var embed = new LocalEmbed()
-            .WithColor(Utils.ConfirmationColor)
+            .WithColor(Utils.SuccessColor)
             .WithTitle(GetText(module.Parent is null ? Strings.Help.AllModuleCommands : Strings.Help.AllSubmoduleCommands, module.Name))
             .WithDescription(description.ToString())
             .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
@@ -207,34 +207,13 @@ public class HelpModule : RiasTextModule<HelpService>
         }
         
         var embed = new LocalEmbed()
-            .WithColor(Utils.ConfirmationColor)
+            .WithColor(Utils.SuccessColor)
             .WithTitle(GetText(Strings.Help.AllCommands))
             .WithDescription(description.ToString())
             .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
         
         return Reply(embed);
     }
-
-    private IEnumerable<ITextCommand> GetCommands(ITextModule? module, string? alias)
-    {
-        if (module is null && !string.IsNullOrEmpty(alias))
-            return GetCommands(alias);
-            
-        if (string.IsNullOrEmpty(alias))
-            return module?.Commands.Where(x => x.Aliases.Count == 0) ?? Enumerable.Empty<ITextCommand>();
-
-        return module?.Commands.Where(c =>
-                   c.Aliases.Any(a => string.Equals(a, alias, StringComparison.OrdinalIgnoreCase)))
-               ?? Enumerable.Empty<ITextCommand>();
-    }
-    
-    private IEnumerable<ITextCommand> GetCommands(string alias) => _commandService.EnumerateTextModules().SelectMany(m => m.Commands).Where(c =>
-    {
-        if (c.Aliases.Count == 0)
-            return false;
-
-        return c.Module.Aliases.Count == 0 && c.Aliases.Any(y => string.Equals(y, alias, StringComparison.OrdinalIgnoreCase));
-    });
 
     private static IEnumerable<ITextCommand> GetModuleCommands(ITextModule module, bool isOwner)
     {

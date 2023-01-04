@@ -34,17 +34,17 @@ var builder = new HostBuilder()
             configBuilder.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
         
         var config = configBuilder.Build();
-        var confirmationColor = config["ConfirmationColor"];
-        if (!string.IsNullOrEmpty(confirmationColor))
-            Utils.ConfirmationColor = Helpers.HexToInt(confirmationColor) ?? Utils.ConfirmationColor;
+        var successColor = config["SuccessColor"];
+        if (!string.IsNullOrEmpty(successColor))
+            Utils.SuccessColor = Helpers.HexToInt(successColor) ?? default;
         
         var errorColor = config["ErrorColor"];
         if (!string.IsNullOrEmpty(errorColor))
-            Utils.ErrorColor = Helpers.HexToInt(errorColor) ?? Utils.ErrorColor;
+            Utils.ErrorColor = Helpers.HexToInt(errorColor) ?? default;
         
         var intermediateColor = config["IntermediateColor"];
         if (!string.IsNullOrEmpty(intermediateColor))
-            Utils.IntermediateColor = Helpers.HexToInt(intermediateColor) ?? Utils.IntermediateColor;
+            Utils.IntermediateColor = Helpers.HexToInt(intermediateColor) ?? default;
     })
     .ConfigureLogging((context, loggingBuilder) =>
     {

@@ -17,35 +17,35 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         _localizationService = new Lazy<LocalisationService>(() => Context.Services.GetRequiredService<LocalisationService>());
     }
 
-    protected IResult ReplyConfirmationResponse(string key)
-        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localisation.GetText(Context.GuildId, key)));
+    protected IResult ReplySuccessResponse(string key)
+        => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key)));
 
-    protected IResult ReplyConfirmationResponse(string key, object arg0)
-        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localisation.GetText(Context.GuildId, key, arg0)));
+    protected IResult ReplySuccessResponse(string key, object arg0)
+        => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, arg0)));
     
-    protected IResult ReplyConfirmationResponse(string key, object arg0, object arg1)
-        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localisation.GetText(Context.GuildId, key, arg0, arg1)));
+    protected IResult ReplySuccessResponse(string key, object arg0, object arg1)
+        => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, arg0, arg1)));
     
-    protected IResult ReplyConfirmationResponse(string key, object arg0, object arg1, object arg2)
-        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localisation.GetText(Context.GuildId, key, arg0, arg1, arg2)));
+    protected IResult ReplySuccessResponse(string key, object arg0, object arg1, object arg2)
+        => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, arg0, arg1, arg2)));
     
-    protected IResult ReplyConfirmationResponse(string key, params object[] args)
-        => Reply(new LocalEmbed().WithColor(Utils.ConfirmationColor).WithDescription(Localisation.GetText(Context.GuildId, key, args)));
+    protected IResult ReplySuccessResponse(string key, params object[] args)
+        => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, args)));
     
     protected IResult ReplyErrorResponse(string key)
-        => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localisation.GetText(Context.GuildId, key)));
+        => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key)));
     
     protected IResult ReplyErrorResponse(string key, object arg0)
-        => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localisation.GetText(Context.GuildId, key, arg0)));
+        => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, arg0)));
     
     protected IResult ReplyErrorResponse(string key, object arg0, object arg1)
-        => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localisation.GetText(Context.GuildId, key, arg0, arg1)));
+        => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, arg0, arg1)));
     
     protected IResult ReplyErrorResponse(string key, object arg0, object arg1, object arg2)
-        => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localisation.GetText(Context.GuildId, key, arg0, arg1, arg2)));
+        => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, arg0, arg1, arg2)));
     
     protected IResult ReplyErrorResponse(string key, params object[] args)
-        => Reply(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localisation.GetText(Context.GuildId, key, args)));
+        => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, args)));
 
     protected string GetText(string key)
         => Localisation.GetText(Context.GuildId, key);
@@ -61,6 +61,11 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
     
     protected string GetText(string key, params object[] args)
         => Localisation.GetText(Context.GuildId, key, args);
+
+    private LocalEmbed GetEmbed(Color color, string description) => new LocalEmbed()
+        .WithColor(color)
+        .WithDescription(description)
+        .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
 }
 
 public abstract class RiasTextGuildModule<TService> : RiasTextGuildModule
