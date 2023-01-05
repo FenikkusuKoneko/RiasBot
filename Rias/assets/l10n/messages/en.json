@@ -57,7 +57,8 @@
 
   "service_command_cooldown": "Hey, calm down! Take a breath and try again in **{0}**.",
   "service_command_not_executed": "The command couldn't be executed",
-  "service_command_not_executed_footer": "{0} | Get more info about the command by typing `{0}h {1}`.",
+  "service_command_not_executed_footer": "{0} | Get more info about the command by typing {1}h {2}.",
+  "service_command_exception": "A rude exception has been caught and reported.",
 
   "attribute_missing_author_permissions": "You lack the following permission(s): {0}",
   "attribute_missing_author_guild_permissions": "You lack the following permission(s) in this server: {0}",

@@ -71,7 +71,8 @@ public static class Strings
     {
         public const string CommandCooldown = "service_command_cooldown";
         public const string CommandNotExecuted = "service_command_not_executed";
-        public const string CommandNotExecutedGetInfo = "service_command_not_executed_get_info";
+        public const string CommandNotExecutedFooter = "service_command_not_executed_footer";
+        public const string CommandException = "service_command_exception";
     }
 
     public static class Attribute

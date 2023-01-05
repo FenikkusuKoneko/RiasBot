@@ -6,6 +6,8 @@
 public record RiasOptions
 {
     public string[]? Prefixes { get; set; }
+    public ulong LogsServerId { get; set; }
+    public ulong LogsChannelId { get; set; }
     public string? CurrencyEmoji { get; set; }
     
     public string? InviteLink { get; set; }

@@ -4,10 +4,10 @@ using Qommon;
 
 namespace Rias.Services.Responses;
 
-public class RiasResult : IResult
+public class RiasResult
 {
-    public bool IsSuccessful { get; private set; }
-    public string? FailureReason { get; private set; }
+    public bool IsSuccessful { get; private init; }
+    public string FailureReason { get; private init; } = string.Empty;
     
     public static RiasResult FromSuccess()
         => new() { IsSuccessful = true };
