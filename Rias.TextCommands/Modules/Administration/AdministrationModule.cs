@@ -28,7 +28,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
         var setGreetResponse = await Service.SetGreetAsync(Context.GetCurrentMember(), guild, channel, Context.Author, switchGreet);
         
         if (!setGreetResponse.IsGreetEnabled)
-            return ReplySuccessResponse(Strings.Administration.GreetDisabled);
+            return SuccessReply(Strings.Administration.GreetDisabled);
 
         var message = new LocalMessage()
             .WithContent(channel.Id == Context.ChannelId
@@ -62,13 +62,13 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
         var guild = Context.GetGuild();
 
         if (message is { Length: > GreetByeMessageLengthLimit })
-            return ReplyErrorResponse(Strings.Administration.GreetMessageLengthLimit, GreetByeMessageLengthLimit);
+            return ErrorReply(Strings.Administration.GreetMessageLengthLimit, GreetByeMessageLengthLimit);
 
         var greetMessage = Helpers.FormatPlaceholders(Context.Author, message);
         var messageParsed = Helpers.TryParseMessage(greetMessage, out var greetContent, out var greetEmbed);
 
         if (messageParsed && string.IsNullOrEmpty(greetContent) && greetEmbed is null)
-            return ReplyErrorResponse(Strings.Administration.InvalidCustomMessage);
+            return ErrorReply(Strings.Administration.InvalidCustomMessage);
 
         var greetMessageResponse = await Service.SetGreetMessageAsync(guild, message);
         var content = new StringBuilder()
@@ -124,7 +124,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
         var setByeResponse = await Service.SetByeAsync(Context.GetCurrentMember(), guild, channel, Context.Author, switchBye);
         
         if (!setByeResponse.IsByeEnabled)
-            return ReplySuccessResponse(Strings.Administration.ByeDisabled);
+            return SuccessReply(Strings.Administration.ByeDisabled);
 
         var message = new LocalMessage()
             .WithContent(channel.Id == Context.ChannelId
@@ -158,13 +158,13 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
         var guild = Context.GetGuild();
 
         if (message is { Length: > GreetByeMessageLengthLimit })
-            return ReplyErrorResponse(Strings.Administration.ByeMessageLengthLimit, GreetByeMessageLengthLimit);
+            return ErrorReply(Strings.Administration.ByeMessageLengthLimit, GreetByeMessageLengthLimit);
 
         var byeMessage = Helpers.FormatPlaceholders(Context.Author, message);
         var messageParsed = Helpers.TryParseMessage(byeMessage, out var byeContent, out var byeEmbed);
 
         if (messageParsed && string.IsNullOrEmpty(byeContent) && byeEmbed is null)
-            return ReplyErrorResponse(Strings.Administration.InvalidCustomMessage);
+            return ErrorReply(Strings.Administration.InvalidCustomMessage);
 
         var byeMessageResponse = await Service.SetByeMessageAsync(guild, message);
         var content = new StringBuilder()
@@ -219,10 +219,10 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
         if (modLogEnabled)
         {
             return channel.Id == Context.ChannelId
-                ? ReplySuccessResponse(Strings.Administration.ModLogEnabled)
-                : ReplySuccessResponse(Strings.Administration.ModLogEnabledChannel, channel.Mention);
+                ? SuccessReply(Strings.Administration.ModLogEnabled)
+                : SuccessReply(Strings.Administration.ModLogEnabledChannel, channel.Mention);
         }
 
-        return ReplySuccessResponse(Strings.Administration.ModLogDisabled);
+        return SuccessReply(Strings.Administration.ModLogDisabled);
     }
 }

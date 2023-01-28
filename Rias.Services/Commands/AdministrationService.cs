@@ -13,8 +13,11 @@ public class AdministrationService : RiasCommandService
 {
     private readonly HttpClient _httpClient;
     
-    public AdministrationService(HttpClient httpClient, RiasDbContext db)
-        : base(db)
+    public AdministrationService(
+        RiasDbContext db,
+        LocalisationService localisation,
+        HttpClient httpClient)
+        : base(db, localisation)
     {
         _httpClient = httpClient;
     }

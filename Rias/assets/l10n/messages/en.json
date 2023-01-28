@@ -25,6 +25,13 @@
   "administration_voice_channel_added_to_category": "The voice channel **{0}** has been added to **{1}** category.",
   "administration_author_missing_channel_manage_permission": "You are not allowed to alter {0}.",
   "administration_bot_missing_channel_manage_permission": "I am not allowed to alter {0}.",
+  "administration_emoji_name_length_limit": "The emoji name's length must be between {0} and {1} characters.",
+  "administration_emoji_created": "The emoji **{0}** has been created.",
+  "administration_emoji_deleted": "The emoji **{0}** has been deleted.",
+  "administration_emoji_renamed": "The emoji **{0}** has been renamed to **{1}**.",
+  "administration_emoji_not_found": "I couldn't find the emoji.",
+  "administration_animated_emojis_limit": "This server reached the limit of {0} animated emojis.",
+  "administration_non_animated_emojis_limit": "This server reached the limit of {0} non-animated emojis.",
   
   "help_title": "{0} v{1} help page",
   "help_info": "I'm based on modules. Each module has commands.\n\nType `{0}modules` to get a list with all modules.\n\nType `{0}commands <moduleName>` to get a list with all commands from the module.\nExample: `{0}commands Administration`, `{0}commands Server`\n\nType `{0}allcommands` to get a list with all commands.\nCheck https://rias.gg/commands to see all commands with their description and examples.",
@@ -54,6 +61,13 @@
   
   "utility_prefix_is": "My prefix in this server is **{0}**.",
   "utility_prefix_name_or_mention": "My prefix in this server is my **name** or my **mention**.",
+  "utility_url_not_valid": "The URL is not valid.",
+  "utility_url_not_https": "The URL must be HTTPS.",
+  "utility_cannot_access_image_url": "I cannot access the URL or the image size exceeds {0} {1}.",
+  "utility_invalid_image_url": "The image URL is not valid.",
+  "utility_url_not_png_jpg_webp": "The URL is not be a direct link to a PNG, JPG/JPEG or WEBP image.",
+  "utility_url_not_png_jpg_webp_gif": "The URL is not be a direct link PNG, JPG/JPEG, WEBP or GIF image.",
+  "utility_no_image_attached": "Please provide and image.",
 
   "service_command_cooldown": "Hey, calm down! Take a breath and try again in **{0}**.",
   "service_command_not_executed": "The command couldn't be executed",
@@ -71,6 +85,9 @@
   "type_parser_text_channel_not_found": "I couldn't find the text channel.",
   "type_parser_voice_channel_not_found": "I couldn't find the voice channel.",
   "type_parser_category_channel_not_found": "I couldn't find the category channel.",
+  "type_parser_invalid_emoji": "**{0}** is not a valid emoji.",
+  "type_parser_guild_emoji_not_found": "I couldn't find **{0}** emoji in this server.",
+  "type_parser_emoji_not_from_guild": "The emoji **{0}** is not from this server.",
 
   "and": "and",
   "channel": "Channel",

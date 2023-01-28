@@ -20,7 +20,6 @@ using Qmmands.Default;
 using Qmmands.Text;
 using Rias.Common;
 using Rias.Services;
-using Rias.Services.TypeParsers;
 
 namespace Rias;
 
@@ -53,22 +52,19 @@ public class RiasBot : DiscordBot
 
     protected override ValueTask AddTypeParsers(DefaultTypeParserProvider typeParserProvider, CancellationToken cancellationToken)
     {
-        // typeParserProvider.AddParser(new Disqord.Bot.Commands.Parsers.SnowflakeTypeParser());
-        // typeParserProvider.AddParser(new Disqord.Bot.Commands.Parsers.ColorTypeParser());
-        // typeParserProvider.AddParser(new Disqord.Bot.Commands.Parsers.CustomEmojiTypeParser());
-        // typeParserProvider.AddParser(new Disqord.Bot.Commands.Parsers.GuildEmojiTypeParser());
-        typeParserProvider.AddParser(new GuildChannelTypeParser<IGuildChannel>());
-        typeParserProvider.AddParser(new GuildChannelTypeParser<ICategorizableGuildChannel>());
-        typeParserProvider.AddParser(new GuildChannelTypeParser<IMessageGuildChannel>());
-        typeParserProvider.AddParser(new GuildChannelTypeParser<IVocalGuildChannel>());
-        typeParserProvider.AddParser(new GuildChannelTypeParser<ITextChannel>());
-        typeParserProvider.AddParser(new GuildChannelTypeParser<IVoiceChannel>());
-        typeParserProvider.AddParser(new GuildChannelTypeParser<ICategoryChannel>());
-        typeParserProvider.AddParser(new GuildChannelTypeParser<IStageChannel>());
-        typeParserProvider.AddParser(new GuildChannelTypeParser<IThreadChannel>());
-        typeParserProvider.AddParser(new GuildChannelTypeParser<IForumChannel>());
-        // typeParserProvider.AddParser(new Disqord.Bot.Commands.Parsers.MemberTypeParser());
-        // typeParserProvider.AddParser(new Disqord.Bot.Commands.Parsers.RoleTypeParser());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<IGuildChannel>());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<ICategorizableGuildChannel>());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<IMessageGuildChannel>());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<IVocalGuildChannel>());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<ITextChannel>());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<IVoiceChannel>());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<ICategoryChannel>());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<IStageChannel>());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<IThreadChannel>());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<IForumChannel>());
+        typeParserProvider.AddParser(new Services.TypeParsers.CustomEmojiTypeParser());
+        typeParserProvider.AddParser(new Services.TypeParsers.GuildEmojiTypeParser());
+        
         return default;
     }
 
@@ -89,7 +85,9 @@ public class RiasBot : DiscordBot
                 case ChecksFailedResult checksFailedResult:
                     return string.Join('\n', checksFailedResult.FailedChecks.Select(check => $"• {check.Value.FailureReason}"));
                 case TypeParseFailedResult typeParseFailedResult:
-                    return typeParseFailedResult.FailureReason;
+                    return $"• {typeParseFailedResult.FailureReason}";
+                case ParameterChecksFailedResult parameterChecksFailedResult:
+                    return string.Join('\n', parameterChecksFailedResult.FailedChecks.Select(check => $"• {check.Value.FailureReason}"));
                 case CommandRateLimitedResult rateLimitedResult:
                 {
                     var (rateLimitAttribute, retryAfter) = rateLimitedResult.RateLimits.First();
@@ -121,27 +119,37 @@ public class RiasBot : DiscordBot
         
         var embed = new LocalEmbed()
             .WithColor(Utils.ErrorColor)
-            .WithTitle(_localisation.GetText(context.GuildId, Strings.Service.CommandNotExecuted))
             .WithDescription(reason);
 
-        switch (context.Command)
+        if (result is OverloadsFailedResult overloadsFailedResult)
         {
-            case TextCommand textCommand:
+            var textCommand = overloadsFailedResult.FailedOverloads.First().Key;
+            PopulateTextCommandEmbed(textCommand);
+        }
+        else
+        {
+            switch (context.Command)
             {
-                var moduleAlias = textCommand.Module.Aliases.Count != 0 ? $"{textCommand.Module.Aliases[0]} " : string.Empty;
-                var author = string.Join(" / ", textCommand.Aliases.Select(a => $"{moduleAlias}{a}"));
-                embed.WithAuthor(author);
-
-                var textCommandContext = (IDiscordTextCommandContext) context;
-                var footer = _localisation.GetText(context.GuildId, Strings.Service.CommandNotExecutedFooter,
-                    context.Author.Tag, textCommandContext.Prefix.Stringify(), textCommand.Name);
-
-                embed.WithFooter(footer, context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
-                break;
+                case TextCommand textCommand:
+                    PopulateTextCommandEmbed(textCommand);
+                    break;
+                case ApplicationCommand applicationCommand:
+                    embed.WithAuthor(applicationCommand.Alias);
+                    break;
             }
-            case ApplicationCommand applicationCommand:
-                embed.WithAuthor(applicationCommand.Alias);
-                break;
+        }
+
+        void PopulateTextCommandEmbed(ITextCommand textCommand1)
+        {
+            var moduleAlias = textCommand1.Module.Aliases.Count != 0 ? $"{textCommand1.Module.Aliases[0]} " : string.Empty;
+            var title = string.Join(" / ", textCommand1.Aliases.Select(a => $"{moduleAlias}{a}"));
+            embed.WithTitle(title);
+
+            var textCommandContext = (IDiscordTextCommandContext) context;
+            var footer = _localisation.GetText(context.GuildId, Strings.Service.CommandNotExecutedFooter,
+                context.Author.Tag, textCommandContext.Prefix.Stringify(), textCommand1.Name);
+
+            embed.WithFooter(footer, context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
         }
 
         message.AddEmbed(embed);

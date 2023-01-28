@@ -11,6 +11,10 @@
   "category_channels_deletecategory": "Deletes a category channel.",
   "category_channels_addtextchanneltocategory": "Adds a text channel to a category channel.",
   "category_channels_addvoicechanneltocategory": "Adds a voice channel to a category channel.",
+  "emojis_addemoji": "Adds an emoji to this server using another emoji, image URL, or attachment. PNG, JPG/JPEG, WEBP and GIF formats are supported. The image size must be lower than 256 KB.",
+  "emojis_deleteemoji": "Deletes an emoji from this server.",
+  "emojis_renameemoji": "Renames an emoji from this server.",
+  "emojis_emoji": "Shows the image of an emoji.",
   
   "help_help": "Shows a page info for a command, or shows the general help page if no arguments are given.\nMost of the commands are single word but there are command groups (or subcommands of those commands).",
   "help_modules": "Shows all modules and submodules.",

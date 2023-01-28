@@ -21,11 +21,11 @@ public partial class AdministrationModule
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
         public async Task<IResult> CreateCategoryAsync([Remainder] string name)
         {
-            if (name.Length is < 1 or > 100)
-                return ReplyErrorResponse(Strings.Administration.ChannelNameLengthLimit, 1, 100);
+            if (name.Length is < Limits.Guild.Channel.MinNameLength or > Limits.Guild.Channel.MaxNameLength)
+                return ErrorReply(Strings.Administration.ChannelNameLengthLimit, Limits.Guild.Channel.MinNameLength, Limits.Guild.Channel.MaxNameLength);
 
             await Context.GetGuild().CreateCategoryChannelAsync(name);
-            return ReplySuccessResponse(Strings.Administration.CategoryChannelCreated, name);
+            return SuccessReply(Strings.Administration.CategoryChannelCreated, name);
         }
         
         [TextCommand("renamecategory", "rcat")]
@@ -34,17 +34,17 @@ public partial class AdministrationModule
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
         public async Task<IResult> RenameCategoryAsync(ICategoryChannel category, [Remainder] string name)
         {
-            if (name.Length is < 1 or > 100)
-                return ReplyErrorResponse(Strings.Administration.ChannelNameLengthLimit, 1, 100);
+            if (name.Length is < Limits.Guild.Channel.MinNameLength or > Limits.Guild.Channel.MaxNameLength)
+                return ErrorReply(Strings.Administration.ChannelNameLengthLimit, Limits.Guild.Channel.MinNameLength, Limits.Guild.Channel.MaxNameLength);
             
             if ((Context.Author.CalculateChannelPermissions(category) & Permissions.ManageChannels) == 0)
-                return ReplyErrorResponse(Strings.Administration.AuthorMissingChannelManagePermission, category.Mention);
+                return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, category.Mention);
             
             if (Context.GetCurrentMember().CalculateChannelPermissions(category) == 0)
-                return ReplyErrorResponse(Strings.Administration.BotMissingChannelManagePermission, category.Mention);
+                return ErrorReply(Strings.Administration.BotMissingChannelManagePermission, category.Mention);
 
             await category.ModifyAsync(props => props.Name = name);
-            return ReplySuccessResponse(Strings.Administration.CategoryChannelRenamed, category.Name, name);
+            return SuccessReply(Strings.Administration.CategoryChannelRenamed, category.Name, name);
         }
         
         [TextCommand("deletecategory", "dcat")]
@@ -54,13 +54,13 @@ public partial class AdministrationModule
         public async Task<IResult> DeleteCategoryAsync([Remainder] ICategoryChannel category)
         {
             if ((Context.Author.CalculateChannelPermissions(category) & Permissions.ManageChannels) == 0)
-                return ReplyErrorResponse(Strings.Administration.AuthorMissingChannelManagePermission, category.Mention);
+                return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, category.Mention);
             
             if (Context.GetCurrentMember().CalculateChannelPermissions(category) == 0)
-                return ReplyErrorResponse(Strings.Administration.BotMissingChannelManagePermission, category.Mention);
+                return ErrorReply(Strings.Administration.BotMissingChannelManagePermission, category.Mention);
 
             await category.DeleteAsync();
-            return ReplySuccessResponse(Strings.Administration.CategoryChannelDeleted, category.Name);
+            return SuccessReply(Strings.Administration.CategoryChannelDeleted, category.Name);
         }
 
         [TextCommand("addtextchanneltocategory", "atchtocat")]
@@ -69,13 +69,13 @@ public partial class AdministrationModule
         public async Task<IResult> AddTextChannelToCategoryAsync(ITextChannel channel, [Remainder] ICategoryChannel category)
         {
             if ((Context.Author.CalculateChannelPermissions(channel) & Permissions.ManageChannels) == 0)
-                return ReplyErrorResponse(Strings.Administration.AuthorMissingChannelManagePermission, channel.Mention);
+                return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, channel.Mention);
             
             if (Context.GetCurrentMember().CalculateChannelPermissions(channel) == 0)
-                return ReplyErrorResponse(Strings.Administration.BotMissingChannelManagePermission, channel.Mention);
+                return ErrorReply(Strings.Administration.BotMissingChannelManagePermission, channel.Mention);
 
             await channel.ModifyAsync(props => props.CategoryId = category.Id);
-            return ReplySuccessResponse(Strings.Administration.TextChannelAddedToCategory, channel.Mention, category.Name);
+            return SuccessReply(Strings.Administration.TextChannelAddedToCategory, channel.Mention, category.Name);
         }
         
         [TextCommand("addvoicechanneltocategory", "avchtocat")]
@@ -84,13 +84,13 @@ public partial class AdministrationModule
         public async Task<IResult> AddVoiceChannelToCategoryAsync(IVoiceChannel channel, [Remainder] ICategoryChannel category)
         {
             if ((Context.Author.CalculateChannelPermissions(channel) & Permissions.ManageChannels) == 0)
-                return ReplyErrorResponse(Strings.Administration.AuthorMissingChannelManagePermission, channel.Mention);
+                return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, channel.Mention);
             
             if (Context.GetCurrentMember().CalculateChannelPermissions(channel) == 0)
-                return ReplyErrorResponse(Strings.Administration.BotMissingChannelManagePermission, channel.Mention);
+                return ErrorReply(Strings.Administration.BotMissingChannelManagePermission, channel.Mention);
 
             await channel.ModifyAsync(props => props.CategoryId = category.Id);
-            return ReplySuccessResponse(Strings.Administration.VoiceChannelAddedToCategory, channel.Mention, category.Name);
+            return SuccessReply(Strings.Administration.VoiceChannelAddedToCategory, channel.Mention, category.Name);
         }
     }
 }

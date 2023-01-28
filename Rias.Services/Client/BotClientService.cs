@@ -5,20 +5,26 @@ using Disqord.Hosting;
 using Disqord.Rest;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Rias.Common;
 using Rias.Database;
 using Rias.Services.Extensions;
 
 namespace Rias.Services.Client;
 
-public class BotService : DiscordClientService
+public class BotClientService : DiscordClientService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly LocalisationService _localisation;
     
     private readonly ConcurrentDictionary<Snowflake, List<IWebhook>> _webhooks = new();
 
-    public BotService(IServiceProvider serviceProvider, LocalisationService localisation)
+    public BotClientService(
+        IServiceProvider serviceProvider,
+        LocalisationService localisation,
+        ILogger<BotClientService> logger,
+        DiscordClientBase client) 
+        : base(logger, client)
     {
         _serviceProvider = serviceProvider;
         _localisation = localisation;

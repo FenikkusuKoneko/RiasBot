@@ -17,13 +17,14 @@ namespace Rias.Services.Commands;
 
 public class HelpService : RiasCommandService
 {
-    private readonly LocalisationService _localisation;
     private readonly RiasOptions _options;
     
-    public HelpService(RiasDbContext db, LocalisationService localisation, IOptions<RiasOptions> options)
-        : base(db)
+    public HelpService(
+        RiasDbContext db,
+        LocalisationService localisation,
+        IOptions<RiasOptions> options)
+        : base(db, localisation)
     {
-        _localisation = localisation;
         _options = options.Value;
     }
 
@@ -40,27 +41,27 @@ public class HelpService : RiasCommandService
         var title = string.Join(" / ", command.Aliases.Select(a => $"{moduleAlias}{a}"));
         
         if (command.Checks.Any(c => c is RequireBotOwnerAttribute))
-            title += $" [{_localisation.GetText(guild?.Id, Strings.Help.OwnerOnly).ToLowerInvariant()}]";
+            title += $" [{Localisation.GetText(guild?.Id, Strings.Help.OwnerOnly).ToLowerInvariant()}]";
         
         var commandInfoKey = $"{command.Module.Name.Replace(' ', '_').ToLower()}_{command.Name.Replace(' ', '_')}";
-        var description = _localisation.GetCommandText(guild?.Id, commandInfoKey);
+        var description = Localisation.GetCommandText(guild?.Id, commandInfoKey);
 
         if (!string.IsNullOrEmpty(description))
         {
             description = description.Replace("{prefix}", prefixString).Replace("{currency}", _options.CurrencyEmoji)
-                          + $"\n\n{_localisation.GetText(guild?.Id, Strings.Help.Module, Markdown.Bold(moduleName))}";
+                          + $"\n\n{Localisation.GetText(guild?.Id, Strings.Help.Module, Markdown.Bold(moduleName))}";
         }
         else
         {
-            description = _localisation.GetText(guild?.Id, Strings.NoDescription)
-                          + $"\n\n{_localisation.GetText(guild?.Id, Strings.Help.Module, Markdown.Bold(moduleName))}";
+            description = Localisation.GetText(guild?.Id, Strings.NoDescription)
+                          + $"\n\n{Localisation.GetText(guild?.Id, Strings.Help.Module, Markdown.Bold(moduleName))}";
         }
 
         var embed = new LocalEmbed()
             .WithColor(Utils.SuccessColor)
             .WithTitle(title)
             .WithDescription(description)
-            .WithFooter(_localisation.GetText(guild?.Id, Strings.Help.CommandInfoFooter, user.Tag), user.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
+            .WithFooter(Localisation.GetText(guild?.Id, Strings.Help.CommandInfoFooter, user.Tag), user.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
 
         string? requiredAuthorPermissions = null;
         string? requiredBotPermissions = null;
@@ -92,17 +93,17 @@ public class HelpService : RiasCommandService
 
         if (!string.IsNullOrEmpty(requiredAuthorPermissions) || !string.IsNullOrEmpty(requiredBotPermissions))
         {
-            embed.AddField(_localisation.GetText(guild?.Id, Strings.Help.RequiredPermissions),
-                $"{(string.IsNullOrEmpty(requiredAuthorPermissions) ? string.Empty : _localisation.GetText(guild?.Id, Strings.Help.RequiredPermissionsYou, requiredAuthorPermissions))}\n" +
-                $"{(string.IsNullOrEmpty(requiredBotPermissions) ? string.Empty : _localisation.GetText(guild?.Id, Strings.Help.RequiredPermissionsMe, requiredBotPermissions))}",
+            embed.AddField(Localisation.GetText(guild?.Id, Strings.Help.RequiredPermissions),
+                $"{(string.IsNullOrEmpty(requiredAuthorPermissions) ? string.Empty : Localisation.GetText(guild?.Id, Strings.Help.RequiredPermissionsYou, requiredAuthorPermissions))}\n" +
+                $"{(string.IsNullOrEmpty(requiredBotPermissions) ? string.Empty : Localisation.GetText(guild?.Id, Strings.Help.RequiredPermissionsMe, requiredBotPermissions))}",
                 true);
         }
         
         var rateLimitAttribute = command.CustomAttributes.OfType<RateLimitAttribute>().FirstOrDefault();
         if (rateLimitAttribute is not null)
         {
-            var cooldownWindow = rateLimitAttribute.Window.Humanize(1, new CultureInfo(_localisation.GetGuildLocale(guild?.Id)));
-            var cooldownScope = _localisation.GetText(guild?.Id, rateLimitAttribute.BucketType switch
+            var cooldownWindow = rateLimitAttribute.Window.Humanize(1, new CultureInfo(Localisation.GetGuildLocale(guild?.Id)));
+            var cooldownScope = Localisation.GetText(guild?.Id, rateLimitAttribute.BucketType switch
             {
                 RateLimitBucketType.User => Strings.User,
                 RateLimitBucketType.Member => Strings.Member,
@@ -111,29 +112,29 @@ public class HelpService : RiasCommandService
                 _ => throw new UnreachableException()
             }).ToLowerInvariant();
 
-            var cooldownValue = $"{_localisation.GetText(guild?.Id, Strings.Help.HelpCooldownUses, rateLimitAttribute.Uses)}\n" +
-                                $"{_localisation.GetText(guild?.Id, Strings.Help.HelpCooldownWindow, cooldownWindow)}\n" +
-                                $"{_localisation.GetText(guild?.Id, Strings.Help.HelpCooldownScope, cooldownScope)}";
+            var cooldownValue = $"{Localisation.GetText(guild?.Id, Strings.Help.HelpCooldownUses, rateLimitAttribute.Uses)}\n" +
+                                $"{Localisation.GetText(guild?.Id, Strings.Help.HelpCooldownWindow, cooldownWindow)}\n" +
+                                $"{Localisation.GetText(guild?.Id, Strings.Help.HelpCooldownScope, cooldownScope)}";
             
-            embed.AddField(_localisation.GetText(guild?.Id, Strings.Help.HelpCooldown), cooldownValue, true);
+            embed.AddField(Localisation.GetText(guild?.Id, Strings.Help.HelpCooldown), cooldownValue, true);
         }
         
-        var examples = _localisation.GetCommandText(guild?.Id, $"{commandInfoKey}_examples");
+        var examples = Localisation.GetCommandText(guild?.Id, $"{commandInfoKey}_examples");
         if (!string.IsNullOrEmpty(examples))
         {
             examples = string.Join('\n', examples.Split('\n').Select(ex => $"{prefixString}{command.Aliases[0]} {ex}"));
-            embed.AddField(_localisation.GetText(guild?.Id, Strings.Examples), examples);
+            embed.AddField(Localisation.GetText(guild?.Id, Strings.Examples), examples);
         }
 
         var usages = new StringBuilder();
-        foreach (var cmd in commands.OrderBy(c => c.Parameters.Count))
+        foreach (var cmd in commands)
         {
             usages.AppendLine()
                 .Append($"{prefixString}{cmd.Aliases[0]} ")
                 .AppendJoin(' ', cmd.Parameters.Select(p => p.ParameterInfo is not null && p.ParameterInfo.IsOptional ? $"[{p.Name}]" : $"<{p.Name}>"));
         }
         
-        embed.AddField(_localisation.GetText(guild?.Id, Strings.Usages), usages.ToString());
+        embed.AddField(Localisation.GetText(guild?.Id, Strings.Usages), usages.ToString());
         return embed;
     }
 }

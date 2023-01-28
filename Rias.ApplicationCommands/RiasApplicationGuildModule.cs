@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Common;
 using Rias.Services;
+using Rias.Services.Responses;
 
 namespace Rias.ApplicationCommands;
 
@@ -47,6 +48,12 @@ public abstract class RiasApplicationGuildModule : DiscordApplicationGuildModule
 
     protected IResult ErrorResponse(string key, params object[] args)
         => Response(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(Localisation.GetText(Context.GuildId, key, args)));
+    
+    protected IResult ErrorResponse(RiasResult result)
+        => Response(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(result.ErrorReason));
+    
+    protected IResult ErrorResponse<T>(RiasResult<T> result)
+        => Response(new LocalEmbed().WithColor(Utils.ErrorColor).WithDescription(result.ErrorReason));
     
     protected string GetText(string key)
         => Localisation.GetText(Context.GuildId, key);

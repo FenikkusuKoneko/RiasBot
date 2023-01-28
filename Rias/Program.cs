@@ -3,6 +3,7 @@ using Disqord.Bot;
 using Disqord.Bot.Commands.Text;
 using Disqord.Bot.Hosting;
 using Disqord.Gateway;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,11 +15,15 @@ using Rias.Database;
 using Rias.Database.Enums;
 using Rias.Services;
 using Rias.Services.Commands;
+using Rias.Services.Extensions;
 using Serilog;
+using Serilog.Core;
 using Serilog.Sinks.SystemConsole.Themes;
 
 Assembly.Load("Rias.ApplicationCommands");
 Assembly.Load("Rias.TextCommands");
+
+Logger? logger;
 
 var builder = new HostBuilder()
     .ConfigureHostConfiguration(config =>
@@ -51,11 +56,12 @@ var builder = new HostBuilder()
         var loggerConfig = new LoggerConfiguration()
             .MinimumLevel.Information()
             .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}", theme: SystemConsoleTheme.Literate);
-
+        
         if (context.HostingEnvironment.IsDevelopment())
             loggerConfig.MinimumLevel.Debug();
 
-        var logger = loggerConfig.CreateLogger();
+        logger = loggerConfig.CreateLogger();
+        Log.Logger = logger;
         loggingBuilder.AddSerilog(logger, true);
     })
     .ConfigureServices((context, services) =>
@@ -64,8 +70,6 @@ var builder = new HostBuilder()
         
         services.AddPrefixProvider<RiasPrefixProvider>();
         services.Configure<RiasOptions>(context.Configuration);
-        
-        services.AddHttpClient<AdministrationService>();
 
         var dbConnectionString = context.Configuration.GetConnectionString("Database") ?? throw new Exception("Database connection string is not set.");
         var dbDataSource = new NpgsqlDataSourceBuilder(dbConnectionString);
@@ -83,6 +87,13 @@ var builder = new HostBuilder()
         
         foreach (var commandService in commandServices)
             services.AddScoped(commandService);
+        
+        services.AddHttpClient<AdministrationService>(httpClient => httpClient.Timeout = 15.Seconds());
+        services.AddHttpClient<EmojisService>(httpClient =>
+        {
+            httpClient.MaxResponseContentBufferSize = 256.KilobytesToBytes();
+            httpClient.Timeout = 15.Seconds();
+        });
     })
     .ConfigureDiscordBot<RiasBot>((context, bot) =>
     {
@@ -100,6 +111,21 @@ var builder = new HostBuilder()
         options.ValidateOnBuild = true;
     })
     .UseConsoleLifetime();
+
+
+TaskScheduler.UnobservedTaskException += (sender, args) =>
+{
+    args.SetObserved();
+    Log.ForContext("SourceContext", sender).Error(args.Exception, "Unobserved task exception");
+};
+
+AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+{
+    Log.ForContext("SourceContext", sender).Fatal(args.ExceptionObject as Exception, "Unhandled exception. The process is {ProcessState}", args.IsTerminating ? "terminating" : "continuing");
+    
+    if (args.IsTerminating)
+        Log.CloseAndFlush();
+};
 
 var host = builder.Build();
 

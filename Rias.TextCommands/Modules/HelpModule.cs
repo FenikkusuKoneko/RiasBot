@@ -36,7 +36,7 @@ public class HelpModule : RiasTextModule<HelpService>
             .ToList();
 
         if (commands.Count == 0)
-            return ReplyErrorResponse(Strings.Help.CommandNotFound, Context.Prefix.Stringify());
+            return ErrorReply(Strings.Help.CommandNotFound, Context.Prefix.Stringify());
 
         var guild = Context.GuildId.HasValue ? Context.Bot.GetGuild(Context.GuildId.Value) : null;
         var embed = Service.GenerateHelpEmbed(Context.Author, guild, commands, Context.Prefix);
@@ -111,13 +111,13 @@ public class HelpModule : RiasTextModule<HelpService>
             .FirstOrDefault(m => m.Name.StartsWith(moduleName, StringComparison.OrdinalIgnoreCase));
         
         if (module is null)
-            return ReplyErrorResponse(Strings.Help.ModuleNotFound, Context.Prefix.Stringify());
+            return ErrorReply(Strings.Help.ModuleNotFound, Context.Prefix.Stringify());
         
         var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
         var commands = GetModuleCommands(module, isOwner).ToList();
         
         if (commands.Count == 0)
-            return ReplyErrorResponse(Strings.Help.ModuleNotFound, Context.Prefix.Stringify());
+            return ErrorReply(Strings.Help.ModuleNotFound, Context.Prefix.Stringify());
 
         var commandAliases = GetAliases(commands).ToList();
         var description = new StringBuilder()
@@ -180,7 +180,7 @@ public class HelpModule : RiasTextModule<HelpService>
                 continue;
             
             var commandAliases = GetAliases(moduleCommands).ToList();
-            description.Append($"**{module.Name}:** {string.Join(" ", commandAliases.Select(Markdown.Code))}");
+            description.AppendLine($"**{module.Name}:** {string.Join(" ", commandAliases.Select(Markdown.Code))}");
             
             if (module.Submodules.Count != 0)
             {
@@ -197,7 +197,7 @@ public class HelpModule : RiasTextModule<HelpService>
                         if (groupModuleCommands.Count != 0)
                         {
                             var groupCommandAliases = GetAliases(groupModuleCommands).ToList();
-                            description.AppendLine().Append($"**{submodule.Name}:** {string.Join(" ", groupCommandAliases.Select(Markdown.Code))}");
+                            description.AppendLine().AppendLine($"**{submodule.Name}:** {string.Join(" ", groupCommandAliases.Select(Markdown.Code))}");
                         }
                     }
                 }

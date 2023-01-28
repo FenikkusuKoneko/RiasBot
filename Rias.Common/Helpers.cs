@@ -151,4 +151,70 @@ public static class Helpers
             return false;
         }
     }
+    
+    public static bool IsPngJpgWebp(Uri uri)
+    {
+        var extension = Path.GetExtension(uri.AbsolutePath);
+        return extension is ".png" or ".jpg" or ".webp";
+    }
+    
+    public static bool IsPngJpgWebpGif(Uri uri)
+    {
+        var extension = Path.GetExtension(uri.AbsolutePath);
+        return extension is ".png" or ".jpg" or ".webp" or ".gif";
+    }
+    
+    /// <summary>
+    /// Checks the header of a stream if is PNG.<br/>
+    /// 89 50 4E 47 0D 0A 1A 0A.
+    /// </summary>
+    public static bool IsPng(Stream stream)
+        => HasHeader(stream, new[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A });
+
+    /// <summary>
+    /// Checks the header of a stream if is JPG/JPEG.<br/>
+    /// FF D8 FF E0 00 10 4A 46 49 46 00 01.<br/>
+    /// FF D8 FF EE.<br/>
+    /// FF D8 FF E1 ?? ?? 45 78 69 66 00 00, where ?? ?? is the length of the EXIF data.
+    /// </summary>
+    public static bool IsJpg(Stream stream)
+        => HasHeader(stream, new[] { 0xFF, 0xD8, 0xFF, 0xDB })
+           || HasHeader(stream, new[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x0, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x0, 0x01 })
+           || HasHeader(stream, new[] { 0xFF, 0xD8, 0xFF, 0xEE })
+           || HasHeader(stream, new[] { 0xFF, 0xD8, 0xFF, 0xE1, -1, -1, 0x45, 0x78, 0x69, 0x66, 0x0, 0x0 });
+    
+    /// <summary>
+    /// Checks the header of a stream if is WEBP.<br/>
+    /// 52 49 46 46 ?? ?? ?? ?? 57 45 42 50, where ?? ?? ?? ?? is the size of the file - 8 bytes.
+    /// </summary>
+    public static bool IsWebp(Stream stream)
+        => HasHeader(stream, new[] { 0x52, 0x49, 0x46, 0x46, -1, -1, -1, -1, 0x57, 0x45, 0x42, 0x50 });
+
+    /// <summary>
+    /// Checks the header of a stream if is GIF.<br/>
+    /// 47 49 46 38 39 61, GIF87a.<br/>
+    /// 47 49 46 38 39 61, GIF89a.
+    /// </summary>
+    public static bool IsGif(Stream stream)
+        => HasHeader(stream, new[] { 0x47, 0x49, 0x46, 0x38, 0x37, 0x61 })
+           || HasHeader(stream, new[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61 });
+
+    private static bool HasHeader(Stream stream, IEnumerable<int> values)
+    {
+        if (!(stream.CanRead || stream.CanSeek))
+            return false;
+        
+        stream.Position = 0;
+        foreach (var value in values)
+        {
+            var @byte = stream.ReadByte();
+            if (value == -1) // ? ? bytes, can be anything
+                continue;
+            
+            if (@byte != value)
+                return false;
+        }
+        
+        return true;
+    }
 }

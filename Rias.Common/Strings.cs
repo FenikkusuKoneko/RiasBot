@@ -30,6 +30,13 @@ public static class Strings
         public const string VoiceChannelAddedToCategory = "administration_voice_channel_added_to_category";
         public const string AuthorMissingChannelManagePermission = "administration_author_missing_channel_manage_permission";
         public const string BotMissingChannelManagePermission = "administration_bot_missing_channel_manage_permission";
+        public const string EmojiNameLengthLimit = "administration_emoji_name_length_limit";
+        public const string EmojiCreated = "administration_emoji_created";
+        public const string EmojiDeleted = "administration_emoji_deleted";
+        public const string EmojiRenamed = "administration_emoji_renamed";
+        public const string EmojiNotFound = "administration_emoji_not_found";
+        public const string AnimatedEmojisLimit = "administration_animated_emojis_limit";
+        public const string NonAnimatedEmojisLimit = "administration_non_animated_emojis_limit";
     }
 
     public static class Help
@@ -65,6 +72,13 @@ public static class Strings
     {
         public const string PrefixIs = "utility_prefix_is";
         public const string PrefixNameOrMention = "utility_prefix_name_or_mention";
+        public const string UrlNotValid = "utility_url_not_valid";
+        public const string UrlNotHttps = "utility_url_not_https";
+        public const string CannotAccessImageUrl = "utility_cannot_access_image_url";
+        public const string InvalidImageUrl = "utility_invalid_image_url";
+        public const string UrlNotPngJpgWebp = "utility_url_not_png_jpg_webp";
+        public const string UrlNotPngJpgWebpGif = "utility_url_not_png_jpg_webp_gif";
+        public const string NoImageAttached = "utility_no_image_attached";
     }
 
     public static class Service
@@ -93,6 +107,9 @@ public static class Strings
             "message" => "type_parser_text_channel_not_found",
             _ => $"type_parser_{type}_channel_not_found"
         };
+        public const string InvalidEmoji = "type_parser_invalid_emoji";
+        public const string GuildEmojiNotFound = "type_parser_guild_emoji_not_found";
+        public const string EmojiNotFromGuild = "type_parser_emoji_not_from_guild";
     }
 
     public const string And = "and";

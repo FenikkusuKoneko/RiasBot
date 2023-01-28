@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Rias.Common;
 using Rias.Services;
+using Rias.Services.Responses;
 
 namespace Rias.TextCommands;
 
@@ -17,35 +18,41 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         _localizationService = new Lazy<LocalisationService>(() => Context.Services.GetRequiredService<LocalisationService>());
     }
 
-    protected IResult ReplySuccessResponse(string key)
+    protected IResult SuccessReply(string key)
         => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key)));
 
-    protected IResult ReplySuccessResponse(string key, object arg0)
+    protected IResult SuccessReply(string key, object arg0)
         => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, arg0)));
     
-    protected IResult ReplySuccessResponse(string key, object arg0, object arg1)
+    protected IResult SuccessReply(string key, object arg0, object arg1)
         => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, arg0, arg1)));
     
-    protected IResult ReplySuccessResponse(string key, object arg0, object arg1, object arg2)
+    protected IResult SuccessReply(string key, object arg0, object arg1, object arg2)
         => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, arg0, arg1, arg2)));
     
-    protected IResult ReplySuccessResponse(string key, params object[] args)
+    protected IResult SuccessReply(string key, params object[] args)
         => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, args)));
     
-    protected IResult ReplyErrorResponse(string key)
+    protected IResult ErrorReply(string key)
         => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key)));
     
-    protected IResult ReplyErrorResponse(string key, object arg0)
+    protected IResult ErrorReply(string key, object arg0)
         => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, arg0)));
     
-    protected IResult ReplyErrorResponse(string key, object arg0, object arg1)
+    protected IResult ErrorReply(string key, object arg0, object arg1)
         => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, arg0, arg1)));
     
-    protected IResult ReplyErrorResponse(string key, object arg0, object arg1, object arg2)
+    protected IResult ErrorReply(string key, object arg0, object arg1, object arg2)
         => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, arg0, arg1, arg2)));
     
-    protected IResult ReplyErrorResponse(string key, params object[] args)
+    protected IResult ErrorReply(string key, params object[] args)
         => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, args)));
+    
+    protected IResult ErrorReply(RiasResult result)
+        => Reply(GetEmbed(Utils.ErrorColor, result.ErrorReason));
+    
+    protected IResult ErrorReply<T>(RiasResult<T> result)
+        => Reply(GetEmbed(Utils.ErrorColor, result.ErrorReason));
 
     protected string GetText(string key)
         => Localisation.GetText(Context.GuildId, key);

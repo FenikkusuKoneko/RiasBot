@@ -10,7 +10,6 @@
         <PackageReference Include="ConcurrentHashSet" />
         <PackageReference Include="Disqord.Bot" />
         <PackageReference Include="Humanizer" />
-        <PackageReference Include="JetBrains.Annotations" />
     </ItemGroup>
 
     <ItemGroup>
