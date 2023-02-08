@@ -149,7 +149,9 @@ namespace Rias.Services
         {
             try
             {
-                using var response = await HttpClient.GetAsync(url);
+                var httpClient = HttpClient;
+                httpClient.DefaultRequestHeaders.Add("User-Agent", "Rias - Discord Bot");
+                using var response = await httpClient.GetAsync(url);
                 if (!response.IsSuccessStatusCode) return null;
 
                 var result = await response.Content.ReadAsStringAsync();
