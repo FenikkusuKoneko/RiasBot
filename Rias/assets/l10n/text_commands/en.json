@@ -11,7 +11,7 @@
   "category_channels_deletecategory": "Deletes a category channel.",
   "category_channels_addtextchanneltocategory": "Adds a text channel to a category channel.",
   "category_channels_addvoicechanneltocategory": "Adds a voice channel to a category channel.",
-  "emojis_addemoji": "Adds an emoji to this server using another emoji, image URL, or attachment. PNG, JPG/JPEG, WEBP and GIF formats are supported. The image size must be lower than 256 KB.",
+  "emojis_addemoji": "Creates an emoji in this server using another emoji, image URL, or attachment. The formats accepted are: PNG, JPG/JPEG, WEBP and GIF. The maximum image size for an emoji should be 256 KB but Discord will compress it (up to 1 MB). Also be sure the image to be square.",
   "emojis_deleteemoji": "Deletes an emoji from this server.",
   "emojis_renameemoji": "Renames an emoji from this server.",
   "emojis_emoji": "Shows the image of an emoji.",

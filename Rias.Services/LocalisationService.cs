@@ -1,83 +1,47 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using Disqord;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Rias.Database;
 
 namespace Rias.Services;
 
 public class LocalisationService
 {
-    public const string DefaultLocale = "en";
+    private const string DefaultLocale = "en";
     
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<LocalisationService> _logger;
-
     // first string is the locale, second string is the key, third string is the value
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _locales = new();
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _textCommandLocales = new();
 
     // first snowflake is the guild id, second string is the locale
     private readonly ConcurrentDictionary<Snowflake, string> _guildLocales = new();
-    private readonly string _localesPath = Path.Combine(Environment.CurrentDirectory, "assets/l10n");
 
-    public LocalisationService(IServiceProvider serviceProvider, ILogger<LocalisationService> logger)
+    public void AddOrUpdateLocale(string locale, string key, string value)
     {
-        _serviceProvider = serviceProvider;
-        _logger = logger;
+        if (_locales.TryGetValue(locale, out var locales))
+        {
+            locales[key] = value;
+        }
+        else
+        {
+            _locales[locale] = new ConcurrentDictionary<string, string>
+            {
+                [key] = value
+            };
+        }
     }
     
-    public async Task LoadAsync()
+    public void AddOrUpdateTextCommandLocale(string locale, string key, string value)
     {
-        // Loading general locales
-        var sw = Stopwatch.StartNew();
-        
-        _locales.Clear();
-        foreach (var localeFile in Directory.GetFiles(Path.Combine(_localesPath, "messages")))
+        if (_textCommandLocales.TryGetValue(locale, out var locales))
         {
-            var fileName = Path.GetFileNameWithoutExtension(localeFile);
-            var locales = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(await File.ReadAllTextAsync(localeFile)) 
-                          ?? throw new InvalidOperationException();
-            
-            _locales.TryAdd(fileName, locales);
+            locales[key] = value;
         }
-        
-        sw.Stop();
-        _logger.LogInformation("Loaded {Count} locales in {Elapsed}ms", _locales.Count, sw.ElapsedMilliseconds);
-        
-        
-        // Loading text command locales
-        sw.Restart();
-        
-        _textCommandLocales.Clear();
-        foreach (var commandLocaleFile in Directory.GetFiles(Path.Combine(_localesPath, "text_commands")))
+        else
         {
-            var fileName = Path.GetFileNameWithoutExtension(commandLocaleFile);
-            var textCommandLocales = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(await File.ReadAllTextAsync(commandLocaleFile)) 
-                          ?? throw new InvalidOperationException();
-            
-            _textCommandLocales.TryAdd(fileName, textCommandLocales);
+            _textCommandLocales[locale] = new ConcurrentDictionary<string, string>
+            {
+                [key] = value
+            };
         }
-        
-        sw.Stop();
-        _logger.LogInformation("Loaded {Count} text command locales in {Elapsed}ms", _textCommandLocales.Count, sw.ElapsedMilliseconds);
-        
-        // Loading guild locales
-        sw.Restart();
-        
-        using var scope = _serviceProvider.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-        var guildEntities = await db.Guilds.Where(guildDb => !string.IsNullOrEmpty(guildDb.Locale)).ToListAsync();
-        
-        _guildLocales.Clear();
-        foreach (var guildEntity in guildEntities)
-            _guildLocales.TryAdd(guildEntity.GuildId, guildEntity.Locale!);
-        
-        sw.Stop();
-        _logger.LogInformation("Loaded {Count} guild locales in {Elapsed}ms", _guildLocales.Count, sw.ElapsedMilliseconds);
     }
     
     public string GetGuildLocale(Snowflake? guildId)
@@ -87,16 +51,9 @@ public class LocalisationService
 
         return _guildLocales.TryGetValue(guildId.Value, out var locale) ? locale : DefaultLocale;
     }
-    
-    public void SetGuildLocale(Snowflake guildId, string locale)
-    {
-        _guildLocales.AddOrUpdate(guildId, locale, (_, _) => locale);
-    }
-    
-    public void RemoveGuildLocale(Snowflake guildId)
-    {
-        _guildLocales.TryRemove(guildId, out _);
-    }
+
+    public void AddOrUpdateGuildLocale(Snowflake guildId, string locale)
+        => _guildLocales[guildId] = locale;
 
     /// <summary>
     /// Get a translation string without arguments.

@@ -15,7 +15,7 @@ public partial class AdministrationModule
     [Name("Emojis")]
     public class EmojisSubmodule : RiasTextGuildModule<EmojisService>
     {
-        [TextCommand("addemoji", "addemote", "ae")]
+        [TextCommand("addemoji", "ae")]
         [AuthorPermissions(Permissions.ManageEmojisAndStickers)]
         [BotPermissions(Permissions.ManageEmojisAndStickers)]
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
@@ -31,7 +31,7 @@ public partial class AdministrationModule
                 : ErrorReply(result);
         }
         
-        [TextCommand("addemoji", "addemote", "ae")]
+        [TextCommand("addemoji", "ae")]
         [AuthorPermissions(Permissions.ManageEmojisAndStickers)]
         [BotPermissions(Permissions.ManageEmojisAndStickers)]
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]

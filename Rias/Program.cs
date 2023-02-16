@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Disqord.Bot;
-using Disqord.Bot.Commands.Text;
 using Disqord.Bot.Hosting;
 using Disqord.Gateway;
 using Humanizer;
@@ -15,7 +14,8 @@ using Rias.Database;
 using Rias.Database.Enums;
 using Rias.Services;
 using Rias.Services.Commands;
-using Rias.Services.Extensions;
+using Rias.Services.Hosted;
+using Rias.Services.Providers;
 using Serilog;
 using Serilog.Core;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -66,10 +66,11 @@ var builder = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
-        services.AddSingleton<LocalisationService>();
-        
-        services.AddPrefixProvider<RiasPrefixProvider>();
-        services.Configure<RiasOptions>(context.Configuration);
+        services.AddSingleton<LocalisationService>()
+            .AddHostedService<LocalisationBackgroundService>()
+            .AddHostedService<PrefixesBackgroundService>()
+            .AddPrefixProvider<RiasPrefixProvider>()
+            .Configure<RiasOptions>(context.Configuration);
 
         var dbConnectionString = context.Configuration.GetConnectionString("Database") ?? throw new Exception("Database connection string is not set.");
         var dbDataSource = new NpgsqlDataSourceBuilder(dbConnectionString);
@@ -91,7 +92,7 @@ var builder = new HostBuilder()
         services.AddHttpClient<AdministrationService>(httpClient => httpClient.Timeout = 15.Seconds());
         services.AddHttpClient<EmojisService>(httpClient =>
         {
-            httpClient.MaxResponseContentBufferSize = 256.KilobytesToBytes();
+            httpClient.MaxResponseContentBufferSize = Limits.Guild.Emoji.SizeLimit;
             httpClient.Timeout = 15.Seconds();
         });
     })
@@ -132,11 +133,5 @@ var host = builder.Build();
 await using var scope = host.Services.CreateAsyncScope();
 var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
 await db.Database.MigrateAsync();
-
-var localization = host.Services.GetRequiredService<LocalisationService>();
-await localization.LoadAsync();
-
-var prefixProvider = (RiasPrefixProvider) host.Services.GetRequiredService<IPrefixProvider>();
-await prefixProvider.LoadGuildPrefixesAsync();
 
 await host.RunAsync();

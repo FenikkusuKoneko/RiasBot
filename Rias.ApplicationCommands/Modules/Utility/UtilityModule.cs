@@ -2,8 +2,8 @@
 using Disqord.Bot.Commands.Text;
 using Qmmands;
 using Rias.Common;
-using Rias.Services;
 using Rias.Services.Commands;
+using Rias.Services.Providers;
 
 namespace Rias.ApplicationCommands.Modules.Utility;
 
@@ -17,7 +17,7 @@ public class UtilityModule : RiasApplicationGuildModule<UtilityService>
     }
     
     [SlashCommand("prefix")]
-    [Description("Shows the prefix for this server.")]
+    [Description("Shows my prefix in this server.")]
     public IResult Prefix()
     {
         var prefix = _prefixProvider.GetPrefix(Context.GuildId);

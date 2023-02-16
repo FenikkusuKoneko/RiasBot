@@ -37,6 +37,9 @@ public static class Strings
         public const string EmojiNotFound = "administration_emoji_not_found";
         public const string AnimatedEmojisLimit = "administration_animated_emojis_limit";
         public const string NonAnimatedEmojisLimit = "administration_non_animated_emojis_limit";
+        public const string StickerNameLengthLimit = "administration_sticker_name_length_limit";
+        public const string StickerCreated = "administration_sticker_created";
+        public const string StickersLimit = "administration_stickers_limit";
     }
 
     public static class Help
@@ -74,10 +77,10 @@ public static class Strings
         public const string PrefixNameOrMention = "utility_prefix_name_or_mention";
         public const string UrlNotValid = "utility_url_not_valid";
         public const string UrlNotHttps = "utility_url_not_https";
-        public const string CannotAccessImageUrl = "utility_cannot_access_image_url";
-        public const string InvalidImageUrl = "utility_invalid_image_url";
-        public const string UrlNotPngJpgWebp = "utility_url_not_png_jpg_webp";
-        public const string UrlNotPngJpgWebpGif = "utility_url_not_png_jpg_webp_gif";
+        public const string CannotAccessImage = "utility_cannot_access_image";
+        public const string ImageTimeout = "utility_image_timeout";
+        public const string ImageSizeLimit = "utility_image_size_limit";
+        public const string ImageNotPngJpgWebpGif = "utility_image_not_png_jpg_webp_gif";
         public const string NoImageAttached = "utility_no_image_attached";
     }
 

@@ -1,6 +1,7 @@
 ﻿using Disqord;
 using Disqord.Gateway;
 using Disqord.Rest;
+using Humanizer;
 using Rias.Common;
 using Rias.Database;
 using Rias.Services.Extensions;
@@ -56,24 +57,22 @@ public class EmojisService : RiasCommandService
         
         if (uri.Scheme != Uri.UriSchemeHttps)
             return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.UrlNotHttps);
-        
-        if (!Helpers.IsPngJpgWebpGif(uri))
-            return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.UrlNotPngJpgWebpGif);
 
         try
         {
             using var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
-                return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.InvalidImageUrl);
+                return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.CannotAccessImage);
             
-            var image = await response.Content.ReadAsStreamAsync();
-            if (!(Helpers.IsPng(image) || Helpers.IsJpg(image) || Helpers.IsWebp(image)))
-                return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.InvalidImageUrl);
+            await using var image = await response.Content.ReadAsStreamAsync();
+            var isGif = Helpers.IsGif(image);
+            
+            if (!(Helpers.IsPng(image) || Helpers.IsJpg(image) || Helpers.IsWebp(image) || isGif))
+                return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.ImageNotPngJpgWebpGif);
 
-            var isAnimated = Helpers.IsGif(image);
             var emojiSlots = guild.GetEmojiSlots();
         
-            if (isAnimated)
+            if (isGif)
             {
                 if (guild.Emojis.Count(e => e.Value.IsAnimated) == emojiSlots)
                     return ErrorResult<IGuildEmoji>(guild.Id, Strings.Administration.AnimatedEmojisLimit, emojiSlots);
@@ -86,14 +85,21 @@ public class EmojisService : RiasCommandService
             
             image.Position = 0;
             name = name.Replace(" ", "");
-            var newEmoji = await guild.CreateEmojiAsync(name, image);
 
-            return SuccessResult(newEmoji);
+            var emoji = await guild.CreateEmojiAsync(name, image);
+            return SuccessResult(emoji);
         }
-        catch (HttpRequestException)
+        catch (HttpRequestException ex)
         {
-            return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.CannotAccessImageUrl,
-                _httpClient.MaxResponseContentBufferSize.BytesToKilobytes(), DataExtensions.Kilobytes);
+            if (ex.HResult == Constants.HttpClientExceededBufferSizeCode)
+                return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.ImageSizeLimit, 
+                    _httpClient.MaxResponseContentBufferSize.Bytes().Humanize());
+            
+            return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.CannotAccessImage);
+        }
+        catch (Exception)
+        {
+            return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.ImageTimeout);
         }
     }
 }

@@ -2,8 +2,8 @@
 using Qmmands;
 using Qmmands.Text;
 using Rias.Common;
-using Rias.Services;
 using Rias.Services.Commands;
+using Rias.Services.Providers;
 
 namespace Rias.TextCommands.Modules;
 
