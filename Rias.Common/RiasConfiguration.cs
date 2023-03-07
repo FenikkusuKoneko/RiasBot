@@ -3,7 +3,7 @@
 /// <summary>
 /// Common options from appsettings.json.
 /// </summary>
-public record RiasOptions
+public record RiasConfiguration
 {
     public string[]? Prefixes { get; set; }
     public ulong LogsServerId { get; set; }

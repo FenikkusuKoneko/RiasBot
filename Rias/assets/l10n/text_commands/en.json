@@ -21,5 +21,6 @@
   "help_commands": "Shows all commands or shows the commands for a module or submodule.",
   "help_allcommands": "Shows all commands.",
   
-  "utility_prefix": "Shows my prefix in this server."
+  "utility_prefix": "Shows my prefix in this server.",
+  "info_stats": "Shows my stats."
 }

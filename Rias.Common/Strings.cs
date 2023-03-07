@@ -37,9 +37,6 @@ public static class Strings
         public const string EmojiNotFound = "administration_emoji_not_found";
         public const string AnimatedEmojisLimit = "administration_animated_emojis_limit";
         public const string NonAnimatedEmojisLimit = "administration_non_animated_emojis_limit";
-        public const string StickerNameLengthLimit = "administration_sticker_name_length_limit";
-        public const string StickerCreated = "administration_sticker_created";
-        public const string StickersLimit = "administration_stickers_limit";
     }
 
     public static class Help
@@ -82,12 +79,22 @@ public static class Strings
         public const string ImageSizeLimit = "utility_image_size_limit";
         public const string ImageNotPngJpgWebpGif = "utility_image_not_png_jpg_webp_gif";
         public const string NoImageAttached = "utility_no_image_attached";
+        public const string Ping = "utility_ping";
+        public const string PingInfo = "utility_ping_info";
+        public const string Author = "utility_author";
+        public const string Owner = "utility_owner";
+        public const string Owners = "utility_owners";
+        public const string Shard = "utility_shard";
+        public const string InServer = "utility_in_server";
+        public const string Uptime = "utility_uptime";
+        public const string Presence = "utility_presence";
+        public const string PresenceInfo = "utility_presence_info";
+        public const string StatsFooter = "utility_stats_footer";
     }
 
     public static class Service
     {
         public const string CommandCooldown = "service_command_cooldown";
-        public const string CommandNotExecuted = "service_command_not_executed";
         public const string CommandNotExecutedFooter = "service_command_not_executed_footer";
         public const string CommandException = "service_command_exception";
     }

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -23,13 +24,15 @@ using Rias.Services;
 
 namespace Rias;
 
-public class RiasBot : DiscordBot
+public class RiasBot : DiscordBot, IRiasBot
 {
-    protected override IEnumerable<Assembly> GetModuleAssemblies() => AppDomain.CurrentDomain.GetAssemblies()
-        .Where(a => a.FullName?.StartsWith("Rias") == true);
+    private readonly string _version = "4.0.0-beta";
+    private readonly string _author = "Koneko#0001";
+    private readonly Snowflake _authorId = 327927038360944640;
+    private readonly Stopwatch _uptime = Stopwatch.StartNew();
 
     private readonly LocalisationService _localisation;
-    private readonly RiasOptions _riasOptions;
+    private readonly RiasConfiguration _configuration;
     
     private readonly ConcurrentHashSetCache<object> _rateLimits = new();
     private readonly ConcurrentHashSet<string> _exceptions = new();
@@ -37,7 +40,7 @@ public class RiasBot : DiscordBot
     private CachedMessageGuildChannel? _logsChannel;
 
     public RiasBot(
-        IOptions<RiasOptions> riasOptions,
+        IOptions<RiasConfiguration> riasOptions,
         IOptions<DiscordBotConfiguration> options,
         ILogger<RiasBot> logger,
         IServiceProvider services,
@@ -45,10 +48,18 @@ public class RiasBot : DiscordBot
         : base(options, logger, services, client)
     {
         _localisation = services.GetRequiredService<LocalisationService>();
-        _riasOptions = riasOptions.Value;
+        _configuration = riasOptions.Value;
         
         Ready += OnReadyAsync;
     }
+
+    public string Version => _version;
+    public string Author => _author;
+    public Snowflake AuthorId => _authorId;
+    public TimeSpan ElapsedTime => _uptime.Elapsed;
+    
+    protected override IEnumerable<Assembly> GetModuleAssemblies() => AppDomain.CurrentDomain.GetAssemblies()
+        .Where(a => a.FullName?.StartsWith("Rias") == true);
 
     protected override ValueTask AddTypeParsers(DefaultTypeParserProvider typeParserProvider, CancellationToken cancellationToken)
     {
@@ -166,8 +177,8 @@ public class RiasBot : DiscordBot
 
     private ValueTask OnReadyAsync(object? sender, ReadyEventArgs? args)
     {
-        if (CacheProvider.TryGetChannels(_riasOptions.LogsServerId, out var channels)
-            && channels.TryGetValue(_riasOptions.LogsChannelId, out var channel))
+        if (CacheProvider.TryGetChannels(_configuration.LogsServerId, out var channels)
+            && channels.TryGetValue(_configuration.LogsChannelId, out var channel))
             _logsChannel = channel as CachedMessageGuildChannel;
 
         return default;

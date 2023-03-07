@@ -70,7 +70,7 @@ var builder = new HostBuilder()
             .AddHostedService<LocalisationBackgroundService>()
             .AddHostedService<PrefixesBackgroundService>()
             .AddPrefixProvider<RiasPrefixProvider>()
-            .Configure<RiasOptions>(context.Configuration);
+            .Configure<RiasConfiguration>(context.Configuration);
 
         var dbConnectionString = context.Configuration.GetConnectionString("Database") ?? throw new Exception("Database connection string is not set.");
         var dbDataSource = new NpgsqlDataSourceBuilder(dbConnectionString);

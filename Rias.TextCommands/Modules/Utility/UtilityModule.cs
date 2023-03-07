@@ -5,10 +5,10 @@ using Rias.Common;
 using Rias.Services.Commands;
 using Rias.Services.Providers;
 
-namespace Rias.TextCommands.Modules;
+namespace Rias.TextCommands.Modules.Utility;
 
 [Name("Utility")]
-public class UtilityModule : RiasTextGuildModule<UtilityService>
+public partial class UtilityModule : RiasTextGuildModule<UtilityService>
 {
     private readonly RiasPrefixProvider _prefixProvider;
     
@@ -22,8 +22,8 @@ public class UtilityModule : RiasTextGuildModule<UtilityService>
     {
         var prefix = _prefixProvider.GetPrefix(Context.GuildId);
 
-        return !string.IsNullOrEmpty(prefix) 
-            ? SuccessReply(Strings.Utility.PrefixIs, prefix) 
+        return !string.IsNullOrEmpty(prefix)
+            ? SuccessReply(Strings.Utility.PrefixIs, prefix)
             : SuccessReply(Strings.Utility.PrefixNameOrMention);
     }
 }

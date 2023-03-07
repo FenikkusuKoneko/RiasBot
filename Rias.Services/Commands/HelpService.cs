@@ -17,15 +17,15 @@ namespace Rias.Services.Commands;
 
 public class HelpService : RiasCommandService
 {
-    private readonly RiasOptions _options;
+    private readonly RiasConfiguration _configuration;
     
     public HelpService(
         RiasDbContext db,
         LocalisationService localisation,
-        IOptions<RiasOptions> options)
+        IOptions<RiasConfiguration> options)
         : base(db, localisation)
     {
-        _options = options.Value;
+        _configuration = options.Value;
     }
 
     public LocalEmbed GenerateHelpEmbed(IUser user, CachedGuild? guild, IList<ITextCommand> commands, IPrefix prefix)
@@ -48,7 +48,7 @@ public class HelpService : RiasCommandService
 
         if (!string.IsNullOrEmpty(description))
         {
-            description = description.Replace("{prefix}", prefixString).Replace("{currency}", _options.CurrencyEmoji)
+            description = description.Replace("{prefix}", prefixString).Replace("{currency}", _configuration.CurrencyEmoji)
                           + $"\n\n{Localisation.GetText(guild?.Id, Strings.Help.Module, Markdown.Bold(moduleName))}";
         }
         else

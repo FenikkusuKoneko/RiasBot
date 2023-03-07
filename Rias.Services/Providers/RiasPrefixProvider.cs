@@ -10,22 +10,22 @@ namespace Rias.Services.Providers;
 
 public class RiasPrefixProvider : IPrefixProvider
 {
-    private readonly RiasOptions _options;
+    private readonly RiasConfiguration _configuration;
 
     private readonly ConcurrentDictionary<ulong, string> _guildPrefixes = new();
 
-    public RiasPrefixProvider(IOptions<RiasOptions> options)
+    public RiasPrefixProvider(IOptions<RiasConfiguration> options)
     {
-        _options = options.Value;
+        _configuration = options.Value;
     }
     
     public ValueTask<IEnumerable<IPrefix>?> GetPrefixesAsync(IGatewayUserMessage message)
     {
         var prefixes = new HashSet<IPrefix>();
 
-        if (_options.Prefixes is not null)
+        if (_configuration.Prefixes is not null)
         {
-            foreach (var prefix in _options.Prefixes)
+            foreach (var prefix in _configuration.Prefixes)
                 prefixes.Add(new StringPrefix(prefix));
         }
 
@@ -42,7 +42,7 @@ public class RiasPrefixProvider : IPrefixProvider
     {
         return _guildPrefixes.TryGetValue(guildId, out var prefix)
             ? prefix 
-            : _options.Prefixes?.FirstOrDefault() ?? null;
+            : _configuration.Prefixes?.FirstOrDefault() ?? null;
     }
 
     public void AddOrUpdatePrefix(Snowflake guildId, string prefix)

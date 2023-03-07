@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Rias.Common.Models;
 
-public record struct JsonEmbed
+public record JsonEmbed
 {
     public string? Content { get; set; }
     
@@ -39,7 +39,7 @@ public record struct JsonEmbed
                && Timestamp is null;
     }
         
-    public record struct JsonEmbedAuthor
+    public record JsonEmbedAuthor
     {
         public string? Name { get; set; }
         
@@ -49,7 +49,7 @@ public record struct JsonEmbed
         public string? IconUrl { get; set; }
     }
 
-    public record struct JsonEmbedField
+    public record JsonEmbedField
     {
         public string? Name { get; set; }
         
@@ -58,7 +58,7 @@ public record struct JsonEmbed
         public bool Inline { get; set; }
     }
 
-    public record struct JsonEmbedFooter
+    public record JsonEmbedFooter
     {
         public string? Text { get; set; }
         

@@ -62,13 +62,20 @@ public static class Helpers
             return false;
         }
         
-        JsonEmbed jsonEmbed;
+        JsonEmbed? jsonEmbed;
 
         try
         {
             jsonEmbed = JsonConvert.DeserializeObject<JsonEmbed>(json);
         }
         catch
+        {
+            content = default;
+            embed = default;
+            return false;
+        }
+
+        if (jsonEmbed is null)
         {
             content = default;
             embed = default;
@@ -98,8 +105,8 @@ public static class Helpers
             var footer = jsonEmbed.Footer;
             var timestamp = jsonEmbed.Timestamp;
 
-            if (author.HasValue && !string.IsNullOrEmpty(author.Value.Name))
-                embed.WithAuthor(author.Value.Name, author.Value.Url, author.Value.IconUrl);
+            if (!string.IsNullOrEmpty(author?.Name))
+                embed.WithAuthor(author.Name, author.Url, author.IconUrl);
 
             if (!string.IsNullOrEmpty(title))
                 embed.WithTitle(title);
@@ -135,8 +142,8 @@ public static class Helpers
                 }
             }
 
-            if (footer.HasValue && !string.IsNullOrEmpty(footer.Value.Text))
-                embed.WithFooter(footer.Value.Text, footer.Value.IconUrl);
+            if (!string.IsNullOrEmpty(footer?.Text))
+                embed.WithFooter(footer.Text, footer.IconUrl);
 
             if (timestamp.HasValue)
                 embed.WithTimestamp(timestamp.Value);

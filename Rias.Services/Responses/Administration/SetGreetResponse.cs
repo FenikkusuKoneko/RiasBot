@@ -2,7 +2,7 @@
 
 namespace Rias.Services.Responses.Administration;
 
-public record struct SetGreetResponse
+public record SetGreetResponse
 {
     public bool IsGreetEnabled { get; init; }
     public string? Content { get; init; }
