@@ -1,4 +1,5 @@
-﻿using Disqord;
+﻿using System.Diagnostics.CodeAnalysis;
+using Disqord;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Rias.Database.Enums;
@@ -9,7 +10,10 @@ public class PatreonEntity : DbEntity
 {
     public Snowflake UserId { get; set; }
     public int PatreonUserId { get; set; }
+    
+    [NotNull]
     public string? PatreonUserName { get; set; }
+    
     public int AmountCents { get; set; }
     public int WillPayAmountCents { get; set; }
     public DateTimeOffset? LastChargeDate { get; set; }

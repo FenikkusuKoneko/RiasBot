@@ -9,14 +9,21 @@ namespace Rias.Database.Entities;
 public class CharacterEntity : DbEntity, ICharacterEntity
 {
     public int CharacterId { get; set; }
+    
+    [NotNull]
     public string? Name { get; set; }
+    
+    [NotNull]
     public string? Url { get; set; }
+    
+    [NotNull]
     public string? ImageUrl { get; set; }
+    
     public string? Description { get; set; }
     
-    [AllowNull]
+    [NotNull]
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public NpgsqlTsVector SearchVector { get; set; }
+    public NpgsqlTsVector? SearchVector { get; set; }
 }
 
 public class CharacterEntityTypeConfiguration : IEntityTypeConfiguration<CharacterEntity>

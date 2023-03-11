@@ -175,13 +175,13 @@ public class RiasBot : DiscordBot, IRiasBot
             : base.GetRateLimitBucketKey(context, bucketType);
     }
 
-    private ValueTask OnReadyAsync(object? sender, ReadyEventArgs? args)
+    private Task OnReadyAsync(object? sender, ReadyEventArgs args)
     {
         if (CacheProvider.TryGetChannels(_configuration.LogsServerId, out var channels)
             && channels.TryGetValue(_configuration.LogsChannelId, out var channel))
             _logsChannel = channel as CachedMessageGuildChannel;
 
-        return default;
+        return Task.CompletedTask;
     }
 
     private async Task SendExceptionLogAsync(IDiscordCommandContext context, Exception exception)

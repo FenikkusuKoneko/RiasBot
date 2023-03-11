@@ -13,6 +13,14 @@ namespace Rias.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
+                name: "query",
+                table: "votes");
+
+            migrationBuilder.DropColumn(
+                name: "type",
+                table: "votes");
+
+            migrationBuilder.DropColumn(
                 name: "delete_command_message",
                 table: "guilds");
 
@@ -156,6 +164,16 @@ namespace Rias.Migrations
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp without time zone");
 
+            migrationBuilder.AlterColumn<string>(
+                name: "patreon_user_name",
+                table: "patreon",
+                type: "text",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "text",
+                oldNullable: true);
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "created_at",
                 table: "patreon",
@@ -261,6 +279,26 @@ namespace Rias.Migrations
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp without time zone");
 
+            migrationBuilder.AlterColumn<string>(
+                name: "name",
+                table: "custom_waifus",
+                type: "text",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "text",
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "image_url",
+                table: "custom_waifus",
+                type: "text",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "text",
+                oldNullable: true);
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "created_at",
                 table: "custom_waifus",
@@ -290,6 +328,26 @@ namespace Rias.Migrations
                 .OldAnnotation("Npgsql:TsVectorConfig", "english")
                 .OldAnnotation("Npgsql:TsVectorProperties", new[] { "name", "description" });
 
+            migrationBuilder.AlterColumn<string>(
+                name: "name",
+                table: "custom_characters",
+                type: "text",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "text",
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "image_url",
+                table: "custom_characters",
+                type: "text",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "text",
+                oldNullable: true);
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "created_at",
                 table: "custom_characters",
@@ -297,6 +355,16 @@ namespace Rias.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp without time zone");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "url",
+                table: "characters",
+                type: "text",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "text",
+                oldNullable: true);
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "updated_at",
@@ -318,6 +386,26 @@ namespace Rias.Migrations
                 .Annotation("Npgsql:TsVectorProperties", new[] { "name", "description" })
                 .OldAnnotation("Npgsql:TsVectorConfig", "english")
                 .OldAnnotation("Npgsql:TsVectorProperties", new[] { "name", "description" });
+
+            migrationBuilder.AlterColumn<string>(
+                name: "name",
+                table: "characters",
+                type: "text",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "text",
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "image_url",
+                table: "characters",
+                type: "text",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "text",
+                oldNullable: true);
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "created_at",
@@ -409,6 +497,18 @@ namespace Rias.Migrations
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone");
 
+            migrationBuilder.AddColumn<string>(
+                name: "query",
+                table: "votes",
+                type: "text",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "type",
+                table: "votes",
+                type: "text",
+                nullable: true);
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "updated_at",
                 table: "users",
@@ -480,6 +580,14 @@ namespace Rias.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "patreon_user_name",
+                table: "patreon",
+                type: "text",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "text");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "created_at",
@@ -593,6 +701,22 @@ namespace Rias.Migrations
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone");
 
+            migrationBuilder.AlterColumn<string>(
+                name: "name",
+                table: "custom_waifus",
+                type: "text",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "image_url",
+                table: "custom_waifus",
+                type: "text",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "text");
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "created_at",
                 table: "custom_waifus",
@@ -621,6 +745,22 @@ namespace Rias.Migrations
                 .OldAnnotation("Npgsql:TsVectorConfig", "english")
                 .OldAnnotation("Npgsql:TsVectorProperties", new[] { "name", "description" });
 
+            migrationBuilder.AlterColumn<string>(
+                name: "name",
+                table: "custom_characters",
+                type: "text",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "image_url",
+                table: "custom_characters",
+                type: "text",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "text");
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "created_at",
                 table: "custom_characters",
@@ -628,6 +768,14 @@ namespace Rias.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "url",
+                table: "characters",
+                type: "text",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "text");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "updated_at",
@@ -648,6 +796,22 @@ namespace Rias.Migrations
                 .Annotation("Npgsql:TsVectorProperties", new[] { "name", "description" })
                 .OldAnnotation("Npgsql:TsVectorConfig", "english")
                 .OldAnnotation("Npgsql:TsVectorProperties", new[] { "name", "description" });
+
+            migrationBuilder.AlterColumn<string>(
+                name: "name",
+                table: "characters",
+                type: "text",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "image_url",
+                table: "characters",
+                type: "text",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "text");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "created_at",

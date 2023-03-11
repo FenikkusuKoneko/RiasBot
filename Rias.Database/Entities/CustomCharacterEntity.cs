@@ -9,8 +9,13 @@ namespace Rias.Database.Entities;
 public class CustomCharacterEntity : DbEntity, ICharacterEntity
 {
     public int CharacterId { get; set; }
+    
+    [NotNull]
     public string? Name { get; set; }
+    
+    [NotNull]
     public string? ImageUrl { get; set; }
+    
     public string? Description { get; set; }
     
     [AllowNull]

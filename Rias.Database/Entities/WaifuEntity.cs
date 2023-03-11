@@ -9,8 +9,8 @@ public class WaifuEntity : DbEntity, IWaifuEntity
     public Snowflake UserId { get; set; }
     public int? CharacterId { get; set; }
     public int? CustomCharacterId { get; set; }
-    public string? Name => Character?.Name ?? CustomCharacter?.Name;
-    public string? ImageUrl => Character?.ImageUrl ?? CustomCharacter?.ImageUrl;
+    public string Name => (Character?.Name ?? CustomCharacter?.Name) ?? string.Empty;
+    public string ImageUrl => (Character?.ImageUrl ?? CustomCharacter?.ImageUrl) ?? string.Empty;
     public string? CustomImageUrl { get; set; }
     public int Price { get; set; }
     public bool IsSpecial { get; set; }

@@ -13,7 +13,7 @@ using Rias.Database;
 namespace Rias.Migrations
 {
     [DbContext(typeof(RiasDbContext))]
-    [Migration("20221203110701_V4")]
+    [Migration("20230311005830_V4")]
     partial class V4
     {
         /// <inheritdoc />
@@ -21,7 +21,7 @@ namespace Rias.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "last_charge_status", new[] { "paid", "declined", "pending", "refunded", "fraud", "other" });
@@ -51,10 +51,12 @@ namespace Rias.Migrations
                         .HasColumnName("description");
 
                     b.Property<string>("ImageUrl")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("image_url");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name");
 
@@ -72,6 +74,7 @@ namespace Rias.Migrations
                         .HasColumnName("updated_at");
 
                     b.Property<string>("Url")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("url");
 
@@ -116,10 +119,12 @@ namespace Rias.Migrations
                         .HasColumnName("description");
 
                     b.Property<string>("ImageUrl")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("image_url");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name");
 
@@ -169,6 +174,7 @@ namespace Rias.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("ImageUrl")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("image_url");
 
@@ -177,6 +183,7 @@ namespace Rias.Migrations
                         .HasColumnName("is_special");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name");
 
@@ -486,6 +493,7 @@ namespace Rias.Migrations
                         .HasColumnName("patreon_user_id");
 
                     b.Property<string>("PatreonUserName")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("patreon_user_name");
 
@@ -688,14 +696,6 @@ namespace Rias.Migrations
                     b.Property<bool>("IsWeekend")
                         .HasColumnType("boolean")
                         .HasColumnName("is_weekend");
-
-                    b.Property<string>("Query")
-                        .HasColumnType("text")
-                        .HasColumnName("query");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("text")
-                        .HasColumnName("type");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()

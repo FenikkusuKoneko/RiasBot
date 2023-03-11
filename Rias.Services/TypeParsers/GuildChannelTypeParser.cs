@@ -3,7 +3,6 @@ using Disqord.Bot.Commands;
 using Disqord.Gateway;
 using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
-using Qommon.Collections;
 using Rias.Common;
 
 namespace Rias.Services.TypeParsers;
@@ -49,26 +48,24 @@ public class GuildChannelTypeParser<TChannel> : DiscordGuildTypeParser<TChannel>
     {
         if (!context.Bot.CacheProvider.TryGetChannels(context.GuildId, out var channelCache))
             throw new InvalidOperationException($"The {GetType().Name} requires the channel cache.");
-
-        // Wraps the cache in a pattern-matching wrapper dictionary.
-        var channels = new ReadOnlyOfTypeDictionary<Snowflake, CachedGuildChannel, TChannel>(channelCache);
+        
         TChannel? foundChannel = null;
         var valueSpan = value.Span;
         
         if (Snowflake.TryParse(valueSpan, out var id) || Mention.TryParseChannel(valueSpan, out id))
         {
             // The value is a mention or an id.
-            foundChannel = channels.GetValueOrDefault(id);
+            foundChannel = channelCache.TryGetValue(id, out var channel) ? channel as TChannel : null;
         }
         else
         {
             // The value is possibly a name.
-            foreach (var channel in channels.Values)
+            foreach (var channel in channelCache.Values)
             {
                 if (!valueSpan.Equals(channel.Name, StringComparison.InvariantCultureIgnoreCase))
                     continue;
 
-                foundChannel = channel;
+                foundChannel = channel as TChannel;
                 break;
             }
         }
