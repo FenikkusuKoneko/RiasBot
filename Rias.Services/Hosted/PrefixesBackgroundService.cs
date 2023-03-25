@@ -31,7 +31,7 @@ public class PrefixesBackgroundService : BackgroundService
         
         using var scope = _serviceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-        var prefixes = await db.Guilds.Where(g => !string.IsNullOrEmpty(g.Prefix)).ToListAsync(stoppingToken);
+        var prefixes = await db.Guilds.AsNoTracking().Where(g => !string.IsNullOrEmpty(g.Prefix)).ToListAsync(stoppingToken);
         
         foreach (var prefix in prefixes)
             _prefixProvider.AddOrUpdatePrefix(prefix.GuildId, prefix.Prefix ?? string.Empty);

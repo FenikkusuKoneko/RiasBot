@@ -81,7 +81,7 @@ public class LocalisationBackgroundService : BackgroundService
         
         using var scope = _serviceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
-        var guildEntities = await db.Guilds.Where(guildDb => !string.IsNullOrEmpty(guildDb.Locale)).ToListAsync(stoppingToken);
+        var guildEntities = await db.Guilds.AsNoTracking().Where(guildDb => !string.IsNullOrEmpty(guildDb.Locale)).ToListAsync(stoppingToken);
 
         foreach (var guildEntity in guildEntities)
         {

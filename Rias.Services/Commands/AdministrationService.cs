@@ -48,7 +48,6 @@ public class AdministrationService : RiasCommandService
                 await webhook.DeleteAsync();
 
             guildEntity.GreetWebhookId = 0;
-            Db.Guilds.Update(guildEntity);
             await Db.SaveChangesAsync();
 
             return new SetGreetResponse
@@ -77,7 +76,6 @@ public class AdministrationService : RiasCommandService
         }
         
         guildEntity.GreetWebhookId = webhook.Id;
-        Db.Guilds.Update(guildEntity);
         await Db.SaveChangesAsync();
 
         var greetMessage = Helpers.FormatPlaceholders(member, guildEntity.GreetMessage);
@@ -106,7 +104,6 @@ public class AdministrationService : RiasCommandService
             () => new GuildEntity { GuildId = guild.Id });
 
         guildEntity.GreetMessage = message;
-        Db.Guilds.Update(guildEntity);
         await Db.SaveChangesAsync();
 
         var webhook = guildEntity.GreetWebhookId > 0
@@ -150,7 +147,6 @@ public class AdministrationService : RiasCommandService
                 await webhook.DeleteAsync();
 
             guildEntity.ByeWebhookId = 0;
-            Db.Guilds.Update(guildEntity);
             await Db.SaveChangesAsync();
 
             return new SetByeResponse
@@ -179,7 +175,6 @@ public class AdministrationService : RiasCommandService
         }
         
         guildEntity.ByeWebhookId = webhook.Id;
-        Db.Guilds.Update(guildEntity);
         await Db.SaveChangesAsync();
 
         var byeMessage = Helpers.FormatPlaceholders(member, guildEntity.ByeMessage);
@@ -208,7 +203,6 @@ public class AdministrationService : RiasCommandService
             () => new GuildEntity { GuildId = guild.Id });
 
         guildEntity.ByeMessage = message;
-        Db.Guilds.Update(guildEntity);
         await Db.SaveChangesAsync();
 
         var webhook = guildEntity.ByeWebhookId > 0
@@ -243,7 +237,6 @@ public class AdministrationService : RiasCommandService
             guildEntity.ModLogChannelId = channel.Id;
         }
 
-        Db.Guilds.Update(guildEntity);
         await Db.SaveChangesAsync();
         
         return guildEntity.ModLogChannelId > 0;

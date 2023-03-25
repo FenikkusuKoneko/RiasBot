@@ -86,4 +86,17 @@ public class RiasDbContext : DbContext
             .Properties<Snowflake>()
             .HaveConversion<SnowflakeConverter>();
     }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    {
+        var entries = ChangeTracker
+            .Entries()
+            .Where(e => e is { Entity: DbEntity, State: EntityState.Modified });
+
+        var now = DateTime.UtcNow;
+        foreach (var entityEntry in entries)
+            ((DbEntity) entityEntry.Entity).UpdatedAt = now;
+            
+        return base.SaveChangesAsync(cancellationToken);
+    }
 }

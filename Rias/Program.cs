@@ -78,9 +78,7 @@ var builder = new HostBuilder()
         dbDataSource.MapEnum<PatronStatus>();
         
         services.AddDbContext<RiasDbContext>(options =>
-            options.UseNpgsql(dbDataSource.Build(), npgsqlOptions => npgsqlOptions.EnableRetryOnFailure())
-                .UseSnakeCaseNamingConvention()
-                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+            options.UseNpgsql(dbDataSource.Build(), npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()).UseSnakeCaseNamingConvention());
 
         var commandServices = typeof(RiasCommandService).Assembly
             .GetTypes()
