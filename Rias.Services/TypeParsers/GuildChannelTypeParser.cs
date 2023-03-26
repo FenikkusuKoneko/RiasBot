@@ -35,7 +35,7 @@ public class GuildChannelTypeParser<TChannel> : DiscordGuildTypeParser<TChannel>
 {
     // ReSharper disable once StaticMemberInGenericType
     private static readonly string ChannelNotFoundString;
-    
+
     static GuildChannelTypeParser()
     {
         var type = typeof(TChannel);
@@ -48,10 +48,10 @@ public class GuildChannelTypeParser<TChannel> : DiscordGuildTypeParser<TChannel>
     {
         if (!context.Bot.CacheProvider.TryGetChannels(context.GuildId, out var channelCache))
             throw new InvalidOperationException($"The {GetType().Name} requires the channel cache.");
-        
+
         TChannel? foundChannel = null;
         var valueSpan = value.Span;
-        
+
         if (Snowflake.TryParse(valueSpan, out var id) || Mention.TryParseChannel(valueSpan, out id))
         {
             // The value is a mention or an id.
@@ -72,7 +72,7 @@ public class GuildChannelTypeParser<TChannel> : DiscordGuildTypeParser<TChannel>
 
         if (foundChannel != null)
             return Success(foundChannel);
-        
+
         var localisation = context.Services.GetRequiredService<LocalisationService>();
         return Failure(localisation.GetText(context.GuildId, ChannelNotFoundString));
     }

@@ -2,7 +2,7 @@
   "administration_greet_enabled": "The announcements for the members joining this server are **enabled** in this channel.",
   "administration_greet_enabled_channel": "The announcements for the members joining this are **enabled** in {0}.",
   "administration_greet_disabled": "The announcements for the members joining this server are **disabled**.",
-  "administration_greet_message_set_to_default": "The greeting message has been set to the default one.", 
+  "administration_greet_message_set_to_default": "The greeting message has been set to the default one.",
   "administration_greet_message_length_limit": "The greeting message's length cannot be longer than {0} characters.",
   "administration_greet_message_set": "A new greeting message has been set for the members joining this server.",
   "administration_bye_enabled": "The announcements for the members leaving this server are **enabled** in this channel.",
@@ -32,7 +32,7 @@
   "administration_emoji_not_found": "I couldn't find the emoji.",
   "administration_animated_emojis_limit": "This server reached the limit of {0} animated emojis.",
   "administration_non_animated_emojis_limit": "This server reached the limit of {0} non-animated emojis.",
-  
+
   "help_title": "{0} v{1} help page",
   "help_info": "I'm based on modules. Each module has commands.\n\nType `{0}modules` to get a list with all modules.\n\nType `{0}commands <moduleName>` to get a list with all commands from the module.\nExample: `{0}commands Administration`, `{0}commands Server`\n\nType `{0}allcommands` to get a list with all commands.\nCheck https://rias.gg/commands to see all commands with their description and examples.",
   "help_links": "Links",
@@ -59,7 +59,7 @@
   "help_command_info": "For a specific command info type **{0}h <command>**",
   "help_command_info_footer": "{0} | <> - mandatory; [] - optional",
   "help_all_commands": "All commands",
-  
+
   "utility_prefix_is": "My prefix in this server is **{0}**.",
   "utility_prefix_name_or_mention": "My prefix in this server is my **name** or my **mention**.",
   "utility_url_not_valid": "The URL is not valid.",

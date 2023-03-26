@@ -7,14 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ConcurrentHashSet" />
-        <PackageReference Include="Disqord.Bot" />
-        <PackageReference Include="Humanizer" />
+        <PackageReference Include="ConcurrentHashSet"/>
+        <PackageReference Include="Disqord.Bot"/>
+        <PackageReference Include="Humanizer"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Rias.Common\Rias.Common.csproj" />
-      <ProjectReference Include="..\Rias.Database\Rias.Database.csproj" />
+        <ProjectReference Include="..\Rias.Common\Rias.Common.csproj"/>
+        <ProjectReference Include="..\Rias.Database\Rias.Database.csproj"/>
     </ItemGroup>
 
 </Project>

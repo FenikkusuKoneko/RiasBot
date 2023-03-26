@@ -27,7 +27,7 @@ public partial class UtilityModule
         {
             _configuration = options.Value;
         }
-        
+
         [TextCommand("stats")]
         public async Task StatsAsync()
         {
@@ -37,7 +37,7 @@ public partial class UtilityModule
             var guilds = Context.Bot.GetGuilds();
             var membersCount = guilds.Sum(g => g.Value.MemberCount);
             var usersCount = Context.Bot.CacheProvider.TryGetUsers(out var cachedUsers) ? cachedUsers.Count : 0;
-            
+
             var shardId = Context.Bot.ApiClient.GetShardId(Context.GuildId);
             var latency = (int) Context.Bot.ApiClient.Shards.Average(s => s.Value.Heartbeater.Latency?.TotalMilliseconds ?? 0);
 
@@ -45,9 +45,9 @@ public partial class UtilityModule
             var message = await Context.GetChannel().SendMessageAsync(new LocalMessage().WithContent("Pinging..."));
             sw.Stop();
             var messageLatency = sw.ElapsedMilliseconds;
-            
+
             if (Context.Bot.OwnerIds.Count == 0)
-                await Context.Bot.IsOwnerAsync(0);  // Calling IsOwnerAsync just for OwnersIds to be populated
+                await Context.Bot.IsOwnerAsync(0); // Calling IsOwnerAsync just for OwnersIds to be populated
 
             var embed = SuccessEmbed
                 .WithAuthor($"{Context.Bot.CurrentUser.Name} v{riasBot.Version}", Context.Bot.CurrentUser.GetAvatarUrl(CdnAssetFormat.Automatic, 128))
@@ -68,11 +68,11 @@ public partial class UtilityModule
                     if (owner is not null)
                         owners.Add(owner);
                 }
-                
-                embed.AddField(GetText(owners.Count == 1 ? Strings.Utility.Owner : Strings.Utility.Owners), 
+
+                embed.AddField(GetText(owners.Count == 1 ? Strings.Utility.Owner : Strings.Utility.Owners),
                     owners.Count > 0 ? string.Join('\n', owners) : "-", true);
             }
-            
+
             embed.AddField(GetText(Strings.Utility.Shard), $"{shardId.Index + 1}/{shardId.Count}", true)
                 .AddField(GetText(Strings.Utility.InServer), Context.GetGuild().Name, true)
                 .AddField(GetText(Strings.Utility.Uptime), uptime, true);
@@ -97,7 +97,7 @@ public partial class UtilityModule
                 links.Add(delimiter + GetText(Strings.Help.Donate, _configuration.PatreonUrl));
 
             embed.AddField(GetText(Strings.Links), string.Join('\n', links));
-            
+
             await message.ModifyAsync(props =>
             {
                 props.Content = null;
@@ -110,7 +110,7 @@ public partial class UtilityModule
         {
             member ??= Context.Author;
             var locale = Localisation.GetGuildLocale(Context.GuildId);
-            
+
             var joinedAt = member.JoinedAt.GetValueOrDefault();
             var joinedAtString = $"{joinedAt:yyyy-MM-dd HH:mm:ss}\n" +
                                  $"`{GetText(Strings.Utility.DateTimeAgo, (DateTime.UtcNow - joinedAt).Humanize(6, new CultureInfo(locale), TimeUnit.Year, TimeUnit.Second))}`";
@@ -125,7 +125,7 @@ public partial class UtilityModule
                 .Where(r => r.Value.Id != r.Value.GuildId)
                 .Select(r => r.Value.Mention)
                 .TakeWhile(rm => rolesString.Length + rm.Length <= 1024);
-            
+
             foreach (var roleMention in roleMentions)
                 rolesString.Append(roleMention).Append(' ');
 
@@ -178,11 +178,11 @@ public partial class UtilityModule
                 if (afkChannel is not null)
                     embed.AddField(GetText(Strings.Utility.AfkChannel), afkChannel.Name, true);
             }
-            
+
             embed.AddField(GetText(Strings.Utility.VerificationLevel), guild.VerificationLevel, true)
                 .AddField(GetText(Strings.Utility.BoostTier), guild.BoostTier, true)
                 .AddField(GetText(Strings.Utility.Boosts), guild.BoostingMemberCount ?? 0, true);
-            
+
             if (!string.IsNullOrEmpty(guild.VanityUrlCode))
                 embed.AddField(GetText(Strings.Utility.VanityUrl), $"https://discord.gg/{guild.VanityUrlCode}");
 
@@ -191,7 +191,7 @@ public partial class UtilityModule
                 embed.AddField(GetText(Strings.Utility.Features, guild.Features.Count),
                     string.Join(" • ", guild.Features.OrderBy(f => f).Select(x => x.ToLower().Humanize(LetterCasing.Sentence))));
             }
-            
+
             var emojisString = new StringBuilder();
             foreach (var (_, emoji) in guild.Emojis)
             {
@@ -202,7 +202,7 @@ public partial class UtilityModule
             }
 
             embed.AddField(GetText(Strings.Utility.Emojis, guild.Emojis.Count), guild.Emojis.Count > 0 ? emojisString : '-');
-            
+
             var guildIconUrl = guild.GetIconUrl(CdnAssetFormat.Automatic, 1024);
             if (!string.IsNullOrEmpty(guildIconUrl))
                 embed.WithThumbnailUrl(guildIconUrl);
@@ -210,7 +210,7 @@ public partial class UtilityModule
             var imageUrl = guild.GetBannerUrl(CdnAssetFormat.Automatic, 2048)
                            ?? guild.GetDiscoverySplashUrl(CdnAssetFormat.Automatic, 2048)
                            ?? guild.GetSplashUrl(CdnAssetFormat.Automatic, 2048);
-            
+
             if (!string.IsNullOrEmpty(imageUrl))
                 embed.WithImageUrl(imageUrl);
 
@@ -229,7 +229,7 @@ public partial class UtilityModule
 
             return Reply(embed);
         }
-        
+
         [TextCommand("useravatar", "uav")]
         public IResult UserAvatar([Remainder] IMember? member = null)
         {
@@ -242,7 +242,7 @@ public partial class UtilityModule
 
             return Reply(embed);
         }
-        
+
         [TextCommand("servericon", "sic")]
         public IResult ServerIcon()
         {

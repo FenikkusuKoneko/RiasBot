@@ -18,7 +18,7 @@ namespace Rias.Services.Commands;
 public class HelpService : RiasCommandService
 {
     private readonly RiasConfiguration _configuration;
-    
+
     public HelpService(
         RiasDbContext db,
         LocalisationService localisation,
@@ -32,17 +32,17 @@ public class HelpService : RiasCommandService
     {
         var command = commands[0];
         var prefixString = prefix.Stringify();
-        
+
         var moduleName = command.Module.Name;
         if (command.Module.Parent != null && !string.Equals(command.Module.Name, command.Module.Parent.Name, StringComparison.OrdinalIgnoreCase))
             moduleName = $"{command.Module.Parent.Name} -> {moduleName}";
-        
+
         var moduleAlias = command.Module.Aliases.Count != 0 ? $"{command.Module.Aliases[0]} " : string.Empty;
         var title = string.Join(" / ", command.Aliases.Select(a => $"{moduleAlias}{a}"));
-        
+
         if (command.Checks.Any(c => c is RequireBotOwnerAttribute))
             title += $" [{Localisation.GetText(guild?.Id, Strings.Help.OwnerOnly).ToLowerInvariant()}]";
-        
+
         var commandInfoKey = $"{command.Module.Name.Replace(' ', '_').ToLower()}_{command.Name.Replace(' ', '_')}";
         var description = Localisation.GetCommandText(guild?.Id, commandInfoKey);
 
@@ -65,7 +65,7 @@ public class HelpService : RiasCommandService
 
         string? requiredAuthorPermissions = null;
         string? requiredBotPermissions = null;
-        
+
         foreach (var attribute in command.Checks)
         {
             switch (attribute)
@@ -98,7 +98,7 @@ public class HelpService : RiasCommandService
                 $"{(string.IsNullOrEmpty(requiredBotPermissions) ? string.Empty : Localisation.GetText(guild?.Id, Strings.Help.RequiredPermissionsMe, requiredBotPermissions))}",
                 true);
         }
-        
+
         var rateLimitAttribute = command.CustomAttributes.OfType<RateLimitAttribute>().FirstOrDefault();
         if (rateLimitAttribute is not null)
         {
@@ -115,10 +115,10 @@ public class HelpService : RiasCommandService
             var cooldownValue = $"{Localisation.GetText(guild?.Id, Strings.Help.HelpCooldownUses, rateLimitAttribute.Uses)}\n" +
                                 $"{Localisation.GetText(guild?.Id, Strings.Help.HelpCooldownWindow, cooldownWindow)}\n" +
                                 $"{Localisation.GetText(guild?.Id, Strings.Help.HelpCooldownScope, cooldownScope)}";
-            
+
             embed.AddField(Localisation.GetText(guild?.Id, Strings.Help.HelpCooldown), cooldownValue, true);
         }
-        
+
         var examples = Localisation.GetCommandText(guild?.Id, $"{commandInfoKey}_examples");
         if (!string.IsNullOrEmpty(examples))
         {
@@ -133,7 +133,7 @@ public class HelpService : RiasCommandService
                 .Append($"{prefixString}{cmd.Aliases[0]} ")
                 .AppendJoin(' ', cmd.Parameters.Select(p => p.ParameterInfo is not null && p.ParameterInfo.IsOptional ? $"[{p.Name}]" : $"<{p.Name}>"));
         }
-        
+
         embed.AddField(Localisation.GetText(guild?.Id, Strings.Usages), usages.ToString());
         return embed;
     }

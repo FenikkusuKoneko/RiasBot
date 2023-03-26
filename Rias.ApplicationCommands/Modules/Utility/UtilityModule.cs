@@ -10,12 +10,12 @@ namespace Rias.ApplicationCommands.Modules.Utility;
 public class UtilityModule : RiasApplicationGuildModule<UtilityService>
 {
     private readonly RiasPrefixProvider _prefixProvider;
-    
+
     public UtilityModule(IPrefixProvider prefixProvider)
     {
         _prefixProvider = (RiasPrefixProvider) prefixProvider;
     }
-    
+
     [SlashCommand("prefix")]
     [Description("Shows my prefix in this server.")]
     public IResult Prefix()
@@ -23,7 +23,7 @@ public class UtilityModule : RiasApplicationGuildModule<UtilityService>
         var prefix = _prefixProvider.GetPrefix(Context.GuildId);
 
         return !string.IsNullOrEmpty(prefix)
-            ? SuccessResponse(Strings.Utility.PrefixIs, prefix) 
+            ? SuccessResponse(Strings.Utility.PrefixIs, prefix)
             : SuccessResponse(Strings.Utility.PrefixNameOrMention);
     }
 }

@@ -10,10 +10,10 @@ public class PatreonEntity : DbEntity
 {
     public Snowflake UserId { get; set; }
     public int PatreonUserId { get; set; }
-    
+
     [NotNull]
     public string? PatreonUserName { get; set; }
-    
+
     public int AmountCents { get; set; }
     public int WillPayAmountCents { get; set; }
     public DateTimeOffset? LastChargeDate { get; set; }
@@ -29,7 +29,7 @@ public class PatreonEntityTypeConfiguration : IEntityTypeConfiguration<PatreonEn
     public void Configure(EntityTypeBuilder<PatreonEntity> builder)
     {
         builder.HasIndex(p => new { p.PatreonUserId, p.UserId }).IsUnique();
-        
+
         // Temporary hard-coded types until Npgsql 7.0.0 is fixed
         builder.Property(p => p.LastChargeStatus).HasColumnType("last_charge_status");
         builder.Property(p => p.PatronStatus).HasColumnType("patron_status");

@@ -10,9 +10,9 @@ namespace Rias.ApplicationCommands;
 public abstract class RiasApplicationGuildModule : DiscordApplicationGuildModuleBase
 {
     protected LocalisationService Localisation => _localizationService.Value;
-    
+
     private readonly Lazy<LocalisationService> _localizationService;
-    
+
     public RiasApplicationGuildModule()
     {
         _localizationService = new Lazy<LocalisationService>(() => Context.Services.GetRequiredService<LocalisationService>());
@@ -20,7 +20,7 @@ public abstract class RiasApplicationGuildModule : DiscordApplicationGuildModule
 
     protected IResult SuccessResponse(string key)
         => Response(new LocalEmbed().WithColor(Utils.SuccessColor).WithDescription(Localisation.GetText(Context.GuildId, key)));
-    
+
     protected IResult SuccessResponse(string key, object arg0)
         => Response(new LocalEmbed().WithColor(Utils.SuccessColor).WithDescription(Localisation.GetText(Context.GuildId, key, arg0)));
 }

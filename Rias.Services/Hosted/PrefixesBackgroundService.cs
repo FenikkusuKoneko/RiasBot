@@ -24,18 +24,18 @@ public class PrefixesBackgroundService : BackgroundService
         _prefixProvider = (RiasPrefixProvider) prefixProvider;
         _logger = logger;
     }
-    
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var sw = Stopwatch.StartNew();
-        
+
         using var scope = _serviceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<RiasDbContext>();
         var prefixes = await db.Guilds.AsNoTracking().Where(g => !string.IsNullOrEmpty(g.Prefix)).ToListAsync(stoppingToken);
-        
+
         foreach (var prefix in prefixes)
             _prefixProvider.AddOrUpdatePrefix(prefix.GuildId, prefix.Prefix ?? string.Empty);
-        
+
         sw.Stop();
         _logger.LogInformation("Loaded {Count} guild prefixes in {Elapsed}ms", prefixes.Count, sw.ElapsedMilliseconds);
     }

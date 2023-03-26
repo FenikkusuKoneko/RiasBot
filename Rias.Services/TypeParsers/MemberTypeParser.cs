@@ -75,7 +75,7 @@ public class MemberTypeParser : DiscordGuildTypeParser<IMember>
         {
             // The value is possibly a tag, name, or nick.
             var (name, discriminator) = Helpers.ParseTag(value);
-            
+
             static IMember? FindMember(IReadOnlyCollection<IMember> members, string name, string? discriminator)
             {
                 // Checks for tag.

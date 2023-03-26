@@ -18,7 +18,7 @@ public class RiasContextFactory : IDesignTimeDbContextFactory<RiasDbContext>
         var optionsBuilder = new DbContextOptionsBuilder<RiasDbContext>()
             .UseNpgsql(config.GetConnectionString("Database") ?? throw new NullReferenceException("Missing database configuration."))
             .UseSnakeCaseNamingConvention();
-            
+
         return new RiasDbContext(optionsBuilder.Options);
     }
 }
@@ -27,56 +27,56 @@ public class RiasDbContext : DbContext
 {
     [NotNull]
     public DbSet<CharacterEntity>? Characters { get; set; }
-    
+
     [NotNull]
     public DbSet<CustomCharacterEntity>? CustomCharacters { get; set; }
-    
+
     [NotNull]
     public DbSet<CustomWaifuEntity>? CustomWaifus { get; set; }
-    
+
     [NotNull]
     public DbSet<GuildEntity>? Guilds { get; set; }
-    
+
     [NotNull]
     public DbSet<GuildXpRoleEntity>? GuildXpRoles { get; set; }
-    
+
     [NotNull]
     public DbSet<MembersEntity>? Members { get; set; }
-    
+
     [NotNull]
     public DbSet<MuteTimerEntity>? MuteTimers { get; set; }
-    
+
     [NotNull]
     public DbSet<PatreonEntity>? Patreon { get; set; }
-    
+
     [NotNull]
     public DbSet<ProfileEntity>? Profile { get; set; }
-    
+
     [NotNull]
     public DbSet<SelfAssignableRoleEntity>? SelfAssignableRoles { get; set; }
-    
+
     [NotNull]
     public DbSet<UserEntity>? Users { get; set; }
-    
+
     [NotNull]
     public DbSet<VoteEntity>? Votes { get; set; }
-    
+
     [NotNull]
     public DbSet<WaifuEntity>? Waifus { get; set; }
-    
+
     [NotNull]
     public DbSet<WarningEntity>? Warnings { get; set; }
-    
+
     public RiasDbContext(DbContextOptions<RiasDbContext> options)
         : base(options)
     {
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresEnum<LastChargeStatus>();
         modelBuilder.HasPostgresEnum<PatronStatus>();
-        
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(RiasDbContext).Assembly);
     }
 
@@ -87,7 +87,7 @@ public class RiasDbContext : DbContext
             .HaveConversion<SnowflakeConverter>();
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
     {
         var entries = ChangeTracker
             .Entries()
@@ -96,7 +96,7 @@ public class RiasDbContext : DbContext
         var now = DateTime.UtcNow;
         foreach (var entityEntry in entries)
             ((DbEntity) entityEntry.Entity).UpdatedAt = now;
-            
+
         return base.SaveChangesAsync(cancellationToken);
     }
 }

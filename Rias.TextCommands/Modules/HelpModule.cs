@@ -13,12 +13,12 @@ namespace Rias.TextCommands.Modules;
 public class HelpModule : RiasTextModule<HelpService>
 {
     private readonly ICommandService _commandService;
-    
+
     public HelpModule(ICommandService commandService)
     {
         _commandService = commandService;
     }
-    
+
     [TextCommand("help", "h")]
     public IResult Help()
     {
@@ -47,20 +47,20 @@ public class HelpModule : RiasTextModule<HelpService>
     public async Task<IResult> Modules()
     {
         var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
-        
+
         Func<ITextModule, bool> modulesPredicate;
         if (isOwner)
             modulesPredicate = m => m.Parent is null;
         else
             modulesPredicate = m => m.Parent is null && m.Commands.All(c => !c.Checks.Any(ch => ch is RequireBotOwnerAttribute));
-        
+
         var modules = _commandService.EnumerateTextModules()
             .Where(modulesPredicate)
             .OrderBy(m => m.Name)
             .ToList();
-        
+
         Func<ITextModule, bool> submodulesOwnerPredicate;
-        
+
         if (isOwner)
             submodulesOwnerPredicate = m => !string.Equals(m.Parent?.Name, m.Name, StringComparison.OrdinalIgnoreCase);
         else
@@ -70,11 +70,11 @@ public class HelpModule : RiasTextModule<HelpService>
         var description = new StringBuilder()
             .AppendLine(GetText(Strings.Help.ModulesListFooter, Context.Prefix.Stringify()))
             .AppendLine();
-        
+
         foreach (var module in modules)
         {
             description.Append(Markdown.Code(module.Name));
-            
+
             if (module.Submodules.Count != 0)
             {
                 var submodules = module.Submodules
@@ -94,7 +94,7 @@ public class HelpModule : RiasTextModule<HelpService>
             .WithTitle(GetText(Strings.Help.ModulesListTitle))
             .WithDescription(description.ToString())
             .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
-        
+
         return Reply(embed);
     }
 
@@ -103,18 +103,18 @@ public class HelpModule : RiasTextModule<HelpService>
     {
         if (string.IsNullOrWhiteSpace(moduleName))
             return await AllCommands();
-        
+
         var module = _commandService
             .EnumerateTextModules()
             .SelectMany(m => m.Submodules.Prepend(m))
             .FirstOrDefault(m => m.Name.StartsWith(moduleName, StringComparison.OrdinalIgnoreCase));
-        
+
         if (module is null)
             return ErrorReply(Strings.Help.ModuleNotFound, Context.Prefix.Stringify());
-        
+
         var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
         var commands = GetModuleCommands(module, isOwner).ToList();
-        
+
         if (commands.Count == 0)
             return ErrorReply(Strings.Help.ModuleNotFound, Context.Prefix.Stringify());
 
@@ -123,7 +123,7 @@ public class HelpModule : RiasTextModule<HelpService>
             .AppendLine(GetText(Strings.Help.CommandInfo, Context.Prefix.Stringify()))
             .AppendLine()
             .AppendLine($"**{module.Name}:** {string.Join(" ", commandAliases.Select(Markdown.Code))}");
-        
+
         foreach (var submodule in module.Submodules.OrderBy(sm => sm.Name))
         {
             var groupModuleCommands = GetModuleCommands(submodule, isOwner).ToList();
@@ -147,20 +147,20 @@ public class HelpModule : RiasTextModule<HelpService>
     public async Task<IResult> AllCommands()
     {
         var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
-        
+
         Func<ITextModule, bool> modulesPredicate;
         if (isOwner)
             modulesPredicate = m => m.Parent is null;
         else
             modulesPredicate = m => m.Parent is null && m.Commands.All(c => !c.Checks.Any(ch => ch is RequireBotOwnerAttribute));
-        
+
         var modules = _commandService.EnumerateTextModules()
             .Where(modulesPredicate)
             .OrderBy(m => m.Name)
             .ToList();
-        
+
         Func<ITextModule, bool> submodulesOwnerPredicate;
-        
+
         if (isOwner)
             submodulesOwnerPredicate = m => !string.Equals(m.Parent?.Name, m.Name, StringComparison.OrdinalIgnoreCase);
         else
@@ -170,16 +170,16 @@ public class HelpModule : RiasTextModule<HelpService>
         var description = new StringBuilder()
             .AppendLine(GetText(Strings.Help.CommandInfo, Context.Prefix.Stringify()))
             .AppendLine();
-        
+
         foreach (var module in modules)
         {
             var moduleCommands = GetModuleCommands(module, isOwner).ToList();
             if (moduleCommands.Count == 0)
                 continue;
-            
+
             var commandAliases = GetAliases(moduleCommands).ToList();
             description.AppendLine($"**{module.Name}:** {string.Join(" ", commandAliases.Select(Markdown.Code))}");
-            
+
             if (module.Submodules.Count != 0)
             {
                 var submodules = module.Submodules
@@ -203,13 +203,13 @@ public class HelpModule : RiasTextModule<HelpService>
 
             description.AppendLine();
         }
-        
+
         var embed = new LocalEmbed()
             .WithColor(Utils.SuccessColor)
             .WithTitle(GetText(Strings.Help.AllCommands))
             .WithDescription(description.ToString())
             .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
-        
+
         return Reply(embed);
     }
 
@@ -217,7 +217,7 @@ public class HelpModule : RiasTextModule<HelpService>
     {
         var commands = module.Commands.AsEnumerable();
         var submoduleCommands = module.Submodules.FirstOrDefault(sm => string.Equals(sm.Name, sm.Parent?.Name, StringComparison.OrdinalIgnoreCase))?.Commands;
-        
+
         if (submoduleCommands is not null)
             commands = commands.Concat(submoduleCommands);
 
@@ -236,7 +236,7 @@ public class HelpModule : RiasTextModule<HelpService>
             var moduleAlias = command.Module.Aliases.Count != 0 ? $"{command.Module.Aliases[0]} " : null;
             var isMasterOnly = command.Checks.Any(c => c is RequireBotOwnerAttribute);
             aliases = $"{moduleAlias}{aliases}";
-            
+
             return isMasterOnly ? $"{aliases}*" : aliases;
         });
 }

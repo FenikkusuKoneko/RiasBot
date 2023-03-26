@@ -27,7 +27,7 @@ public partial class AdministrationModule
             await Context.GetGuild().CreateCategoryChannelAsync(name);
             return SuccessReply(Strings.Administration.CategoryChannelCreated, name);
         }
-        
+
         [TextCommand("renamecategory", "rcat")]
         [AuthorPermissions(Permissions.ManageChannels)]
         [BotPermissions(Permissions.ManageChannels)]
@@ -36,17 +36,17 @@ public partial class AdministrationModule
         {
             if (name.Length is < Limits.Guild.Channel.MinNameLength or > Limits.Guild.Channel.MaxNameLength)
                 return ErrorReply(Strings.Administration.ChannelNameLengthLimit, Limits.Guild.Channel.MinNameLength, Limits.Guild.Channel.MaxNameLength);
-            
+
             if ((Context.Author.CalculateChannelPermissions(category) & Permissions.ManageChannels) == 0)
                 return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, category.Mention);
-            
+
             if (Context.GetCurrentMember().CalculateChannelPermissions(category) == 0)
                 return ErrorReply(Strings.Administration.BotMissingChannelManagePermission, category.Mention);
 
             await category.ModifyAsync(props => props.Name = name);
             return SuccessReply(Strings.Administration.CategoryChannelRenamed, category.Name, name);
         }
-        
+
         [TextCommand("deletecategory", "dcat")]
         [AuthorPermissions(Permissions.ManageChannels)]
         [BotPermissions(Permissions.ManageChannels)]
@@ -55,7 +55,7 @@ public partial class AdministrationModule
         {
             if ((Context.Author.CalculateChannelPermissions(category) & Permissions.ManageChannels) == 0)
                 return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, category.Mention);
-            
+
             if (Context.GetCurrentMember().CalculateChannelPermissions(category) == 0)
                 return ErrorReply(Strings.Administration.BotMissingChannelManagePermission, category.Mention);
 
@@ -70,14 +70,14 @@ public partial class AdministrationModule
         {
             if ((Context.Author.CalculateChannelPermissions(channel) & Permissions.ManageChannels) == 0)
                 return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, channel.Mention);
-            
+
             if (Context.GetCurrentMember().CalculateChannelPermissions(channel) == 0)
                 return ErrorReply(Strings.Administration.BotMissingChannelManagePermission, channel.Mention);
 
             await channel.ModifyAsync(props => props.CategoryId = category.Id);
             return SuccessReply(Strings.Administration.TextChannelAddedToCategory, channel.Mention, category.Name);
         }
-        
+
         [TextCommand("addvoicechanneltocategory", "avchtocat")]
         [AuthorPermissions(Permissions.ManageChannels)]
         [BotPermissions(Permissions.ManageChannels)]
@@ -85,7 +85,7 @@ public partial class AdministrationModule
         {
             if ((Context.Author.CalculateChannelPermissions(channel) & Permissions.ManageChannels) == 0)
                 return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, channel.Mention);
-            
+
             if (Context.GetCurrentMember().CalculateChannelPermissions(channel) == 0)
                 return ErrorReply(Strings.Administration.BotMissingChannelManagePermission, channel.Mention);
 

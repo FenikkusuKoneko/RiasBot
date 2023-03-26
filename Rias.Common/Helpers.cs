@@ -12,7 +12,7 @@ public static class Helpers
 {
     public static string Stringify(this IPrefix prefix)
         => char.IsLetter(prefix.ToString()![^1]) ? prefix + " " : prefix.ToString()!;
-    
+
     public static int? HexToInt(string? hex, int decimals = 6)
     {
         hex = hex?.Replace("#", string.Empty);
@@ -33,7 +33,7 @@ public static class Helpers
     {
         if (message is null)
             return null;
-        
+
         var username = user.Tag.Replace("\\", "\\\\").Replace("\"", "\\\"");
         var sb = new StringBuilder(message)
             .Replace("%member%", username)
@@ -43,7 +43,7 @@ public static class Helpers
         if (user is IMember member)
         {
             var guild = member.GetGuild();
-            
+
             var guildName = guild?.Name.Replace("\\", "\\\\").Replace("\"", "\\\"");
             sb.Replace("%mention%", member.Mention)
                 .Replace("%server%", guildName)
@@ -52,10 +52,10 @@ public static class Helpers
 
         return sb.ToString();
     }
-    
+
     public static bool TryParseUserId(ReadOnlySpan<char> value, out Snowflake id)
         => Snowflake.TryParse(value, out id) || Mention.TryParseUser(value, out id);
-    
+
     public static (string, string?) ParseTag(ReadOnlyMemory<char> value)
     {
         string name;
@@ -86,7 +86,7 @@ public static class Helpers
             embed = default;
             return false;
         }
-        
+
         JsonEmbed? jsonEmbed;
 
         try
@@ -161,9 +161,7 @@ public static class Helpers
                     var fieldInline = field.Inline;
 
                     if (!string.IsNullOrEmpty(fieldName) && !string.IsNullOrEmpty(fieldValue))
-                    {
                         embed.AddField(fieldName, fieldValue, fieldInline);
-                    }
                 }
             }
 
@@ -183,19 +181,19 @@ public static class Helpers
             return false;
         }
     }
-    
+
     public static bool IsPngJpgWebp(Uri uri)
     {
         var extension = Path.GetExtension(uri.AbsolutePath);
         return extension is ".png" or ".jpg" or ".webp";
     }
-    
+
     public static bool IsPngJpgWebpGif(Uri uri)
     {
         var extension = Path.GetExtension(uri.AbsolutePath);
         return extension is ".png" or ".jpg" or ".webp" or ".gif";
     }
-    
+
     /// <summary>
     /// Checks the header of a stream if is PNG.<br/>
     /// 89 50 4E 47 0D 0A 1A 0A.
@@ -214,7 +212,7 @@ public static class Helpers
            || HasHeader(stream, new[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x0, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x0, 0x01 })
            || HasHeader(stream, new[] { 0xFF, 0xD8, 0xFF, 0xEE })
            || HasHeader(stream, new[] { 0xFF, 0xD8, 0xFF, 0xE1, -1, -1, 0x45, 0x78, 0x69, 0x66, 0x0, 0x0 });
-    
+
     /// <summary>
     /// Checks the header of a stream if is WEBP.<br/>
     /// 52 49 46 46 ?? ?? ?? ?? 57 45 42 50, where ?? ?? ?? ?? is the size of the file - 8 bytes.
@@ -235,18 +233,18 @@ public static class Helpers
     {
         if (!(stream.CanRead || stream.CanSeek))
             return false;
-        
+
         stream.Position = 0;
         foreach (var value in values)
         {
             var @byte = stream.ReadByte();
             if (value == -1) // ? ? bytes, can be anything
                 continue;
-            
+
             if (@byte != value)
                 return false;
         }
-        
+
         return true;
     }
 }

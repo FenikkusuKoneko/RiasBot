@@ -14,7 +14,7 @@ public class ConcurrentHashSetCache<TKey> : IDisposable where TKey : notnull
     {
         _cleanupTimer = new Timer(CleanupTimerCallback, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
     }
-    
+
     private void CleanupTimerCallback(object? state)
     {
         lock (_cleanupTimer)
@@ -26,7 +26,7 @@ public class ConcurrentHashSetCache<TKey> : IDisposable where TKey : notnull
             }
         }
     }
-    
+
     public void AddOrUpdate(TKey key, TimeSpan expiry)
     {
         lock (_cleanupTimer)
@@ -35,14 +35,14 @@ public class ConcurrentHashSetCache<TKey> : IDisposable where TKey : notnull
             _dictionary.AddOrUpdate(key, value, (_, _) => value);
         }
     }
-    
+
     public bool Contains(TKey key)
     {
         lock (_cleanupTimer)
         {
             if (!_dictionary.TryGetValue(key, out var expiryKey))
                 return false;
-            
+
             if (expiryKey.IsExpired())
             {
                 _dictionary.Remove(key, out _);
@@ -56,12 +56,12 @@ public class ConcurrentHashSetCache<TKey> : IDisposable where TKey : notnull
     private class ExpiryKey
     {
         private readonly long _expiryTicks;
-        
+
         public ExpiryKey(TimeSpan expiry)
         {
             _expiryTicks = Environment.TickCount64 + (long) expiry.TotalMilliseconds;
         }
-        
+
         public bool IsExpired()
         {
             return Environment.TickCount64 > _expiryTicks;
@@ -73,7 +73,7 @@ public class ConcurrentHashSetCache<TKey> : IDisposable where TKey : notnull
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    
+
     protected virtual void Dispose(bool disposing)
     {
         if (disposing)

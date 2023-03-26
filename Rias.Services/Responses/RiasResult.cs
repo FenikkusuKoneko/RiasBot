@@ -15,7 +15,7 @@ public class RiasResult
         IsSuccessful = false,
         ErrorReason = reason
     };
-    
+
     public static RiasResult<T> FromError<T>(string reason) => new(reason);
 }
 
@@ -23,17 +23,17 @@ public class RiasResult<T>
 {
     public readonly bool IsSuccessful;
     public readonly string ErrorReason = string.Empty;
-    
+
     private readonly Optional<T> _value;
 
     public T Value => _value.Value;
-    
+
     public RiasResult(T value)
     {
         IsSuccessful = true;
         _value = value;
     }
-    
+
     public RiasResult(string errorReason)
     {
         ErrorReason = errorReason;

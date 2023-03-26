@@ -12,7 +12,7 @@ namespace Rias.Services.Commands;
 public class EmojisService : RiasCommandService
 {
     private readonly HttpClient _httpClient;
-    
+
     public EmojisService(
         RiasDbContext db,
         LocalisationService localisation,
@@ -25,7 +25,7 @@ public class EmojisService : RiasCommandService
     public async Task<RiasResult<IGuildEmoji>> AddEmojiAsync(ICustomEmoji emoji, CachedGuild guild, string name)
     {
         var emojiSlots = guild.GetEmojiSlots();
-        
+
         if (emoji.IsAnimated)
         {
             if (guild.Emojis.Count(e => e.Value.IsAnimated) == emojiSlots)
@@ -36,7 +36,7 @@ public class EmojisService : RiasCommandService
             if (guild.Emojis.Count(e => !e.Value.IsAnimated) == emojiSlots)
                 return ErrorResult<IGuildEmoji>(guild.Id, Strings.Administration.NonAnimatedEmojisLimit, emojiSlots);
         }
-        
+
         var url = emoji.GetUrl(CdnAssetFormat.Automatic, 128);
 
         using var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
@@ -54,7 +54,7 @@ public class EmojisService : RiasCommandService
     {
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
             return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.UrlNotValid);
-        
+
         if (uri.Scheme != Uri.UriSchemeHttps)
             return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.UrlNotHttps);
 
@@ -63,15 +63,15 @@ public class EmojisService : RiasCommandService
             using var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
                 return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.CannotAccessImage);
-            
+
             await using var image = await response.Content.ReadAsStreamAsync();
             var isGif = Helpers.IsGif(image);
-            
+
             if (!(Helpers.IsPng(image) || Helpers.IsJpg(image) || Helpers.IsWebp(image) || isGif))
                 return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.ImageNotPngJpgWebpGif);
 
             var emojiSlots = guild.GetEmojiSlots();
-        
+
             if (isGif)
             {
                 if (guild.Emojis.Count(e => e.Value.IsAnimated) == emojiSlots)
@@ -82,7 +82,7 @@ public class EmojisService : RiasCommandService
                 if (guild.Emojis.Count(e => !e.Value.IsAnimated) == emojiSlots)
                     return ErrorResult<IGuildEmoji>(guild.Id, Strings.Administration.NonAnimatedEmojisLimit, emojiSlots);
             }
-            
+
             image.Position = 0;
             name = name.Replace(" ", "");
 
@@ -92,9 +92,9 @@ public class EmojisService : RiasCommandService
         catch (HttpRequestException ex)
         {
             if (ex.HResult == Constants.HttpClientExceededBufferSizeCode)
-                return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.ImageSizeLimit, 
+                return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.ImageSizeLimit,
                     _httpClient.MaxResponseContentBufferSize.Bytes().Humanize());
-            
+
             return ErrorResult<IGuildEmoji>(guild.Id, Strings.Utility.CannotAccessImage);
         }
         catch (Exception)

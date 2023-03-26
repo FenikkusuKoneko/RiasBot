@@ -9,7 +9,7 @@ public static class Limits
             public const int MinNameLength = 1;
             public const int MaxNameLength = 100;
         }
-        
+
         public static class Emoji
         {
             public const int MinNameLength = 2;

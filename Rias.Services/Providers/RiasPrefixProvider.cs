@@ -18,7 +18,7 @@ public class RiasPrefixProvider : IPrefixProvider
     {
         _configuration = options.Value;
     }
-    
+
     public ValueTask<IEnumerable<IPrefix>?> GetPrefixesAsync(IGatewayUserMessage message)
     {
         var prefixes = new HashSet<IPrefix>();
@@ -41,7 +41,7 @@ public class RiasPrefixProvider : IPrefixProvider
     public string? GetPrefix(Snowflake guildId)
     {
         return _guildPrefixes.TryGetValue(guildId, out var prefix)
-            ? prefix 
+            ? prefix
             : _configuration.Prefixes?.FirstOrDefault() ?? null;
     }
 

@@ -16,20 +16,20 @@ public class BotClientService : DiscordClientService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly LocalisationService _localisation;
-    
+
     private readonly ConcurrentDictionary<Snowflake, List<IWebhook>> _webhooks = new();
 
     public BotClientService(
         IServiceProvider serviceProvider,
         LocalisationService localisation,
         ILogger<BotClientService> logger,
-        DiscordClientBase client) 
+        DiscordClientBase client)
         : base(logger, client)
     {
         _serviceProvider = serviceProvider;
         _localisation = localisation;
     }
-    
+
     protected override async ValueTask OnMemberJoined(MemberJoinedEventArgs args)
     {
         if (!args.Member.IsPending && args.Guild is not null)
@@ -58,7 +58,7 @@ public class BotClientService : DiscordClientService
             await DisableGreetAsync();
             return;
         }
-        
+
         var webhooks = _webhooks.GetOrAdd(guild.Id, _ => new List<IWebhook>());
         var webhook = webhooks.FirstOrDefault(x => x.Id == guildEntity.GreetWebhookId);
 
@@ -79,9 +79,9 @@ public class BotClientService : DiscordClientService
 
         var greetMessage = Helpers.FormatPlaceholders(member, guildEntity.GreetMessage);
         var messageParsed = Helpers.TryParseMessage(greetMessage, out var content, out var embed);
-        
+
         var message = new LocalWebhookMessage();
-        
+
         if (!messageParsed)
             message.Content = greetMessage;
         else if (!string.IsNullOrEmpty(content))
@@ -92,7 +92,7 @@ public class BotClientService : DiscordClientService
             message.AddEmbed(embed);
         }
         else
-        
+
         {
             var defaultEmbed = new LocalEmbed()
                 .WithColor(Utils.SuccessColor)
@@ -101,7 +101,7 @@ public class BotClientService : DiscordClientService
 
             message.AddEmbed(defaultEmbed);
         }
-        
+
         await webhook.ExecuteAsync(message);
 
         async Task DisableGreetAsync()
@@ -110,7 +110,7 @@ public class BotClientService : DiscordClientService
             await db.SaveChangesAsync();
         }
     }
-    
+
     private async Task SendByeMessageAsync(CachedGuild guild, IUser user)
     {
         await using var scope = _serviceProvider.CreateAsyncScope();
@@ -127,7 +127,7 @@ public class BotClientService : DiscordClientService
             await DisableByeAsync();
             return;
         }
-        
+
         var webhooks = _webhooks.GetOrAdd(guild.Id, _ => new List<IWebhook>());
         var webhook = webhooks.FirstOrDefault(x => x.Id == guildEntity.ByeWebhookId);
 
@@ -148,9 +148,9 @@ public class BotClientService : DiscordClientService
 
         var byeMessage = Helpers.FormatPlaceholders(user, guildEntity.ByeMessage);
         var messageParsed = Helpers.TryParseMessage(byeMessage, out var content, out var embed);
-        
+
         var message = new LocalWebhookMessage();
-        
+
         if (!messageParsed)
             message.Content = byeMessage;
         else if (!string.IsNullOrEmpty(content))
@@ -161,7 +161,6 @@ public class BotClientService : DiscordClientService
             message.AddEmbed(embed);
         }
         else
-        
         {
             var defaultEmbed = new LocalEmbed()
                 .WithColor(Utils.SuccessColor)
@@ -170,7 +169,7 @@ public class BotClientService : DiscordClientService
 
             message.AddEmbed(defaultEmbed);
         }
-        
+
         await webhook.ExecuteAsync(message);
 
         async Task DisableByeAsync()

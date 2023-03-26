@@ -26,10 +26,7 @@ Assembly.Load("Rias.TextCommands");
 Logger? logger;
 
 var builder = new HostBuilder()
-    .ConfigureHostConfiguration(config =>
-    {
-        config.AddEnvironmentVariables("RIAS_");
-    })
+    .ConfigureHostConfiguration(config => { config.AddEnvironmentVariables("RIAS_"); })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {
         var env = context.HostingEnvironment;
@@ -37,16 +34,16 @@ var builder = new HostBuilder()
 
         if (File.Exists($"appsettings.{env.EnvironmentName}.json"))
             configBuilder.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
-        
+
         var config = configBuilder.Build();
         var successColor = config["SuccessColor"];
         if (!string.IsNullOrEmpty(successColor))
             Utils.SuccessColor = Helpers.HexToInt(successColor) ?? default;
-        
+
         var errorColor = config["ErrorColor"];
         if (!string.IsNullOrEmpty(errorColor))
             Utils.ErrorColor = Helpers.HexToInt(errorColor) ?? default;
-        
+
         var intermediateColor = config["IntermediateColor"];
         if (!string.IsNullOrEmpty(intermediateColor))
             Utils.IntermediateColor = Helpers.HexToInt(intermediateColor) ?? default;
@@ -56,7 +53,7 @@ var builder = new HostBuilder()
         var loggerConfig = new LoggerConfiguration()
             .MinimumLevel.Information()
             .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}", theme: SystemConsoleTheme.Literate);
-        
+
         if (context.HostingEnvironment.IsDevelopment())
             loggerConfig.MinimumLevel.Debug();
 
@@ -76,17 +73,17 @@ var builder = new HostBuilder()
         var dbDataSource = new NpgsqlDataSourceBuilder(dbConnectionString);
         dbDataSource.MapEnum<LastChargeStatus>();
         dbDataSource.MapEnum<PatronStatus>();
-        
+
         services.AddDbContext<RiasDbContext>(options =>
             options.UseNpgsql(dbDataSource.Build(), npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()).UseSnakeCaseNamingConvention());
 
         var commandServices = typeof(RiasCommandService).Assembly
             .GetTypes()
             .Where(t => t.IsSubclassOf(typeof(RiasCommandService)) && t is { IsAbstract: false, IsInterface: false });
-        
+
         foreach (var commandService in commandServices)
             services.AddScoped(commandService);
-        
+
         services.AddHttpClient<AdministrationService>(httpClient => httpClient.Timeout = 15.Seconds());
         services.AddHttpClient<EmojisService>(httpClient =>
         {
@@ -99,7 +96,7 @@ var builder = new HostBuilder()
         bot.Token = context.Configuration["Token"];
         bot.Intents = GatewayIntents.All & ~GatewayIntents.Presences;
         bot.ServiceAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-        
+
         var activity = context.Configuration["Activity"];
         if (!string.IsNullOrEmpty(activity))
             bot.Activities = new[] { LocalActivity.Playing(activity) };
@@ -121,7 +118,7 @@ TaskScheduler.UnobservedTaskException += (sender, args) =>
 AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
 {
     Log.ForContext("SourceContext", sender).Fatal(args.ExceptionObject as Exception, "Unhandled exception. The process is {ProcessState}", args.IsTerminating ? "terminating" : "continuing");
-    
+
     if (args.IsTerminating)
         Log.CloseAndFlush();
 };

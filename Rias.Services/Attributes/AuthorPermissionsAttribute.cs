@@ -15,7 +15,7 @@ namespace Rias.Services.Attributes;
 public class AuthorPermissionsAttribute : DiscordCheckAttribute
 {
     public readonly Permissions Permissions;
-    
+
     public AuthorPermissionsAttribute(Permissions permissions)
     {
         Permissions = permissions;
@@ -33,7 +33,7 @@ public class AuthorPermissionsAttribute : DiscordCheckAttribute
             var permissions = interactionContext.AuthorPermissions;
 
             if (!permissions.HasFlag(Permissions))
-                return Results.Failure(localisation.GetText(context.GuildId, Strings.Attribute.MissingAuthorPermissions, 
+                return Results.Failure(localisation.GetText(context.GuildId, Strings.Attribute.MissingAuthorPermissions,
                     Permissions & ~permissions));
         }
         else
@@ -43,7 +43,7 @@ public class AuthorPermissionsAttribute : DiscordCheckAttribute
 
             var guildPermissions = guildContext.Author.CalculateGuildPermissions();
             var channelPermissions = guildContext.Author.CalculateChannelPermissions(channel);
-            
+
             var hasGuildPermissions = guildPermissions.HasFlag(Permissions);
             var hasChannelPermissions = channelPermissions.HasFlag(Permissions);
 

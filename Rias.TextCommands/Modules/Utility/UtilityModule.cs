@@ -11,12 +11,12 @@ namespace Rias.TextCommands.Modules.Utility;
 public partial class UtilityModule : RiasTextGuildModule<UtilityService>
 {
     private readonly RiasPrefixProvider _prefixProvider;
-    
+
     public UtilityModule(IPrefixProvider prefixProvider)
     {
         _prefixProvider = (RiasPrefixProvider) prefixProvider;
     }
-    
+
     [TextCommand("prefix")]
     public IResult Prefix()
     {

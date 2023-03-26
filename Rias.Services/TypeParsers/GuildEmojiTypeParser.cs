@@ -18,24 +18,24 @@ public class GuildEmojiTypeParser : DiscordGuildTypeParser<IGuildEmoji>
 
         var valueString = value.ToString();
         string? invalidEmojiString;
-        
+
         if (LocalCustomEmoji.TryParse(value.Span, out var emoji))
         {
             if (guild.Emojis.TryGetValue(emoji.Id.Value, out var guildEmoji))
                 return Success(new Optional<IGuildEmoji>(guildEmoji));
-            
+
             invalidEmojiString = Strings.TypeParser.EmojiNotFromGuild;
         }
         else
         {
             var guildEmoji = guild.Emojis.Values.FirstOrDefault(e => string.Equals(e.Name, valueString, StringComparison.OrdinalIgnoreCase));
-            
+
             if (guildEmoji is not null)
                 return Success(new Optional<IGuildEmoji>(guildEmoji));
 
             invalidEmojiString = Strings.TypeParser.GuildEmojiNotFound;
         }
-        
+
         var localisation = context.Services.GetRequiredService<LocalisationService>();
         return Failure(localisation.GetText(context.GuildId, invalidEmojiString, emoji?.Name ?? valueString));
     }

@@ -12,7 +12,7 @@ namespace Rias.Services.Commands;
 public class AdministrationService : RiasCommandService
 {
     private readonly HttpClient _httpClient;
-    
+
     public AdministrationService(
         RiasDbContext db,
         LocalisationService localisation,
@@ -37,11 +37,11 @@ public class AdministrationService : RiasCommandService
             guildEntity.IsGreetEnabled = !guildEntity.IsGreetEnabled;
         else
             guildEntity.IsGreetEnabled = true;
-        
+
         var webhook = guildEntity.GreetWebhookId > 0
             ? await guild.GetWebhookAsync(guildEntity.GreetWebhookId)
             : null;
-        
+
         if (!guildEntity.IsGreetEnabled)
         {
             if (webhook is not null)
@@ -55,12 +55,12 @@ public class AdministrationService : RiasCommandService
                 IsGreetEnabled = false
             };
         }
-        
+
         await using var stream = await _httpClient.GetStreamAsync(currentUser.GetAvatarUrl(CdnAssetFormat.Automatic, 2048));
         await using var webhookAvatar = new MemoryStream();
         await stream.CopyToAsync(webhookAvatar);
         webhookAvatar.Position = 0;
-        
+
         if (webhook is null)
         {
             webhook = await channel.CreateWebhookAsync(currentUser.Name, props => props.Avatar = webhookAvatar);
@@ -74,12 +74,12 @@ public class AdministrationService : RiasCommandService
                 props.ChannelId = channel.Id;
             });
         }
-        
+
         guildEntity.GreetWebhookId = webhook.Id;
         await Db.SaveChangesAsync();
 
         var greetMessage = Helpers.FormatPlaceholders(member, guildEntity.GreetMessage);
-        
+
         if (Helpers.TryParseMessage(greetMessage, out var content, out var embed))
         {
             return new SetGreetResponse
@@ -100,7 +100,7 @@ public class AdministrationService : RiasCommandService
     public async Task<SetGreetMessageResponse> SetGreetMessageAsync(IGuild guild, string? message)
     {
         var guildEntity = await Db.Guilds.GetOrAddAsync(
-            g => g.GuildId == guild.Id, 
+            g => g.GuildId == guild.Id,
             () => new GuildEntity { GuildId = guild.Id });
 
         guildEntity.GreetMessage = message;
@@ -120,7 +120,7 @@ public class AdministrationService : RiasCommandService
             Channel = channel
         };
     }
-    
+
     public async Task<SetByeResponse> SetByeAsync(
         IMember currentUser,
         IGuild guild,
@@ -136,11 +136,11 @@ public class AdministrationService : RiasCommandService
             guildEntity.IsByeEnabled = !guildEntity.IsByeEnabled;
         else
             guildEntity.IsByeEnabled = true;
-        
+
         var webhook = guildEntity.ByeWebhookId > 0
             ? await guild.GetWebhookAsync(guildEntity.ByeWebhookId)
             : null;
-        
+
         if (!guildEntity.IsByeEnabled)
         {
             if (webhook is not null)
@@ -154,12 +154,12 @@ public class AdministrationService : RiasCommandService
                 IsByeEnabled = false
             };
         }
-        
+
         await using var stream = await _httpClient.GetStreamAsync(currentUser.GetAvatarUrl(CdnAssetFormat.Automatic, 2048));
         await using var webhookAvatar = new MemoryStream();
         await stream.CopyToAsync(webhookAvatar);
         webhookAvatar.Position = 0;
-        
+
         if (webhook is null)
         {
             webhook = await channel.CreateWebhookAsync(currentUser.Name, props => props.Avatar = webhookAvatar);
@@ -173,12 +173,12 @@ public class AdministrationService : RiasCommandService
                 props.ChannelId = channel.Id;
             });
         }
-        
+
         guildEntity.ByeWebhookId = webhook.Id;
         await Db.SaveChangesAsync();
 
         var byeMessage = Helpers.FormatPlaceholders(member, guildEntity.ByeMessage);
-        
+
         if (Helpers.TryParseMessage(byeMessage, out var content, out var embed))
         {
             return new SetByeResponse
@@ -195,11 +195,11 @@ public class AdministrationService : RiasCommandService
             Content = byeMessage
         };
     }
-    
+
     public async Task<SetByeMessageResponse> SetByeMessageAsync(IGuild guild, string? message)
     {
         var guildEntity = await Db.Guilds.GetOrAddAsync(
-            g => g.GuildId == guild.Id, 
+            g => g.GuildId == guild.Id,
             () => new GuildEntity { GuildId = guild.Id });
 
         guildEntity.ByeMessage = message;
@@ -223,7 +223,7 @@ public class AdministrationService : RiasCommandService
     public async Task<bool> SetModLogAsync(IMessageGuildChannel channel, bool toggleModLog)
     {
         var guildEntity = await Db.Guilds.GetOrAddAsync(
-            g => g.GuildId == channel.GuildId, 
+            g => g.GuildId == channel.GuildId,
             () => new GuildEntity { GuildId = channel.GuildId });
 
         if (toggleModLog)
@@ -238,7 +238,7 @@ public class AdministrationService : RiasCommandService
         }
 
         await Db.SaveChangesAsync();
-        
+
         return guildEntity.ModLogChannelId > 0;
     }
 }

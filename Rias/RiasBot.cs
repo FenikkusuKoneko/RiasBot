@@ -33,7 +33,7 @@ public class RiasBot : DiscordBot, IRiasBot
 
     private readonly LocalisationService _localisation;
     private readonly RiasConfiguration _configuration;
-    
+
     private readonly ConcurrentHashSetCache<object> _rateLimits = new();
     private readonly ConcurrentHashSet<string> _exceptions = new();
 
@@ -49,7 +49,7 @@ public class RiasBot : DiscordBot, IRiasBot
     {
         _localisation = services.GetRequiredService<LocalisationService>();
         _configuration = riasOptions.Value;
-        
+
         Ready += OnReadyAsync;
     }
 
@@ -76,7 +76,7 @@ public class RiasBot : DiscordBot, IRiasBot
         typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<IForumChannel>());
         typeParserProvider.AddParser(new Services.TypeParsers.CustomEmojiTypeParser());
         typeParserProvider.AddParser(new Services.TypeParsers.GuildEmojiTypeParser());
-        
+
         return default;
     }
 
@@ -95,7 +95,7 @@ public class RiasBot : DiscordBot, IRiasBot
                 case CommandNotFoundResult:
                     return null;
                 case ChecksFailedResult checksFailedResult:
-                    return string.Join('\n', checksFailedResult.FailedChecks.Select(check => 
+                    return string.Join('\n', checksFailedResult.FailedChecks.Select(check =>
                         check.Key is RequireGuildAttribute ? "• This command can be executed only in a server." : $"• {check.Value.FailureReason}"));
                 case TypeParseFailedResult typeParseFailedResult:
                     return $"• {typeParseFailedResult.FailureReason}";
@@ -105,10 +105,10 @@ public class RiasBot : DiscordBot, IRiasBot
                 {
                     var (rateLimitAttribute, retryAfter) = rateLimitedResult.RateLimits.First();
                     var key = GetRateLimitBucketKey(context, (RateLimitBucketType) rateLimitAttribute.BucketType);
-            
+
                     if (_rateLimits.Contains(key))
                         return null;
-            
+
                     _rateLimits.AddOrUpdate(key, retryAfter);
 
                     return _localisation.GetText(context.GuildId, Strings.Service.CommandCooldown,
@@ -129,7 +129,7 @@ public class RiasBot : DiscordBot, IRiasBot
         var reason = FormatFailureReason(context, result);
         if (reason is null)
             return false;
-        
+
         var embed = new LocalEmbed()
             .WithColor(Utils.ErrorColor)
             .WithDescription(reason);
@@ -192,14 +192,14 @@ public class RiasBot : DiscordBot, IRiasBot
         {
             var exceptionString = exception.ToString();
             var exceptionBytes = Encoding.UTF8.GetBytes(exceptionString);
-            
+
             var exceptionHashBytes = MD5.HashData(exceptionBytes);
             var exceptionHash = Convert.ToHexString(exceptionHashBytes);
-            
+
             if (_logsChannel is not null && !_exceptions.Contains(exceptionHash))
             {
                 var message = new LocalMessage();
-                
+
                 var embed = new LocalEmbed()
                     .WithColor(Utils.ErrorColor)
                     .WithAuthor(context.Author)

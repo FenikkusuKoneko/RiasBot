@@ -15,7 +15,7 @@ public class WaifuEntity : DbEntity, IWaifuEntity
     public int Price { get; set; }
     public bool IsSpecial { get; set; }
     public int Position { get; set; }
-    
+
     public CharacterEntity? Character { get; set; }
     public CustomCharacterEntity? CustomCharacter { get; set; }
 }
@@ -28,7 +28,7 @@ public class WaifuEntityTypeConfiguration : IEntityTypeConfiguration<WaifuEntity
             .WithMany()
             .HasForeignKey(w => w.CharacterId)
             .HasPrincipalKey(w => w.CharacterId);
-        
+
         builder.HasOne(w => w.CustomCharacter)
             .WithMany()
             .HasForeignKey(w => w.CustomCharacterId)

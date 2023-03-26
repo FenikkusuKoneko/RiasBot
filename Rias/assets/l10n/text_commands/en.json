@@ -15,7 +15,7 @@
   "emojis_deleteemoji": "Deletes an emoji from this server.",
   "emojis_renameemoji": "Renames an emoji from this server.",
   "emojis_emoji": "Shows the image of an emoji.",
-  
+
   "help_help": "Shows a page info for a command, or shows the general help page if no arguments are given.\nMost of the commands are single word but there are command groups (or subcommands of those commands).",
   "help_modules": "Shows all modules and submodules.",
   "help_commands": "Shows all commands or shows the commands for a module or submodule.",
@@ -25,7 +25,7 @@
   "info_avatar": "Shows the server avatar for a member. Provide no arguments to show your server avatar.",
   "info_useravatar": "Shows the global avatar for a member. Provide no arguments to show your global avatar.",
   "info_servericon": "Shows the icon of this server.",
-  
+
   "utility_prefix": "Shows my prefix in this server.",
   "info_stats": "Shows my stats."
 }

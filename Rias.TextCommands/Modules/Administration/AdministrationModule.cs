@@ -14,7 +14,7 @@ namespace Rias.TextCommands.Modules.Administration;
 public partial class AdministrationModule : RiasTextGuildModule<AdministrationService>
 {
     private const int GreetByeMessageLengthLimit = 1500;
-    
+
     [TextCommand("greet", "setgreet")]
     [AuthorPermissions(Permissions.Administrator)]
     [BotPermissions(Permissions.ManageWebhooks)]
@@ -26,7 +26,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
         channel ??= Context.GetChannel();
 
         var setGreetResponse = await Service.SetGreetAsync(Context.GetCurrentMember(), guild, channel, Context.Author, switchGreet);
-        
+
         if (!setGreetResponse.IsGreetEnabled)
             return SuccessReply(Strings.Administration.GreetDisabled);
 
@@ -37,16 +37,16 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
 
         if (!string.IsNullOrWhiteSpace(setGreetResponse.Content))
             message.Content += $"\n\n{setGreetResponse.Content}";
-        
+
         if (setGreetResponse.Embed is not null)
             message.AddEmbed(setGreetResponse.Embed);
-        
+
         if (string.IsNullOrWhiteSpace(setGreetResponse.Content) && setGreetResponse.Embed is null)
         {
             var embed = SuccessEmbed
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultGreetMessage, Markdown.Bold(guild.Name), Markdown.Bold(Context.Author.Tag), guild.MemberCount));
-            
+
             message.AddEmbed(embed);
         }
 
@@ -90,7 +90,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
             content.AppendLine().AppendLine(greetMessage);
         else if (!string.IsNullOrWhiteSpace(greetContent))
             content.AppendLine().AppendLine(greetContent);
-        
+
         var replyMessage = new LocalMessage().WithContent(content.ToString());
 
         if (greetEmbed is not null)
@@ -102,13 +102,13 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
             var defaultEmbed = SuccessEmbed
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultGreetMessage, Markdown.Bold(guild.Name), Markdown.Bold(Context.Author.Tag), guild.MemberCount));
-            
+
             replyMessage.AddEmbed(defaultEmbed);
         }
-        
+
         return Reply(replyMessage);
     }
-    
+
     [TextCommand("bye", "setbye")]
     [AuthorPermissions(Permissions.Administrator)]
     [BotPermissions(Permissions.ManageWebhooks)]
@@ -120,7 +120,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
         channel ??= Context.GetChannel();
 
         var setByeResponse = await Service.SetByeAsync(Context.GetCurrentMember(), guild, channel, Context.Author, switchBye);
-        
+
         if (!setByeResponse.IsByeEnabled)
             return SuccessReply(Strings.Administration.ByeDisabled);
 
@@ -131,23 +131,23 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
 
         if (!string.IsNullOrWhiteSpace(setByeResponse.Content))
             message.Content += $"\n\n{setByeResponse.Content}";
-        
+
         if (setByeResponse.Embed is not null)
             message.AddEmbed(setByeResponse.Embed);
-        
+
         if (string.IsNullOrWhiteSpace(setByeResponse.Content) && setByeResponse.Embed is null)
         {
             var embed = new LocalEmbed()
                 .WithColor(Utils.SuccessColor)
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultByeMessage, Markdown.Bold(Context.Author.Tag), guild.MemberCount));
-            
+
             message.AddEmbed(embed);
         }
 
         return Reply(message);
     }
-    
+
     [TextCommand("byemessage", "byemsg")]
     [AuthorPermissions(Permissions.Administrator)]
     [BotPermissions(Permissions.ManageWebhooks)]
@@ -180,12 +180,12 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
                 ? GetText(Strings.Administration.ByeEnabled)
                 : GetText(Strings.Administration.ByeEnabledChannel, byeMessageResponse.Channel.Mention));
         }
-        
+
         if (!messageParsed)
             content.AppendLine().AppendLine(byeMessage);
         else if (!string.IsNullOrWhiteSpace(byeContent))
             content.AppendLine().AppendLine(byeContent);
-        
+
         var replyMessage = new LocalMessage().WithContent(content.ToString());
 
         if (byeEmbed is not null)
@@ -197,10 +197,10 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
             var defaultEmbed = SuccessEmbed
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultByeMessage, Markdown.Bold(Context.Author.Tag), guild.MemberCount));
-            
+
             replyMessage.AddEmbed(defaultEmbed);
         }
-        
+
         return Reply(replyMessage);
     }
 
@@ -210,7 +210,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
     {
         var toggleModLog = channel is null;
         channel ??= Context.GetChannel();
-        
+
         var modLogEnabled = await Service.SetModLogAsync(channel, toggleModLog);
 
         if (modLogEnabled)

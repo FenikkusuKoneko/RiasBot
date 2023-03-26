@@ -6,7 +6,7 @@ namespace Rias.Services;
 public class LocalisationService
 {
     private const string DefaultLocale = "en";
-    
+
     // first string is the locale, second string is the key, third string is the value
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _locales = new();
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _textCommandLocales = new();
@@ -28,7 +28,7 @@ public class LocalisationService
             };
         }
     }
-    
+
     public void AddOrUpdateTextCommandLocale(string locale, string key, string value)
     {
         if (_textCommandLocales.TryGetValue(locale, out var locales))
@@ -43,7 +43,7 @@ public class LocalisationService
             };
         }
     }
-    
+
     public string GetGuildLocale(Snowflake? guildId)
     {
         if (!guildId.HasValue)
@@ -69,19 +69,19 @@ public class LocalisationService
 
         throw new InvalidOperationException($"The translation for the key \"{key}\" couldn't be found.");
     }
-    
+
     /// <summary>
     /// Get a translation string with one argument.
     /// </summary>
     public string GetText(Snowflake? guildId, string key, object arg0)
         => string.Format(GetText(guildId, key), arg0);
-    
+
     /// <summary>
     /// Get a translation string with two arguments.
     /// </summary>
     public string GetText(Snowflake? guildId, string key, object arg0, object arg1)
         => string.Format(GetText(guildId, key), arg0, arg1);
-    
+
     /// <summary>
     /// Get a translation string with three arguments.
     /// </summary>
@@ -120,7 +120,7 @@ public class LocalisationService
         value = null;
         return false;
     }
-    
+
     private bool TryGetTextCommandLocaleString(string locale, string key, out string? value)
     {
         if (_textCommandLocales.TryGetValue(locale, out var localeDictionary))
