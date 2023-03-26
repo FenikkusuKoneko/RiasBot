@@ -19,7 +19,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
     [AuthorPermissions(Permissions.Administrator)]
     [BotPermissions(Permissions.ManageWebhooks)]
     [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
-    public async Task<IResult> SetGreetAsync(IMessageGuildChannel? channel = null)
+    public async Task<IResult> SetGreet(IMessageGuildChannel? channel = null)
     {
         var switchGreet = channel is null;
         var guild = Context.GetGuild();
@@ -43,8 +43,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
         
         if (string.IsNullOrWhiteSpace(setGreetResponse.Content) && setGreetResponse.Embed is null)
         {
-            var embed = new LocalEmbed()
-                .WithColor(Utils.SuccessColor)
+            var embed = SuccessEmbed
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultGreetMessage, Markdown.Bold(guild.Name), Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
@@ -57,7 +56,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
     [TextCommand("greetmessage", "greetmsg")]
     [AuthorPermissions(Permissions.Administrator)]
     [BotPermissions(Permissions.ManageWebhooks)]
-    public async Task<IResult> GreetMessageAsync([Remainder] string? message = null)
+    public async Task<IResult> GreetMessage([Remainder] string? message = null)
     {
         var guild = Context.GetGuild();
 
@@ -100,8 +99,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
         }
         else if (string.IsNullOrEmpty(message))
         {
-            var defaultEmbed = new LocalEmbed()
-                .WithColor(Utils.SuccessColor)
+            var defaultEmbed = SuccessEmbed
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultGreetMessage, Markdown.Bold(guild.Name), Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
@@ -115,7 +113,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
     [AuthorPermissions(Permissions.Administrator)]
     [BotPermissions(Permissions.ManageWebhooks)]
     [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
-    public async Task<IResult> SetByeAsync(IMessageGuildChannel? channel = null)
+    public async Task<IResult> SetBye(IMessageGuildChannel? channel = null)
     {
         var switchBye = channel is null;
         var guild = Context.GetGuild();
@@ -153,7 +151,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
     [TextCommand("byemessage", "byemsg")]
     [AuthorPermissions(Permissions.Administrator)]
     [BotPermissions(Permissions.ManageWebhooks)]
-    public async Task<IResult> ByeMessageAsync([Remainder] string? message = null)
+    public async Task<IResult> ByeMessage([Remainder] string? message = null)
     {
         var guild = Context.GetGuild();
 
@@ -196,8 +194,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
         }
         else if (string.IsNullOrEmpty(message))
         {
-            var defaultEmbed = new LocalEmbed()
-                .WithColor(Utils.SuccessColor)
+            var defaultEmbed = SuccessEmbed
                 .WithThumbnailUrl(Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 2048))
                 .WithDescription(GetText(Strings.Administration.DefaultByeMessage, Markdown.Bold(Context.Author.Tag), guild.MemberCount));
             
@@ -209,7 +206,7 @@ public partial class AdministrationModule : RiasTextGuildModule<AdministrationSe
 
     [TextCommand("setmodlog", "modlog")]
     [AuthorPermissions(Permissions.Administrator)]
-    public async Task<IResult> SetModLogAsync(IMessageGuildChannel? channel = null)
+    public async Task<IResult> SetModLog(IMessageGuildChannel? channel = null)
     {
         var toggleModLog = channel is null;
         channel ??= Context.GetChannel();

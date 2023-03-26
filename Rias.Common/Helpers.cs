@@ -52,6 +52,31 @@ public static class Helpers
 
         return sb.ToString();
     }
+    
+    public static bool TryParseUserId(ReadOnlySpan<char> value, out Snowflake id)
+        => Snowflake.TryParse(value, out id) || Mention.TryParseUser(value, out id);
+    
+    public static (string, string?) ParseTag(ReadOnlyMemory<char> value)
+    {
+        string name;
+        string? discriminator;
+        var valueSpan = value.Span;
+        var hashIndex = valueSpan.LastIndexOf('#');
+        if (hashIndex != -1 && hashIndex + 5 == value.Length)
+        {
+            // The value is a tag (Name#0000);
+            name = new string(valueSpan[..(value.Length - 5)]);
+            discriminator = new string(valueSpan[(hashIndex + 1)..]);
+        }
+        else
+        {
+            // The value is possibly a name or a nick.
+            name = value.ToString();
+            discriminator = null;
+        }
+
+        return (name, discriminator);
+    }
 
     public static bool TryParseMessage(string? json, out string? content, out LocalEmbed? embed)
     {

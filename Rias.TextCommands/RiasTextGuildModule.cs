@@ -18,6 +18,8 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
         _localizationService = new Lazy<LocalisationService>(() => Context.Services.GetRequiredService<LocalisationService>());
     }
 
+    protected static LocalEmbed SuccessEmbed => new LocalEmbed().WithColor(Utils.SuccessColor);
+
     protected IResult SuccessReply(string key)
         => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key)));
 
@@ -27,12 +29,6 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
     protected IResult SuccessReply(string key, object arg0, object arg1)
         => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, arg0, arg1)));
     
-    protected IResult SuccessReply(string key, object arg0, object arg1, object arg2)
-        => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, arg0, arg1, arg2)));
-    
-    protected IResult SuccessReply(string key, params object[] args)
-        => Reply(GetEmbed(Utils.SuccessColor, Localisation.GetText(Context.GuildId, key, args)));
-    
     protected IResult ErrorReply(string key)
         => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key)));
     
@@ -41,15 +37,6 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
     
     protected IResult ErrorReply(string key, object arg0, object arg1)
         => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, arg0, arg1)));
-    
-    protected IResult ErrorReply(string key, object arg0, object arg1, object arg2)
-        => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, arg0, arg1, arg2)));
-    
-    protected IResult ErrorReply(string key, params object[] args)
-        => Reply(GetEmbed(Utils.ErrorColor, Localisation.GetText(Context.GuildId, key, args)));
-    
-    protected IResult ErrorReply(RiasResult result)
-        => Reply(GetEmbed(Utils.ErrorColor, result.ErrorReason));
     
     protected IResult ErrorReply<T>(RiasResult<T> result)
         => Reply(GetEmbed(Utils.ErrorColor, result.ErrorReason));
@@ -65,9 +52,6 @@ public abstract class RiasTextGuildModule : DiscordTextGuildModuleBase
     
     protected string GetText(string key, object arg0, object arg1, object arg2)
         => Localisation.GetText(Context.GuildId, key, arg0, arg1, arg2);
-    
-    protected string GetText(string key, params object[] args)
-        => Localisation.GetText(Context.GuildId, key, args);
 
     private LocalEmbed GetEmbed(Color color, string description) => new LocalEmbed()
         .WithColor(color)

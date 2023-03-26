@@ -19,7 +19,7 @@ public partial class AdministrationModule
         [AuthorPermissions(Permissions.ManageChannels)]
         [BotPermissions(Permissions.ManageChannels)]
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
-        public async Task<IResult> CreateCategoryAsync([Remainder] string name)
+        public async Task<IResult> CreateCategory([Remainder] string name)
         {
             if (name.Length is < Limits.Guild.Channel.MinNameLength or > Limits.Guild.Channel.MaxNameLength)
                 return ErrorReply(Strings.Administration.ChannelNameLengthLimit, Limits.Guild.Channel.MinNameLength, Limits.Guild.Channel.MaxNameLength);
@@ -32,7 +32,7 @@ public partial class AdministrationModule
         [AuthorPermissions(Permissions.ManageChannels)]
         [BotPermissions(Permissions.ManageChannels)]
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
-        public async Task<IResult> RenameCategoryAsync(ICategoryChannel category, [Remainder] string name)
+        public async Task<IResult> RenameCategory(ICategoryChannel category, [Remainder] string name)
         {
             if (name.Length is < Limits.Guild.Channel.MinNameLength or > Limits.Guild.Channel.MaxNameLength)
                 return ErrorReply(Strings.Administration.ChannelNameLengthLimit, Limits.Guild.Channel.MinNameLength, Limits.Guild.Channel.MaxNameLength);
@@ -51,7 +51,7 @@ public partial class AdministrationModule
         [AuthorPermissions(Permissions.ManageChannels)]
         [BotPermissions(Permissions.ManageChannels)]
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
-        public async Task<IResult> DeleteCategoryAsync([Remainder] ICategoryChannel category)
+        public async Task<IResult> DeleteCategory([Remainder] ICategoryChannel category)
         {
             if ((Context.Author.CalculateChannelPermissions(category) & Permissions.ManageChannels) == 0)
                 return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, category.Mention);
@@ -66,7 +66,7 @@ public partial class AdministrationModule
         [TextCommand("addtextchanneltocategory", "atchtocat")]
         [AuthorPermissions(Permissions.ManageChannels)]
         [BotPermissions(Permissions.ManageChannels)]
-        public async Task<IResult> AddTextChannelToCategoryAsync(ITextChannel channel, [Remainder] ICategoryChannel category)
+        public async Task<IResult> AddTextChannelToCategory(ITextChannel channel, [Remainder] ICategoryChannel category)
         {
             if ((Context.Author.CalculateChannelPermissions(channel) & Permissions.ManageChannels) == 0)
                 return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, channel.Mention);
@@ -81,7 +81,7 @@ public partial class AdministrationModule
         [TextCommand("addvoicechanneltocategory", "avchtocat")]
         [AuthorPermissions(Permissions.ManageChannels)]
         [BotPermissions(Permissions.ManageChannels)]
-        public async Task<IResult> AddVoiceChannelToCategoryAsync(IVoiceChannel channel, [Remainder] ICategoryChannel category)
+        public async Task<IResult> AddVoiceChannelToCategory(IVoiceChannel channel, [Remainder] ICategoryChannel category)
         {
             if ((Context.Author.CalculateChannelPermissions(channel) & Permissions.ManageChannels) == 0)
                 return ErrorReply(Strings.Administration.AuthorMissingChannelManagePermission, channel.Mention);

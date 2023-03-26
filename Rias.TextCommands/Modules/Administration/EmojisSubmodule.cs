@@ -19,7 +19,7 @@ public partial class AdministrationModule
         [AuthorPermissions(Permissions.ManageEmojisAndStickers)]
         [BotPermissions(Permissions.ManageEmojisAndStickers)]
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
-        public async Task<IResult> AddEmojiAsync(ICustomEmoji emoji, [Remainder] string name)
+        public async Task<IResult> AddEmoji(ICustomEmoji emoji, [Remainder] string name)
         {
             if (name.Length is < Limits.Guild.Emoji.MinNameLength or > Limits.Guild.Emoji.MaxNameLength)
                 return ErrorReply(Strings.Administration.EmojiNameLengthLimit, Limits.Guild.Emoji.MinNameLength, Limits.Guild.Emoji.MaxNameLength);
@@ -35,7 +35,7 @@ public partial class AdministrationModule
         [AuthorPermissions(Permissions.ManageEmojisAndStickers)]
         [BotPermissions(Permissions.ManageEmojisAndStickers)]
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
-        public async Task<IResult> AddEmojiAsync(string url, [Remainder] string name)
+        public async Task<IResult> AddEmoji(string url, [Remainder] string name)
         {
             if (name.Length is < Limits.Guild.Emoji.MinNameLength or > Limits.Guild.Emoji.MaxNameLength)
                 return ErrorReply(Strings.Administration.EmojiNameLengthLimit, Limits.Guild.Emoji.MinNameLength, Limits.Guild.Emoji.MaxNameLength);
@@ -51,7 +51,7 @@ public partial class AdministrationModule
         [AuthorPermissions(Permissions.ManageEmojisAndStickers)]
         [BotPermissions(Permissions.ManageEmojisAndStickers)]
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
-        public async Task<IResult> AddEmojiAsync([Remainder] string name)
+        public async Task<IResult> AddEmoji([Remainder] string name)
         {
             if (name.Length is < Limits.Guild.Emoji.MinNameLength or > Limits.Guild.Emoji.MaxNameLength)
                 return ErrorReply(Strings.Administration.EmojiNameLengthLimit, Limits.Guild.Emoji.MinNameLength, Limits.Guild.Emoji.MaxNameLength);
@@ -70,7 +70,7 @@ public partial class AdministrationModule
         [AuthorPermissions(Permissions.ManageEmojisAndStickers)]
         [BotPermissions(Permissions.ManageEmojisAndStickers)]
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
-        public async Task<IResult> DeleteEmojiAsync(IGuildEmoji emoji)
+        public async Task<IResult> DeleteEmoji(IGuildEmoji emoji)
         {
             await Context.GetGuild().DeleteEmojiAsync(emoji.Id);
             return SuccessReply(Strings.Administration.EmojiDeleted, emoji.Name);
@@ -80,7 +80,7 @@ public partial class AdministrationModule
         [AuthorPermissions(Permissions.ManageEmojisAndStickers)]
         [BotPermissions(Permissions.ManageEmojisAndStickers)]
         [RateLimit(1, 5, RateLimitMeasure.Seconds, RateLimitBucketType.Guild)]
-        public async Task<IResult> RenameEmojiAsync(IGuildEmoji emoji, [Remainder] string name)
+        public async Task<IResult> RenameEmoji(IGuildEmoji emoji, [Remainder] string name)
         {
             if (name.Length is < Limits.Guild.Emoji.MinNameLength or > Limits.Guild.Emoji.MaxNameLength)
                 return ErrorReply(Strings.Administration.EmojiNameLengthLimit, Limits.Guild.Emoji.MinNameLength, Limits.Guild.Emoji.MaxNameLength);
@@ -91,10 +91,9 @@ public partial class AdministrationModule
         }
 
         [TextCommand("emoji")]
-        public IResult EmojiAsync(ICustomEmoji emoji)
+        public IResult Emoji(ICustomEmoji emoji)
         {
-            var embed = new LocalEmbed()
-                .WithColor(Utils.SuccessColor)
+            var embed = SuccessEmbed
                 .WithTitle(emoji.Name ?? emoji.Id.ToString())
                 .WithImageUrl(emoji.GetUrl(CdnAssetFormat.Automatic, 128));
 

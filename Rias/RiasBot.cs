@@ -63,6 +63,7 @@ public class RiasBot : DiscordBot, IRiasBot
 
     protected override ValueTask AddTypeParsers(DefaultTypeParserProvider typeParserProvider, CancellationToken cancellationToken)
     {
+        typeParserProvider.AddParser(new Services.TypeParsers.MemberTypeParser());
         typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<IGuildChannel>());
         typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<ICategorizableGuildChannel>());
         typeParserProvider.AddParser(new Services.TypeParsers.GuildChannelTypeParser<IMessageGuildChannel>());
@@ -94,7 +95,8 @@ public class RiasBot : DiscordBot, IRiasBot
                 case CommandNotFoundResult:
                     return null;
                 case ChecksFailedResult checksFailedResult:
-                    return string.Join('\n', checksFailedResult.FailedChecks.Select(check => $"• {check.Value.FailureReason}"));
+                    return string.Join('\n', checksFailedResult.FailedChecks.Select(check => 
+                        check.Key is RequireGuildAttribute ? "• This command can be executed only in a server." : $"• {check.Value.FailureReason}"));
                 case TypeParseFailedResult typeParseFailedResult:
                     return $"• {typeParseFailedResult.FailureReason}";
                 case ParameterChecksFailedResult parameterChecksFailedResult:

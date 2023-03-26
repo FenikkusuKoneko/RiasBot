@@ -20,6 +20,11 @@
   "help_modules": "Shows all modules and submodules.",
   "help_commands": "Shows all commands or shows the commands for a module or submodule.",
   "help_allcommands": "Shows all commands.",
+  "info_memberinfo": "Shows the info for a member. Provide no arguments to show your info.",
+  "info_serverinfo": "Shows the info for this server.",
+  "info_avatar": "Shows the server avatar for a member. Provide no arguments to show your server avatar.",
+  "info_useravatar": "Shows the global avatar for a member. Provide no arguments to show your global avatar.",
+  "info_servericon": "Shows the icon of this server.",
   
   "utility_prefix": "Shows my prefix in this server.",
   "info_stats": "Shows my stats."

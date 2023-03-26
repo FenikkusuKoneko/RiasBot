@@ -90,6 +90,25 @@ public static class Strings
         public const string Presence = "utility_presence";
         public const string PresenceInfo = "utility_presence_info";
         public const string StatsFooter = "utility_stats_footer";
+        public const string Username = "utility_username";
+        public const string Nickname = "utility_nickname";
+        public const string JoinedServer = "utility_joined_server";
+        public const string JoinedDiscord = "utility_joined_discord";
+        public const string CreatedAt = "utility_created_at";
+        public const string Roles = "utility_roles";
+        public const string Bots = "utility_bots";
+        public const string TextChannels = "utility_text_channels";
+        public const string VoiceChannels = "utility_voice_channels";
+        public const string SystemChannel = "utility_system_channel";
+        public const string AfkChannel = "utility_afk_channel";
+        public const string VerificationLevel = "utility_verification_level";
+        public const string BoostTier = "utility_boost_tier";
+        public const string Boosts = "utility_boosts";
+        public const string VanityUrl = "utility_vanity_url";
+        public const string Features = "utility_features";
+        public const string Emojis = "utility_emojis";
+        public const string DateTimeAgo = "utility_date_time_ago";
+        public const string NoGuildIcon = "utility_no_guild_icon";
     }
 
     public static class Service
@@ -111,6 +130,7 @@ public static class Strings
 
     public static class TypeParser
     {
+        public const string MemberNotFound = "type_parser_member_not_found";
         public static string ChannelNotFound(string? type = null) => type switch
         {
             null => "type_parser_channel_not_found",
@@ -127,8 +147,10 @@ public static class Strings
     public const string Examples = "examples";
     public const string Links = "links";
     public const string Member = "member";
+    public const string Members = "members";
     public const string NoDescription = "no_description";
     public const string Server = "server";
     public const string Usages = "usages";
     public const string User = "user";
+    public const string Id = "id";
 }

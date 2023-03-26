@@ -44,7 +44,7 @@ public class HelpModule : RiasTextModule<HelpService>
     }
 
     [TextCommand("modules", "mdls")]
-    public async Task<IResult> ModulesAsync()
+    public async Task<IResult> Modules()
     {
         var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
         
@@ -90,8 +90,7 @@ public class HelpModule : RiasTextModule<HelpService>
             description.AppendLine();
         }
 
-        var embed = new LocalEmbed()
-            .WithColor(Utils.SuccessColor)
+        var embed = SuccessEmbed
             .WithTitle(GetText(Strings.Help.ModulesListTitle))
             .WithDescription(description.ToString())
             .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
@@ -100,10 +99,10 @@ public class HelpModule : RiasTextModule<HelpService>
     }
 
     [TextCommand("commands", "cmds")]
-    public async Task<IResult> CommandsAsync([Remainder, Name("module")] string? moduleName = null)
+    public async Task<IResult> Commands([Remainder, Name("module")] string? moduleName = null)
     {
         if (string.IsNullOrWhiteSpace(moduleName))
-            return await AllCommandsAsync();
+            return await AllCommands();
         
         var module = _commandService
             .EnumerateTextModules()
@@ -136,8 +135,7 @@ public class HelpModule : RiasTextModule<HelpService>
             }
         }
 
-        var embed = new LocalEmbed()
-            .WithColor(Utils.SuccessColor)
+        var embed = SuccessEmbed
             .WithTitle(GetText(module.Parent is null ? Strings.Help.AllModuleCommands : Strings.Help.AllSubmoduleCommands, module.Name))
             .WithDescription(description.ToString())
             .WithFooter(Context.Author.Tag, Context.Author.GetAvatarUrl(CdnAssetFormat.Automatic, 128));
@@ -146,7 +144,7 @@ public class HelpModule : RiasTextModule<HelpService>
     }
 
     [TextCommand("allcommands", "allcmds")]
-    public async Task<IResult> AllCommandsAsync()
+    public async Task<IResult> AllCommands()
     {
         var isOwner = await Context.Bot.IsOwnerAsync(Context.AuthorId);
         
