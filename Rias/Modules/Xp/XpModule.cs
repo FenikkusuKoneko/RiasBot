@@ -53,7 +53,7 @@ namespace Rias.Modules.Xp
             }
 
             await using var xpImage = await Service.GenerateXpImageAsync(member);
-            await Context.Channel.SendMessageAsync(new DiscordMessageBuilder().WithFile($"{member.Id}_xp.png", xpImage));
+            await Context.Channel.SendMessageAsync(new DiscordMessageBuilder().AddFile($"{member.Id}_xp.png", xpImage));
         }
 
         [Command("globalxpleaderboard", "gxplb")]

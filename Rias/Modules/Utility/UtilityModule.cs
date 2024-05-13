@@ -290,7 +290,7 @@ namespace Rias.Modules.Utility
             var image = new MemoryStream();
             await magickImage.WriteAsync(image, MagickFormat.Png);
             image.Position = 0;
-            await Context.Channel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithFile(fileName, image));
+            await Context.Channel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).AddFile(fileName, image));
         }
         
         [Command("calculator", "calc")]

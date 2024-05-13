@@ -45,7 +45,7 @@ namespace Rias.Modules.Profile
             }
 
             await using var profileImage = await Service.GenerateProfileImageAsync(member);
-            await Context.Channel.SendMessageAsync(new DiscordMessageBuilder().WithFile($"{member.Id}_profile.png", profileImage));
+            await Context.Channel.SendMessageAsync(new DiscordMessageBuilder().AddFile($"{member.Id}_profile.png", profileImage));
         }
 
         [Command("background", "bg", "cover", "image")]
@@ -115,7 +115,7 @@ namespace Rias.Modules.Profile
                     Description = GetText(Localization.ProfileBackgroundPreview),
                     ImageUrl = $"attachment://{Context.User.Id}_profile_preview.png"
                 })
-                .WithFile($"{Context.User.Id}_profile_preview.png", profilePreview));
+                .AddFile($"{Context.User.Id}_profile_preview.png", profilePreview));
             
             if (componentInteractionArgs is null)
                 return;
